@@ -1,0 +1,8 @@
+<div *ngIf="site">
+    <h2>{{site.name | uppercase}} Details</h2>
+    <div>id: {{site.uuid_site}}</div>
+    <div>
+      <label for="site-name">Hero name: </label>
+      <input id="site-name" [(ngModel)]="site.nom" placeholder="nom">
+    </div>
+  </div>
