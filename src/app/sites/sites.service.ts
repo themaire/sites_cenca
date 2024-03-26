@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-// import { Observable } from 'rxjs';
-import { Site } from './site';
+
+import { ListSite } from './site'; // prototype d'un site
+import { DetailSite } from './site-detail';
 import { Selector } from './selector';
 
 
@@ -15,31 +16,23 @@ export class SitesService {
 
   private url :string = "http://192.168.27.66:8889/Sites/"
 
-  // getSitesById(id :string) :Observable<any> {
-  //   console.log("Dans research.service.getProductById() => /Product/id="+id);	
-  //   return this.http.get(this.url + id);
-  // }
-
   // Recherche par critères ou par mots clefs
-  async getSites(parametres :string): Promise<Site[]> {
-    console.log("Dans getSites avec " + parametres);
-    const data = await fetch(this.url + parametres);
+  async getSiteUUID(paramUUID :string): Promise<DetailSite> {
+    // console.log("Dans getSiteUUID avec " + paramUUID);
+    const data = await fetch(this.url + paramUUID);
     return await data.json() ?? [];
   }
 
-  // getSelectors() :Observable<any> {
-  //   console.log("Dans getSelectors.");
-  //   return this.http.get(this.url + "selectors");
-  // }
-
-  // getSelectors(): Observable<Selector[]> {
-  //   return this.http.get<Selector[]>(this.url + "selectors")
-  // }
+  // Recherche par critères ou par mots clefs
+  // Pour la recherche de sites uniquement
+  async getSites(parametres :string): Promise<ListSite[]> {
+    // console.log("Dans getSites avec " + parametres);
+    const data = await fetch(this.url + parametres);
+    return await data.json() ?? [];
+  }
 
   async getSelectors(): Promise<Selector[]> {
     const data = await fetch(this.url + "selectors");
     return await data.json() ?? [];
   }
-
-
 }

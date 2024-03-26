@@ -3,31 +3,35 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
-import { Site } from '../site'; // prototype d'un site
+import { ListSite } from '../site'; // prototype d'un site
 import { SitesService } from '../sites.service'; // service de données
-// import { Observable } from 'rxjs';
+import { SiteDetailComponent } from '../site-detail/site-detail.component'; // service de données
+
 
 @Component({
   selector: 'app-sites-display',
   standalone: true,
   imports: [CommonModule,
-            RouterLink, 
-            RouterOutlet
+            RouterLink, RouterOutlet,
+            SiteDetailComponent
             ],
   templateUrl: './sites-display.component.html',
   styleUrl: './sites-display.component.scss'
 })
 export class SitesDisplayComponent implements OnInit{
-  public sites: Site[] = []; // La liste des sites à afficher
+  public sites: ListSite[] = []; // La liste des sites à afficher
+  public selectedSite?: ListSite;
   research: SitesService = inject(SitesService);
+
+  listTheaders: Array<string> = ["--", "Codes", "Nom", "Status", "Communes(s)", "Milieux naturels", "Bassin agence", "Responsable",]
 
   constructor(private route: ActivatedRoute, private router :Router ) {}
 
   ngOnInit(){
-
+    // Rechercher et obtenir une liste de sites selon des critères passés en paramètre via la route.
     this.route.params.subscribe((params: Params) => {
-      console.log("Route param :" + params['type']);
-      console.log(this.route.params);
+      // console.log("Route param type :" + params['type']);
+      // console.log(this.route.params);
       let subroute: string = "";
       
       if (params["type"] !== undefined) {
@@ -39,13 +43,10 @@ export class SitesDisplayComponent implements OnInit{
                         + "/" + params['milieux_naturels']
                         + "/" + params['responsable'];
         
-        this.research.getSites(subroute).then((sitesGuetted: Site[]) => {
+        this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
           this.sites = sitesGuetted;
-          console.log(this.sites);
-          // for(let i of sites){
-          //   console.log(i);
-          //   console.log(typeof i);
-          // }
+          // console.log(this.sites);
+
         });
       }
     //   // else{
@@ -53,13 +54,26 @@ export class SitesDisplayComponent implements OnInit{
     //   //   // voir la section suivante
     //   //   subroute = "keyword?" + params["terms"].split(" ").join("&");
 
-     
-
     });
   }
 
-  productSelection(uuid: string) {
-    this.router.navigate(['/sites', {outlets: {'detail': ['uuid', uuid]}}]);
+  onSelect(site: ListSite): void {
+    // Sert au bouton qui fait rentrer dans le detail d'un site.
+    // LE SITE SELECTIONNE PAR L'UTILISATEUR dans la variable selectedSite
+
+    // Si this.selectedSite == undefined on affiche la liste de sites
+    // Si this.selectedSite == "un site" on le detail du site
+
+    // Ca se passe dans la vue du component sites-display 
+    this.selectedSite = site;
   }
 
+  resetSelected(): void {
+    // Remettre à zéro pour justement vider la variable pour ré afficher la liste
+    // des sites.
+
+    // !!! Cette fonction est utilisé (un bouton retour) dans le sous component site-detail
+    // pour quitter la vue "detail". 
+    this.selectedSite = undefined;
+  }
 }

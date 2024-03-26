@@ -1,4 +1,4 @@
-export interface Site {
+export interface ListSite {
     uuid_site: string;
     code: string;
     nom: string;

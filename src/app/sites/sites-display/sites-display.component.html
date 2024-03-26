@@ -1,40 +1,29 @@
-<p>
-    Liste des sites sélectionnés parmis votre filtrage :
-  </p>
-  <!-- {{sites}} -->
-  <table >
-    <thead>
-        <th scope="col">
-            --
-        </th>
-        <th scope="col">
-            Codes
-        </th>
-        <th scope="col">
-            Nom
-        </th>
-        <th scope="col">
-            Status
-        </th>
-        <th scope="col">
-            Commune(s)
-        </th>
-        <th scope="col">
-            Milieux naturels
-        </th>
-        <th scope="col">
-            Bassin agence
-        </th>
-        <th scope="col">
-            Responsable
-        </th>
-    </thead>
-    
-    <tr *ngFor="let site of sites, let i = index" scope="row" class="table-secondary">
-        
-        <!-- <button (click)="showSite(site.uuid_site)"> Voir </button> -->
+
+<div *ngIf="selectedSite !== undefined">
+    <app-site-detail 
+        [site]="selectedSite"
+        (selectedSite)="resetSelected()">
+    </app-site-detail>
+</div>
+
+<div *ngIf="selectedSite == undefined">
+    <p>
+        Liste des sites sélectionnés parmis votre filtrage :
+    </p>
+
+    <table>
+
+        <thead>
+            <th *ngFor="let thName of listTheaders" scope="col">
+                {{ thName }}
+            </th>
+        </thead>
+
+        <tr *ngFor="let site of sites, let i = index" scope="row" class="table-secondary">
+            
+            <button type="button" (click)="onSelect(site)">DETAIL</button>
             <td>
-                <a [routerLink]="['/sites/uuid=', '{{ site.code }}']">{{ site.code }}</a>
+                {{ site.code }}
             </td>
             <td>
                 {{ site.nom }}
@@ -54,6 +43,6 @@
             <td>
                 {{ site.responsable }}
             </td>
-
-     </tr>
-  </table>
+        </tr>
+    </table>
+</div>

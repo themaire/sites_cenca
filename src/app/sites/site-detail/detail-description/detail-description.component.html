@@ -1,0 +1,48 @@
+
+
+
+<div *ngIf="inputDescription !== undefined">
+    <table>
+        <tr>
+            <td colspan="2">
+                Description du site : {{inputDescription.description_site}}
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Site sensible : {{inputDescription.sensibilite}}
+            </td>
+            <td>
+                Description sensibilité : {{inputDescription.remq_sensibilite}}
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                Site ouvert au public : {{inputDescription.typ_ouverture}}
+            </td>
+        </tr>
+
+        <tr>
+        
+            <td>
+                Aménagements : <br>
+            -+--+-
+            </td>
+        </tr>
+
+        <tr>
+            <table>
+                <td>
+                    Lien CEN : <a href="{{inputDescription.url_cen}}">{{inputDescription.url_cen}}</a>
+                </td>
+                <td>
+                    Lien MNHN : <a href="{{inputDescription.url_mnhn}}">{{inputDescription.url_mnhn}}</a>
+                </td>
+            </table>
+        </tr>
+
+      </table>
+</div>
+

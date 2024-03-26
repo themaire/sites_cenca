@@ -25,7 +25,7 @@ export class SitesResearchComponent implements OnInit {
   constructor( private router :Router ) {
     this.research.getSelectors().then((selectors: Selector[]) => {
       this.selectors = selectors;
-      console.log(this.selectors);
+      // console.log(this.selectors);
     });
   }
 
