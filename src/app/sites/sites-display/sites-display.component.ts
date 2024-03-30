@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { RouterLink, RouterOutlet } from '@angular/router';
@@ -7,25 +7,50 @@ import { ListSite } from '../site'; // prototype d'un site
 import { SitesService } from '../sites.service'; // service de données
 import { SiteDetailComponent } from '../site-detail/site-detail.component'; // service de données
 
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatSort, MatSortModule} from '@angular/material/sort';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @Component({
   selector: 'app-sites-display',
   standalone: true,
   imports: [CommonModule,
             RouterLink, RouterOutlet,
-            SiteDetailComponent
+            SiteDetailComponent, 
+
+            MatTableModule, 
+
+            MatFormFieldModule, MatInputModule, 
+            
+            // MatSortModule, 
+            MatPaginatorModule
             ],
   templateUrl: './sites-display.component.html',
   styleUrl: './sites-display.component.scss'
 })
-export class SitesDisplayComponent implements OnInit{
+export class SitesDisplayComponent {
   public sites: ListSite[] = []; // La liste des sites à afficher
   public selectedSite?: ListSite;
+
+  // Pour la liste tableau Material
+  public dataSource!: MatTableDataSource<ListSite>;
+  public displayedColumns: string[] = ['code', 'nom', 'statut', 'communes', 'milieux_naturels', 'bassin_agence', 'responsable',];
+  // listTheaders: Array<string> = ["--", "Codes", "Nom", "Status", "Communes(s)", "Milieux naturels", "Bassin agence", "Responsable",]
+
+  @ViewChild(MatPaginator, {static: false})
+  set paginator(value: MatPaginator) {
+    if (this.dataSource){
+      this.dataSource.paginator = value;
+    }
+  }
+
   research: SitesService = inject(SitesService);
 
-  listTheaders: Array<string> = ["--", "Codes", "Nom", "Status", "Communes(s)", "Milieux naturels", "Bassin agence", "Responsable",]
-
   constructor(private route: ActivatedRoute, private router :Router ) {}
+
+
 
   ngOnInit(){
     // Rechercher et obtenir une liste de sites selon des critères passés en paramètre via la route.
@@ -45,17 +70,29 @@ export class SitesDisplayComponent implements OnInit{
         
         this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
           this.sites = sitesGuetted;
-          // console.log(this.sites);
-
+          this.dataSource = new MatTableDataSource(this.sites);
+          this.dataSource.paginator = this.paginator
         });
       }
-    //   // else{
-    //   //   // Cas d'une recherche avec des mots-clés,
-    //   //   // voir la section suivante
-    //   //   subroute = "keyword?" + params["terms"].split(" ").join("&");
 
     });
   }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+
+    console.log(filterValue.trim().toLowerCase())
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    console.log("datasource filtrée : " + this.dataSource);
+    
+    // if (this.dataSource.paginator) {
+    //   this.dataSource.paginator.firstPage();
+    // }
+  }
+
+  
+
+  
 
   onSelect(site: ListSite): void {
     // Sert au bouton qui fait rentrer dans le detail d'un site.
@@ -65,6 +102,8 @@ export class SitesDisplayComponent implements OnInit{
     // Si this.selectedSite == "un site" on le detail du site
 
     // Ca se passe dans la vue du component sites-display 
+
+    console.log(site);
     this.selectedSite = site;
   }
 

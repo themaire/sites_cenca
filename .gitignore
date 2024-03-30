@@ -159,6 +159,7 @@ yarn-error.log
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
+*.code-workspace
 
 # Miscellaneous
 /.angular/cache
@@ -173,3 +174,4 @@ testem.log
 .DS_Store
 Thumbs.db
 >>>>>>> 4e1e9a2 (premier commit)
+

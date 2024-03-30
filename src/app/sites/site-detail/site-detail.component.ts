@@ -51,7 +51,7 @@ export class SiteDetailComponent {
   constructor(private route: ActivatedRoute, 
               private router :Router
               ) {
-                console.log("> Constructor ::: this.siteSel est " + this.site);
+
               }
 
   ngOnChanges(changes: SimpleChanges){
