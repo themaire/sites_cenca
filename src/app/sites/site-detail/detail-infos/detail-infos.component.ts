@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DetailSite } from '../../site-detail';
+import { Commune } from './commune';
+import { SitesService } from '../../sites.service'; // service de données
 
 @Component({
   selector: 'app-detail-infos',

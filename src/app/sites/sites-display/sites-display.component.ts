@@ -34,7 +34,7 @@ export class SitesDisplayComponent {
   public sites: ListSite[] = []; // La liste des sites à afficher
   public selectedSite?: ListSite;
 
-  // Pour la liste tableau Material
+  // Pour la liste des sites : le tableau Material
   public dataSource!: MatTableDataSource<ListSite>;
   public displayedColumns: string[] = ['code', 'nom', 'statut', 'communes', 'milieux_naturels', 'bassin_agence', 'responsable',];
   // listTheaders: Array<string> = ["--", "Codes", "Nom", "Status", "Communes(s)", "Milieux naturels", "Bassin agence", "Responsable",]
@@ -49,8 +49,6 @@ export class SitesDisplayComponent {
   research: SitesService = inject(SitesService);
 
   constructor(private route: ActivatedRoute, private router :Router ) {}
-
-
 
   ngOnInit(){
     // Rechercher et obtenir une liste de sites selon des critères passés en paramètre via la route.
@@ -85,14 +83,10 @@ export class SitesDisplayComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
     console.log("datasource filtrée : " + this.dataSource);
     
-    // if (this.dataSource.paginator) {
-    //   this.dataSource.paginator.firstPage();
-    // }
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
-
-  
-
-  
 
   onSelect(site: ListSite): void {
     // Sert au bouton qui fait rentrer dans le detail d'un site.
@@ -102,9 +96,11 @@ export class SitesDisplayComponent {
     // Si this.selectedSite == "un site" on le detail du site
 
     // Ca se passe dans la vue du component sites-display 
-
-    console.log(site);
-    this.selectedSite = site;
+    if(site.uuid_site !== undefined){
+      this.selectedSite = site;
+    }else{
+      console.log("Pas de uuid pour afficher le site : " + site.uuid_site);
+    }
   }
 
   resetSelected(): void {

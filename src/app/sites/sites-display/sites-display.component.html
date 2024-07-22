@@ -1,6 +1,24 @@
+<!--
 
-<!-- "On affiche le détail -- si on a selectionné de site dans la liste" -->
-<div *ngIf="selectedSite !== undefined">
+ICI deux div. On affiche l'une ou l'autre : 
+
+    Soit :
+        -- la liste des sites
+        -- le détail d'un site
+
+    C'est la fonction ts onSelect() qui assigne la variable selectedSite.
+
+-->
+
+<!-- "On affiche le détail -- si on a selectionné le site dans la liste" -->
+<!-- <div *ngIf="selectedSite !== undefined">
+    <app-site-detail 
+        [site]="selectedSite"
+        (selectedSite)="resetSelected()">
+    </app-site-detail>
+</div> -->
+
+<div>
     <app-site-detail 
         [site]="selectedSite"
         (selectedSite)="resetSelected()">
@@ -12,41 +30,6 @@
     <p>
         Liste des sites sélectionnés parmis votre filtrage :
     </p>
-
-    <!-- <table>
-
-        <thead>
-            <th *ngFor="let thName of listTheaders" scope="col">
-                {{ thName }}
-            </th>
-        </thead>
-
-        <tr *ngFor="let site of sites, let i = index" scope="row" class="table-secondary">
-            
-            <button type="button" (click)="onSelect(site)">DETAIL</button>
-            <td>
-                {{ site.code }}
-            </td>
-            <td>
-                {{ site.nom }}
-            </td>
-            <td>
-                {{ site.statut }}
-            </td>
-            <td>
-                {{ site.communes }}
-            </td>
-            <td>
-                {{ site.milieux_naturels }}
-            </td>
-            <td>
-                {{ site.bassin_agence }}
-            </td>
-            <td>
-                {{ site.responsable }}
-            </td>
-        </tr>
-    </table> -->
 
     <mat-form-field>
         <mat-label>Mots-clés</mat-label>
@@ -82,19 +65,19 @@
             <td mat-cell *matCellDef="let element"> {{element.communes}} </td>
         </ng-container>
 
-        <!-- communes Column -->
+        <!-- milieux_naturels Column -->
         <ng-container matColumnDef="milieux_naturels">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Milieux naturels </th>
-            <td mat-cell *matCellDef="let element"> {{element.communes}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.milieux_naturels}} </td>
         </ng-container>
 
-        <!-- communes Column -->
+        <!-- bassin_agence Column -->
         <ng-container matColumnDef="bassin_agence">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Bassin agence </th>
             <td mat-cell *matCellDef="let element"> {{element.bassin_agence}} </td>
         </ng-container>
 
-        <!-- communes Column -->
+        <!-- responsable Column -->
         <ng-container matColumnDef="responsable">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Responsable </th>
             <td mat-cell *matCellDef="let element"> {{element.responsable}} </td>

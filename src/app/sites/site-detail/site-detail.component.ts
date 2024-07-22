@@ -16,6 +16,7 @@ import { DetailGestionComponent } from './detail-gestion/detail-gestion.componen
 import { DetailHabitatsComponent } from './detail-habitats/detail-habitats.component'; // service de données
 import { DetailOperationsComponent } from './detail-operations/detail-operations.component'; // service de données
 
+// Composant qui affiche une fiche site (6 sous-composants).
 
 @Component({
   selector: 'app-site-detail',
@@ -56,7 +57,7 @@ export class SiteDetailComponent {
 
   ngOnChanges(changes: SimpleChanges){
     // Ce component est chargé en meme temps que sitesDisplay. Vide et non visible.
-    // Le chargement des details à affiché se fait par la suite, d'où le OnChanges.
+    // Le chargement des details à afficher se fait par la suite, d'où le OnChanges.
 
     // for (let propName in changes) {  
     //   console.log('propname :' + propName)

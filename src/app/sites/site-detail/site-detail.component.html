@@ -2,11 +2,13 @@
 <button type="button" (click)="resetSelectedd()">Retour</button>
 <section>
 
+  <!-- Titre -->
   <h2 *ngIf="siteDetail !== undefined">{{siteDetail.description_site}}</h2>
 
+  <!-- Onglets supérieurs -->
   <mat-tab-group>
 
-    <mat-tab label="Infos générales"> 
+    <mat-tab label="Infos générales">
       <app-detail-infos
         [inputDetail]="siteDetail">
       </app-detail-infos>
@@ -26,11 +28,12 @@
 
   </mat-tab-group>
 
+  <!-- Onglets inferieurs -->
   <mat-tab-group>
 
     <mat-tab label="Gestion">
       <app-detail-gestion
-        [inputGestion]="siteDetail">
+        [inputDetail]="siteDetail">
       </app-detail-gestion>
     </mat-tab>
 
