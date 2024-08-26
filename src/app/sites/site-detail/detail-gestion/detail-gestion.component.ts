@@ -31,15 +31,12 @@ export class DetailGestionComponent {
       
       // ChatGPT 19/07/2024
       try {
-        const docGuetted = await this.research.getDocPlan(subroute);
-        this.docPlan = docGuetted;
+        this.docPlan = await this.research.getDocPlan(subroute);
         console.log('docPlan après assignation :', this.docPlan);
         this.cdr.detectChanges(); // Forcer la détection des changements
       } catch (error) {
         console.error('Error fetching documents', error);
       }
-      
     }
-
   }
 }

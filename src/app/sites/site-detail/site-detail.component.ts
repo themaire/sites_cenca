@@ -77,7 +77,8 @@ export class SiteDetailComponent {
       // Cas d'une recherche sur critères
       subroute = "uuid=" + this.site["uuid_site"];
 
-      console.log("Ouais on est dans le OnChanges. UUID : " + this.site["uuid_site"]);
+      console.log("Ouais on est dans le OnChanges de site-detail. UUID : " + this.site["uuid_site"]);
+      // console.log(this.site);
       
       this.research.getSiteUUID(subroute).then((siteGuetted) => {
         this.siteDetail = siteGuetted;

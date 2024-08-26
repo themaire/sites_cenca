@@ -11,19 +11,19 @@ ICI deux div. On affiche l'une ou l'autre :
 -->
 
 <!-- "On affiche le détail -- si on a selectionné le site dans la liste" -->
-<!-- <div *ngIf="selectedSite !== undefined">
-    <app-site-detail 
-        [site]="selectedSite"
-        (selectedSite)="resetSelected()">
-    </app-site-detail>
-</div> -->
-
-<div>
+<div *ngIf="selectedSite !== undefined">
     <app-site-detail 
         [site]="selectedSite"
         (selectedSite)="resetSelected()">
     </app-site-detail>
 </div>
+
+<!-- <div>
+    <app-site-detail 
+        [site]="selectedSite"
+        (selectedSite)="resetSelected()">
+    </app-site-detail>
+</div> -->
 
 <!-- "On affiche la liste -- si on a PAS selectionné de site dans la liste" -->
 <div *ngIf="selectedSite == undefined">
