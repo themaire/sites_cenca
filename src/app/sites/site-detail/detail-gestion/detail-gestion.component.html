@@ -1,67 +1,64 @@
+<div *ngIf="docPlan.length > 0; then thenBlock else elseBlock"></div>
 
+<ng-template #thenBlock>
+    {{ docPlan.length }} plan(s) de gestions<br>
+    <ul>
+        <li *ngFor="let doc of docPlan">
+          Document : {{ doc.document }}<br>
+          Année début : {{ doc.annee_deb }}<br>
+          Année fin : {{ doc.annee_fin }}<br>
+          Surface : {{ doc.surface }}<br>
+          Doc. actuel : {{ doc.docactuel }}<br>
+          Lien du document : <a [href]="doc.url" target="_blank">Télécharger</a>
+        </li>
+      </ul>
+</ng-template>
 
+<ng-template #elseBlock>
+    Il n'y a pas de plan de gestion sur ce site.
+</ng-template>
 
-<div *ngIf="inputGestion !== undefined">
+<div *ngIf="inputDetail !== undefined">
     <table>
-        <tr>
-            <td colspan="2">
-                Documents planificateurs : 
-            </td>
-        </tr>
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    Agriculteurs/trices sous contrat ou convention : 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <section>---Tableau à venir---</section>
+                </td>
+            </tr>
 
-        <tr>
-            <section>---</section>
-        </tr>
+            <tr>
+                <td colspan="2">
+                    Surfaces en libre évolution : 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <section>---Tableau à venir---</section>
+                </td>
+            </tr>
 
-        <tr>
-            <td colspan="2">
-                <section>---Tableau à venir---</section>
-            </td>
-        </tr>
-
-        <tr>
-            <section>---</section>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                Agriculteurs/trices sous contrat ou convention : 
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <section>---Tableau à venir---</section>
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                Surfaces en libre évolution : 
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <section>---Tableau à venir---</section>
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                Conservateur/trice(s) bénévoles : 
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <section>---Tableau à venir---</section>
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="2">
-                Pourcentage estimé du site dont la gestion est assurée : {{inputGestion.pourc_gere}}%
-            </td>
-        </tr>
-
+            <tr>
+                <td colspan="2">
+                    Conservateur/trice(s) bénévoles : 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <section>---Tableau à venir---</section>
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="2">
+                    Pourcentage estimé du site dont la gestion est assurée : {{inputDetail.pourc_gere}}%
+                </td>
+            </tr>
+        </tbody>
       </table>
 </div>
-

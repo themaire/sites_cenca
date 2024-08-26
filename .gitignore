@@ -172,6 +172,9 @@ testem.log
 
 # System files
 .DS_Store
+._.DS_Store
 Thumbs.db
->>>>>>> 4e1e9a2 (premier commit)
+src/app/sites/req.sql
+.idea
 
+>>>>>>> 4e1e9a2 (premier commit)

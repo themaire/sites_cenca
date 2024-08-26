@@ -1,25 +1,24 @@
-
-
-
 <div *ngIf="inputHabitats !== undefined">
+
+    <div *ngIf="milNat.length > 0; then thenBlock else elseBlock"></div>
+
+    <ng-template #thenBlock>
+        
+        <ul>
+            <li *ngFor="let milieu of milNat">
+              Type de milieu : {{ milieu.type_milieu }}
+              <section *ngIf="milieu.pourcentage != null"> - Pourcentage : {{ milieu.pourcentage }}</section>
+            </li>
+          </ul>
+
+    </ng-template>
+    
+    <ng-template #elseBlock>
+        Il n'y a pas de plan de milieu naturel renseigné.
+    </ng-template>
+
     <table>
-        <tr>
-            <td colspan="2">
-                Milieux naturels : 
-            </td>
-        </tr>
-
-
-        <tr>
-            <td colspan="2">
-                <section>---Tableau à venir---</section>
-            </td>
-        </tr>
-
-        <tr>
-            <section>---</section>
-        </tr>
-
+        
         <tr>
             <td colspan="1">
                 Code géologie : {{inputHabitats.typ_geologie}}

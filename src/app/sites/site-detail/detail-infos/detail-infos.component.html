@@ -1,84 +1,95 @@
 
 
 
-    <div *ngIf="inputDetail !== undefined">
-        <table>
-            <tr>
-              <td colspan="3">
-                Nom : {{inputDetail.nom}}
-              </td>
-            </tr>
+<div *ngIf="inputDetail !== undefined">
+    <table>
+      <tr>
+        <td colspan="3">
+          Nom : {{inputDetail.nom}}
+        </td>
+      </tr>
 
-            <tr>
-              <td>
-                Code : {{inputDetail.code}}
-              </td>
-              <td>
-                Surface : {{inputDetail.surface}}
-              </td><td>
-                Responsable : {{inputDetail.responsable}}
-              </td>
-            </tr>
+      <tr>
+        <td>
+          Code : {{inputDetail.code}}
+        </td>
+        <td>
+          Surface : {{inputDetail.surface}}
+        </td><td>
+          Responsable : {{inputDetail.responsable}}
+        </td>
+      </tr>
 
-            <tr>
-              <td>
-                Catégorie : {{inputDetail.typ_site}}
-              </td>
-              <td>
-                Status : {{inputDetail.validite}}
-              </td>
-              <td>
-                Première année contrat : {{inputDetail.prem_ctr}}
-              </td>
-            </tr>
+      <tr>
+        <td>
+          Catégorie : {{inputDetail.typ_site}}
+        </td>
+        <td>
+          Status : {{inputDetail.validite}}
+        </td>
+        <td>
+          Première année contrat : {{inputDetail.prem_ctr}}
+        </td>
+      </tr>
 
-            <tr>
-                <td colspan="2">
-                  Parties consernée(s) : ---
-                </td>
-                <td>
-                  Site ref.public : {{inputDetail.ref_public}}
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                  Type d'espace : {{inputDetail.typ_espace}}
-                </td>
-                <td>
-                  Bassin d'agence : {{inputDetail.bassin_agence}}
-                </td>
-                <td>
-                  Zone humide : {{inputDetail.zh}}
-                </td>
-            </tr>
+      <tr>
+          <td colspan="2">
+            Parties consernée(s) : ---
+          </td>
+          <td>
+            Site ref.public : {{inputDetail.ref_public}}
+          </td>
+      </tr>
+      
+      <tr>
+          <td>
+            Type d'espace : {{inputDetail.typ_espace}}
+          </td>
+          <td>
+            Bassin d'agence : {{inputDetail.bassin_agence}}
+          </td>
+          <td>
+            Zone humide : {{inputDetail.zh}}
+          </td>
+      </tr>
 
-            <tr>
-                <td>
-                  Ref. MNHN : {{inputDetail.id_mnhn}}
-                </td>
-                <td>
-                  Ref. FCEN : {{inputDetail.ref_fcen}}
-                </td>
-                <td>
-                 RGTP : {{inputDetail.rgpt}}
-                </td>
-            </tr>
+      <tr>
+          <td>
+            Ref. MNHN : {{inputDetail.id_mnhn}}
+          </td>
+          <td>
+            Ref. FCEN : {{inputDetail.ref_fcen}}
+          </td>
+          <td>
+            RGTP : {{inputDetail.rgpt}}
+          </td>
+      </tr>
 
-            <tr>
-                <td colspan="3">
-                    Mesures compensatoires : projets associés :
-                </td>
-            </tr>
+      <tr>
+          <td colspan="3">
+              Mesures compensatoires : projets associés :
+          </td>
+      </tr>
+
+      <tr>
+          <section>---Tableau à venir---</section>
+      </tr>
+    </table>
+</div>
+
+<br>
+
+<div *ngIf="communes !== undefined">
+  <table>
     
-            <tr>
-                <section>---Tableau à venir---</section>
-            </tr>
-
-
-
-
-
-          </table>
-    </div>
-
+    <thead>
+      <tr>
+        <th scope="col">Commune(s) concernée(s)</th>
+      </tr>
+    </thead>
+    
+    <tr *ngFor="let comm of communes">
+      {{ comm.nom }}
+    </tr>
+  </table>
+</div>
