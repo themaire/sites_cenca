@@ -1,26 +1,26 @@
 
 
 
-<div *ngIf="inputDescription !== undefined">
+<div *ngIf="inputDetail !== undefined">
     <table>
         <tr>
             <td colspan="2">
-                Description du site : {{inputDescription.description_site}}
+                Description du site : {{inputDetail.description_site}}
             </td>
         </tr>
 
         <tr>
             <td>
-                Site sensible : {{inputDescription.sensibilite}}
+                Site sensible : {{inputDetail.sensibilite}}
             </td>
             <td>
-                Description sensibilité : {{inputDescription.remq_sensibilite}}
+                Description sensibilité : {{inputDetail.remq_sensibilite}}
             </td>
         </tr>
 
         <tr>
             <td colspan="2">
-                Site ouvert au public : {{inputDescription.typ_ouverture}}
+                Site ouvert au public : {{inputDetail.typ_ouverture}}
             </td>
         </tr>
 
@@ -35,10 +35,10 @@
         <tr>
             <table>
                 <td>
-                    Lien CEN : <a href="{{inputDescription.url_cen}}">{{inputDescription.url_cen}}</a>
+                    Lien CEN : <a href="{{inputDetail.url_cen}}">{{inputDetail.url_cen}}</a>
                 </td>
                 <td>
-                    Lien MNHN : <a href="{{inputDescription.url_mnhn}}">{{inputDescription.url_mnhn}}</a>
+                    Lien MNHN : <a href="{{inputDetail.url_mnhn}}">{{inputDetail.url_mnhn}}</a>
                 </td>
             </table>
         </tr>

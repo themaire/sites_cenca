@@ -9,6 +9,7 @@ import { Commune } from  './site-detail/detail-infos/commune';
 import { DocPlan } from  './site-detail/detail-gestion/docplan';
 import { MilNat } from   './site-detail/detail-habitats/docmilnat';
 import { Acte } from      './site-detail/detail-mfu/acte';
+import { Operation } from      './site-detail/detail-operations/operation'; 
 import { DetailSite } from './site-detail';
 
 import { Selector } from './selector';
@@ -66,6 +67,14 @@ export class SitesService {
   async getMfu(subroute: string): Promise<Acte[]> {
     const url = `${this.url}${subroute}`;
     console.log("Dans getMfu() avec " + url);
+    
+    const data = await fetch(this.url + subroute);
+    return await data.json() ?? [];
+  }
+
+  async getOperations(subroute: string): Promise<Operation[]> {
+    const url = `${this.url}${subroute}`;
+    console.log("Dans getOperations() avec " + url);
     
     const data = await fetch(this.url + subroute);
     return await data.json() ?? [];

@@ -1,17 +1,16 @@
 <div *ngIf="actes.length > 0; then thenBlock else elseBlock"></div>
 
 <ng-template #thenBlock>
-    {{ actes.length }} plan(s) de gestions<br>
+    Nb d'zctes : {{ actes.length }}<br>
     <ul>
         <li *ngFor="let acte of actes">
           Type : {{ acte.typ_mfu }}<br>
           Année début : {{ acte.debut }}<br>
           Année fin : {{ acte.fin }}<br>
           Tacite.r : {{ acte.tacit_rec }}<br>
-          Surface totale : {{ acte.surf_totale }} ha<br>
-          Nb. parcelles : {{ acte.nb_parcelles }}<br>
+          Surface totale : {{ acte.surface }} ha<br>
           Type prop. : {{ acte.type_prop }}<br>
-
+          
           Lien du document : <a [href]="acte.url" target="_blank">Télécharger</a>
         </li>
       </ul>

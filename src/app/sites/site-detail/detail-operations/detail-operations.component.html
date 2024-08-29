@@ -1,21 +1,20 @@
+<div *ngIf="operations.length > 0; then thenBlock else elseBlock"></div>
 
+<ng-template #thenBlock>
+    Nb opérations : {{ operations.length }}<br>
+    <ul>
+        <li *ngFor="let operation of operations">
+          Responsable : {{ operation.responsable }}<br>
+          Année : {{ operation.annee }}<br>
+          Date début : {{ operation.date_deb }}<br>
+          Projet : {{ operation.projet }}<br>
+          Action: {{ operation.action }} ha<br>
+          Type d'intervenant : {{ operation.typ_interv }}<br>
+          Statut: {{ operation.statut }}<br>
+        </li>
+      </ul>
+</ng-template>
 
-
-<div *ngIf="inputOperations !== undefined">
-    <table>
-        <tr>
-            <td colspan="2">
-                Opérations réalisées : 
-            </td>
-        </tr>
-
-
-        <tr>
-            <td colspan="2">
-                <section>---Tableau à venir---</section>
-            </td>
-        </tr>
-
-      </table>
-</div>
-
+<ng-template #elseBlock>
+    Il n'y a pas d'opérations sur ce site.
+</ng-template>

@@ -1,7 +1,7 @@
 <div *ngIf="docPlan.length > 0; then thenBlock else elseBlock"></div>
 
 <ng-template #thenBlock>
-    {{ docPlan.length }} plan(s) de gestions<br>
+    Nb de plans de gestion : {{ docPlan.length }}<br>
     <ul>
         <li *ngFor="let doc of docPlan">
           Document : {{ doc.document }}<br>

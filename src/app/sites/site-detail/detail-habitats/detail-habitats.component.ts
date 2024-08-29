@@ -14,7 +14,7 @@ import { SitesService } from '../../sites.service'; // service de données
   styleUrls: ['./detail-habitats.component.scss']
 })
 export class DetailHabitatsComponent {
-  @Input() inputHabitats?: DetailSite; // Le site selectionné pour voir son détail
+  @Input() inputDetail?: DetailSite; // Le site selectionné pour voir son détail
   public milNat: MilNat[] = [];
 
   research: SitesService = inject(SitesService);
@@ -24,10 +24,10 @@ export class DetailHabitatsComponent {
     // Ce component est chargé en meme temps que sitesDetail.
     let subroute: string = "";
     
-    if (this.inputHabitats !== undefined) {
+    if (this.inputDetail !== undefined) {
       // Cas d'une recherche sur critères
-      subroute = `milnat/uuid=${this.inputHabitats.uuid_site}`;
-      console.log("On est dans le OnChanges 'onglet Habitats Milieu naturels' . UUID:" + this.inputHabitats["uuid_site"]);
+      subroute = `milnat/uuid=${this.inputDetail.uuid_site}`;
+      console.log("On est dans le OnChanges 'onglet Habitats Milieu naturels' . UUID:" + this.inputDetail["uuid_site"]);
       
       // ChatGPT 19/07/2024
       try {
