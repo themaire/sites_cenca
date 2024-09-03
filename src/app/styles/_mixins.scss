@@ -1,0 +1,29 @@
+//position pour un objet fixe
+@mixin position($top, $right, $bottom, $left) {
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+//Dimensions (largeur, hauteur)
+@mixin dimensions($width, $height) {
+  width: $width;
+  height: $height;
+}
+// Typographie(Taille, epaisseur, couleur)
+@mixin Typo($size, $weight, $color) {
+  font-size: $size;
+  font-weight: $weight;
+  color: $color;
+}
+// fond bleu logo avec le svg
+@mixin fond-bleu() {
+  background: $couleur-flore url("../../assets/images/fond/footer-bg.svg")
+    no-repeat center/cover;
+}
+//Alignement en flex/grid horizontal et vertical
+@mixin alignement($align, $justify) {
+  align-items: $align;
+  justify-content: $justify;
+}

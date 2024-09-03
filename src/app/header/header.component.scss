@@ -1,66 +1,80 @@
-.header{
-    display: flex;
-    width: 100%;
-    font-family: "Dela Gothic One", "Montserrat", Arial, Helvetica, sans-serif;
-    height: 100px;
-}
+// Rappelle des variable et des fonction CSS
+@import "../../app/styles/variables.scss";
+@import "../../app/styles/mixins.scss";
 
-.bg-primary {
-    --tw-bg-opacity: 1;
-    background-color:rgb(22 65 148/var(--tw-bg-opacity))
-}
+header {
+  @include fond-bleu();
 
-.logo{
-    width: 20%;
-    padding-left: 40px;
-}
-
-img{
-    width:100px;
-    height: 100px;
-}
-
-nav{
-    width:80%;
-}
-
-.navbar{
-    display: flex;
-    list-style: none;
-    justify-content: flex-end;
+  nav {
+    display: grid;
+    grid-template-columns: 3fr 8fr 1fr;
+    height: 80px;
+    margin-left: 50px;
+    margin-right: 50px;
+    justify-content: space-between;
     align-items: center;
-    gap:60px;
-    color: #fff;
-    font-size: 14px;
-    text-transform: uppercase;
-    height: 100px;
-    margin-top: 0;
-    
+    @include Typo($h11, $semiGras, white);
+    gap: 144px;
+    .logo-containeur {
+      @include dimensions(250px, 70px);
+      background: white;
+      .logoGrand {
+        @include dimensions(100%, 70px);
+        object-fit: cover;
+      }
+    }
+    .menu,
+    a,
+    li {
+      display: flex;
+      list-style: none;
+      text-decoration: none;
+      @include Typo($h8, $semiGras, white);
+      @include alignement(center, center);
+      text-transform: uppercase;
+      gap: 90px;
+    }
+    .connection {
+      display: flex;
+      margin-left: auto;
+      align-items: end;
+      gap: 10px;
+
+      img {
+        @include dimensions(40px, 40px);
+        border: 1px solid white;
+        border-radius: 100px;
+        object-fit: cover;
+      }
+      .hamburger {
+        display: none;
+      }
+    }
+  }
 }
 
-li{
-    width: 120px;
-}
-
-a:hover{
-    color: #A5D81F;
-}
-
-a{
-    text-decoration: none;
-    color: #fff;
-}
-
-.border{
-    border: 2px solid #A5D81F; 
-}
-
-.icon{
-    height: 50px;
-    padding-top: 16px; 
-}
-
-.login{
-    height: 25px;
-    width:25px;
-}
+// RESPONSIVE
+// .menu {
+//   @media screen and (width < $mobile) {
+//     display: none;
+//   }
+// }
+// @media screen and (width < $mobile) {
+//   display: block;
+//   @include dimensions(auto, 46px);
+//   background: white;
+//   padding: 8px 24px;
+//   border-radius: 9999px;
+//   border: 1px solid $couleur-flore;
+//   img {
+//     @include dimensions(30px, 30px);
+//     object-fit: cover;
+//   }
+// }
+// @media screen and (min-width: $mobile) and (max-width: $tablette) {
+//   gap: 20px;
+//   .menu {
+//     gap: 45px;
+//     font-size: $h11;
+//   }
+// }

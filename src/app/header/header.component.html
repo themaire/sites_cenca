@@ -1,26 +1,39 @@
-<header class="header bg-primary">
-    <div class="logo">
-        <img src="../assets/images/logocen-color-petit.png" alt="logo du CENCA">
-    </div>
+<header>
+  <div class="containeur">
     <nav>
-        <ul class="navbar">
-            <li>
-                <a [routerLink]="['/']"> Accueil</a>
-            </li>
-            <li>
-                <a [routerLink]="['/sites']"> MaRie (Sites) </a>
-            </li>
-            <li>
-                <a [routerLink]="['/admin']"> Admin </a>
-            </li>
-            <li>
-                A propos
-            </li>
-            <li class="icon">
-                <img class="login" src="../assets/icons/login-icon.svg" alt="logo de connexion">
-            </li>
+      <div class="logo-containeur">
+        <img
+          class="logoGrand"
+          src="../assets/images/logo/logo_couleur.jpg"
+          alt="logo du CENCA"
+        />
+      </div>
+      <div>
+        <ul class="menu">
+          <li>
+            <a [routerLink]="['/']"> Accueil</a>
+          </li>
+          <li>
+            <a [routerLink]="['/sites']"> MaRie (Sites) </a>
+          </li>
+          <li>
+            <a [routerLink]="['/admin']"> Admin </a>
+          </li>
+          <li>A propos</li>
         </ul>
+      </div>
+      <div class="connection">
+        <img
+          src="https://randomuser.me/api/portraits/med/women/56.jpg"
+          alt="Icône de connexion"
+        />
+        <div class="hamburger">
+          <img
+            src="../assets/images/icons/menu/hamburger.png"
+            alt="Icône de connexion"
+          />
+        </div>
+      </div>
     </nav>
+  </div>
 </header>
-<div class="border"></div>
-
