@@ -5,7 +5,7 @@
 .conteneur {
   position: relative;
   z-index: 10; // S'assure que le conteneur est au-dessus du fond
-  @include dimensions(100%, 100%);
+  @include dim(100%, 100%);
   display: flex;
   flex-direction: column;
 }

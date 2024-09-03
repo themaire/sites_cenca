@@ -11,28 +11,38 @@ header {
     height: 80px;
     margin-left: 50px;
     margin-right: 50px;
-    justify-content: space-between;
-    align-items: center;
+    @include align(center, space-between);
     @include Typo($h11, $semiGras, white);
     gap: 144px;
     .logo-containeur {
-      @include dimensions(250px, 70px);
+      @include dim(250px, 70px);
       background: white;
       .logoGrand {
-        @include dimensions(100%, 70px);
+        @include dim(auto, 70px);
         object-fit: cover;
       }
+      .logoPetit {
+        display: none;
+      }
     }
-    .menu,
-    a,
-    li {
+    .menu-containeur {
       display: flex;
-      list-style: none;
-      text-decoration: none;
-      @include Typo($h8, $semiGras, white);
-      @include alignement(center, center);
-      text-transform: uppercase;
-      gap: 90px;
+      @include dim(100%, 100%);
+      .menu {
+        display: flex;
+        @include dim(100%, 100%);
+        @include align(center, center);
+        gap: 90px;
+        a,
+        li {
+          list-style: none;
+          text-decoration: none;
+          @include Typo($h8, $semiGras, white);
+          @include align(center, center);
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+      }
     }
     .connection {
       display: flex;
@@ -41,7 +51,7 @@ header {
       gap: 10px;
 
       img {
-        @include dimensions(40px, 40px);
+        @include dim(40px, 40px);
         border: 1px solid white;
         border-radius: 100px;
         object-fit: cover;
@@ -54,27 +64,36 @@ header {
 }
 
 // RESPONSIVE
-// .menu {
-//   @media screen and (width < $mobile) {
-//     display: none;
-//   }
-// }
-// @media screen and (width < $mobile) {
-//   display: block;
-//   @include dimensions(auto, 46px);
-//   background: white;
-//   padding: 8px 24px;
-//   border-radius: 9999px;
-//   border: 1px solid $couleur-flore;
-//   img {
-//     @include dimensions(30px, 30px);
-//     object-fit: cover;
-//   }
-// }
-// @media screen and (min-width: $mobile) and (max-width: $tablette) {
-//   gap: 20px;
-//   .menu {
-//     gap: 45px;
-//     font-size: $h11;
-//   }
-// }
+@media screen and (max-width: $mobile) {
+  header {
+    nav {
+      margin: 0 25px;
+      gap: 0;
+      .logo-containeur {
+        @include dim(60px, 70px);
+        .logoGrand {
+          display: none;
+        }
+        .logoPetit {
+          display: block;
+          @include dim(60px, 70px);
+          object-fit: cover;
+        }
+      }
+      .menu-containeur {
+        .menu {
+          display: none;
+        }
+      }
+      .connection {
+        gap: 26px;
+        .hamburger {
+          display: block;
+          img {
+            @include boutonsImg(white);
+          }
+        }
+      }
+    }
+  }
+}

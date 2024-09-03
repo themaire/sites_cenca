@@ -9,21 +9,21 @@ html {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
-  @include dimensions(100%, 100vh);
+  @include dim(100%, 100vh);
   min-height: 100%;
   overflow-x: hidden;
 }
 
 :host {
   display: block;
-  @include dimensions(auto, 100vh);
+  @include dim(auto, 100vh);
   overflow: hidden;
 }
 
 .fondDePage {
   position: absolute;
   @include position(0, 0, 0, 0);
-  @include dimensions(100%, 100%);
+  @include dim(100%, 100%);
   z-index: 0; // Le fond doit être derrière tout le reste
   overflow: hidden;
 
@@ -32,19 +32,19 @@ html {
     object-fit: cover;
     max-width: 100%;
     max-height: 100%;
-    @include dimensions(auto, auto);
+    @include dim(auto, auto);
   }
 
   .hautGauche {
     @include position(-22px, auto, auto, -87px);
-    @include dimensions(30%, auto);
+    @include dim(30%, auto);
     transform: rotate(7deg);
   }
 
   .milieu {
     @include position(50%, auto, auto, 50%);
     transform: translate(-50%, -50%);
-    @include dimensions(30%, auto);
+    @include dim(30%, auto);
     width: 30%;
     height: auto;
     opacity: 15%;
@@ -52,7 +52,7 @@ html {
 
   .basDroite {
     @include position(auto, -84px, -137px, auto);
-    @include dimensions(30%, auto);
+    @include dim(30%, auto);
     transform: rotate(11deg);
     max-width: 100%;
   }

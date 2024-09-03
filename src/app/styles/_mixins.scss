@@ -7,7 +7,7 @@
   left: $left;
 }
 //Dimensions (largeur, hauteur)
-@mixin dimensions($width, $height) {
+@mixin dim($width, $height) {
   width: $width;
   height: $height;
 }
@@ -23,7 +23,36 @@
     no-repeat center/cover;
 }
 //Alignement en flex/grid horizontal et vertical
-@mixin alignement($align, $justify) {
+@mixin align($align, $justify) {
   align-items: $align;
   justify-content: $justify;
+}
+// Boutons texte
+@mixin boutons($textColor, $bgColor, $colorHover, $textHover) {
+  @include Typo($h11, $semiGras, $textColor);
+  background-color: $bgColor;
+  @include dim(auto, 36px);
+  @include align(center, center);
+  border: none;
+  border-radius: 100px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 5px 5px 5px 0px rgb(0 0 0 / 25%);
+}
+@mixin boutonsHover($textHover, $colorHover) {
+  @include Typo($h11, $semiGras, $textHover);
+  background-color: $colorHover;
+}
+
+// Boutons image
+@mixin boutonsImg($bgColor) {
+  background-color: $bgColor;
+  @include dim(40px, 40px);
+  @include align(center, center);
+  border: none;
+  border-radius: 100px;
+  padding: 8px 10px;
+  cursor: pointer;
+  box-shadow: 5px 5px 5px 0px rgb(0 0 0 / 25%);
 }
