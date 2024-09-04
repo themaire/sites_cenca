@@ -14,7 +14,7 @@ header {
     @include align(center, space-between);
     @include Typo($h11, $semiGras, white);
     gap: 144px;
-    .logo-containeur {
+    .logo-conteneur {
       @include dim(250px, 70px);
       background: white;
       .logoGrand {
@@ -25,7 +25,7 @@ header {
         display: none;
       }
     }
-    .menu-containeur {
+    .menu-conteneur {
       display: flex;
       @include dim(100%, 100%);
       .menu {
@@ -69,7 +69,7 @@ header {
     nav {
       margin: 0 25px;
       gap: 0;
-      .logo-containeur {
+      .logo-conteneur {
         @include dim(60px, 70px);
         .logoGrand {
           display: none;
@@ -80,9 +80,18 @@ header {
           object-fit: cover;
         }
       }
-      .menu-containeur {
+      .menu-conteneur {
         .menu {
           display: none;
+        }
+        // &.open ===.menu.open !== .menu .open
+        &.open {
+          display: block;
+          position: absolute;
+          top: 50px;
+          left: 0;
+          background-color: white;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
       }
       .connection {

@@ -1,104 +1,139 @@
-.border {
-  border: 2px solid #a5d81f;
-}
+@import "../../app/styles/variables.scss";
+@import "../../app/styles/mixins.scss";
 
-.footer {
+footer {
   display: flex;
+  @include position(auto, 0, 0, 0);
+  @include fond-bleu();
+  @include dim(100%, 150px);
+  @include align(center, space-between);
+}
+.conteneur {
+  display: grid;
   flex-wrap: wrap;
-  justify-content: space-evenly;
-  width: 100%;
-  font-family: "Dela Gothic One", "Montserrat", Arial, Helvetica, sans-serif;
-  height: 10px;
+  margin: 0 50px;
+  @include dim(100%, 100%);
+  padding: 20px 0;
+  .infos {
+    display: grid;
+    grid-template-columns: 3fr 4fr 3fr;
+    flex-wrap: wrap;
+    gap: auto;
+    .logo,
+    .reseaux {
+      @include dim(100%, auto);
+    }
+    .logo {
+      @include dim(100%, 100%);
+      img {
+        @include dim(auto, 70px);
+        object-fit: cover;
+      }
+    }
+    .contact {
+      display: flex;
+      flex-direction: column;
+      @include align(center, top);
+      h2 {
+        @include Typo($h8, $semiGras, white);
+        text-transform: uppercase;
+      }
+      h3 {
+        @include Typo($h10, $semiGras, white);
+        text-transform: uppercase;
+      }
+      p {
+        @include Typo($h11, $normal, white);
+      }
+    }
+    .reseaux {
+      display: flex;
+      flex-direction: column;
+      @include align(end, top);
+      h2 {
+        @include Typo($h8, $semiGras, white);
+        text-align: center;
+      }
+      .logos-reseaux {
+        display: flex;
+        @include align(center, center);
+        gap: 22px;
+        img {
+          @include dim(auto, 45px);
+          object-fit: cover;
+        }
+      }
+    }
+  }
+  .droits {
+    p {
+      @include Typo($h11, $normal, white);
+      text-align: center;
+    }
+  }
 }
 
-.bg-primary {
-  --tw-bg-opacity: 1;
-  background-color: rgb(22 65 148 / var(--tw-bg-opacity));
-}
+// RESPONSIVE
+@media screen and (max-width: $mobile) {
+  footer {
+    display: flex;
+    flex-direction: column;
+    @include dim(100%, auto); /* Ajuste la hauteur automatiquement */
+  }
+  .conteneur {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
+    @include dim(100%, 100%);
+    padding: 10px 0;
+    align-items: center;
+    gap: 10px; /* Espacement entre les blocs */
 
-.bg-footer {
-  // background-image:url(../../assets/images/footer-bg.svg);
-  height: 180px;
-}
+    .infos {
+      display: grid;
+      grid-template-columns: (repeat(3, 1fr));
+      flex-wrap: wrap;
+      gap: 20px;
+      .logo {
+        grid-column: 1/0;
+        grid-row: 1;
+        img {
+          @include dim(auto, 60px);
+        }
+      }
+      .contact {
+        grid-column: 1/4;
+        grid-row: 2/2;
+        h2 {
+          @include Typo($h11, $semiGras, white);
+          text-transform: uppercase;
+        }
+        h3,
+        p {
+          @include Typo($h12, $normal, white);
+        }
+      }
+      .reseaux {
+        grid-column: 2/4;
+        grid-row: 1;
+        h2 {
+          @include Typo($h11, $semiGras, white);
+        }
+        .logos-reseaux {
+          display: flex;
+          justify-content: center; /* Centre les icônes */
+          gap: 22px; /* Réduit l'espace entre les icônes */
+          img {
+            @include dim(auto, 30px); /* Redimensionne les icônes */
+          }
+        }
+      }
+    }
 
-.text-white {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.imag {
-  width: 33%;
-  display: flex;
-  justify-content: center;
-}
-
-.logo {
-  width: 249px;
-  height: 108px;
-  padding-top: 40px;
-}
-
-.relative {
-  position: relative;
-}
-
-.text-secondary-light {
-  --tw-text-opacity: 1;
-  color: rgb(193 209 18 / var(--tw-text-opacity));
-}
-
-.contact {
-  width: 33%;
-  padding-top: 25px;
-}
-
-.contact h2,
-h3,
-p {
-  padding-left: 30px;
-}
-
-.contact h3 {
-  margin-bottom: 0;
-  font-family: "Montserrat", Arial, Helvetica, sans-serif;
-}
-
-.contact p {
-  font-family: "Montserrat", Arial, Helvetica, sans-serif;
-}
-
-.reseaux {
-  width: 33%;
-  padding-top: 25px;
-}
-
-.reseau h2 {
-  margin-left: 20px;
-}
-
-.logo-reseau {
-  margin-left: 10px;
-}
-
-h2 {
-  font-size: 18px;
-}
-
-h3 {
-  font-size: 14px;
-}
-
-p {
-  font-size: 12px;
-}
-
-.droits {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.droits p {
-  font-family: "Montserrat", Arial, Helvetica, sans-serif;
-  text-align: center;
+    .droits {
+      p {
+        @include Typo($h12, $normal, white);
+      }
+    }
+  }
 }
