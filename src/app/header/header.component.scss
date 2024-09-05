@@ -88,10 +88,9 @@ header {
         &.open {
           display: block;
           position: absolute;
-          top: 50px;
-          left: 0;
-          background-color: white;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          @include dim(20%, 20%);
+          top: 80px;
+          background-color: red;
         }
       }
       .connection {
