@@ -14,7 +14,7 @@
         />
       </div>
       <div class="menu-conteneur">
-        <ul class="menu">
+        <ul class="menu open">
           <li>
             <a [routerLink]="['/']"> Accueil</a>
           </li>
@@ -32,8 +32,32 @@
           src="https://randomuser.me/api/portraits/med/women/56.jpg"
           alt="Icône de connexion"
         />
-        <div class="hamburger">
+        <!--
+        <div class="hamburger" (click)="onOpenMenu()">
           <img src="../assets/images/icons/menu/hamburger.png" alt="menu" />
+        </div> -->
+        <div class="hamburger">
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>dialpad</mat-icon>
+              <span>Redial</span>
+            </button>
+            <button mat-menu-item disabled>
+              <mat-icon>voicemail</mat-icon>
+              <span>Check voice mail</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>notifications_off</mat-icon>
+              <span>Disable alerts</span>
+            </button>
+          </mat-menu>
         </div>
       </div>
     </nav>
