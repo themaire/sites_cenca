@@ -1,0 +1,11 @@
+// Rappelle des variable et des fonction CSS
+@import "../app/styles/variables.scss";
+@import "../app/styles/mixins.scss";
+
+.conteneur {
+  position: relative;
+  z-index: 10; // S'assure que le conteneur est au-dessus du fond
+  @include dim(100%, 100%);
+  display: flex;
+  flex-direction: column;
+}

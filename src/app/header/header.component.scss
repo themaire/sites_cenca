@@ -1,66 +1,144 @@
-.header{
-    display: flex;
-    width: 100%;
-    font-family: "Dela Gothic One", "Montserrat", Arial, Helvetica, sans-serif;
-    height: 100px;
+// Rappelle des variable et des fonction CSS
+@import "../../app/styles/variables.scss";
+@import "../../app/styles/mixins.scss";
+
+header {
+  @include fond-bleu();
+
+  nav {
+    display: grid;
+    grid-template-columns: 3fr 8fr 1fr;
+    height: 80px;
+    margin-left: 50px;
+    margin-right: 50px;
+    @include align(center, space-between);
+    gap: auto;
+
+    .logo-conteneur {
+      @include dim(250px, 70px);
+      background: white;
+
+      .logoGrand {
+        @include dim(auto, 70px);
+        object-fit: cover;
+      }
+
+      .logoPetit {
+        display: none;
+      }
+    }
+
+    .menu-conteneur {
+      display: flex;
+      @include dim(100%, 100%);
+
+      .menu {
+        display: flex;
+        @include dim(100%, 100%);
+        @include align(center, center);
+        gap: 50px;
+      }
+    }
+
+    .connection {
+      display: flex;
+      margin-left: auto;
+      align-items: end;
+      gap: 10px;
+
+      img {
+        @include dim(40px, 40px);
+        border: 1px solid white;
+        border-radius: 100px;
+        object-fit: cover;
+      }
+      .hamburger {
+        display: none;
+      }
+    }
+  }
+}
+.c-proteger {
+  @include btn-menu(
+    $proteger
+  ); // Inclut les styles de base comme padding et border-radius
 }
 
-.bg-primary {
-    --tw-bg-opacity: 1;
-    background-color:rgb(22 65 148/var(--tw-bg-opacity))
+.c-connaitre {
+  @include btn-menu(
+    $connaitre
+  ); // Inclut les styles de base comme padding et border-radius
 }
 
-.logo{
-    width: 20%;
-    padding-left: 40px;
+.c-gerer {
+  @include btn-menu(
+    $gerer
+  ); // Inclut les styles de base comme padding et border-radius
 }
 
-img{
-    width:100px;
-    height: 100px;
+.c-valoriser {
+  @include btn-menu(
+    $valoriser
+  ); // Inclut les styles de base comme padding et border-radius
 }
 
-nav{
-    width:80%;
+.c-accompagner {
+  @include btn-menu(
+    $accompagner
+  ); // Inclut les styles de base comme padding et border-radius
 }
 
-.navbar{
-    display: flex;
-    list-style: none;
-    justify-content: flex-end;
-    align-items: center;
-    gap:60px;
-    color: #fff;
-    font-size: 14px;
-    text-transform: uppercase;
-    height: 100px;
-    margin-top: 0;
-    
+.c-administratif {
+  @include btn-menu(
+    $administrafif
+  ); // Inclut les styles de base comme padding et border-radius
+}
+.c-liens-utils {
+  @include btn-menu(
+    $liens-utils
+  ); // Inclut les styles de base comme padding et border-radius
 }
 
-li{
-    width: 120px;
-}
-
-a:hover{
-    color: #A5D81F;
-}
-
-a{
-    text-decoration: none;
-    color: #fff;
-}
-
-.border{
-    border: 2px solid #A5D81F; 
-}
-
-.icon{
-    height: 50px;
-    padding-top: 16px; 
-}
-
-.login{
-    height: 25px;
-    width:25px;
+// RESPONSIVE
+@media screen and (max-width: $mobile) {
+  header {
+    nav {
+      margin: 0 25px;
+      gap: 0;
+      .logo-conteneur {
+        @include dim(60px, 70px);
+        .logoGrand {
+          display: none;
+        }
+        .logoPetit {
+          display: block;
+          @include dim(60px, 70px);
+          object-fit: cover;
+        }
+      }
+      .menu-conteneur {
+        .menu {
+          display: none;
+        }
+        // &.open ===.menu.open !== .menu .open
+        &.open {
+          display: block;
+          position: absolute;
+          @include dim(20%, 20%);
+          top: 80px;
+          background-color: red;
+        }
+      }
+      .connection {
+        gap: 26px;
+        .hamburger {
+          display: block;
+          @include dim(40px, 40px);
+          // mat-icon {
+          //   @include boutonsImg(white);
+          // }
+        }
+      }
+    }
+  }
 }

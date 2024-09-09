@@ -1,26 +1,101 @@
-<header class="header bg-primary">
-    <div class="logo">
-        <img src="../assets/images/logocen-color-petit.png" alt="logo du CENCA">
-    </div>
+<header>
+  <div class="conteneur">
     <nav>
-        <ul class="navbar">
-            <li>
-                <a [routerLink]="['/']"> Accueil</a>
-            </li>
-            <li>
-                <a [routerLink]="['/sites']"> MaRie (Sites) </a>
-            </li>
-            <li>
-                <a [routerLink]="['/admin']"> Admin </a>
-            </li>
-            <li>
-                A propos
-            </li>
-            <li class="icon">
-                <img class="login" src="../assets/icons/login-icon.svg" alt="logo de connexion">
-            </li>
-        </ul>
-    </nav>
-</header>
-<div class="border"></div>
+      <div class="logo-conteneur">
+        <img
+          class="logoGrand"
+          src="../assets/images/logo/logo_couleur.jpg"
+          alt="logo du CENCA"
+        />
+        <img
+          class="logoPetit"
+          src="../assets/images/logo/logocen-color-petit.png"
+          alt="logo du CENCA"
+        />
+      </div>
+      <div class="menu-conteneur">
+        <div class="menu">
+          <ng-container *ngFor="let item of menuItems[0].children">
+            <!-- Un bouton pour chaque axe du CENCA -->
+            <button
+              mat-button
+              [ngStyle]="{
+                'border-radius': '20px'
+              }"
+              [ngClass]="item.class_color"
+              [matMenuTriggerFor]="menu"
+            >
+              {{ item.name }}
+            </button>
 
+            <!-- Elements de l'axe en question -->
+            <mat-menu #menu="matMenu">
+              <ng-container *ngFor="let child of item.children">
+                <button
+                  mat-menu-item
+                  [ngClass]="item.class_color"
+                  *ngIf="!child.children"
+                >
+                  {{ child.name }}
+                </button>
+              </ng-container>
+            </mat-menu>
+          </ng-container>
+        </div>
+      </div>
+      <div class="connection">
+        <img
+          src="https://randomuser.me/api/portraits/med/women/56.jpg"
+          alt="Icône de connexion"
+        />
+        <!--
+        <div class="hamburger" (click)="onOpenMenu()">
+          <img src="../assets/images/icons/menu/hamburger.png" alt="menu" />
+        </div> -->
+        <div class="hamburger">
+          <!-- Menu hamburger -->
+          <!-- Boucle principale pour le menu -->
+          <ng-container *ngFor="let item of menuItems">
+            <!-- Bouton pour les menus principaux -->
+            <button mat-icon-button [matMenuTriggerFor]="menuMap[item.name]">
+              <mat-icon
+                [ngStyle]="{
+                  color: 'white',
+                  border: '1px solid white',
+                  'border-radius': '100px'
+                }"
+              >
+                more_vert</mat-icon
+              >
+            </button>
+
+            <!-- Menu principal -->
+            <mat-menu [id]="item.name">
+              <ng-container *ngFor="let child of item.children">
+                <button
+                  mat-menu-item
+                  [ngClass]="child.class_color"
+                  *ngIf="child.children"
+                  [matMenuTriggerFor]="menuMap[child.name]"
+                >
+                  {{ child.name }}
+                </button>
+              </ng-container>
+            </mat-menu>
+
+            <!-- Sous-menus récursifs -->
+            <ng-container *ngFor="let child of item.children">
+              <mat-menu *ngIf="child.children" [id]="child.name">
+                <ng-container *ngFor="let grandChild of child.children">
+                  <button mat-menu-item [ngClass]="child.class_color">
+                    {{ grandChild.name }}
+                  </button>
+                </ng-container>
+              </mat-menu>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
