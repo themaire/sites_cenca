@@ -12,38 +12,34 @@ header {
     margin-left: 50px;
     margin-right: 50px;
     @include align(center, space-between);
-    @include Typo($h11, $semiGras, white);
-    gap: 144px;
+    gap: auto;
+
     .logo-conteneur {
       @include dim(250px, 70px);
       background: white;
+
       .logoGrand {
         @include dim(auto, 70px);
         object-fit: cover;
       }
+
       .logoPetit {
         display: none;
       }
     }
+
     .menu-conteneur {
       display: flex;
       @include dim(100%, 100%);
+
       .menu {
         display: flex;
         @include dim(100%, 100%);
         @include align(center, center);
-        gap: 90px;
-        a,
-        li {
-          list-style: none;
-          text-decoration: none;
-          @include Typo($h8, $semiGras, white);
-          @include align(center, center);
-          text-transform: uppercase;
-          cursor: pointer;
-        }
+        gap: 50px;
       }
     }
+
     .connection {
       display: flex;
       margin-left: auto;
@@ -61,6 +57,46 @@ header {
       }
     }
   }
+}
+.c-proteger {
+  @include btn-menu(
+    $proteger
+  ); // Inclut les styles de base comme padding et border-radius
+}
+
+.c-connaitre {
+  @include btn-menu(
+    $connaitre
+  ); // Inclut les styles de base comme padding et border-radius
+}
+
+.c-gerer {
+  @include btn-menu(
+    $gerer
+  ); // Inclut les styles de base comme padding et border-radius
+}
+
+.c-valoriser {
+  @include btn-menu(
+    $valoriser
+  ); // Inclut les styles de base comme padding et border-radius
+}
+
+.c-accompagner {
+  @include btn-menu(
+    $accompagner
+  ); // Inclut les styles de base comme padding et border-radius
+}
+
+.c-administratif {
+  @include btn-menu(
+    $administrafif
+  ); // Inclut les styles de base comme padding et border-radius
+}
+.c-liens-utils {
+  @include btn-menu(
+    $liens-utils
+  ); // Inclut les styles de base comme padding et border-radius
 }
 
 // RESPONSIVE
@@ -97,9 +133,10 @@ header {
         gap: 26px;
         .hamburger {
           display: block;
-          img {
-            @include boutonsImg(white);
-          }
+          @include dim(40px, 40px);
+          // mat-icon {
+          //   @include boutonsImg(white);
+          // }
         }
       }
     }

@@ -8,20 +8,59 @@ $couleur-flore: #164194;
 $couleur-territoire: #76b82a;
 $couleur-faune: #d77813;
 
+// Couleur univers chromatique du CENCA
+// Verts
+$vertC: #e0de12;
+$VertM: #c1d112;
+$VertF: #4b6426;
+
+// Oranges
+$orangeC: #fec700;
+$orangeM: #b44917;
+$orangeF: #63340d;
+
+// Bleus
+$bleuC: #8cd2f5;
+$bleuM: #089cd9;
+$bleuF: #495fa9;
+
+// Couleurs complémentaires
+//déclinaison de jaune
+$jauneC: #f8f4ba;
+$jauneM: #f4ee92;
+$jauneF: #ebe01f;
+
+//déclinaison de violet
+$violetC: #d0a9cf;
+$violetM: #bb7bb3;
+$violetF: #430035;
+
+// Couleur du menu
+$proteger: $couleur-faune; // Couleur de fond personnalisée
+$connaitre: $bleuC;
+$gerer: $couleur-territoire;
+$valoriser: $orangeC;
+$accompagner: $violetM;
+$administrafif: $bleuM;
+$liens-utils: $VertM;
+$menu-text: white; // Couleur du texte
+
 // Typographie
 // Taille
 $h1: 58px;
 $h2: 46px;
 $h3: 38px;
-$h4: 34px;
-$h5: 30px;
-$h6: 28px;
-$h7: 24px;
-$h8: 20px;
-$h9: 18px;
-$h10: 16px;
-$h11: 14px;
-$h12: 12px;
+
+// texte
+$p34: 34px;
+$p30: 30px;
+$p20: 28px;
+$p24: 24px;
+$p20: 20px;
+$p18: 18px;
+$p16: 16px;
+$p14: 14px;
+$p12: 12px;
 
 // Epaisseur
 $gras: bold;

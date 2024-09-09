@@ -35,15 +35,15 @@ footer {
       flex-direction: column;
       @include align(center, top);
       h2 {
-        @include Typo($h8, $semiGras, white);
+        @include Typo($p20, $semiGras, white);
         text-transform: uppercase;
       }
       h3 {
-        @include Typo($h10, $semiGras, white);
+        @include Typo($p16, $semiGras, white);
         text-transform: uppercase;
       }
       p {
-        @include Typo($h11, $normal, white);
+        @include Typo($p14, $normal, white);
       }
     }
     .reseaux {
@@ -51,7 +51,7 @@ footer {
       flex-direction: column;
       @include align(end, top);
       h2 {
-        @include Typo($h8, $semiGras, white);
+        @include Typo($p20, $semiGras, white);
         text-align: center;
       }
       .logos-reseaux {
@@ -67,7 +67,7 @@ footer {
   }
   .droits {
     p {
-      @include Typo($h11, $normal, white);
+      @include Typo($p14, $normal, white);
       text-align: center;
     }
   }
@@ -105,19 +105,19 @@ footer {
         grid-column: 1/4;
         grid-row: 2/2;
         h2 {
-          @include Typo($h11, $semiGras, white);
+          @include Typo($p14, $semiGras, white);
           text-transform: uppercase;
         }
         h3,
         p {
-          @include Typo($h12, $normal, white);
+          @include Typo($p12, $normal, white);
         }
       }
       .reseaux {
         grid-column: 2/4;
         grid-row: 1;
         h2 {
-          @include Typo($h11, $semiGras, white);
+          @include Typo($p14, $semiGras, white);
         }
         .logos-reseaux {
           display: flex;
@@ -132,7 +132,7 @@ footer {
 
     .droits {
       p {
-        @include Typo($h12, $normal, white);
+        @include Typo($p12, $normal, white);
       }
     }
   }
