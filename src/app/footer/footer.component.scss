@@ -26,6 +26,7 @@ footer {
     .logo {
       @include dim(100%, 100%);
       img {
+        background-color: white;
         @include dim(auto, 70px);
         object-fit: cover;
       }

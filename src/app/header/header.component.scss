@@ -120,23 +120,37 @@ header {
         .menu {
           display: none;
         }
-        // &.open ===.menu.open !== .menu .open
-        &.open {
-          display: block;
-          position: absolute;
-          @include dim(20%, 20%);
-          top: 80px;
-          background-color: red;
-        }
       }
       .connection {
-        gap: 26px;
+        display: flex; /* Make the container a flexbox */
+      }
+
+      // .connection img,
+      // .connection .hamburger {
+      //   align-self: center; /* Align elements vertically in the container */
+      // }
+      .connection {
+        gap: 20px;
         .hamburger {
           display: block;
-          @include dim(40px, 40px);
-          // mat-icon {
-          //   @include boutonsImg(white);
-          // }
+
+          .btn-hamburger {
+            display: flex;
+            @include align(center, center);
+            border: 1px solid white;
+            @include dim(auto, 40px);
+            border-radius: 100px;
+            color: white;
+          }
+          .icon {
+            display: flex;
+            @include align(center, center);
+            @include dim(25px, 25px);
+            text-align: center;
+          }
+          span {
+            @include dim(40px, 40px);
+          }
         }
       }
     }

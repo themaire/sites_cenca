@@ -7,6 +7,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { MatMenu } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,6 +21,7 @@ import { MenuItem } from '../menuItem';
   standalone: true,
   imports: [
     RouterOutlet,
+    RouterModule,
     MatButtonModule,
     MatMenuModule,
     CommonModule,
@@ -40,5 +43,10 @@ export class HeaderComponent {
         this.menuMap[menuName] = menu;
       }
     });
+  }
+  constructor(private router: Router) {}
+
+  nagigateToHome() {
+    this.router.navigate(['/']);
   }
 }

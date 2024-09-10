@@ -6,6 +6,7 @@
           class="logoGrand"
           src="../assets/images/logo/logo_couleur.jpg"
           alt="logo du CENCA"
+          (click)="nagigateToHome()"
         />
         <img
           class="logoPetit"
@@ -35,6 +36,7 @@
                   mat-menu-item
                   [ngClass]="item.class_color"
                   *ngIf="!child.children"
+                  [routerLink]="child.route"
                 >
                   {{ child.name }}
                 </button>
@@ -57,16 +59,12 @@
           <!-- Boucle principale pour le menu -->
           <ng-container *ngFor="let item of menuItems">
             <!-- Bouton pour les menus principaux -->
-            <button mat-icon-button [matMenuTriggerFor]="menuMap[item.name]">
-              <mat-icon
-                [ngStyle]="{
-                  color: 'white',
-                  border: '1px solid white',
-                  'border-radius': '100px'
-                }"
-              >
-                more_vert</mat-icon
-              >
+            <button
+              class="btn-hamburger"
+              mat-icon-button
+              [matMenuTriggerFor]="menuMap[item.name]"
+            >
+              <mat-icon class="icon"> more_vert</mat-icon>
             </button>
 
             <!-- Menu principal -->
