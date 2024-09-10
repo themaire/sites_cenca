@@ -1,11 +1,14 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
+import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
 
 export const routes: Routes = [
   {
     path: '',
     component: HomeComponent,
-    // inject???
+    resolve: {
+        menuItems: MenuItemResolver // Association du resolver à cette route
+    }
   },
 
   // Lazy-load
