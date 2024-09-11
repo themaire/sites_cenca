@@ -33,7 +33,7 @@ export class HomeComponent {
       this.menuItems = data['menuItems'];
 
     });
-    console.log("menuItems de ngOnInit() du home component : ");
+    // console.log("menuItems de ngOnInit() du home component : ");
     console.log(this.menuItems);
   }
   

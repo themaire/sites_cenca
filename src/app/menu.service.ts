@@ -10,8 +10,8 @@ import { MenuItem } from './menuItem';
   providedIn: 'root'
 })
 export class MenuService {
-  private url :string = "http://192.168.27.66:8889/menu/"
-  // private url :string = "http://192.168.1.50:8889/manu/"
+  // private url :string = "http://192.168.27.66:8889/menu/"
+  private url :string = "http://192.168.1.50:8889/manu/"
 
   // L'objet " http " est créé dans le constructor
   constructor(private http: HttpClient) { }
