@@ -7,20 +7,27 @@ html {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
-  @include dim(100%, 100vh);
-  min-height: 100%;
+  // padding-bottom: 50px;
+  @include dim(100%, 100%);
+  // min-height: 100vh;
   overflow-x: hidden;
 }
-body {
+
+.conteneur {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+}
+app-header {
+  height: auto;
 }
 main {
-  flex: 1;
+  flex-grow: 1;
+  min-height: 100vh;
 }
+
 app-footer {
-  position: relative;
+  height: auto;
+  // position: relative;
 }
 
 :host {
@@ -33,7 +40,7 @@ app-footer {
   position: absolute;
   @include position(0, 0, 0, 0);
   @include dim(100%, 100%);
-  z-index: 0; // Le fond doit être derrière tout le reste
+  z-index: -1; // Le fond doit être derrière tout le reste
   overflow: hidden;
 
   .image {
@@ -48,6 +55,7 @@ app-footer {
     @include position(-22px, auto, auto, -87px);
     @include dim(30%, auto);
     transform: rotate(7deg);
+    opacity: 50%;
   }
 
   .milieu {
@@ -63,9 +71,16 @@ app-footer {
     @include position(auto, -84px, -137px, auto);
     @include dim(30%, auto);
     transform: rotate(11deg);
+    opacity: 50%;
     max-width: 100%;
   }
 }
-.component-class {
-  background-color: transparent !important;
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }

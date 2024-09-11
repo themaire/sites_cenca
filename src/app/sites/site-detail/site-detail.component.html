@@ -1,60 +1,42 @@
+<div class="site-detail">
+  <button type="button" (click)="resetSelectedd()">Retour</button>
+  <section>
+    <!-- Titre -->
+    <h2 *ngIf="siteDetail !== undefined">{{ siteDetail.description_site }}</h2>
 
-<button type="button" (click)="resetSelectedd()">Retour</button>
-<section>
+    <!-- Onglets supérieurs -->
+    <mat-tab-group>
+      <mat-tab label="Infos générales">
+        <app-detail-infos [inputDetail]="siteDetail"> </app-detail-infos>
+      </mat-tab>
 
-  <!-- Titre -->
-  <h2 *ngIf="siteDetail !== undefined">{{siteDetail.description_site}}</h2>
+      <mat-tab label="Description et Ouverture">
+        <app-detail-description [inputDetail]="siteDetail">
+        </app-detail-description>
+      </mat-tab>
 
-  <!-- Onglets supérieurs -->
-  <mat-tab-group>
+      <mat-tab label="Actes MFU">
+        <app-detail-mfu [inputDetail]="siteDetail"> </app-detail-mfu>
+      </mat-tab>
+    </mat-tab-group>
 
-    <mat-tab label="Infos générales">
-      <app-detail-infos
-        [inputDetail]="siteDetail">
-      </app-detail-infos>
-    </mat-tab>
+    <!-- Onglets inferieurs -->
+    <mat-tab-group>
+      <mat-tab label="Gestion">
+        <app-detail-gestion [inputDetail]="siteDetail"> </app-detail-gestion>
+      </mat-tab>
 
-    <mat-tab label="Description et Ouverture">
-      <app-detail-description
-        [inputDetail]="siteDetail">
-      </app-detail-description>
-    </mat-tab>
+      <mat-tab label="Habitats">
+        <app-detail-habitats [inputDetail]="siteDetail"> </app-detail-habitats>
+      </mat-tab>
 
-    <mat-tab label="Actes MFU">
-      <app-detail-mfu
-        [inputDetail]="siteDetail">
-      </app-detail-mfu>
-    </mat-tab>
+      <mat-tab label="Opérations">
+        <app-detail-operations [inputDetail]="siteDetail">
+        </app-detail-operations>
+      </mat-tab>
+    </mat-tab-group>
 
-  </mat-tab-group>
-
-  <!-- Onglets inferieurs -->
-  <mat-tab-group>
-
-    <mat-tab label="Gestion">
-      <app-detail-gestion
-        [inputDetail]="siteDetail">
-      </app-detail-gestion>
-    </mat-tab>
-
-    <mat-tab label="Habitats">
-      <app-detail-habitats
-        [inputDetail]="siteDetail">
-      </app-detail-habitats>
-    </mat-tab>
-
-    <mat-tab label="Opérations">
-      <app-detail-operations
-        [inputDetail]="siteDetail">
-      </app-detail-operations>
-    </mat-tab>
-
-  </mat-tab-group>
-
-
-
-
-  <!-- <div class="tabs">
+    <!-- <div class="tabs">
     <div >
       <div class="tab" (click)="tab=1" (keyup.enter)="tab=1"
         [ngClass]="{active: tab===1}" tabindex="0" role="tab">
@@ -116,12 +98,7 @@
 
     </div>
   </div> -->
+  </section>
 
-
-
-
-
-
-</section>
-
-<button type="button" (click)="resetSelectedd()">Retour</button>
+  <button type="button" (click)="resetSelectedd()">Retour</button>
+</div>
