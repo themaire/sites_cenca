@@ -19,8 +19,8 @@ import { Selector } from './selector';
   providedIn: 'root'
 })
 export class SitesService {
-  // private url :string = "http://192.168.27.66:8889/Sites/"
-  private url :string = "http://192.168.1.50:8889/Sites/"
+  private url :string = "http://192.168.27.66:8889/Sites/"
+  // private url :string = "http://192.168.1.50:8889/Sites/"
 
   // L'objet " http " est créé dans le constructor
   constructor(private http: HttpClient) { }

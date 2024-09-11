@@ -30,29 +30,39 @@ import { MenuItem } from '../menuItem';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  menuItems!: MenuItem[];
-
   // Plus utilisé
   // @Input() menuItems: MenuItem[] = []; // Liste des items prevenant du menu parent.
 
-  research: MenuService = inject(MenuService);
+  menuItems: MenuItem[] = [
+    {
+      id: 0,
+      name: 'Axes du CENCA',
+      children: [] // Pas de sous-menus pour celui-ci
+    },{
+      id: 1,
+      name: 'Plus tard',
+      children: [] // Pas de sous-menus pour celui-ci
+    },
+  ]
+  menuData: MenuService = inject(MenuService);
 
-
+  // Necessaire pour l'activation des sous menus
   menuMap: { [key: string]: MatMenu } = {};
-
   @ViewChildren(MatMenu) menus!: QueryList<MatMenu>;
 
-  ngAfterViewInit() {
-    let subroute: string = "class=" + this.site["uuid_site"];
-    this.research.getParentMenu(subroute).then((resultMenu) => {
-      this.menuItems = resultMenu;
-    });
-
-    this.menus.forEach((menu) => {
-      const menuName = menu['_elementRef'].nativeElement.getAttribute('id');
-      if (menuName) {
-        this.menuMap[menuName] = menu;
+  async ngAfterViewInit() {
+    let subroute: string = "parent=null";
+    
+    // Récupération des items principaux du menu
+    this.menuItems[0].children = await this.menuData.getMenu(subroute);
+    
+    // Utilisation d'une boucle for...of pour pouvoir utiliser await à l'intérieur
+    for (let child of this.menuItems[0].children) {
+      if (child.id !== undefined) {
+        let subroute: string = `parent=${child.id.toString()}`;
+        child.children = await this.menuData.getMenu(subroute);
       }
-    });
-  }
+    }
+    console.log(this.menuItems);
+  };
 }
