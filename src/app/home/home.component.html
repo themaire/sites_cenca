@@ -1,3 +1,20 @@
 <p>home works!</p>
 
 <mat-slide-toggle>Toggle me!</mat-slide-toggle>
+
+<div *ngIf="menuItems">
+
+
+    {{ menuItems[0].name }}
+
+
+        <div *ngFor="let elem of menuItems[0].children">
+        <label>{{ elem.name }}</label>
+        <br><br>
+        <div *ngFor="let child of elem.children">
+            <label>{{ child.name }}</label>
+        </div>
+        </div>
+
+
+</div>
