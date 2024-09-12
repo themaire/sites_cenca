@@ -77,7 +77,16 @@ export class SitesResearchComponent implements OnInit {
     const nameField = (event.target as HTMLInputElement).id;
     // console.log(newName);
     // Perform actions based on the new value
-    this.params[nameField] = encodeURIComponent(newName);
+
+    if (newName != '') {
+      this.params[nameField] = encodeURIComponent(newName);
+      console.log('je mets la bonne valeur ' + encodeURIComponent(newName));
+    } else {
+      this.params[nameField] = '*';
+      console.log('je remets une etoile');
+    }
+    console.log(this.params[nameField]);
+
     // console.log('Input value changed:', newName);
     // console.dir(this.params);
     // console.log("Dans nameChange avec " + this.params.type + "/" + this.params.code + "/" + this.params.nom + "/" + this.params.commune + "/" + this.params.milieux_naturels + "/" + this.params.responsable);
@@ -89,22 +98,26 @@ export class SitesResearchComponent implements OnInit {
     // console.log(optionIndex);
 
     let optionText = selectElement.options[optionIndex].text;
-    // console.log(optionText);
+    console.log(optionText);
 
-    let optionValue = selectElement.options[optionIndex].value;
-    // console.log(optionValue);
+    console.log(
+      'Avant le IF Dans selection avec ' + selector + '=' + optionText
+    );
 
-    // console.log("Dans selection avec "+selector+"="+ optionText + " sélectionné !");
-
-    if (selector == optionText) {
+    if (selector.toLowerCase() === optionText.toLowerCase()) {
       this.params[selector] = '*';
+      console.log(this.params[selector]);
       selectElement.style.backgroundColor = '#F5F3F3';
+      console.log(
+        'Dans le if avec ' + selector + '=' + optionText + ' sélectionné !'
+      );
     } else {
       if (index != true) this.params[selector] = encodeURIComponent(optionText);
       else this.params[selector] = encodeURIComponent(optionIndex);
+      console.log(this.params[selector]);
       selectElement.style.backgroundColor = '#76b82a';
     }
-    // console.dir(this.params);
+    console.dir(this.params);
 
     // console.log("Dans selection avec " + this.params.type + "/" + this.params.code + "/" + this.params.nom + "/" + this.params.commune + "/" + this.params.milieux_naturels + "/" + this.params.responsable);
   }
@@ -139,8 +152,16 @@ export class SitesResearchComponent implements OnInit {
     Validators.pattern('^[0-9]*$'),
     // Ce pattern permet uniquement les chiffres],);
   ]);
+
+  // Variable pour le FormControl de nom.
+  nameFormControl = new FormControl('', [Validators.minLength(3)]);
   // Méthode pour réinitialiser le FormControl
-  clearCode() {
-    this.codeFormControl.setValue('');
+  clearCode(type: string) {
+    if (type == 'code') {
+      this.codeFormControl.setValue('');
+    } else if (type == 'nom') {
+      this.nameFormControl.setValue('');
+    }
+    this.params[type] = '*';
   }
 }
