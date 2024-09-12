@@ -98,6 +98,9 @@ header {
     $liens-utils
   ); // Inclut les styles de base comme padding et border-radius
 }
+span {
+  color: black !important;
+}
 
 // RESPONSIVE
 @media screen and (max-width: $mobile) {

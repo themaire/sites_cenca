@@ -1,5 +1,5 @@
 <div class="barRecherche">
-  <!--  Sélection du type de site.  -->
+  <!--  Sélection du type de site. 
   <div class="type">
     <label for="type">Type :</label>
     <select id="type" (change)="selectionSelectors($event, 'type', true)">
@@ -7,7 +7,19 @@
       <option id="1">Site géré</option>
       <option id="2">CAST</option>
     </select>
-  </div>
+  </div> -->
+
+  <mat-form-field appearance="outline" class="type">
+    <mat-label for="type">Type :</mat-label>
+    <mat-select
+      id="type"
+      (selectionChange)="selectionSelectors($event, 'type', true)"
+    >
+      <mat-option value="Type" selected>Type</mat-option>
+      <mat-option value="Site géré" id="1">Site géré</mat-option>
+      <mat-option value="CAST" id="2">CAST</mat-option>
+    </mat-select>
+  </mat-form-field>
 
   <div class="code">
     <!-- Sélection du code. -->

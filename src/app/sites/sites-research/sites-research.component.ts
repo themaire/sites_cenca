@@ -17,6 +17,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-sites-research',
@@ -28,6 +29,7 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     MatIconModule,
     ReactiveFormsModule,
+    MatSelectModule,
   ],
   templateUrl: './sites-research.component.html',
   styleUrl: './sites-research.component.scss',
@@ -93,11 +95,14 @@ export class SitesResearchComponent implements OnInit {
   }
 
   selectionSelectors($event: any, selector: any, index: boolean = false) {
-    let selectElement = $event.target;
+    let selectElement = $event.value;
+    // Utilise `selectElement` pour les opérations nécessaires
+    console.log('Selected value:', selectElement);
+
     let optionIndex = selectElement.selectedIndex;
     // console.log(optionIndex);
 
-    let optionText = selectElement.options[optionIndex].text;
+    let optionText = selectElement;
     console.log(optionText);
 
     console.log(
@@ -115,7 +120,7 @@ export class SitesResearchComponent implements OnInit {
       if (index != true) this.params[selector] = encodeURIComponent(optionText);
       else this.params[selector] = encodeURIComponent(optionIndex);
       console.log(this.params[selector]);
-      selectElement.style.backgroundColor = '#76b82a';
+      // selectElement.style.backgroundColor = '#76b82a';
     }
     console.dir(this.params);
 

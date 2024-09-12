@@ -6,7 +6,7 @@
           class="logoGrand"
           src="../assets/images/logo/logo_couleur.jpg"
           alt="logo du CENCA"
-          (click)="nagigateToHome()"
+          (click)="navigateToHome()"
         />
         <img
           class="logoPetit"
@@ -38,7 +38,7 @@
                   *ngIf="!child.children"
                   [routerLink]="child.route"
                 >
-                  {{ child.name }}
+                  <span>{{ child.name }}</span>
                 </button>
               </ng-container>
             </mat-menu>
@@ -76,7 +76,7 @@
                   *ngIf="child.children"
                   [matMenuTriggerFor]="menuMap[child.name]"
                 >
-                  {{ child.name }}
+                  <span>{{ child.name }}</span>
                 </button>
               </ng-container>
             </mat-menu>

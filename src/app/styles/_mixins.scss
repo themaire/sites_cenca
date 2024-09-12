@@ -9,11 +9,11 @@
 // Boutons menus
 @mixin btn-menu($base-color, $hover-darkness: 10%) {
   // background-color: lighten($base-color, 0%) !important;
-  // color: $menu-text !important; // Couleur par défaut du texte
+  color: $menu-text !important; // Couleur par défaut du texte
   transition: background-color 0.3s ease;
   @include Typo($p16, $semiGras, $menu-text);
   &:hover {
-    background-color: darken(
+    background-color: lighten(
       $base-color,
       $hover-darkness
     ) !important; // Couleur plus claire au survol
