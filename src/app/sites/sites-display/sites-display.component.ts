@@ -53,7 +53,7 @@ export class SitesDisplayComponent {
   ngOnInit(){
     // Rechercher et obtenir une liste de sites selon des critères passés en paramètre via la route.
     this.route.params.subscribe((params: Params) => {
-      // console.log("Route param type :" + params['type']);
+      console.log("Route param type :" + params['type']);
       // console.log(this.route.params);
       let subroute: string = "";
       
@@ -66,17 +66,25 @@ export class SitesDisplayComponent {
                         + "/" + params['milieux_naturels']
                         + "/" + params['responsable'];
         
+      
+        
         this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
           this.sites = sitesGuetted;
           this.dataSource = new MatTableDataSource(this.sites);
           this.dataSource.paginator = this.paginator
         });
+
+
+        console.log("subroute : " + subroute);
+        console.log("Tableau sites : ");
+        console.log(this.sites);
       }
 
     });
   }
 
   applyFilter(event: Event) {
+    // Filtre du tableau mat-table
     const filterValue = (event.target as HTMLInputElement).value;
 
     console.log(filterValue.trim().toLowerCase())
