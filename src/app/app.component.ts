@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { SitesComponent } from './sites/sites.component';
@@ -11,6 +12,7 @@ import { MenuItem } from './menuItem';
   imports: [
     RouterOutlet,
     RouterLink,
+    RouterModule,
     HeaderComponent,
     FooterComponent,
     SitesComponent,
@@ -30,7 +32,7 @@ export class AppComponent {
           class_color: 'c-proteger',
           children: [
             { name: 'Stratégie, animation et veille foncière' },
-            { name: 'Liste des sites' },
+            { name: 'Liste des sites', route: '/sites' },
             { name: 'Police et surveillance' },
             { name: 'Classements de sites' },
             { name: 'Patrtenariats et foncier' },

@@ -1,4 +1,5 @@
 export interface Selector {
-    name: string;
-    values: [string];
+  name: string;
+  title: string;
+  values: [string];
 }

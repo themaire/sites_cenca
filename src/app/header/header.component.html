@@ -54,13 +54,13 @@
         <div class="hamburger" (click)="onOpenMenu()">
           <img src="../assets/images/icons/menu/hamburger.png" alt="menu" />
         </div> -->
+
         <!-- Bouton du menu hamburger visible uniquement en version mobile -->
         <!-- Bouton du menu hamburger -->
         <div class="hamburger" *ngIf="isMobile">
           <button mat-icon-button [matMenuTriggerFor]="hamburgerMenu" class="btn-hamburger">
             <mat-icon>menu</mat-icon>
           </button>
-        
 
           <!-- Menu principal -->
           <mat-menu #hamburgerMenu="matMenu">

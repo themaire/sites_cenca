@@ -6,4 +6,5 @@ export interface MenuItem {
   route?: string;
   short?: string;
   children?: MenuItem[]; // Optionnel : sous-menu
+  route?: string;
 }

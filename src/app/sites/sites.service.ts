@@ -5,18 +5,17 @@ import { of } from 'rxjs';
 
 // prototypes utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
-import { Commune } from  './site-detail/detail-infos/commune';
-import { DocPlan } from  './site-detail/detail-gestion/docplan';
-import { MilNat } from   './site-detail/detail-habitats/docmilnat';
-import { Acte } from      './site-detail/detail-mfu/acte';
-import { Operation } from      './site-detail/detail-operations/operation'; 
+import { Commune } from './site-detail/detail-infos/commune';
+import { DocPlan } from './site-detail/detail-gestion/docplan';
+import { MilNat } from './site-detail/detail-habitats/docmilnat';
+import { Acte } from './site-detail/detail-mfu/acte';
+import { Operation } from './site-detail/detail-operations/operation';
 import { DetailSite } from './site-detail';
 
 import { Selector } from './selector';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SitesService {
   private url1: string = "http://192.168.1.50:8889/Sites/"; // Télétravail
@@ -43,6 +42,7 @@ export class SitesService {
     });
   }
 
+
   // Recherche une liste de plans de gestion par l'UUID d'un site
   // async getDocPlannn(siteUUID: string): Promise<DocPlan[]> {
   //   console.log("Dans la fonction getDocPlan(" + siteUUID + ')');
@@ -51,6 +51,7 @@ export class SitesService {
   // }
 
   // Recherche des détails d'un site par son UUID
+
   async getSiteUUID(paramUUID :string): Promise<DetailSite> {
     console.log("Dans la fonction getSiteUUID du service avec " + paramUUID);
     
@@ -96,13 +97,14 @@ export class SitesService {
     
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
-  }
 
+  }
 
   // Recherche par critères ou par mots clefs
   // Pour la recherche de sites uniquement
-  async getSites(parametres :string): Promise<ListSite[]> {
+  async getSites(parametres: string): Promise<ListSite[]> {
     // console.log("Dans getSites avec " + parametres);
+
     const data = await fetch(this.activeUrl + parametres);
     return await data.json() ?? [];
   }
@@ -143,3 +145,4 @@ export class SitesService {
 // Cela te permet de réduire la quantité de code dupliqué et de rendre ton code plus générique et plus facile à maintenir.
 
 // Qu'en penses-tu ? Est-ce que cela te convient ?
+
