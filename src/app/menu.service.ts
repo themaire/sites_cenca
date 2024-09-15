@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';   
 
@@ -10,8 +11,11 @@ import { MenuItem } from './menuItem';
   providedIn: 'root'
 })
 export class MenuService {
-  // private url :string = "http://192.168.27.66:8889/menu/"
-  private url :string = "http://192.168.1.50:8889/manu/"
+  // private url :string = "http://192.168.1.50:8889/menu/"
+  private url :string = "http://192.168.27.66:8889/menu/"
+
+  private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
+  menuItems$ = this.menuItemsSubject.asObservable();
 
   // L'objet " http " est créé dans le constructor
   constructor(private http: HttpClient) { }
@@ -24,12 +28,32 @@ export class MenuService {
     return await data.json() ?? [];
   }
 
-  getMenu2(subroute: string): Observable<MenuItem[]> {
-    const url = `${this.url}${subroute}`;
+  // getMenu2(subroute: string): Observable<MenuItem[]> {
+  //   const url = `${this.url}${subroute}`;
 
-    return this.http.get<MenuItem[]>(url).pipe(
-      catchError(() => of([])) // Gestion des erreurs : retourne un tableau vide en cas d'erreur
-    );
+  //   return this.http.get<MenuItem[]>(url).pipe(
+  //     catchError(() => of([])) // Gestion des erreurs : retourne un tableau vide en cas d'erreur
+  //   );
+  // }
+  // private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
+  // menuItems$ = this.menuItemsSubject.asObservable();
+
+
+  loadMenuItems(): void {
+    let subroute: string = "parent=null";
+    this.getMenu(subroute).then((mainMenuItems) => {
+      // Ici, compléter les sous-menus pour chaque élément
+      const loadChildren = async () => {
+        for (let item of mainMenuItems) {
+          let subroute: string = `parent=${item.id}`;
+          item.children = await this.getMenu(subroute);
+        }
+        // Met à jour le BehaviorSubject une fois les données chargées
+        this.menuItemsSubject.next(mainMenuItems);
+      };
+
+      loadChildren();
+    });
   }
 
 }

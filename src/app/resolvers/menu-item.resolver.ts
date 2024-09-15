@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { MenuService } from '../menu.service';
 import { Resolve } from '@angular/router';
-import { Observable, of } from 'rxjs';
+// import { Observable, of } from 'rxjs';
 
+import { MenuService } from '../menu.service';
 import { MenuItem } from '../menuItem';
 
 @Injectable({
@@ -12,6 +12,15 @@ import { MenuItem } from '../menuItem';
 export class MenuItemResolver implements Resolve<MenuItem[]> {
   constructor(private menuService: MenuService) {}
 
+  /**
+   * Renvoie un tableau de MenuItem, dont les enfants sont des tableaux vides,
+   * représentant les axes du CENCA et les items "Plus tard".
+   *
+   * Les enfants sont eux-mêmes des tableaux vides, sauf pour les items
+   * "Protéger" et "Gérer", qui ont des enfants.
+   *
+   * @returns Un tableau de MenuItem.
+   */
   async resolve(): Promise<MenuItem[]> {
     //<<<<<<<<<<<<<<  ✨ Codeium Command 🌟  >>>>>>>>>>>>>>>>
     // Crée un tableau de deux éléments, dont les enfants sont des tableaux vides

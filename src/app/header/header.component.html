@@ -6,6 +6,7 @@
           class="logoGrand"
           src="../assets/images/logo/logo_couleur.jpg"
           alt="logo du CENCA"
+          (click)="navigateToHome()"
         />
         <img
           class="logoPetit"
@@ -23,20 +24,21 @@
                 'border-radius': '20px'
               }"
               [ngClass]="item.class_color"
-              [matMenuTriggerFor]="menu"
+              [matMenuTriggerFor]="menuButtons"
             >
               {{ item.name }}
             </button>
 
             <!-- Elements de l'axe en question -->
-            <mat-menu #menu="matMenu">
+            <mat-menu #menuButtons="matMenu">
               <ng-container *ngFor="let child of item.children">
                 <button
                   mat-menu-item
                   [ngClass]="item.class_color"
                   *ngIf="!child.children"
+                  [routerLink]="child.route"
                 >
-                  {{ child.name }}
+                  <span>{{ child.name }}</span>
                 </button>
               </ng-container>
             </mat-menu>
@@ -52,48 +54,42 @@
         <div class="hamburger" (click)="onOpenMenu()">
           <img src="../assets/images/icons/menu/hamburger.png" alt="menu" />
         </div> -->
-        <div class="hamburger">
-          <!-- Menu hamburger -->
-          <!-- Boucle principale pour le menu -->
-          <ng-container *ngFor="let item of menuItems">
-            <!-- Bouton pour les menus principaux -->
-            <button mat-icon-button [matMenuTriggerFor]="menuMap[item.name]">
-              <mat-icon
-                [ngStyle]="{
-                  color: 'white',
-                  border: '1px solid white',
-                  'border-radius': '100px'
-                }"
-              >
-                more_vert</mat-icon
-              >
-            </button>
+        <!-- Bouton du menu hamburger visible uniquement en version mobile -->
+        <!-- Bouton du menu hamburger -->
+        <div class="hamburger" *ngIf="isMobile">
+          <button mat-icon-button [matMenuTriggerFor]="hamburgerMenu" class="btn-hamburger">
+            <mat-icon>menu</mat-icon>
+          </button>
+        
 
-            <!-- Menu principal -->
-            <mat-menu [id]="item.name">
-              <ng-container *ngFor="let child of item.children">
-                <button
-                  mat-menu-item
-                  [ngClass]="child.class_color"
-                  *ngIf="child.children"
-                  [matMenuTriggerFor]="menuMap[child.name]"
-                >
-                  {{ child.name }}
-                </button>
-              </ng-container>
-            </mat-menu>
-
-            <!-- Sous-menus récursifs -->
-            <ng-container *ngFor="let child of item.children">
-              <mat-menu *ngIf="child.children" [id]="child.name">
-                <ng-container *ngFor="let grandChild of child.children">
-                  <button mat-menu-item [ngClass]="child.class_color">
-                    {{ grandChild.name }}
+          <!-- Menu principal -->
+          <mat-menu #hamburgerMenu="matMenu">
+            <ng-container *ngFor="let item of menuItems[0].children">
+              <button mat-menu-item 
+                      [ngClass]="item.class_color"
+                      [matMenuTriggerFor]="item.children?.length ? subMenu : null">
+                {{ item.name }}
+              </button>
+              <mat-menu #subMenu="matMenu">
+                <ng-container *ngFor="let child of item.children">
+                  <button mat-menu-item 
+                          [ngClass]="item.class_color"
+                          [matMenuTriggerFor]="child.children?.length ? childSubMenu : null">
+                    child {{ child.name }}
                   </button>
+                  <mat-menu #childSubMenu="matMenu">
+                    <!-- Appel récursif du template pour les sous-sous-menus -->
+                    <ng-container *ngFor="let subChild of child.children">
+                      <button mat-menu-item
+                              [ngClass]="item.class_color">
+                        subchild {{ subChild.name }}
+                      </button>
+                    </ng-container>
+                  </mat-menu>
                 </ng-container>
               </mat-menu>
             </ng-container>
-          </ng-container>
+          </mat-menu>
         </div>
       </div>
     </nav>

@@ -18,14 +18,7 @@ export class HomeComponent {
 
   menuItems!: MenuItem[];
 
-  constructor(private route: ActivatedRoute, private MenuService: MenuService) { }
-
-  // ngOnInit(): void {
-  //   // Récupère la donnée résolue via le resolver
-  //   this.route.data.subscribe(data => {
-  //     this.menuItems = data['menuItems'];
-  //   });
-  // }
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     // Abonnement à l'Observable pour obtenir les données résolues

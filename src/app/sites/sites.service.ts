@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 // prototypes utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
@@ -19,8 +17,8 @@ import { Selector } from './selector';
   providedIn: 'root'
 })
 export class SitesService {
-  // private url :string = "http://192.168.27.66:8889/Sites/"
-  private url :string = "http://192.168.1.50:8889/Sites/"
+  // private url :string = "http://192.168.1.50:8889/Sites/"
+  private url :string = "http://192.168.27.66:8889/Sites/"
 
   // L'objet " http " est créé dans le constructor
   constructor(private http: HttpClient) { }
@@ -94,3 +92,34 @@ export class SitesService {
     return await data.json() ?? [];
   }
 }
+
+// Voici un exemple de comment tu pourrais refactoriser ton code :
+
+// typescript
+// CopyInsert
+// async getData<T>(subroute: string): Promise<T[]> {
+//   const url = `${this.url}${subroute}`;
+//   console.log(`Dans getData() avec ${url}`);
+  
+//   const data = await fetch(url);
+//   return await data.json() ?? [];
+// }
+// Dans cette méthode, T est un type générique qui représente le type de retour. Tu peux ensuite appeler cette méthode avec le type de retour et le sous-chemin de l'URL comme paramètres.
+
+// Par exemple, pour récupérer les communes, tu pourrais appeler :
+
+// typescript
+// CopyInsert
+// async getCommune(subroute: string): Promise<Commune[]> {
+//   return this.getData<Commune[]>(subroute);
+// }
+// Et pour récupérer les plans de gestion, tu pourrais appeler :
+
+// typescript
+// CopyInsert
+// async getDocPlan(subroute: string): Promise<DocPlan[]> {
+//   return this.getData<DocPlan[]>(subroute);
+// }
+// Cela te permet de réduire la quantité de code dupliqué et de rendre ton code plus générique et plus facile à maintenir.
+
+// Qu'en penses-tu ? Est-ce que cela te convient ?
