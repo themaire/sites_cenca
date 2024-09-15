@@ -1,26 +1,81 @@
 @import "../../styles/variables.scss";
 @import "../../styles/mixins.scss";
 
-.barRecherche {
+.conteneur {
+  @include dim(100%, auto);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  height: 60px;
-}
-.code.mat-form-field-appearance-outline {
-  @include dim(120px, 60px);
-  margin: 0;
-  padding: 0;
-}
-.label {
-  @include Typo($p14, $normal, $couleur-flore);
+  grid-template-rows: 2fr 1fr;
+  flex-wrap: wrap;
+  .recherche {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    flex-wrap: wrap;
+    gap: 31px;
+    margin: 20px 50px 0 50px;
+    @include dim(auto, auto);
+    @include align(center, space-between);
+  }
+  .code,
+  .type,
+  .nom,
+  .selecteur {
+    @include dim(100%, auto);
+  }
+  .label {
+    @include Typo($p14, $normal, $couleur-flore);
+  }
+
+  .btn {
+    display: flex;
+    @include align(center, center);
+    button {
+      @include btn($couleur-flore, white, $couleur-territoire, white);
+      @include align(center, center);
+    }
+  }
+  .close {
+    @include boutonsImg(white);
+    @include dim(25px, 25px);
+    padding: 5px 0;
+    .mat-icon {
+      @include Typo($p16, $normal, $couleur-flore);
+      text-align: center;
+      cursor: pointer;
+    }
+  }
 }
 
-.material-icons {
-  @include dim(20px, 20px);
-  font-size: 20px;
-  color: $couleur-flore;
-  cursor: pointer;
+//RESPONSIVE
+// Mobile portrait
+@media screen and (max-width: $mobile) {
+  .conteneur {
+    .recherche {
+      grid-template-columns: 1fr 1fr;
+      margin: 20px 25px 0 25px;
+    }
+    .label {
+      font-size: $p12;
+    }
+
+    .btn {
+      height: 30%;
+    }
+  }
+}
+
+// Mobile paysage
+@media screen and (min-width: $mobile) and (max-width: $tablette) {
+  .conteneur {
+    .recherche {
+      grid-template-columns: 1fr 1fr 1fr;
+      margin: 20px 25px 0 25px;
+    }
+    .label {
+      font-size: $p12;
+    }
+
+    .btn {
+      height: 30%;
+    }
+  }
 }

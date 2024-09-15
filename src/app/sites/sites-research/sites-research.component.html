@@ -1,29 +1,22 @@
-<div class="barRecherche">
-  <!--  Sélection du type de site. 
-  <div class="type">
-    <label for="type">Type :</label>
-    <select id="type" (change)="selectionSelectors($event, 'type', true)">
-      <option selected>Type</option>
-      <option id="1">Site géré</option>
-      <option id="2">CAST</option>
-    </select>
-  </div> -->
+<div class="conteneur">
+  <div class="recherche">
+    <!--  Sélection du type de site.-->
+    <mat-form-field appearance="fill" ngClass="type">
+      <mat-label ngClass="label" for="type">Type :</mat-label>
+      <mat-select
+        id="type"
+        (selectionChange)="selectionSelectors($event, 'Type', true)"
+      >
+        <mat-option [value]="{ id: 0, name: 'Type' }" selected>Type</mat-option>
+        <mat-option [value]="{ id: 1, name: 'Site géré' }"
+          >Site géré</mat-option
+        >
+        <mat-option [value]="{ id: 2, name: 'CAST' }">CAST</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="type">
-    <mat-label for="type">Type :</mat-label>
-    <mat-select
-      id="type"
-      (selectionChange)="selectionSelectors($event, 'type', true)"
-    >
-      <mat-option value="Type" selected>Type</mat-option>
-      <mat-option value="Site géré" id="1">Site géré</mat-option>
-      <mat-option value="CAST" id="2">CAST</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <div class="code">
     <!-- Sélection du code. -->
-    <mat-form-field appearance="outline" ngClass="code">
+    <mat-form-field appearance="fill" ngClass="code">
       <mat-label ngClass="label" for="code">Code :</mat-label>
       <input
         matInput
@@ -35,14 +28,14 @@
         (change)="stringChange($event)"
       />
       <mat-error *ngIf="codeFormControl.hasError('minlength')"
-        >Code trop court</mat-error
+        ><li>Code trop court</li></mat-error
       >
       <mat-error *ngIf="codeFormControl.hasError('pattern')"
-        >Chiffres uniquement</mat-error
+        ><li>Chiffres uniquement</li></mat-error
       >
       <!-- *ngIf="codeFormControl.value" : affiche le bouton clear si le code est renseigné -->
       <button
-        ngClass="btn"
+        ngClass="close"
         *ngIf="codeFormControl.value"
         matSuffix
         mat-icon-button
@@ -52,45 +45,57 @@
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
-  </div>
-  <!-- Sélection du nom. -->
-  <mat-form-field appearance="outline" ngClass="nom">
-    <mat-label ngClass="label" for="nom">Nom :</mat-label>
-    <input
-      matInput
-      id="nom"
-      type="text"
-      [formControl]="nameFormControl"
-      (change)="stringChange($event)"
-    />
-    <mat-error *ngIf="nameFormControl.hasError('minlength')"
-      >Minimum 3 caractères</mat-error
-    >
-    <button
-      ngClass="btn"
-      *ngIf="nameFormControl.value"
-      matSuffix
-      mat-icon-button
-      aria-label="Clear"
-      (click)="clearCode('nom')"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
 
-  <!-- Sélecteurs dynamiques. -->
-  <div *ngFor="let selector of selectors">
-    <label [for]="selector.name">{{ selector.name }} :</label>
-    <select
-      id="{{ selector.name }}"
-      name="{{ selector.name }}"
-      (change)="selectionSelectors($event, selector.name)"
+    <!-- Sélection du nom. -->
+    <mat-form-field appearance="fill" ngClass="nom">
+      <mat-label ngClass="label" for="nom">Nom :</mat-label>
+      <input
+        matInput
+        id="nom"
+        type="text"
+        [formControl]="nameFormControl"
+        (change)="stringChange($event)"
+      />
+      <mat-error *ngIf="nameFormControl.hasError('minlength')"
+        ><li>Minimum 3 caractères</li></mat-error
+      >
+      <button
+        ngClass="close"
+        *ngIf="nameFormControl.value"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="clearCode('nom')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Sélecteurs dynamiques. -->
+    <mat-form-field
+      *ngFor="let selector of selectors"
+      appearance="fill"
+      ngClass="selecteur"
     >
-      <option value="" selected>Sélectionner {{ selector.name }}</option>
-      <option *ngFor="let value of selector.values" [value]="value">
-        {{ value }}
-      </option>
-    </select>
+      <mat-label ngClass="label">{{ selector.title }} :</mat-label>
+      <mat-select
+        id="{{ selector.name }}"
+        (selectionChange)="selectionSelectors($event, selector.name)"
+      >
+        <mat-option
+          [value]="{ id: selector.name, name: selector.name }"
+          selected
+        >
+          Sélectionner {{ selector.name }}</mat-option
+        >
+        <mat-option
+          *ngFor="let value of selector.values"
+          [value]="{ id: value, name: value }"
+        >
+          {{ value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <!-- Validation du filtre.-->

@@ -6,19 +6,6 @@
   bottom: $bottom;
   left: $left;
 }
-// Boutons menus
-@mixin btn-menu($base-color, $hover-darkness: 10%) {
-  // background-color: lighten($base-color, 0%) !important;
-  color: $menu-text !important; // Couleur par défaut du texte
-  transition: background-color 0.3s ease;
-  @include Typo($p16, $semiGras, $menu-text);
-  &:hover {
-    background-color: lighten(
-      $base-color,
-      $hover-darkness
-    ) !important; // Couleur plus claire au survol
-  }
-}
 //Dimensions (largeur, hauteur)
 @mixin dim($width, $height) {
   width: $width;
@@ -40,6 +27,19 @@
   align-items: $align;
   justify-content: $justify;
 }
+// Boutons menus
+@mixin btn-menu($base-color, $hover-darkness: 10%) {
+  // background-color: lighten($base-color, 0%) !important;
+  color: $menu-text !important; // Couleur par défaut du texte
+  transition: background-color 0.3s ease;
+  @include Typo($p16, $semiGras, $menu-text);
+  &:hover {
+    background-color: lighten(
+      $base-color,
+      $hover-darkness
+    ) !important; // Couleur plus claire au survol
+  }
+}
 // Boutons texte
 @mixin btn($textColor, $bgColor, $colorHover, $textHover) {
   @include Typo($p14, $semiGras, $textColor);
@@ -52,10 +52,10 @@
   cursor: pointer;
   text-transform: uppercase;
   box-shadow: 5px 5px 5px 0px rgb(0 0 0 / 25%);
-}
-@mixin boutonsHover($textHover, $colorHover) {
-  @include Typo($p14, $semiGras, $textHover);
-  background-color: $colorHover;
+  &:hover {
+    @include Typo($p14, $semiGras, $textHover);
+    background-color: $colorHover;
+  }
 }
 // Boutons image
 @mixin boutonsImg($bgColor) {

@@ -35,9 +35,6 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './sites-research.component.scss',
 })
 export class SitesResearchComponent implements OnInit {
-  public selectors: Selector[] = [];
-  research: SitesService = inject(SitesService);
-
   private params: any = {
     type: '*',
     code: '*',
@@ -46,6 +43,9 @@ export class SitesResearchComponent implements OnInit {
     milieux_naturels: '*',
     responsable: '*',
   };
+
+  public selectors: Selector[] = [];
+  research: SitesService = inject(SitesService);
 
   constructor(private router: Router) {
     this.research.getSelectors().then((selectors: Selector[]) => {
@@ -95,36 +95,35 @@ export class SitesResearchComponent implements OnInit {
   }
 
   selectionSelectors($event: any, selector: any, index: boolean = false) {
-    let selectElement = $event.value;
-    // Utilise `selectElement` pour les opérations nécessaires
-    console.log('Selected value:', selectElement);
+    // $event.taget contient plein d'informations du <select> en question
+    console.log($event.value);
 
-    let optionIndex = selectElement.selectedIndex;
-    // console.log(optionIndex);
+    // Vaut l'id de l'option sélectionné ( 1 ou 2 )
+    // let optionIndex = $event.target.selectedIndex; // Quand on utilise PAS mat-select
+    let optionIndexMat = $event.value.id;
 
-    let optionText = selectElement;
-    console.log(optionText);
-
-    console.log(
-      'Avant le IF Dans selection avec ' + selector + '=' + optionText
-    );
-
-    if (selector.toLowerCase() === optionText.toLowerCase()) {
-      this.params[selector] = '*';
-      console.log(this.params[selector]);
-      selectElement.style.backgroundColor = '#F5F3F3';
-      console.log(
-        'Dans le if avec ' + selector + '=' + optionText + ' sélectionné !'
-      );
+    // Vaut le libelle de l'option sélectionné ( Type, Site géré, CAST)
+    // let optionText = $event.target.value.toLowerCase(); // Quand on utilise PAS mat-select
+    let optionTextMat = '';
+    if ($event.value.name == 'Type') {
+      optionTextMat = $event.value.name.toLowerCase();
     } else {
-      if (index != true) this.params[selector] = encodeURIComponent(optionText);
-      else this.params[selector] = encodeURIComponent(optionIndex);
-      console.log(this.params[selector]);
+      optionTextMat = $event.value.name;
+    } // Quand on utilise mat-select
+
+    if (selector === optionTextMat) {
+      // Il faut que le nom du type de selector passé en parametre de cette fonction
+      // soit égal au libellé de l'option sélectionnée pour faire une étoile *.
+      this.params[selector] = '*';
+      // $event.target.style.backgroundColor = '#F5F3F3'; // Quand on utilise PAS mat-select
+    } else {
+      if (index != true)
+        this.params[selector] = encodeURIComponent(optionTextMat);
+      else this.params[selector] = encodeURIComponent(optionIndexMat);
+
       // selectElement.style.backgroundColor = '#76b82a';
     }
-    console.dir(this.params);
-
-    // console.log("Dans selection avec " + this.params.type + "/" + this.params.code + "/" + this.params.nom + "/" + this.params.commune + "/" + this.params.milieux_naturels + "/" + this.params.responsable);
+    console.log('Valeur prise en compte : ' + this.params[selector]);
   }
 
   productSelection() {
