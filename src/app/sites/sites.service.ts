@@ -18,17 +18,18 @@ import { Selector } from './selector';
   providedIn: 'root',
 })
 export class SitesService {
-  private url1: string = "http://192.168.1.50:8889/Sites/"; // Télétravail
-  private url2: string = "http://192.168.27.66:8889/Sites/"; // Bureau
+  private url1: string = "http://192.168.27.66:8889/Sites/"; // Télétravail
+  private url2: string = "http://192.168.1.50:8889/Sites/"; // Bureau
   private activeUrl: string = this.url1; // URL par défaut
 
+  // L'objet " http " est créé dans le constructor
   constructor(private http: HttpClient) {
     this.detectBackend();
   }
 
   // Méthode pour tester et définir l'URL correcte
   detectBackend(): void {
-    this.http.get(`${this.url1}test.json`).pipe(
+    this.http.get(`${this.url1}selectors`).pipe(
       catchError(() => {
         // Si l'URL 1 échoue, essayer avec URL 2
         return of(null);
