@@ -38,7 +38,7 @@ header {
         display: flex;
         @include dim(100%, 100%);
         @include align(center, center);
-        gap: 50px;
+        gap: 35px;
       }
     }
 

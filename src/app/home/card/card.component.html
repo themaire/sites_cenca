@@ -1,18 +1,13 @@
-<div class="carte {{ parentColor }}">
-  <div class="parent">
-    <div class="titre">
-      {{ parentItem }}
+<a class="carte {{ parentColor }}" [routerLink]="menuItem.url">
+  <div class="titre">
+    {{ parentItem }}
+  </div>
+  <div class="infos">
+    <div class="liens">
+      {{ menuItem.name }}
+    </div>
+    <div class="description">
+      {{ menuItem.description }}
     </div>
   </div>
-  <div class="contenu">
-    <img src="../../assets/images/home/liste-sites.png" alt="" />
-    <div class="infos">
-      <div class="liens">
-        {{ menuItem.name }}
-      </div>
-      <div class="description">
-        {{ menuItem.description }}
-      </div>
-    </div>
-  </div>
-</div>
+</a>

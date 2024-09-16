@@ -1,10 +1,11 @@
 import { Component, input, Input } from '@angular/core';
 import { MenuItem } from '../../menuItem';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-card',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
 })

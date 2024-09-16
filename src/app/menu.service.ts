@@ -10,51 +10,8 @@ import { MenuItem } from './menuItem';
   providedIn: 'root',
 })
 export class MenuService {
-  private url1: string = 'http://192.168.1.50:8889/menu/'; // Bureau
-  private url2: string = 'http://192.168.27.66:8889/menu/'; // Télétravail
-  private activeUrl: string = this.url1; // URL par défaut
-
-  // L'objet " http " est créé dans le constructor
-  constructor(private http: HttpClient) {
-    this.getPublicIp().subscribe((data: any) => {
-      if (data.ip == '212.39.135.202') {
-        this.activeUrl = this.url1;
-      } else {
-        this.activeUrl = this.url2;
-      }
-      console.log('Adresse IP publique du client : ', data.ip);
-      console.log('Adresse du backend : ', this.activeUrl);
-    });
-  }
-
-  getPublicIp() {
-    return this.http.get('https://api.ipify.org?format=json');
-  }
-
-  // Méthode pour tester et définir l'URL correcte
-  detectBackend(): void {
-    console.log('Détection du backend à utiliser');
-
-    // this.http.get(`${this.url1}parent=null`).pipe(
-    this.http
-      .get(`${this.url1}parent=null`)
-      .pipe(
-        catchError(() => {
-          // Si l'URL 1 échoue, essayer avec URL 2
-          console.log('URL1 télétravail echouée : ' + this.activeUrl);
-          return of(null);
-        })
-      )
-      .subscribe((response) => {
-        if (response) {
-          console.log('URL1 métravail correcte : ' + this.activeUrl);
-          this.activeUrl = this.url1;
-        } else {
-          this.activeUrl = this.url2;
-          console.log("Utilisation de l'URL2 bureau : " + this.activeUrl);
-        }
-      });
-  }
+  // private activeUrl: string = 'http://192.168.1.50:8889/menu/'; // Bureau
+  private activeUrl: string = 'http://192.168.27.66:8889/menu/'; // Télétravail
 
   private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   menuItems$ = this.menuItemsSubject.asObservable();
@@ -76,7 +33,7 @@ export class MenuService {
   // private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   // menuItems$ = this.menuItemsSubject.asObservable();
 
-  loadMenuItems(): void {
+  async loadMenuItems(): Promise<void> {
     let subroute: string = 'parent=null';
     this.getMenu(subroute).then((mainMenuItems) => {
       // Ici, compléter les sous-menus pour chaque élément
