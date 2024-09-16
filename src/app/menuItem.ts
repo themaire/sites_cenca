@@ -5,5 +5,9 @@ export interface MenuItem {
   parent?: number;
   route?: string;
   short?: string;
+  url?: string;
+  description?: string;
+  picture?: string;
+  accueil?: boolean;
   children?: MenuItem[]; // Optionnel : sous-menu
 }

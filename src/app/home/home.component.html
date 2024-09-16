@@ -1,20 +1,13 @@
-<p>home works!</p>
-
-<mat-slide-toggle>Toggle me!</mat-slide-toggle>
-
-<div *ngIf="menuItems">
-
-
-    {{ menuItems[0].name }}
-
-
-        <div *ngFor="let elem of menuItems[0].children">
-        <label>{{ elem.name }}</label>
-        <br><br>
-        <div *ngFor="let child of elem.children">
-            <label>{{ child.name }}</label>
-        </div>
-        </div>
-
-
+<div class="home">
+  <ng-container *ngFor="let item of menuItems[0].children">
+    <ng-container *ngFor="let subItem of item.children">
+      <app-card
+        [parentItem]="item.name"
+        [parentColor]="item?.class_color ?? 'default-color'"
+        [menuItem]="subItem"
+        *ngIf="subItem.accueil == true"
+      >
+      </app-card>
+    </ng-container>
+  </ng-container>
 </div>

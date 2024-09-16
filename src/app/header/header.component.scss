@@ -17,10 +17,12 @@ header {
     .logo-conteneur {
       @include dim(250px, 70px);
       background: white;
+      cursor: pointer;
 
       .logoGrand {
         @include dim(auto, 70px);
         object-fit: cover;
+        cursor: pointer;
       }
 
       .logoPetit {
@@ -93,9 +95,9 @@ header {
     $administrafif
   ); // Inclut les styles de base comme padding et border-radius
 }
-.c-liens-utils {
+.c-liens-utiles {
   @include btn-menu(
-    $liens-utils
+    $liens-utiles
   ); // Inclut les styles de base comme padding et border-radius
 }
 span {
