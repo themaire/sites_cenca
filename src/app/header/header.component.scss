@@ -60,6 +60,7 @@ header {
     }
   }
 }
+
 .c-proteger {
   @include btn-menu(
     $proteger
@@ -102,6 +103,15 @@ header {
 }
 span {
   color: black !important;
+}
+.menu-OP {
+  color: black;
+  pointer-events: auto;
+}
+.menu-noOP {
+  color: gray;
+  pointer-events: none;
+  cursor: default; /* Optionnel : pour indiquer qu'un élément n'est pas cliquable */
 }
 
 // RESPONSIVE

@@ -9,5 +9,7 @@ export interface MenuItem {
   description?: string;
   picture?: string;
   accueil?: boolean;
+  date_added?: Date;
+  opened?: boolean;
   children?: MenuItem[]; // Optionnel : sous-menu
 }

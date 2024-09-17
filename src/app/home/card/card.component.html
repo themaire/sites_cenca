@@ -1,4 +1,4 @@
-<a class="carte {{ parentColor }}" [routerLink]="menuItem.url">
+<a class="carte {{ parentColor }}" [routerLink]="[route]">
   <div class="titre">
     {{ parentItem }}
   </div>
@@ -10,4 +10,6 @@
       {{ menuItem.description }}
     </div>
   </div>
+  <!-- Etiquette "New" clignotante -->
+  <div *ngIf="isNew" class="new-label">New</div>
 </a>

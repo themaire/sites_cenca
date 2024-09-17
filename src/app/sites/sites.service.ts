@@ -18,8 +18,8 @@ import { Selector } from './selector';
   providedIn: 'root',
 })
 export class SitesService {
-  // private activeUrl: string = 'http://192.168.1.50:8889/sites/'; // Bureau
-  private activeUrl: string = 'http://192.168.27.66:8889/sites/'; // Télétravail
+  private activeUrl: string = 'http://192.168.1.50:8889/sites/'; // Bureau
+  // private activeUrl: string = 'http://192.168.27.66:8889/sites/'; // Télétravail
 
   // Recherche une liste de plans de gestion par l'UUID d'un site
   // async getDocPlannn(siteUUID: string): Promise<DocPlan[]> {

@@ -10,8 +10,8 @@ import { MenuItem } from './menuItem';
   providedIn: 'root',
 })
 export class MenuService {
-  // private activeUrl: string = 'http://192.168.1.50:8889/menu/'; // Bureau
-  private activeUrl: string = 'http://192.168.27.66:8889/menu/'; // Télétravail
+  private activeUrl: string = 'http://192.168.1.50:8889/menu/'; // Bureau
+  // private activeUrl: string = 'http://192.168.27.66:8889/menu/'; // Télétravail
 
   private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   menuItems$ = this.menuItemsSubject.asObservable();
@@ -35,12 +35,19 @@ export class MenuService {
 
   async loadMenuItems(): Promise<void> {
     let subroute: string = 'parent=null';
+
+    // Fonction pour trier par ordre alphabétique
+    const sortAlphabetically = (items: MenuItem[]) => {
+      return items.sort((a, b) => a.name.localeCompare(b.name));
+    };
+
     this.getMenu(subroute).then((mainMenuItems) => {
       // Ici, compléter les sous-menus pour chaque élément
       const loadChildren = async () => {
         for (let item of mainMenuItems) {
           let subroute: string = `parent=${item.id}`;
           item.children = await this.getMenu(subroute);
+          item.children = sortAlphabetically(item.children); // Trie les sous-menus
         }
         // Met à jour le BehaviorSubject une fois les données chargées
         this.menuItemsSubject.next(mainMenuItems);

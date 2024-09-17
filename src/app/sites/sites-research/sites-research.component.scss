@@ -49,6 +49,7 @@
 // Mobile portrait
 @media screen and (max-width: $mobile) {
   .conteneur {
+    grid-template-rows: 1fr 30%;
     .recherche {
       grid-template-columns: 1fr 1fr;
       margin: 20px 25px 0 25px;
@@ -58,6 +59,7 @@
     }
 
     .btn {
+      padding: 20px;
       height: 30%;
     }
   }

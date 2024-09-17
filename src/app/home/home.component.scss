@@ -2,10 +2,24 @@
 @import "../../app/styles/mixins.scss";
 
 .home {
-  margin: 50px 50px 0 50px;
+  margin: 50px;
   @include align(top, space-between);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   flex-wrap: wrap;
   gap: 20px;
+}
+//RESPONSIVE
+
+@media screen and (max-width: $mobile) {
+  .home {
+    grid-template-columns: repeat(2, 1fr);
+    margin: 50px 25px;
+  }
+}
+
+@media screen and (min-width: $mobile) and (max-width: $tablette) {
+  .home {
+    margin: 50px 25px;
+  }
 }
