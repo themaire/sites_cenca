@@ -1,3 +1,5 @@
+import { backendAdress } from '../backendAdress';
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
@@ -9,7 +11,7 @@ import { Commune } from './site-detail/detail-infos/commune';
 import { DocPlan } from './site-detail/detail-gestion/docplan';
 import { MilNat } from './site-detail/detail-habitats/docmilnat';
 import { Acte } from './site-detail/detail-mfu/acte';
-import { Operation } from './site-detail/detail-operations/operation';
+import { ProjetLite } from './site-detail/detail-projets/projets';
 import { DetailSite } from './site-detail';
 
 import { Selector } from './selector';
@@ -18,8 +20,7 @@ import { Selector } from './selector';
   providedIn: 'root',
 })
 export class SitesService {
-  // private activeUrl: string = "http://192.168.27.66:8889/Sites/"; // Télétravail
-  private activeUrl: string = "http://192.168.1.50:8889/Sites/"; // Bureau
+  private activeUrl: string = backendAdress + "sites/"; // Bureau
 
   // Recherche une liste de plans de gestion par l'UUID d'un site
   // async getDocPlannn(siteUUID: string): Promise<DocPlan[]> {
@@ -69,7 +70,7 @@ export class SitesService {
     return await data.json() ?? [];
   }
 
-  async getOperations(subroute: string): Promise<Operation[]> {
+  async getOperations(subroute: string): Promise<ProjetLite[]> {
     const url = `${this.activeUrl}${subroute}`;
     console.log("Dans getOperations() avec " + url);
     

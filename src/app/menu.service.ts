@@ -1,3 +1,5 @@
+import { backendAdress } from './backendAdress';
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
@@ -10,8 +12,8 @@ import { MenuItem } from './menuItem';
   providedIn: 'root'
 })
 export class MenuService {
-  // private activeUrl: string = "http://192.168.1.50:8889/menu/"; // Bureau
-  private activeUrl: string = "http://192.168.27.66:8889/menu/"; // Télétravail
+
+  private activeUrl: string = backendAdress + "menu/"; // Bureau
 
   private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   menuItems$ = this.menuItemsSubject.asObservable();

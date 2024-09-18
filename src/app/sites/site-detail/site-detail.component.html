@@ -22,6 +22,11 @@
 
     <!-- Onglets inferieurs -->
     <mat-tab-group>
+      <mat-tab label="Projets">
+        <app-detail-projets [inputDetail]="siteDetail">
+        </app-detail-projets>
+      </mat-tab>
+
       <mat-tab label="Gestion">
         <app-detail-gestion [inputDetail]="siteDetail"> </app-detail-gestion>
       </mat-tab>
@@ -30,10 +35,7 @@
         <app-detail-habitats [inputDetail]="siteDetail"> </app-detail-habitats>
       </mat-tab>
 
-      <mat-tab label="Opérations">
-        <app-detail-operations [inputDetail]="siteDetail">
-        </app-detail-operations>
-      </mat-tab>
+      
     </mat-tab-group>
 
     <!-- <div class="tabs">
