@@ -41,7 +41,7 @@
   }
 }
 // Boutons texte
-@mixin btn($textColor, $bgColor, $colorHover, $textHover) {
+@mixin btn($textColor, $bgColor, $textHover, $colorHover) {
   @include Typo($p14, $semiGras, $textColor);
   background-color: $bgColor;
   @include dim(auto, 36px);

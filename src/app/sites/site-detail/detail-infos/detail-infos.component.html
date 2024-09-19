@@ -1,95 +1,128 @@
-
-
-
-<div *ngIf="inputDetail !== undefined">
-    <table>
-      <tr>
-        <td colspan="3">
-          Nom : {{inputDetail.nom}}
-        </td>
-      </tr>
-
-      <tr>
-        <td>
-          Code : {{inputDetail.code}}
-        </td>
-        <td>
-          Surface : {{inputDetail.surface}}
-        </td><td>
-          Responsable : {{inputDetail.responsable}}
-        </td>
-      </tr>
-
-      <tr>
-        <td>
-          Catégorie : {{inputDetail.typ_site}}
-        </td>
-        <td>
-          Status : {{inputDetail.validite}}
-        </td>
-        <td>
-          Première année contrat : {{inputDetail.prem_ctr}}
-        </td>
-      </tr>
-
-      <tr>
-          <td colspan="2">
-            Parties consernée(s) : ---
-          </td>
-          <td>
-            Site ref.public : {{inputDetail.ref_public}}
-          </td>
-      </tr>
-      
-      <tr>
-          <td>
-            Type d'espace : {{inputDetail.typ_espace}}
-          </td>
-          <td>
-            Bassin d'agence : {{inputDetail.bassin_agence}}
-          </td>
-          <td>
-            Zone humide : {{inputDetail.zh}}
-          </td>
-      </tr>
-
-      <tr>
-          <td>
-            Ref. MNHN : {{inputDetail.id_mnhn}}
-          </td>
-          <td>
-            Ref. FCEN : {{inputDetail.ref_fcen}}
-          </td>
-          <td>
-            RGTP : {{inputDetail.rgpt}}
-          </td>
-      </tr>
-
-      <tr>
-          <td colspan="3">
-              Mesures compensatoires : projets associés :
-          </td>
-      </tr>
-
-      <tr>
-          <section>---Tableau à venir---</section>
-      </tr>
-    </table>
-</div>
-
-<br>
-
-<div *ngIf="communes !== undefined">
-  <table>
-    
-    <thead>
-      <tr>
-        <th scope="col">Commune(s) concernée(s)</th>
-      </tr>
-    </thead>
-    
-    <tr *ngFor="let comm of communes">
-      {{ comm.nom }}
-    </tr>
-  </table>
+<div *ngIf="inputDetail !== undefined" class="container">
+  <div class="container-champ">
+    <div class="champ">
+      <div class="ligne1">
+        <div class="nom">
+          <h2>Nom :</h2>
+          <div class="infos">
+            {{ inputDetail.nom }}
+          </div>
+        </div>
+      </div>
+      <div class="ligne2">
+        <div class="code">
+          <h2>Code :</h2>
+          <div class="infos">
+            {{ inputDetail.code }}
+          </div>
+        </div>
+        <div class="surface">
+          <h2>Surface :</h2>
+          <div class="infos">
+            {{ inputDetail.surface }}
+          </div>
+        </div>
+        <div class="responsable">
+          <h2>Responsable :</h2>
+          <div class="infos">
+            {{ inputDetail.responsable }}
+          </div>
+        </div>
+      </div>
+      <div class="ligne3">
+        <div class="categorie">
+          <h2>Catégorie :</h2>
+          <div class="infos">
+            {{ inputDetail.typ_site }}
+          </div>
+        </div>
+        <div class="statut">
+          <h2>Status :</h2>
+          <div class="infos">
+            {{ inputDetail.validite }}
+          </div>
+        </div>
+        <div class="1er_ctr">
+          <h2>Première année contrat :</h2>
+          <div class="infos">
+            {{ inputDetail.prem_ctr }}
+          </div>
+        </div>
+      </div>
+      <div class="ligne4">
+        <div class="parties">
+          <h2>Parties consernée(s) :</h2>
+          <div class="infos">---</div>
+        </div>
+        <div class="site">
+          <h2>Site ref.public :</h2>
+          <div class="infos">
+            {{ inputDetail.ref_public }}
+          </div>
+        </div>
+      </div>
+      <div class="ligne5">
+        <div class="espace">
+          <h2>Type d'espace :</h2>
+          <div class="infos">
+            {{ inputDetail.typ_espace }}
+          </div>
+        </div>
+        <div class="bassin">
+          <h2>Bassin d'agence :</h2>
+          <div class="infos">
+            {{ inputDetail.bassin_agence }}
+          </div>
+        </div>
+        <div class="zh">
+          <h2>Zone humide :</h2>
+          <div class="infos">
+            {{ inputDetail.zh }}
+          </div>
+        </div>
+      </div>
+      <div class="ligne6">
+        <div class="refM">
+          <h2>Ref. MNHN :</h2>
+          <div class="infos">
+            {{ inputDetail.id_mnhn }}
+          </div>
+        </div>
+        <div class="refF">
+          <h2>Ref. FCEN :</h2>
+          <div class="infos">
+            {{ inputDetail.ref_fcen }}
+          </div>
+        </div>
+      </div>
+      <div class="ligne7">
+        <div class="rgpt">
+          <h2>RGTP :</h2>
+          <div class="infos">
+            {{ inputDetail.rgpt }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="a-venir">
+      <div>Mesures compensatoires : projets associés :</div>
+      <div>
+        <div>---Tableau à venir---</div>
+      </div>
+    </div>
+    <div *ngIf="communes !== undefined" class="container-commune">
+      <h2>Commune(s) concernée(s)</h2>
+      <div class="commune">
+        <p *ngFor="let comm of communes" class="infos">
+          {{ comm.nom }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="container-carte">
+    <div class="map">
+      <h2>Carte provisoire :</h2>
+      <img src="../assets/images/carte/parc-foret-orient.png" />
+    </div>
+  </div>
 </div>

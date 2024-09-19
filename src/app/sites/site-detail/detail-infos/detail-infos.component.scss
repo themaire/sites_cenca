@@ -1,0 +1,66 @@
+@import "../../../styles/mixins.scss";
+@import "../../../styles/variables.scss";
+
+.container {
+  display: grid;
+  grid-template-columns: 6fr 6fr;
+  flex-wrap: wrap;
+  grid-gap: 131px;
+  margin: 20px auto;
+  @include align(top, center);
+}
+.container-champ {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 30px;
+  @include dim(100%, auto);
+
+  h2 {
+    @include Typo($p14, $normal, $couleur-flore);
+    margin-bottom: 0;
+  }
+  .infos {
+    display: flex;
+    @include align(center, start);
+    @include Typo($p16, $normal, black);
+    background-color: rgba(248, 244, 186, 0.5);
+    border: 1px solid $couleur-faune;
+    border-radius: 5px;
+    height: 36px;
+    padding: 5px;
+  }
+  .ligne2,
+  .ligne3,
+  .ligne5 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .ligne4 {
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+    gap: 16px;
+  }
+  .ligne6 {
+    display: grid;
+    grid-template-columns: 3fr 3fr;
+    gap: 16px;
+  }
+
+  .commune {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
+.container-carte {
+  h2 {
+    @include Typo($p14, $normal, $couleur-flore);
+    margin-bottom: 0;
+  }
+  img {
+    width: 100%;
+  }
+}

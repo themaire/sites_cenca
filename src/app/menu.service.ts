@@ -10,8 +10,8 @@ import { MenuItem } from './menuItem';
   providedIn: 'root',
 })
 export class MenuService {
-  private activeUrl: string = 'http://192.168.1.50:8889/menu/'; // Bureau
-  // private activeUrl: string = 'http://192.168.27.66:8889/menu/'; // Télétravail
+  // private activeUrl: string = 'http://192.168.1.50:8889/menu/'; // Bureau
+  private activeUrl: string = 'http://192.168.0.29:8889/menu/'; // Télétravail
 
   private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   menuItems$ = this.menuItemsSubject.asObservable();
