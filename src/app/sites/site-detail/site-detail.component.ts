@@ -14,7 +14,7 @@ import { DetailDescriptionComponent } from './detail-description/detail-descript
 import { DetailMfuComponent } from './detail-mfu/detail-mfu.component'; // service de données
 import { DetailGestionComponent } from './detail-gestion/detail-gestion.component'; // service de données
 import { DetailHabitatsComponent } from './detail-habitats/detail-habitats.component'; // service de données
-import { DetailOperationsComponent } from './detail-operations/detail-operations.component'; // service de données
+import { DetailProjetsComponent } from './detail-projets/detail-projets.component'; // service de données
 
 // Composant qui affiche une fiche site (6 sous-composants).
 
@@ -29,7 +29,7 @@ import { DetailOperationsComponent } from './detail-operations/detail-operations
 
             DetailInfosComponent, DetailDescriptionComponent,
             DetailMfuComponent, DetailGestionComponent,
-            DetailHabitatsComponent, DetailOperationsComponent
+            DetailHabitatsComponent, DetailProjetsComponent
             ],
   templateUrl: './site-detail.component.html',
   styleUrl: './site-detail.component.scss'
