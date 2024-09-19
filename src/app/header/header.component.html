@@ -58,31 +58,40 @@
         <!-- Bouton du menu hamburger visible uniquement en version mobile -->
         <!-- Bouton du menu hamburger -->
         <div class="hamburger" *ngIf="isMobile">
-          <button mat-icon-button [matMenuTriggerFor]="hamburgerMenu" class="btn-hamburger">
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="hamburgerMenu"
+            class="btn-hamburger"
+          >
             <mat-icon>menu</mat-icon>
           </button>
 
           <!-- Menu principal -->
           <mat-menu #hamburgerMenu="matMenu">
             <ng-container *ngFor="let item of menuItems[0].children">
-              <button mat-menu-item 
-                      [ngClass]="item.class_color"
-                      [matMenuTriggerFor]="item.children?.length ? subMenu : null">
-                {{ item.name }}
+              <button
+                mat-menu-item
+                [ngClass]="item.class_color"
+                [matMenuTriggerFor]="item.children?.length ? subMenu : null"
+              >
+                <span>{{ item.name }}</span>
               </button>
               <mat-menu #subMenu="matMenu">
                 <ng-container *ngFor="let child of item.children">
-                  <button mat-menu-item 
-                          [ngClass]="item.class_color"
-                          [routerLink]="child.route"
-                          [matMenuTriggerFor]="child.children?.length ? childSubMenu : null">
-                    {{ child.name }}
+                  <button
+                    mat-menu-item
+                    [ngClass]="item.class_color"
+                    [routerLink]="child.route"
+                    [matMenuTriggerFor]="
+                      child.children?.length ? childSubMenu : null
+                    "
+                  >
+                    <span>{{ child.name }}</span>
                   </button>
                   <mat-menu #childSubMenu="matMenu">
                     <!-- Appel récursif du template pour les sous-sous-menus -->
                     <ng-container *ngFor="let subChild of child.children">
-                      <button mat-menu-item
-                              [ngClass]="item.class_color">
+                      <button mat-menu-item [ngClass]="item.class_color">
                         subchild {{ subChild.name }}
                       </button>
                     </ng-container>

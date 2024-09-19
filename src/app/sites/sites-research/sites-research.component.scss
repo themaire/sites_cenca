@@ -6,6 +6,9 @@
   display: grid;
   grid-template-rows: 2fr 1fr;
   flex-wrap: wrap;
+  box-shadow: 5px 5px 10px 0px rgba(215, 120, 19, 0.5);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
   .recherche {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
@@ -19,6 +22,8 @@
   .type,
   .nom,
   .selecteur {
+    // background-color: $couleur-faune;
+    // border-radius: 10px;
     @include dim(100%, auto);
   }
   .label {
@@ -29,7 +34,7 @@
     display: flex;
     @include align(center, center);
     button {
-      @include btn($couleur-flore, white, $couleur-territoire, white);
+      @include btn($couleur-flore, white, white, $couleur-territoire);
       @include align(center, center);
     }
   }
@@ -49,6 +54,9 @@
 // Mobile portrait
 @media screen and (max-width: $mobile) {
   .conteneur {
+    grid-template-rows: 1fr 30%;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
     .recherche {
       grid-template-columns: 1fr 1fr;
       margin: 20px 25px 0 25px;
@@ -58,6 +66,7 @@
     }
 
     .btn {
+      padding: 20px;
       height: 30%;
     }
   }
@@ -66,6 +75,9 @@
 // Mobile paysage
 @media screen and (min-width: $mobile) and (max-width: $tablette) {
   .conteneur {
+    grid-template-rows: 1fr 30%;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
     .recherche {
       grid-template-columns: 1fr 1fr 1fr;
       margin: 20px 25px 0 25px;

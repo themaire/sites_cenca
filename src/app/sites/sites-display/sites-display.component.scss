@@ -1,3 +1,37 @@
-// .site-display {
-//   padding-bottom: 200px;
+@import "../../styles/mixins.scss";
+@import "../../styles/variables.scss";
+
+p,
+.filtre {
+  margin-left: 50px;
+}
+// mat-label {
+//   color: $couleur-faune;
 // }
+.mat-mdc-header-row {
+  border-bottom: 2px solid $couleur-faune;
+}
+@media screen and (max-width: $mobile) {
+  p,
+  .filtre {
+    margin-left: 25px;
+  }
+
+  .milieux_naturels,
+  .communes,
+  .bassin_agence,
+  .responsable {
+    display: none;
+  }
+}
+@media screen and (max-width: $tablette) {
+  p,
+  .filtre {
+    margin-left: 25px;
+  }
+
+  .communes,
+  .bassin_agence {
+    display: none;
+  }
+}

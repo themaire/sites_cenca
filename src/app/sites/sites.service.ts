@@ -31,52 +31,51 @@ export class SitesService {
 
   // Recherche des détails d'un site par son UUID
 
-  async getSiteUUID(paramUUID :string): Promise<DetailSite> {
-    console.log("Dans la fonction getSiteUUID du service avec " + paramUUID);
-    
+  async getSiteUUID(paramUUID: string): Promise<DetailSite> {
+    console.log('Dans la fonction getSiteUUID du service avec ' + paramUUID);
+
     const data = await fetch(this.activeUrl + paramUUID);
-    return await data.json() ?? [];
+    return (await data.json()) ?? [];
   }
 
   async getCommune(subroute: string): Promise<Commune[]> {
     const url = `${this.activeUrl}${subroute}`;
-    console.log("Dans getCommune() avec " + url);
-    
+    console.log('Dans getCommune() avec ' + url);
+
     const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
+    return (await data.json()) ?? [];
   }
 
   async getDocPlan(subroute: string): Promise<DocPlan[]> {
     const url = `${this.activeUrl}${subroute}`;
-    console.log("Dans getDocPlan() avec " + url);
-    
+    console.log('Dans getDocPlan() avec ' + url);
+
     const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
+    return (await data.json()) ?? [];
   }
 
   async getMilNat(subroute: string): Promise<MilNat[]> {
     const url = `${this.activeUrl}${subroute}`;
-    console.log("Dans getMilNat() avec " + url);
-    
+    console.log('Dans getMilNat() avec ' + url);
+
     const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
+    return (await data.json()) ?? [];
   }
 
   async getMfu(subroute: string): Promise<Acte[]> {
     const url = `${this.activeUrl}${subroute}`;
-    console.log("Dans getMfu() avec " + url);
-    
+    console.log('Dans getMfu() avec ' + url);
+
     const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
+    return (await data.json()) ?? [];
   }
 
   async getOperations(subroute: string): Promise<ProjetLite[]> {
     const url = `${this.activeUrl}${subroute}`;
-    console.log("Dans getOperations() avec " + url);
-    
-    const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
+    console.log('Dans getOperations() avec ' + url);
 
+    const data = await fetch(this.activeUrl + subroute);
+    return (await data.json()) ?? [];
   }
 
   // Recherche par critères ou par mots clefs
@@ -85,12 +84,12 @@ export class SitesService {
     // console.log("Dans getSites avec " + parametres);
 
     const data = await fetch(this.activeUrl + parametres);
-    return await data.json() ?? [];
+    return (await data.json()) ?? [];
   }
 
   async getSelectors(): Promise<Selector[]> {
-    const data = await fetch(this.activeUrl + "selectors");
-    return await data.json() ?? [];
+    const data = await fetch(this.activeUrl + 'selectors');
+    return (await data.json()) ?? [];
   }
 }
 
@@ -101,7 +100,7 @@ export class SitesService {
 // async getData<T>(subroute: string): Promise<T[]> {
 //   const url = `${this.url}${subroute}`;
 //   console.log(`Dans getData() avec ${url}`);
-  
+
 //   const data = await fetch(url);
 //   return await data.json() ?? [];
 // }
@@ -124,4 +123,3 @@ export class SitesService {
 // Cela te permet de réduire la quantité de code dupliqué et de rendre ton code plus générique et plus facile à maintenir.
 
 // Qu'en penses-tu ? Est-ce que cela te convient ?
-

@@ -1,11 +1,15 @@
 <div class="site-detail">
-  <button type="button" (click)="resetSelectedd()">Retour</button>
+  <div class="container-btn-h">
+    <button class="btn" type="button" (click)="resetSelectedd()">Retour</button>
+  </div>
   <section>
     <!-- Titre -->
-    <h2 *ngIf="siteDetail !== undefined">{{ siteDetail.description_site }}</h2>
+    <h2 *ngIf="siteDetail !== undefined">
+      {{ siteDetail.description_site }}
+    </h2>
 
     <!-- Onglets supérieurs -->
-    <mat-tab-group>
+    <mat-tab-group class="top-tabs">
       <mat-tab label="Infos générales">
         <app-detail-infos [inputDetail]="siteDetail"> </app-detail-infos>
       </mat-tab>
@@ -26,7 +30,7 @@
         <app-detail-projets [inputDetail]="siteDetail">
         </app-detail-projets>
       </mat-tab>
-
+      
       <mat-tab label="Gestion">
         <app-detail-gestion [inputDetail]="siteDetail"> </app-detail-gestion>
       </mat-tab>
@@ -101,6 +105,7 @@
     </div>
   </div> -->
   </section>
-
-  <button type="button" (click)="resetSelectedd()">Retour</button>
+  <div class="container-btn-b">
+    <button class="btn" type="button" (click)="resetSelectedd()">Retour</button>
+  </div>
 </div>

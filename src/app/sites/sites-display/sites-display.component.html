@@ -28,7 +28,7 @@ ICI deux div. On affiche l'une ou l'autre :
   <div *ngIf="selectedSite == undefined">
     <p>Liste des sites sélectionnés parmis votre filtrage :</p>
 
-    <mat-form-field>
+    <mat-form-field class="filtre">
       <mat-label>Mots-clés</mat-label>
       <input
         matInput
@@ -43,49 +43,93 @@ ICI deux div. On affiche l'une ou l'autre :
               The actual rendered columns are set as a property on the row definition" -->
 
       <!-- code Column -->
-      <ng-container matColumnDef="code">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
-        <td mat-cell *matCellDef="let element">{{ element.code }}</td>
+      <ng-container matColumnDef="code" class="code">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="code titre"
+        >
+          Code
+        </th>
+        <td mat-cell *matCellDef="let element" class="code">
+          {{ element.code }}
+        </td>
       </ng-container>
 
       <!-- statut Column -->
-      <ng-container matColumnDef="statut">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
-        <td mat-cell *matCellDef="let element">{{ element.statut }}</td>
+      <ng-container matColumnDef="statut" class="statut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="statut">
+          Statut
+        </th>
+        <td mat-cell *matCellDef="let element" class="statut">
+          {{ element.statut }}
+        </td>
       </ng-container>
 
       <!-- nom Column -->
-      <ng-container matColumnDef="nom">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
-        <td mat-cell *matCellDef="let element">{{ element.nom }}</td>
+      <ng-container matColumnDef="nom" class="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="nom">
+          Nom
+        </th>
+        <td mat-cell *matCellDef="let element" class="nom">
+          {{ element.nom }}
+        </td>
       </ng-container>
 
       <!-- communes Column -->
-      <ng-container matColumnDef="communes">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Communes</th>
-        <td mat-cell *matCellDef="let element">{{ element.communes }}</td>
+      <ng-container matColumnDef="communes" class="communes">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="communes">
+          Communes
+        </th>
+        <td mat-cell *matCellDef="let element" class="communes">
+          {{ element.communes }}
+        </td>
       </ng-container>
 
       <!-- milieux_naturels Column -->
-      <ng-container matColumnDef="milieux_naturels">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      <ng-container matColumnDef="milieux_naturels" class="milieux_naturels">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="milieux_naturels"
+        >
           Milieux naturels
         </th>
-        <td mat-cell *matCellDef="let element">
+        <td mat-cell *matCellDef="let element" class="milieux_naturels">
           {{ element.milieux_naturels }}
         </td>
       </ng-container>
 
       <!-- bassin_agence Column -->
-      <ng-container matColumnDef="bassin_agence">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Bassin agence</th>
-        <td mat-cell *matCellDef="let element">{{ element.bassin_agence }}</td>
+      <ng-container matColumnDef="bassin_agence" class="bassin_agence">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="bassin_agence"
+        >
+          Bassin agence
+        </th>
+        <td mat-cell *matCellDef="let element" class="bassin_agence">
+          {{ element.bassin_agence }}
+        </td>
       </ng-container>
 
       <!-- responsable Column -->
       <ng-container matColumnDef="responsable">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Responsable</th>
-        <td mat-cell *matCellDef="let element">{{ element.responsable }}</td>
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="responsable"
+        >
+          Responsable
+        </th>
+        <td mat-cell *matCellDef="let element" class="responsable">
+          {{ element.responsable }}
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

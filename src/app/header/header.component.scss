@@ -17,10 +17,12 @@ header {
     .logo-conteneur {
       @include dim(250px, 70px);
       background: white;
+      cursor: pointer;
 
       .logoGrand {
         @include dim(auto, 70px);
         object-fit: cover;
+        cursor: pointer;
       }
 
       .logoPetit {
@@ -36,7 +38,7 @@ header {
         display: flex;
         @include dim(100%, 100%);
         @include align(center, center);
-        gap: 50px;
+        gap: 35px;
       }
     }
 
@@ -58,6 +60,7 @@ header {
     }
   }
 }
+
 .c-proteger {
   @include btn-menu(
     $proteger
@@ -93,13 +96,22 @@ header {
     $administrafif
   ); // Inclut les styles de base comme padding et border-radius
 }
-.c-liens-utils {
+.c-liens-utiles {
   @include btn-menu(
-    $liens-utils
+    $liens-utiles
   ); // Inclut les styles de base comme padding et border-radius
 }
 span {
   color: black !important;
+}
+.menu-OP {
+  color: black;
+  pointer-events: auto;
+}
+.menu-noOP {
+  color: gray;
+  pointer-events: none;
+  cursor: default; /* Optionnel : pour indiquer qu'un élément n'est pas cliquable */
 }
 
 // RESPONSIVE
