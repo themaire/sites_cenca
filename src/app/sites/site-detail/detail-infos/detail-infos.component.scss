@@ -60,7 +60,23 @@
     @include Typo($p14, $normal, $couleur-flore);
     margin-bottom: 0;
   }
+
   img {
     width: 100%;
   }
+}
+
+@media screen and (max-width: $mobile) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-gap: 50px;
+    h2 {
+      font-size: 12px;
+    }
+  }
+
+  // @media screen and (max-width: $tablette) {
+  //   .container {
+  //     grid-template-columns: 1fr;
+  //   }
 }

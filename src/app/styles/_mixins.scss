@@ -6,6 +6,15 @@
   bottom: $bottom;
   left: $left;
 }
+// bandeau d'emplacement
+@mixin bandeau($bgColor) {
+  background-color: $bgColor;
+  writing-mode: vertical-lr;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  @include Typo($p16, $gras, white);
+  text-align: end;
+}
 //Dimensions (largeur, hauteur)
 @mixin dim($width, $height) {
   width: $width;

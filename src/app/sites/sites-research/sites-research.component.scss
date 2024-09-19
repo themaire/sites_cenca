@@ -6,7 +6,6 @@
   display: grid;
   grid-template-rows: 2fr 1fr;
   flex-wrap: wrap;
-  box-shadow: 5px 5px 10px 0px rgba(215, 120, 19, 0.5);
   padding-bottom: 20px;
   margin-bottom: 20px;
   .recherche {
@@ -22,14 +21,11 @@
   .type,
   .nom,
   .selecteur {
-    // background-color: $couleur-faune;
-    // border-radius: 10px;
     @include dim(100%, auto);
   }
   .label {
     @include Typo($p14, $normal, $couleur-flore);
   }
-
   .btn {
     display: flex;
     @include align(center, center);

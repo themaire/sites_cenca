@@ -28,7 +28,7 @@
     grid-template-rows: repeat(2, 1fr);
     flex-wrap: wrap;
     padding: 15px;
-    @include dim(100%, 100%);
+    // @include dim(100%, 100%);
     @include align(center, start);
 
     .liens {

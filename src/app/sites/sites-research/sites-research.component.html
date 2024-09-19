@@ -5,7 +5,7 @@
       <mat-label ngClass="label" for="type">Type :</mat-label>
       <mat-select
         id="type"
-        (selectionChange)="selectionSelectors($event, 'Type', true)"
+        (selectionChange)="selectionSelectors($event, 'type', true)"
       >
         <mat-option [value]="{ id: 0, name: 'Type' }" selected>Type</mat-option>
         <mat-option [value]="{ id: 1, name: 'Site géré' }"
@@ -20,13 +20,14 @@
       <mat-label ngClass="label" for="code">Code :</mat-label>
       <input
         matInput
-        class="border"
         id="code"
         type="text"
         inputmode="numeric"
         pattern="[0-9]*"
         [formControl]="codeFormControl"
         (change)="stringChange($event)"
+        [(ngModel)]="codeFormControl.value"
+        (keyup.enter)="productSelection()"
       />
       <mat-error *ngIf="codeFormControl.hasError('minlength')"
         ><li>Code trop court</li></mat-error
@@ -56,6 +57,8 @@
         type="text"
         [formControl]="nameFormControl"
         (change)="stringChange($event)"
+        [(ngModel)]="nameFormControl.value"
+        (keyup.enter)="productSelection()"
       />
       <mat-error *ngIf="nameFormControl.hasError('minlength')"
         ><li>Minimum 3 caractères</li></mat-error

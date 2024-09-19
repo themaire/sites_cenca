@@ -4,16 +4,20 @@
 .site-detail {
   margin: 0px 50px 50px 50px;
 }
-.top-tabs,
-.bottom-tabs {
+.fond {
+  background-color: white;
+}
+.mobile {
+  display: none;
+}
+//groupe d'onglets
+.top-tabs {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 }
-.top-tabs mat-tab,
-.bottom-tabs mat-tab {
-  flex: 1;
-  min-width: 200px;
+mat-tab {
+  width: 100%;
 }
 .container-btn-h {
   display: flex;
@@ -30,9 +34,6 @@
   .btn {
     @include btn(white, $couleur-flore, white, $couleur-faune);
   }
-}
-mat-tab {
-  background-color: red;
 }
 
 .mat-mdc-tab-group {
@@ -66,15 +67,20 @@ mat-tab {
 //RESPONSIVE
 @media (max-width: $tablette) {
   .site-detail {
-    margin: 0px 20px 20px 20px;
+    margin: 0px 25px 25px 25px;
   }
-  .top-tabs,
-  .bottom-tabs {
-    flex-direction: column;
-  }
+  .mobile {
+    display: block;
 
-  .top-tabs mat-tab:nth-child(3),
-  .bottom-tabs mat-tab:nth-child(3) {
+    .bloc1 {
+      display: flex;
+      width: 100%;
+      mat-tab-group {
+        width: 100%;
+      }
+    }
+  }
+  .web {
     display: none;
   }
 }
