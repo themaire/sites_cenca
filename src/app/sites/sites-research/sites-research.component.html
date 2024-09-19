@@ -5,7 +5,7 @@
       <mat-label ngClass="label" for="type">Type :</mat-label>
       <mat-select
         id="type"
-        (selectionChange)="selectionSelectors($event, 'Type', true)"
+        (selectionChange)="selectionSelectors($event, 'type', true)"
       >
         <mat-option [value]="{ id: 0, name: 'Type' }" selected>Type</mat-option>
         <mat-option [value]="{ id: 1, name: 'Site géré' }"
