@@ -1,48 +1,104 @@
+<div *ngIf="inputDetail !== undefined" class="container">
+  <div class="container-champ">
+    <div class="champ">
+      <!--
+      <div class="edit">
+        <button mat-icon-button class="btn-edit" (click)="editDetail()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>-->
 
-
-
-<div *ngIf="inputDetail !== undefined">
-    <table>
-        <tr>
-            <td colspan="2">
-                Description du site : {{inputDetail.description_site}}
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                Site sensible : {{inputDetail.sensibilite}}
-            </td>
-            <td>
-                Description sensibilité : {{inputDetail.remq_sensibilite}}
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                Site ouvert au public : {{inputDetail.typ_ouverture}}
-            </td>
-        </tr>
-
-        <tr>
-        
-            <td>
-                Aménagements : <br>
-            -+--+-
-            </td>
-        </tr>
-
-        <tr>
-            <table>
-                <td>
-                    Lien CEN : <a href="{{inputDetail.url_cen}}">{{inputDetail.url_cen}}</a>
-                </td>
-                <td>
-                    Lien MNHN : <a href="{{inputDetail.url_mnhn}}">{{inputDetail.url_mnhn}}</a>
-                </td>
-            </table>
-        </tr>
-
-      </table>
+      <div class="ligne1">
+        <div class="description">
+          <h2>Description du site:</h2>
+          <div class="infos">
+            <textarea [(ngModel)]="inputDetail.description_site"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="ligne2">
+        <div class="sensible">
+          <h2>Site sensible:</h2>
+          <div class="infos">
+            <input [(ngModel)]="inputDetail.sensibilite" />
+          </div>
+        </div>
+        <div class="des-sensible">
+          <h2>Description sensibilité:</h2>
+          <div class="infos">
+            <input [(ngModel)]="inputDetail.remq_sensibilite" />
+          </div>
+        </div>
+      </div>
+      <div class="ligne3">
+        <div class="typ_ouverture">
+          <h2>Site ouvert au public:</h2>
+          <div class="infos">
+            <input [(ngModel)]="inputDetail.typ_ouverture" />
+          </div>
+        </div>
+      </div>
+      <div class="ligne4">
+        <div class="amenagements">
+          <h2>Aménagements:</h2>
+          <div class="infos">
+            <p>Tableau a venir</p>
+          </div>
+        </div>
+      </div>
+      <div class="ligne5">
+        <div class="description">
+          <h2>Lien CEN:</h2>
+          <div class="infos">
+            <a href="{{ inputDetail.url_cen }}">{{ inputDetail.url_cen }}</a>
+          </div>
+        </div>
+        <div class="description">
+          <h2>Lien MNHN:</h2>
+          <div class="infos">
+            <a href="{{ inputDetail.url_mnhn }}">{{ inputDetail.url_mnhn }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+<!--
+    <table>
+      <tr>
+        <td colspan="2">
+          Description du site : {{ inputDetail.description_site }}
+        </td>
+      </tr>
 
+      <tr>
+        <td>Site sensible : {{ inputDetail.sensibilite }}</td>
+        <td>Description sensibilité : {{ inputDetail.remq_sensibilite }}</td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          Site ouvert au public : {{ inputDetail.typ_ouverture }}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          Aménagements : <br />
+          -+--+-
+        </td>
+      </tr>
+
+      <tr>
+        <table>
+          <td>
+            Lien CEN :
+            <a href="{{ inputDetail.url_cen }}">{{ inputDetail.url_cen }}</a>
+          </td>
+          <td>
+            Lien MNHN :
+            <a href="{{ inputDetail.url_mnhn }}">{{ inputDetail.url_mnhn }}</a>
+          </td>
+        </table>
+      </tr>
+    </table> -->

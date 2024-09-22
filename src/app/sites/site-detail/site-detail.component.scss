@@ -2,10 +2,7 @@
 @import "../../styles/mixins.scss";
 
 .site-detail {
-  margin: 0px 50px 50px 50px;
-}
-.fond {
-  background-color: white;
+  margin: 0px 50px 50px 29px;
 }
 .mobile {
   display: none;
@@ -67,7 +64,7 @@ mat-tab {
 //RESPONSIVE
 @media (max-width: $tablette) {
   .site-detail {
-    margin: 0px 25px 25px 25px;
+    margin: 0px 5px 25px 5px;
   }
   .mobile {
     display: block;

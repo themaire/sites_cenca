@@ -1,8 +1,12 @@
 <div class="site-detail web">
-  <div class="container-btn-h">
-    <button class="btn" type="button" (click)="resetSelectedd()">Retour</button>
-  </div>
-  <section>
+  <div class="fond">
+    <!-- Bouton Retour -->
+    <div class="container-btn-h">
+      <button class="btn" type="button" (click)="resetSelectedd()">
+        Retour
+      </button>
+    </div>
+
     <!-- Titre -->
     <h2 *ngIf="siteDetail !== undefined">
       {{ siteDetail.description_site }}
@@ -35,9 +39,12 @@
         <app-detail-habitats [inputDetail]="siteDetail"> </app-detail-habitats>
       </mat-tab>
     </mat-tab-group>
-  </section>
-  <div class="container-btn-b">
-    <button class="btn" type="button" (click)="resetSelectedd()">Retour</button>
+
+    <!--  <div class="container-btn-b">
+      <button class="btn" type="button" (click)="resetSelectedd()">
+        Retour
+      </button>
+    </div>-->
   </div>
 </div>
 
@@ -45,7 +52,7 @@
   <div class="container-btn-h">
     <button class="btn" type="button" (click)="resetSelectedd()">Retour</button>
   </div>
-  <section>
+  <div class="fond">
     <!-- Titre -->
     <h2 *ngIf="siteDetail !== undefined">
       {{ siteDetail.description_site }}
@@ -82,8 +89,11 @@
         <app-detail-habitats [inputDetail]="siteDetail"> </app-detail-habitats>
       </mat-tab>
     </mat-tab-group>
-  </section>
-  <div class="container-btn-b">
-    <button class="btn" type="button" (click)="resetSelectedd()">Retour</button>
+
+    <!--  <div class="container-btn-b">
+            <button class="btn" type="button" (click)="resetSelectedd()">
+              Retour
+            </button>
+          </div> -->
   </div>
 </div>
