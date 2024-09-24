@@ -14,7 +14,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 import { MatTabsModule } from '@angular/material/tabs';
-
 import { ListSite } from '../site'; // prototype d'un site
 import { DetailSite } from '../site-detail';
 import { SitesService } from '../sites.service'; // service de données
@@ -84,5 +83,10 @@ export class SiteDetailComponent {
         this.siteDetail = siteGuetted;
       });
     }
+  }
+
+  // Fonction pour vérifier si l'écran est mobile ou pas
+  isMobile(): boolean {
+    return window.innerWidth <= 400; // Par exemple, mobile si la largeur est <= 768px
   }
 }

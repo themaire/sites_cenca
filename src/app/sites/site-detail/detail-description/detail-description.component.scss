@@ -41,37 +41,16 @@
     flex-wrap: wrap;
     gap: 16px;
   }
+}
 
-  .commune {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-}
-.container-carte {
-  h2 {
-    @include Typo($p14, $normal, $couleur-flore);
-    margin-bottom: 0;
-  }
-  img {
-    width: 100%;
-  }
-}
 .edit {
   @include btn-edit();
 }
 
 @media screen and (max-width: $mobile) {
   .container {
-    grid-template-columns: 1fr;
-    grid-gap: 50px;
     h2 {
       font-size: 12px;
-    }
-    .ligne3,
-    .ligne5 {
-      grid-template-columns: 1fr 1fr;
     }
     .infos {
       min-height: 36px;
@@ -81,8 +60,6 @@
 }
 @media screen and (max-width: $tablette) {
   .container {
-    grid-template-columns: 1fr;
-    grid-gap: 50px;
     h2 {
       font-size: 12px;
     }
