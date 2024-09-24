@@ -1,0 +1,16 @@
+@import "../../app/styles/variables.scss";
+@import "../../app/styles/mixins.scss";
+
+button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  @include btn-img($couleur-faune);
+  // display: none; /* Caché par défaut */
+  color: white;
+  width: auto;
+}
+button.visible {
+  display: block;
+}

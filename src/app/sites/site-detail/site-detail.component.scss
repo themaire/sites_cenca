@@ -4,9 +4,7 @@
 .site-detail {
   margin: 0px 50px 50px 29px;
 }
-.mobile {
-  display: none;
-}
+
 //groupe d'onglets
 .top-tabs {
   display: flex;
@@ -67,8 +65,6 @@ mat-tab {
     margin: 0px 5px 25px 5px;
   }
   .mobile {
-    display: block;
-
     .bloc1 {
       display: flex;
       width: 100%;
@@ -76,8 +72,5 @@ mat-tab {
         width: 100%;
       }
     }
-  }
-  .web {
-    display: none;
   }
 }

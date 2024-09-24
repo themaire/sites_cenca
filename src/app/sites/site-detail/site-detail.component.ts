@@ -12,6 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { MatTabsModule } from '@angular/material/tabs';
 import { ListSite } from '../site'; // prototype d'un site
@@ -51,6 +52,8 @@ export class SiteDetailComponent {
   @Input() site?: ListSite; // Le site selectionné pour voir son détail
   @Output() selectedSite = new EventEmitter<Object>(); // Utiliser cette variable provenent du composant frere
 
+  isMobile: boolean = false;
+
   public siteDetail!: DetailSite;
   resetSelectedd(): void {
     // Assigne la valeur "undefined" à la variable selectedSite
@@ -62,7 +65,11 @@ export class SiteDetailComponent {
 
   research: SitesService = inject(SitesService);
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private breakpointObserver: BreakpointObserver
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     // Ce component est chargé en meme temps que sitesDisplay. Vide et non visible.
@@ -85,8 +92,12 @@ export class SiteDetailComponent {
     }
   }
 
-  // Fonction pour vérifier si l'écran est mobile ou pas
-  isMobile(): boolean {
-    return window.innerWidth <= 400; // Par exemple, mobile si la largeur est <= 768px
+  ngOnInit() {
+    // Détecter si c'est la version mobile
+    this.breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe((result) => {
+        this.isMobile = result.matches;
+      });
   }
 }
