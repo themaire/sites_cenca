@@ -1,62 +1,49 @@
 <div *ngIf="projetsLite.length > 0; then thenBlock else elseBlock"></div>
 
 <ng-template #thenBlock>
-    <div>
-      Nb opérations : {{ projetsLite.length }}<br>
-      <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-        <ng-container matColumnDef="responsable">
-          <mat-header-cell *matHeaderCellDef> Responsable </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.responsable }} </mat-cell>
-        </ng-container>
+  <div>
+    Nb opérations : {{ projetsLite.length }}<br>
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="responsable">
+        <mat-header-cell *matHeaderCellDef> Responsable </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{ element.responsable }} </mat-cell>
+      </ng-container>
+    
+      <ng-container matColumnDef="annee">
+        <mat-header-cell *matHeaderCellDef> Année </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="date_deb">
+        <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{ element.date_deb }} </mat-cell>
+      </ng-container>
       
-        <ng-container matColumnDef="annee">
-          <mat-header-cell *matHeaderCellDef> Année </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+        <ng-container matColumnDef="projet">
+          <mat-header-cell *matHeaderCellDef> Nom (Projet) </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.projet }} </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="date_deb">
-          <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.date_deb }} </mat-cell>
+        <ng-container matColumnDef="action">
+          <mat-header-cell *matHeaderCellDef> Type (Action) </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.action }} </mat-cell>
         </ng-container>
-        
-          <ng-container matColumnDef="projet">
-            <mat-header-cell *matHeaderCellDef> Nom (Projet) </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.projet }} </mat-cell>
-          </ng-container>
 
-          <ng-container matColumnDef="action">
-            <mat-header-cell *matHeaderCellDef> Type (Action) </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.action }} </mat-cell>
-          </ng-container>
-  
-          <ng-container matColumnDef="typ_interv">
-            <mat-header-cell *matHeaderCellDef> Type d'intervention </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.typ_inter }} </mat-cell>
-          </ng-container>
-        
-          <ng-container matColumnDef="statut">
-            <mat-header-cell *matHeaderCellDef> Statut </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.statut }} </mat-cell>
-          </ng-container>
+        <ng-container matColumnDef="typ_interv">
+          <mat-header-cell *matHeaderCellDef> Type d'intervention </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.typ_inter }} </mat-cell>
+        </ng-container>
       
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onSelect(row)"></mat-row>
-      </mat-table>
-    </div>
-  
-    <!-- <div>
-    <ul>
-        <li *ngFor="let operation of operations">
-          Responsable : {{ operation.responsable }}<br>
-          Année : {{ operation.annee }}<br>
-          Date début : {{ operation.date_deb }}<br>
-          Projet : {{ operation.projet }}<br>
-          Action: {{ operation.action }} ha<br>
-          Type d'intervenant : {{ operation.typ_interv }}<br>
-          Statut: {{ operation.statut }}<br>
-        </li>
-      </ul>
-    </div> -->
+        <ng-container matColumnDef="statut">
+          <mat-header-cell *matHeaderCellDef> Statut </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.statut }} </mat-cell>
+        </ng-container>
+    
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onSelect(row)"></mat-row>
+    </mat-table>
+  </div>
+
 </ng-template>
 
 <ng-template #elseBlock>
