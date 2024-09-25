@@ -96,7 +96,7 @@ export class SitesResearchComponent implements OnInit {
 
   selectionSelectors($event: any, selector: any, index: boolean = false) {
     // $event.taget contient plein d'informations du <select> en question
-    console.log($event.value);
+    console.log("$event.value : ", $event.value);
 
     // Vaut l'id de l'option sélectionné ( 1 ou 2 )
     // let optionIndex = $event.target.selectedIndex; // Quand on utilise PAS mat-select
@@ -123,7 +123,9 @@ export class SitesResearchComponent implements OnInit {
 
       // selectElement.style.backgroundColor = '#76b82a';
     }
-    console.log('Valeur prise en compte : ' + this.params[selector]);
+    // console.log('Valeur prise en compte : ' + this.params[selector]);
+    // console.log('this.params :');
+    // console.log(this.params);
   }
 
   productSelection() {

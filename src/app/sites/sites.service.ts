@@ -70,9 +70,9 @@ export class SitesService {
     return (await data.json()) ?? [];
   }
 
-  async getOperations(subroute: string): Promise<ProjetLite[]> {
+  async getProjets(subroute: string): Promise<ProjetLite[]> {
     const url = `${this.activeUrl}${subroute}`;
-    console.log('Dans getOperations() avec ' + url);
+    console.log('Dans getProjets() avec ' + url);
 
     const data = await fetch(this.activeUrl + subroute);
     return (await data.json()) ?? [];

@@ -24,6 +24,7 @@ import {
   standalone: true,
   imports: [CommonModule,
             MatTableModule, 
+            ProjetComponent,
 
             MatFormFieldModule, MatInputModule, 
   ],
@@ -54,50 +55,51 @@ export class DetailProjetsComponent {
       
       // ChatGPT 19/07/2024
       try {
-        this.projetsLite = await this.research.getOperations(subroute);
+        this.projetsLite = await this.research.getProjets(subroute);
         this.dataSource = new MatTableDataSource(this.projetsLite);
 
         // console.log('Données de this.Mfus après assignation :', this.actes);
-        this.cdr.detectChanges(); // Forcer la détection des changements
+        // this.cdr.detectChanges(); // Forcer la détection des changements
       } catch (error) {
         console.error('Error fetching documents', error);
       }
     }
   }
 
+  onSelect(projetlite: ProjetLite): void {
+    // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
+    // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
+
+    // Ca se passe dans la vue du component dialog-operation
+    if(projetlite.responsable !== undefined){
+      // OUVRIR LA FENETRE DE DIALOGUE
+      this.openDialog(projetlite);
+    }else{
+      console.log("Pas de projet au bout : " + projetlite.projet);
+    }
+  }
+
   // Pour l'affichage de la fenetre de dialogue
   dialog = inject(MatDialog);
 
-  
-
   openDialog(projetlite: ProjetLite): void {
-    let dialogComponent: any;
+    // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
+    let dialogComponent: any
 
     if(projetlite.webapp === true){
+      // Si c'est un projet webapp c'est a dire un projet 
+      // nouvelle genetation
+
       // dialogComponent = ProjetVComponent;
       dialogComponent = ProjetComponent;
     }
     // else{
-      
+      // dialogComponent = ProjetVComponent;
     // }
 
     this.dialog.open(dialogComponent, {
       data : projetlite
     });
-    
-  }
 
-  onSelect(ope: ProjetLite): void {
-    // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
-    // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
-
-    // Ca se passe dans la vue du component dialog-operation
-    if(ope.responsable !== undefined){
-      // OUVRIR LA FENETRE DE DIALOGUE
-      this.openDialog(ope);
-    }else{
-      console.log("Pas de projet au bout : " + ope.projet);
-    }
   }
-  
 }

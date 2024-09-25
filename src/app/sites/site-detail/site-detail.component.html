@@ -11,6 +11,7 @@
       {{ siteDetail.description_site }}
     </h2>
 
+
     <div *ngIf="isMobile; then mobile; else desktop" class="site-detail"></div>
 
     <ng-template #desktop>
@@ -57,6 +58,7 @@
     <!--   Onglets supérieurs -->
     <mat-tab-group class="bloc1">
       <mat-tab label="Infos gén.">
+
         <app-detail-infos [inputDetail]="siteDetail"> </app-detail-infos>
       </mat-tab>
 
@@ -86,4 +88,5 @@
       </mat-tab>
     </mat-tab-group>
   </ng-template>
+
 </div>

@@ -1,7 +1,16 @@
 <mat-dialog-content *ngIf="!isLoading; else loading">
+  <!-- @switch (stepperOrientation | async) {
+    @case ('horizontal') {
+      <div>Make your screen smaller to see a vertical stepper</div>
+    }
+    @case ('vertical') {
+      <div>Make your screen larger to see a horizontal stepper</div>
+    }
+  } -->
+
   <div class="example-input-wrapper">
       <!-- <label for="duration">Animation duration:</label> -->
-      <input hidden id="duration" value="1000" type="number" min="0" step="100" #duration>
+      <input hidden id="duration" value="400" type="number" min="0" step="100" #duration>
   </div>
 
   <div>
@@ -9,13 +18,19 @@
     <label>EDIT MODE : {{ editMode }}</label>
   </div>
     
-    <mat-vertical-stepper [linear]="false" #stepper [animationDuration]="duration.value">
+    <mat-stepper labelPosition="bottom" 
+                 [linear]="false" 
+                 #stepper 
+                 [animationDuration]="duration.value" 
+                 class="example-stepper" 
+                 [orientation]="(stepperOrientation | async)!">
+
       <mat-step [stepControl]="descriptionFormGroup">
         <ng-template matStepLabel>Description du projet</ng-template>
         <!-- Affichage en mode consultation (editMode == false) -->
         <ng-container *ngIf="!editMode">
           <div>
-            <label>Type de projet : {{ projet.typ_projet }}</label>
+            <label>Type : {{ projet.typ_projet }}</label>
           </div>
           <div>
             <label>Titre : {{ projet.nom }}</label>
@@ -30,16 +45,16 @@
             <label>Maitre d'ouvrage : -----</label>
           </div>
           <div>
-            <label>Année : {{ projet.annee }}</label>
-          </div>
-          <div>
             <label>Date début : {{ projet.pro_debut }}</label>
           </div>
           <div>
             <label>Date fin : {{ projet.pro_fin }}</label>
           </div>
           <div>
-            <label>Objectif du projet : {{ projet.pro_obj_projet }}</label>
+            <label>Statut : {{ projet.statut }}</label>
+          </div>
+          <div>
+            <label>Objectif : {{ projet.pro_obj_projet }}</label>
           </div>
         </ng-container>
 
@@ -74,44 +89,78 @@
       <mat-step [stepControl]="UGFormGroup">
         <ng-template matStepLabel>Unités de gestion</ng-template>
 
-        <form *ngIf="editMode == true" [formGroup]="UGFormGroup">
-          <mat-form-field>
-            <input matInput placeholder="Address" formControlName="secondCtrl" required>
-          </mat-form-field>
-        </form>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
+
+        <!-- Affichage en mode consultation (editMode == false) -->
+        <ng-container *ngIf="!editMode">
+          <div class="container-carte">
+            <div class="map">
+              <h2>Carte provisoire :</h2>
+              <img src="../assets/images/carte/parc-foret-orient.png" />
+            </div>
+          </div>
+          <div>
+            <label>Surface : {{ projet.nom }}</label>
+          </div>
+          <div>
+            <label>Niveau Enjeu Ecologique : {{ projet.pro_enjeux_eco }}</label>
+          </div>
+          <div>
+            <label>Pression ciblée : {{ projet.pro_pression_ciblee }}</label>
+          </div>
+          <div>
+            <label>Maitre d'ouvrage : -----</label>
+          </div>
+          <div>
+            <label>Type d'objectif opérationnel : {{ projet.pro_obj_ope }}</label>
+          </div>
+          <div>
+            <label>Résultats attendus : {{ projet.pro_results_attendus }}</label>
+          </div>
+        </ng-container>
+
+        <!-- Affichage en mode édition (editMode == true) -->
+        <ng-container *ngIf="editMode">
+          <form [formGroup]="descriptionFormGroup">
+            <mat-form-field>
+              <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+            </mat-form-field>
+          </form>
+        </ng-container>
       </mat-step>
 
 
       <mat-step [stepControl]="indicateursFormGroup">
         <ng-template matStepLabel>Indicateurs projet</ng-template>
-        
+        <div class="container-carte">
+          Tableau des indicateurs projet
+        </div>
+
         <form *ngIf="editMode == true" [formGroup]="indicateursFormGroup">
-          <mat-form-field>
-            <input matInput placeholder="Address" formControlName="secondCtrl" required>
-          </mat-form-field>
+          Ajouter un indicateur dans le tableau
         </form>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </mat-step>
 
 
       <mat-step [stepControl]="financementFormGroup">
         <ng-template matStepLabel>Financements</ng-template>
-        
-        <form *ngIf="editMode == true" [formGroup]="financementFormGroup">
-          <mat-form-field>
-            <input matInput placeholder="Address" formControlName="secondCtrl" required>
-          </mat-form-field>
+        <div class="container-carte">
+          Tableau des financements
+        </div>
+
+        <form *ngIf="editMode == true" [formGroup]="indicateursFormGroup">
+          Ajouter un financement dans le tableau
         </form>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </mat-step>
 
@@ -119,34 +168,78 @@
       <mat-step [stepControl]="operationsFormGroup">
         <ng-template matStepLabel>Opérations</ng-template>
         
-        <form *ngIf="editMode == true" [formGroup]="operationsFormGroup">
-          <mat-form-field>
-            <input matInput placeholder="Address" formControlName="secondCtrl" required>
-          </mat-form-field>
+        <div class="container-carte">
+          Tableau des opérations. Si pâturé (1 opération par parc).
+          <div *ngIf="operations.length > 0; then thenOperationBlock else elseOperationBlock"></div>
+
+          <ng-template #thenOperationBlock>
+            <div>
+              Nb opérations : {{ operations.length }}<br>
+              <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                <ng-container matColumnDef="code">
+                  <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.responsable }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="titre">
+                  <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="description">
+                  <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="surf">
+                  <mat-header-cell *matHeaderCellDef> Surface </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="date_debut">
+                  <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                </ng-container>
+                
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onSelect(row)"></mat-row>
+              </mat-table>
+            </div>
+
+          </ng-template>
+
+          <ng-template #elseOperationBlock>
+              Il n'y a pas d'opérations sur ce site.
+          </ng-template>
+
+
+        </div>
+
+        <form *ngIf="editMode == true" [formGroup]="indicateursFormGroup">
+          Ajouter une opération dans le tableau
         </form>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </mat-step>
-
 
 
       <mat-step>
         <ng-template matStepLabel>Bilan d'execution</ng-template>
         You are now done.
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="stepper.reset()">Retour desciption projet</button>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button (click)="stepper.reset()">Retour au début</button>
         </div>
       </mat-step>
-    </mat-vertical-stepper>
+    </mat-stepper>
 </mat-dialog-content>
 
 <!-- Template de chargement -->
 <ng-template #loading>
   <div class="loading-container">
     <mat-spinner></mat-spinner>
-    <p>Chargement des informations du projet...</p>
+    <p>Veuillez patienter...</p>
   </div>
 </ng-template>

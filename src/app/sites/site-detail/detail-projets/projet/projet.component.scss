@@ -1,3 +1,6 @@
+@import "../../../../styles/mixins.scss";
+@import "../../../../styles/variables.scss";
+
 .loading-container {
     display: flex;
     flex-direction: column;
@@ -5,3 +8,27 @@
     justify-content: center;
     height: 100px; /* Ajuste selon ton besoin */
   }
+
+.example-stepper {
+  margin-top: 8px;
+}
+
+.mat-mdc-form-field {
+  margin-top: 16px;
+}
+
+.example-input-wrapper {
+  margin-bottom: 16px;
+}
+
+
+
+.container-carte {
+  h2 {
+    @include Typo($p14, $normal, $couleur-flore);
+    margin-bottom: 0;
+  }
+  img {
+    width: 30%;
+  }
+}

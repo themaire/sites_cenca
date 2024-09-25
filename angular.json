@@ -27,7 +27,6 @@
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "./src/styles.scss",
-              "./node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
@@ -39,13 +38,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "4kb",∑
+                  "maximumError": "8kb"
                 }
               ],
               "outputHashing": "all"

@@ -10,8 +10,8 @@ export interface ProjetLite {
     statut: string;
     webapp: boolean;
     uuid_site?: string;
-
 }
+
 export interface ProjetV {
     uuid_ope: string;
     uuid_proj: string;
@@ -57,5 +57,6 @@ export interface Projet {
     pro_obj_ope: string;
     pro_obj_projet: string;
     pro_surf_totale: string;
+    pro_results_attendus: number;
     pro_webapp: boolean
 }
