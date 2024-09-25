@@ -20,7 +20,7 @@ import { Selector } from './selector';
   providedIn: 'root',
 })
 export class SitesService {
-  private activeUrl: string = backendAdress + "sites/"; // Bureau
+  private activeUrl: string = backendAdress + 'sites/'; // Bureau
 
   // Recherche une liste de plans de gestion par l'UUID d'un site
   // async getDocPlannn(siteUUID: string): Promise<DocPlan[]> {
@@ -66,7 +66,7 @@ export class SitesService {
     const url = `${this.activeUrl}${subroute}`;
     console.log('Dans getMfu() avec ' + url);
 
-    const data = await fetch(this.activeUrl + subroute);
+    const data = await fetch(url);
     return (await data.json()) ?? [];
   }
 

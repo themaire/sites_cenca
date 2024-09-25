@@ -54,9 +54,6 @@ header {
         border-radius: 100px;
         object-fit: cover;
       }
-      .hamburger {
-        display: none;
-      }
     }
   }
 }
@@ -104,51 +101,29 @@ header {
 span {
   color: black !important;
 }
-.menu-OP {
-  color: black;
-  pointer-events: auto;
-}
-.menu-noOP {
-  color: gray;
-  pointer-events: none;
-  cursor: default; /* Optionnel : pour indiquer qu'un élément n'est pas cliquable */
-}
 
 // RESPONSIVE
 @media screen and (max-width: $tablette) {
   header {
     nav {
+      grid-template-columns: 1fr 1fr;
       margin: 0 25px;
       gap: 0;
+
       .logo-conteneur {
         @include dim(60px, 70px);
-        .logoGrand {
-          display: none;
-        }
         .logoPetit {
           display: block;
           @include dim(60px, 70px);
           object-fit: cover;
         }
       }
-      .menu-conteneur {
-        .menu {
-          display: none;
-        }
-      }
       .connection {
         display: flex; /* Make the container a flexbox */
       }
-
-      // .connection img,
-      // .connection .hamburger {
-      //   align-self: center; /* Align elements vertically in the container */
-      // }
       .connection {
         gap: 20px;
         .hamburger {
-          display: block;
-
           .btn-hamburger {
             display: flex;
             @include align(center, center);

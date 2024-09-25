@@ -1,27 +1,96 @@
-<div *ngIf="actes.length > 0; then thenBlock else elseBlock"></div>
-
+<div
+  *ngIf="actes.length > 0; then thenBlock; else elseBlock"
+  class="detail-mfu"
+></div>
+<!---->
 <ng-template #thenBlock>
-    Nb d'zctes : {{ actes.length }}<br>
-    <ul>
-        <li *ngFor="let acte of actes">
-          Type : {{ acte.typ_mfu }}<br>
-          Année début : {{ acte.debut }}<br>
-          Année fin : {{ acte.fin }}<br>
-          Tacite.r : {{ acte.tacit_rec }}<br>
-          Surface totale : {{ acte.surface }} ha<br>
-          Type prop. : {{ acte.type_prop }}<br>
-          
-          Lien du document : <a [href]="acte.url" target="_blank">Télécharger</a>
-        </li>
-      </ul>
+  <h2>Nb d'actes : {{ actes.length }}</h2>
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+    <!-- code Column -->
+    <ng-container matColumnDef="typ_mfu" class="typ_mfu">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="typ_mfu">
+        Type
+      </th>
+      <td mat-cell *matCellDef="let acte" class="typ_mfu">
+        {{ acte.typ_mfu }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="debut" class="debut">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="debut">
+        Années début
+      </th>
+      <td mat-cell *matCellDef="let acte" class="debut">{{ acte.debut }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="fin" class="fin">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="fin">
+        Année fin
+      </th>
+      <td mat-cell *matCellDef="let acte" class="fin">{{ acte.fin }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="tacit_rec" class="tacit_rec">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="tacit_rec">
+        Tacite.r
+      </th>
+      <td mat-cell *matCellDef="let acte" class="tacit_rec">
+        {{ acte.tacit_rec }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="surface" class="surface">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="surface">
+        Surface totale
+      </th>
+      <td mat-cell *matCellDef="let acte" class="surface">
+        {{ acte.surface }} ha
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="type_prop" class="type_prop">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="type_prop">
+        Type prop.
+      </th>
+      <td mat-cell *matCellDef="let acte" class="type_prop">
+        {{ acte.type_prop }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="url" class="url">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="url">
+        Lien du document
+      </th>
+      <td mat-cell *matCellDef="let acte" class="url">
+        <a [href]="acte.url" target="_blank">Télécharger</a>
+      </td>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </table>
 </ng-template>
 
-<ng-template #elseBlock>
-    Il n'y a pas d'acte MFU sur ce site.
+<ng-template #elseBlock> Il n'y a pas d'acte MFU sur ce site. </ng-template>
+
+<!-- <ng-template #thenBlock>
+  <ul>
+    <li *ngFor="let acte of actes">
+      Type : {{ acte.typ_mfu }}<br />
+      Année début : {{ acte.debut }}<br />
+      Année fin : {{ acte.fin }}<br />
+      Tacite.r : {{ acte.tacit_rec }}<br />
+      Surface totale : {{ acte.surface }} ha<br />
+      Type prop. : {{ acte.type_prop }}<br />
+
+      Lien du document :
+      <a [href]="acte.url" target="_blank">Télécharger</a>
+    </li>
+  </ul>
 </ng-template>
 
+<ng-template #elseBlock> Il n'y a pas d'acte MFU sur ce site. </ng-template>
 
-<!-- <div *ngIf="Mfus !== undefined">
+      <div *ngIf="Mfus !== undefined">
     <table>
         <tr>
             <td colspan="2">
@@ -46,4 +115,3 @@
         </tr>
       </table>
 </div> -->
-

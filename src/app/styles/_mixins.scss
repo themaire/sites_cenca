@@ -6,6 +6,15 @@
   bottom: $bottom;
   left: $left;
 }
+// bandeau d'emplacement
+@mixin bandeau($bgColor) {
+  background-color: $bgColor;
+  writing-mode: vertical-lr;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  @include Typo($p16, $gras, white);
+  text-align: end;
+}
 //Dimensions (largeur, hauteur)
 @mixin dim($width, $height) {
   width: $width;
@@ -58,7 +67,7 @@
   }
 }
 // Boutons image
-@mixin boutonsImg($bgColor) {
+@mixin btn-img($bgColor) {
   background-color: $bgColor;
   @include dim(40px, 40px);
   @include align(center, center);
@@ -67,4 +76,12 @@
   padding: 8px 10px;
   cursor: pointer;
   box-shadow: 5px 5px 5px 0px rgb(0 0 0 / 25%);
+}
+@mixin btn-edit() {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  .btn-edit {
+    @include btn(white, $couleur-faune, white, $orangeM);
+  }
 }

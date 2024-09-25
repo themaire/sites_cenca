@@ -1,13 +1,19 @@
 @import "../../styles/mixins.scss";
 @import "../../styles/variables.scss";
 
+.site-display {
+  margin: 0px 50px 50px 29px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  border-radius: 10px;
+  background-color: white;
+  padding: 10px 0 30px 0;
+}
+
 p,
 .filtre {
-  margin-left: 50px;
+  margin-left: 15px;
 }
-// mat-label {
-//   color: $couleur-faune;
-// }
+
 .mat-mdc-header-row {
   border-bottom: 2px solid $couleur-faune;
 }
@@ -25,9 +31,12 @@ p,
   }
 }
 @media screen and (max-width: $tablette) {
+  .site-display {
+    margin: 0px 5px 50px 5px;
+  }
   p,
   .filtre {
-    margin-left: 25px;
+    margin-left: 5px;
   }
 
   .communes,

@@ -1,105 +1,135 @@
 <div *ngIf="inputDetail !== undefined" class="container">
   <div class="container-champ">
     <div class="champ">
+      <!--
+      <div class="edit">
+        <button mat-icon-button class="btn-edit" (click)="editDetail()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>-->
+
       <div class="ligne1">
         <div class="nom">
-          <h2>Nom :</h2>
+          <h2>Nom:</h2>
           <div class="infos">
-            {{ inputDetail.nom }}
+            <!--{{ inputDetail.nom }}-->
+            <input [(ngModel)]="inputDetail.nom" />
           </div>
         </div>
       </div>
       <div class="ligne2">
         <div class="code">
-          <h2>Code :</h2>
+          <h2>Code:</h2>
           <div class="infos">
-            {{ inputDetail.code }}
+            <!--{{ inputDetail.code }}-->
+            <input [(ngModel)]="inputDetail.code" />
           </div>
         </div>
         <div class="surface">
-          <h2>Surface :</h2>
+          <h2>Surface:</h2>
           <div class="infos">
-            {{ inputDetail.surface }}
+            <!--{{ inputDetail.surface }}-->
+            <input [(ngModel)]="inputDetail.surface" />
           </div>
         </div>
         <div class="responsable">
-          <h2>Responsable :</h2>
+          <h2>Responsable:</h2>
           <div class="infos">
-            {{ inputDetail.responsable }}
+            <!-- {{ inputDetail.responsable }}-->
+            <input [(ngModel)]="inputDetail.responsable" />
           </div>
         </div>
       </div>
       <div class="ligne3">
         <div class="categorie">
-          <h2>Catégorie :</h2>
+          <h2>Catégorie:</h2>
           <div class="infos">
-            {{ inputDetail.typ_site }}
+            <!-- {{ inputDetail.typ_site }}-->
+            <input [(ngModel)]="inputDetail.typ_site" />
           </div>
         </div>
         <div class="statut">
-          <h2>Status :</h2>
+          <h2>Status:</h2>
           <div class="infos">
-            {{ inputDetail.validite }}
+            <!--{{ inputDetail.validite }}-->
+            <input [(ngModel)]="inputDetail.validite" />
           </div>
         </div>
         <div class="1er_ctr">
-          <h2>Première année contrat :</h2>
+          <h2>Première année contrat:</h2>
           <div class="infos">
-            {{ inputDetail.prem_ctr }}
+            <!-- {{ inputDetail.prem_ctr }}-->
+            <input [(ngModel)]="inputDetail.prem_ctr" />
           </div>
         </div>
       </div>
       <div class="ligne4">
         <div class="parties">
-          <h2>Parties consernée(s) :</h2>
-          <div class="infos">---</div>
+          <h2>Parties consernée(s):</h2>
+          <div class="parties-consernées">
+            <!-- <input [(ngModel)]="" />-->
+            ---
+          </div>
         </div>
         <div class="site">
-          <h2>Site ref.public :</h2>
+          <h2>Site ref.public:</h2>
           <div class="infos">
-            {{ inputDetail.ref_public }}
+            <!-- {{ inputDetail.ref_public }}-->
+            <input [(ngModel)]="inputDetail.ref_public" />
           </div>
         </div>
       </div>
       <div class="ligne5">
         <div class="espace">
-          <h2>Type d'espace :</h2>
+          <h2>Type d'espace:</h2>
           <div class="infos">
-            {{ inputDetail.typ_espace }}
+            <!--{{ inputDetail.typ_espace }}-->
+            <input [(ngModel)]="inputDetail.typ_espace" />
           </div>
         </div>
         <div class="bassin">
-          <h2>Bassin d'agence :</h2>
+          <h2>Bassin d'agence:</h2>
           <div class="infos">
-            {{ inputDetail.bassin_agence }}
+            <!--{{ inputDetail.bassin_agence }}-->
+            <input [(ngModel)]="inputDetail.bassin_agence" />
           </div>
         </div>
-        <div class="zh">
-          <h2>Zone humide :</h2>
-          <div class="infos">
-            {{ inputDetail.zh }}
+        <div class="zone-humide">
+          <h2>Zone humide:</h2>
+          <div class="zh">
+            <!--  {{ inputDetail.zh }}
+              <input [(ngModel)]="inputDetail.zh" />-->
+            <mat-slide-toggle
+              class="zh"
+              [(ngModel)]="inputDetail.zh"
+              [disabled]="!isEditMode"
+            >
+            </mat-slide-toggle>
           </div>
         </div>
       </div>
       <div class="ligne6">
         <div class="refM">
-          <h2>Ref. MNHN :</h2>
+          <h2>Ref. MNHN:</h2>
           <div class="infos">
-            {{ inputDetail.id_mnhn }}
+            <!--     {{ inputDetail.id_mnhn }}-->
+            <input [(ngModel)]="inputDetail.id_mnhn" />
           </div>
         </div>
         <div class="refF">
-          <h2>Ref. FCEN :</h2>
+          <h2>Ref. FCEN:</h2>
           <div class="infos">
-            {{ inputDetail.ref_fcen }}
+            <!--   {{ inputDetail.ref_fcen }}-->
+            <input [(ngModel)]="inputDetail.ref_fcen" />
           </div>
         </div>
       </div>
       <div class="ligne7">
         <div class="rgpt">
-          <h2>RGTP :</h2>
+          <h2>RGTP:</h2>
           <div class="infos">
-            {{ inputDetail.rgpt }}
+            <!--  {{ inputDetail.rgpt }}-->
+            <input [(ngModel)]="inputDetail.rgpt" />
           </div>
         </div>
       </div>
@@ -114,7 +144,8 @@
       <h2>Commune(s) concernée(s)</h2>
       <div class="commune">
         <p *ngFor="let comm of communes" class="infos">
-          {{ comm.nom }}
+          <input [(ngModel)]="comm.nom" />
+          <!--{{ comm.nom }}-->
         </p>
       </div>
     </div>

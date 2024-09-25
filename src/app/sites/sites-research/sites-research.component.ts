@@ -131,6 +131,7 @@ export class SitesResearchComponent implements OnInit {
   productSelection() {
     // console.log("Dans productSelection avec " + this.params.type + "/" + this.params.code + "/" + this.params.nom + "/" + this.params.commune + "/" + this.params.milieux_naturels + "/" + this.params.responsable);
     // console.log("Liste de sites demandée.");
+
     this.router.navigate([
       '/sites',
       {
@@ -147,11 +148,11 @@ export class SitesResearchComponent implements OnInit {
         },
       },
     ]);
+
     // this.router.navigate(['sites', {outlets: {'liste': ['filtre']}}]);
     // this.router.navigate(['sites', {outlets: {'liste': ['filtre', this.params.type]}}]);
     // this.router.navigate(['/sites', {outlets: {'display': ['filtre', this.params.type]}}]);
   }
-
   // Variable pour le FormControl de code.
   codeFormControl = new FormControl('', [
     Validators.minLength(4),
