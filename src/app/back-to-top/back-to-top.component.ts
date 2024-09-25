@@ -11,16 +11,19 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./back-to-top.component.scss'],
 })
 export class BackToTopComponent {
-  isVisible: boolean = false;
+  // isVisible: boolean = false;
 
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    console.log('Scroll position:' + window.scrollY.toString()); // Affiche la position verticale
-    this.isVisible = window.scrollY > 300; // Affiche le bouton après avoir défilé de 300px
-  }
+  // @HostListener('window:scroll', [])
+  // onWindowScroll() {
+  //   console.log('Scroll position:' + window.scrollY.toString()); // Affiche la position verticale
+  //   this.isVisible = window.scrollY > 300; // Affiche le bouton après avoir défilé de 300px
+  // }
 
-  scrollToTop() {
-    console.log('je suis cliqué');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  scrollToElement(elementId: string): void {
+    const element = document.getElementById(elementId);
+    if (element) {
+      // console.log('je suis cliqué');
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }
