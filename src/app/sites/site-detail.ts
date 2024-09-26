@@ -1,3 +1,5 @@
+import { GeoJsonObject } from 'geojson';
+
 export interface DetailSite {
     uuid_site: string;
     code: string;
@@ -37,6 +39,8 @@ export interface DetailSite {
     id_crea: string;
     url: string;
     maj_admin: Date;
+
+    geojson: string;
 
     // : string;
     // : string;

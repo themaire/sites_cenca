@@ -1,36 +1,51 @@
 import {
   Component,
   Input,
-  inject,
   SimpleChanges,
   ChangeDetectorRef,
+  AfterViewInit, 
+  inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
+import { MapComponent } from '../../../map/map.component';
+
 import { DetailSite } from '../../site-detail';
 import { Commune } from './commune';
-import { SitesService } from '../../sites.service'; // service de données
+import { SitesService } from '../../sites.service';
 
 @Component({
   selector: 'app-detail-infos',
   standalone: true,
-  imports: [CommonModule, MatIconModule, FormsModule, MatSlideToggleModule],
+  imports: [CommonModule, MatIconModule, FormsModule, MatSlideToggleModule, MapComponent],
   templateUrl: './detail-infos.component.html',
-  styleUrl: './detail-infos.component.scss',
+  styleUrls: ['./detail-infos.component.scss'],  // Attention ici c'était styleUrl sans 's'
 })
 export class DetailInfosComponent {
-  @Input() inputDetail?: DetailSite; // Le site selectionné pour voir son détail
+  @Input() inputDetail?: DetailSite;  
+
+
   public communes: Commune[] = [];
+  
 
   research: SitesService = inject(SitesService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   constructor() {}
 
+
   async ngOnChanges(changes: SimpleChanges) {
+    
+    
+    if (this.inputDetail !== undefined) {
+      // console.log('geojson ' + this.inputDetail.geojson);
+    }
+    
+    
     // Ce component est chargé en meme temps que sitesDetail.
     let subroute: string = '';
 
@@ -73,4 +88,5 @@ export class DetailInfosComponent {
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
   }
+
 }

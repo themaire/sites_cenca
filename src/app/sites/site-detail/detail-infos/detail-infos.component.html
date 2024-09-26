@@ -151,9 +151,10 @@
     </div>
   </div>
   <div class="container-carte">
-    <div class="map">
-      <h2>Carte provisoire :</h2>
-      <img src="../assets/images/carte/parc-foret-orient.png" />
+    <div id="map" class="map">
+      <app-map [geojson]="inputDetail.geojson"></app-map>
     </div>
   </div>
+
+  
 </div>

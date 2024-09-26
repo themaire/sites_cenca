@@ -18,10 +18,5 @@ export const SITES_ROUTES: Route[] = [{
             component: SitesDisplayComponent,
             outlet: 'liste'
         },
-        {
-            path: 'f_ope',
-            component: SitesDisplayComponent,
-            outlet: 'liste'
-        },
     ],
   }];

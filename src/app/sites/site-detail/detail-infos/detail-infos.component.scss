@@ -82,18 +82,15 @@
     flex-wrap: wrap;
   }
 }
+
 .container-carte {
-  h2 {
-    @include Typo($p14, $normal, $couleur-flore);
-    margin-bottom: 0;
-  }
-  img {
-    width: 100%;
-  }
+  @include dim(100%, auto);
 }
 .edit {
   @include btn-edit();
 }
+
+
 
 @media screen and (max-width: $mobile) {
   .container {
@@ -112,6 +109,7 @@
     }
   }
 }
+
 @media screen and (max-width: $tablette) {
   .container {
     grid-template-columns: 1fr;

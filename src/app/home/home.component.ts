@@ -6,10 +6,14 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MenuItem } from '../menuItem';
 import { CardComponent } from './card/card.component';
 
+
+import { MapComponent } from '../map/map.component';
+
+
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatSlideToggleModule, CardComponent],
+  imports: [CommonModule, MatSlideToggleModule, CardComponent, MapComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

@@ -1,15 +1,12 @@
 <div id="top" class="site-display">
-  <!--
+    <!-- ICI deux div. On affiche l'une ou l'autre : 
 
-ICI deux div. On affiche l'une ou l'autre : 
+      Soit :
+          -- la liste des sites
+          -- le détail d'un site
 
-    Soit :
-        -- la liste des sites
-        -- le détail d'un site
-
-    C'est la fonction ts onSelect() qui assigne la variable selectedSite.
-
--->
+      C'est la fonction ts onSelect() utilisé à la fin du mat-table 
+      du resultat des sites selectionnés qui assigne la variable selectedSite. -->
 
   <!-- "On affiche le détail -- si on a selectionné le site dans la liste" -->
   <div *ngIf="selectedSite !== undefined">
@@ -17,14 +14,7 @@ ICI deux div. On affiche l'une ou l'autre :
     </app-site-detail>
   </div>
 
-  <!-- <div>
-    <app-site-detail 
-        [site]="selectedSite"
-        (selectedSite)="resetSelected()">
-    </app-site-detail>
-</div> -->
-
-  <!-- "On affiche la liste -- si on a PAS selectionné de site dans la liste" -->
+  <!-- "On affiche la liste du resultat de recherche -- si on a PAS selectionné de site dans la liste" -->
   <div *ngIf="selectedSite == undefined">
     <p>Liste des sites sélectionnés parmis votre filtrage :</p>
 
@@ -155,6 +145,11 @@ ICI deux div. On affiche l'une ou l'autre :
       aria-label="Select page of periodic elements"
     >
     </mat-paginator>
+
+    <!-- Flèche qui fait remontrer tout en haut -->
+    <app-back-to-top></app-back-to-top>
+
   </div>
+  
 </div>
-<app-back-to-top></app-back-to-top>
+
