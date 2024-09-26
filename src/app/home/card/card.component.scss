@@ -1,0 +1,147 @@
+@import "../../../app/styles/variables.scss";
+@import "../../../app/styles/mixins.scss";
+
+.carte {
+  position: relative; // Pour le label "New"
+  display: grid;
+  grid-template-columns: 15% 1fr;
+  height: 150px;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 30px;
+  box-shadow: 10px 10px 5px 5px rgb(0 0 0 / 25%);
+
+  .titre {
+    display: flex;
+    writing-mode: vertical-lr;
+    text-orientation: sideways;
+    transform: rotate(180deg);
+    @include align(center, center);
+    @include Typo($p16, $semiGras, $menu-text);
+    @include dim(100%, 100%);
+    border-radius: 0 30px 30px 0;
+  }
+
+  .infos {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    flex-wrap: wrap;
+    padding: 15px;
+    // @include dim(100%, 100%);
+    @include align(center, start);
+
+    .liens {
+      flex: 1 1 100%;
+      @include Typo($p16, $semiGras, black);
+      text-transform: uppercase;
+      @include dim(100%, auto);
+    }
+    .description {
+      flex: 1 1 100%;
+      @include Typo($p14, $normal, black);
+      @include dim(100%, auto);
+    }
+  }
+}
+.new-label {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: $couleur-flore;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  box-shadow: 3px 3px 0px 0px rgb(0 0 0 / 25%);
+  font-weight: bold;
+  animation: blink 5s infinite; /* Animation clignotante */
+}
+@keyframes blink {
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+.c-proteger {
+  .titre {
+    background-color: $proteger;
+  }
+  .infos {
+    border: 2px solid $proteger;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+.c-connaitre {
+  .titre {
+    background-color: $connaitre;
+  }
+  .infos {
+    border: 2px solid $connaitre;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+.c-gerer {
+  .titre {
+    background-color: $gerer;
+  }
+  .infos {
+    border: 2px solid $gerer;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+.c-valoriser {
+  .titre {
+    background-color: $valoriser;
+  }
+  .infos {
+    border: 2px solid $valoriser;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+.c-accompagner {
+  .titre {
+    background-color: $accompagner;
+  }
+  .infos {
+    border: 2px solid $accompagner;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+.c-administrafif {
+  .titre {
+    background-color: $administrafif;
+  }
+  .infos {
+    border: 2px solid $administrafif;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+.c-liens-utiles {
+  .titre {
+    background-color: $liens-utiles;
+  }
+  .infos {
+    border: 2px solid $liens-utiles;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+// RESPONSIVE
+
+@media screen and (max-width: $mobile) {
+  .titre {
+    font-size: $p12;
+  }
+  .infos {
+    .liens {
+      font-size: $p12;
+    }
+    .description {
+      font-size: $p10;
+    }
+  }
+}

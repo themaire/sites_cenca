@@ -17,10 +17,12 @@ header {
     .logo-conteneur {
       @include dim(250px, 70px);
       background: white;
+      cursor: pointer;
 
       .logoGrand {
         @include dim(auto, 70px);
         object-fit: cover;
+        cursor: pointer;
       }
 
       .logoPetit {
@@ -36,7 +38,7 @@ header {
         display: flex;
         @include dim(100%, 100%);
         @include align(center, center);
-        gap: 50px;
+        gap: 35px;
       }
     }
 
@@ -52,12 +54,10 @@ header {
         border-radius: 100px;
         object-fit: cover;
       }
-      .hamburger {
-        display: none;
-      }
     }
   }
 }
+
 .c-proteger {
   @include btn-menu(
     $proteger
@@ -93,50 +93,54 @@ header {
     $administrafif
   ); // Inclut les styles de base comme padding et border-radius
 }
-.c-liens-utils {
+.c-liens-utiles {
   @include btn-menu(
-    $liens-utils
+    $liens-utiles
   ); // Inclut les styles de base comme padding et border-radius
+}
+span {
+  color: black !important;
 }
 
 // RESPONSIVE
-@media screen and (max-width: $mobile) {
+@media screen and (max-width: $tablette) {
   header {
     nav {
+      grid-template-columns: 1fr 1fr;
       margin: 0 25px;
       gap: 0;
+
       .logo-conteneur {
         @include dim(60px, 70px);
-        .logoGrand {
-          display: none;
-        }
         .logoPetit {
           display: block;
           @include dim(60px, 70px);
           object-fit: cover;
         }
       }
-      .menu-conteneur {
-        .menu {
-          display: none;
-        }
-        // &.open ===.menu.open !== .menu .open
-        &.open {
-          display: block;
-          position: absolute;
-          @include dim(20%, 20%);
-          top: 80px;
-          background-color: red;
-        }
+      .connection {
+        display: flex; /* Make the container a flexbox */
       }
       .connection {
-        gap: 26px;
+        gap: 20px;
         .hamburger {
-          display: block;
-          @include dim(40px, 40px);
-          // mat-icon {
-          //   @include boutonsImg(white);
-          // }
+          .btn-hamburger {
+            display: flex;
+            @include align(center, center);
+            border: 1px solid white;
+            @include dim(auto, 40px);
+            border-radius: 100px;
+            color: white;
+          }
+          .icon {
+            display: flex;
+            @include align(center, center);
+            @include dim(25px, 25px);
+            text-align: center;
+          }
+          span {
+            @include dim(40px, 40px);
+          }
         }
       }
     }

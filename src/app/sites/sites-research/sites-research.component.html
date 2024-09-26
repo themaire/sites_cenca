@@ -1,34 +1,109 @@
-<br/>
-<table>
-  <tr>
-    <td>
-      Type : <select (change)="selectionSelectors($event, 'type', true)">
-        <option id="type">type</option>
-        <option id="1">Site géré</option>
-        <option id="2">CAST</option>
-      </select>
-    </td>
-    <td>
-      Code : <input type="text" id="code" name="code" required minlength="4" size="7" (change)="stringChange($event)" />
-    </td>
-    <td>
-      Nom : <input type="text" id="nom" name="nom" required minlength="4" size="20" (change)="stringChange($event)" />
-    </td>
-      
-    <td>
-      <select *ngFor="let selector of selectors" (change)="selectionSelectors($event, selector.name)">
-        <option id="{{selector.name}}">{{selector.name}}</option>
-        <option *ngFor="let value of selector.values">{{value}}</option>
-      </select>
-    </td>
-    
-    <td>
-      &rarr;
-    </td>
-    <td>
-      <!--a [routerLink]="['/research', {outlets: {'display': ['display', this.params.type, 
-        this.params.brand, this.params.minprice, this.params.maxprice, this.params.minpopularity]}}]"> Sélection des produits </a-->
-      <button (click)="productSelection()"> Sélection des sites </button>
-    </td>
-  </tr>
-</table>
+<div class="conteneur">
+  <div class="recherche">
+    <!--  Sélection du type de site.-->
+    <mat-form-field appearance="fill" ngClass="type">
+      <mat-label ngClass="label" for="type">Type :</mat-label>
+      <mat-select
+        id="type"
+        (selectionChange)="selectionSelectors($event, 'type', true)"
+      >
+        <mat-option [value]="{ id: 0, name: 'Type' }" selected>Type</mat-option>
+        <mat-option [value]="{ id: 1, name: 'Site géré' }"
+          >Site géré</mat-option
+        >
+        <mat-option [value]="{ id: 2, name: 'CAST' }">CAST</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Sélection du code. -->
+    <mat-form-field appearance="fill" ngClass="code">
+      <mat-label ngClass="label" for="code">Code :</mat-label>
+      <input
+        matInput
+        id="code"
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        [formControl]="codeFormControl"
+        (change)="stringChange($event)"
+        [(ngModel)]="codeFormControl.value"
+        (keyup.enter)="productSelection()"
+      />
+      <mat-error *ngIf="codeFormControl.hasError('minlength')"
+        ><li>Code trop court</li></mat-error
+      >
+      <mat-error *ngIf="codeFormControl.hasError('pattern')"
+        ><li>Chiffres uniquement</li></mat-error
+      >
+      <!-- *ngIf="codeFormControl.value" : affiche le bouton clear si le code est renseigné -->
+      <button
+        ngClass="close"
+        *ngIf="codeFormControl.value"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="clearCode('code')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Sélection du nom. -->
+    <mat-form-field appearance="fill" ngClass="nom">
+      <mat-label ngClass="label" for="nom">Nom :</mat-label>
+      <input
+        matInput
+        id="nom"
+        type="text"
+        [formControl]="nameFormControl"
+        (change)="stringChange($event)"
+        [(ngModel)]="nameFormControl.value"
+        (keyup.enter)="productSelection()"
+      />
+      <mat-error *ngIf="nameFormControl.hasError('minlength')"
+        ><li>Minimum 3 caractères</li></mat-error
+      >
+      <button
+        ngClass="close"
+        *ngIf="nameFormControl.value"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="clearCode('nom')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Sélecteurs dynamiques. -->
+    <mat-form-field
+      *ngFor="let selector of selectors"
+      appearance="fill"
+      ngClass="selecteur"
+    >
+      <mat-label ngClass="label">{{ selector.title }} :</mat-label>
+      <mat-select
+        id="{{ selector.name }}"
+        (selectionChange)="selectionSelectors($event, selector.name)"
+      >
+        <mat-option
+          [value]="{ id: selector.name, name: selector.name }"
+          selected
+        >
+          Sélectionner {{ selector.name }}</mat-option
+        >
+        <mat-option
+          *ngFor="let value of selector.values"
+          [value]="{ id: value, name: value }"
+        >
+          {{ value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Validation du filtre.-->
+  <div class="btn">
+    <button (click)="productSelection()">Sélection des sites</button>
+  </div>
+</div>

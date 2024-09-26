@@ -1,0 +1,15 @@
+<a class="carte {{ parentColor }}" [routerLink]="[route]">
+  <div class="titre">
+    {{ parentItem }}
+  </div>
+  <div class="infos">
+    <div class="liens">
+      {{ menuItem.name }}
+    </div>
+    <div class="description">
+      {{ menuItem.description }}
+    </div>
+  </div>
+  <!-- Etiquette "New" clignotante -->
+  <div *ngIf="isNew" class="new-label">New</div>
+</a>

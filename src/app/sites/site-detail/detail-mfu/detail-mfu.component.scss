@@ -1,0 +1,30 @@
+@import "../../../styles/mixins.scss";
+@import "../../../styles/variables.scss";
+
+.detail-mfu {
+  display: flex;
+}
+
+h2 {
+  padding-top: 10px;
+}
+
+// Taille des colonnes
+.mat-mdc-cell,
+.mat-mdc-table .mat-mdc-header-cell {
+  @include dim(100%, 100%);
+  border: none;
+}
+
+// Ligne de titre
+.mat-mdc-table mat-header-row.mat-mdc-header-row {
+  border-bottom: 2px solid $couleur-faune;
+}
+
+// Responsive
+@media screen and (max-width: $mobile) {
+  .surface,
+  .url {
+    display: none;
+  }
+}

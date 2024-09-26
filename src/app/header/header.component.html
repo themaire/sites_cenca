@@ -1,101 +1,122 @@
 <header>
-  <div class="conteneur">
-    <nav>
-      <div class="logo-conteneur">
-        <img
-          class="logoGrand"
-          src="../assets/images/logo/logo_couleur.jpg"
-          alt="logo du CENCA"
-        />
-        <img
-          class="logoPetit"
-          src="../assets/images/logo/logocen-color-petit.png"
-          alt="logo du CENCA"
-        />
-      </div>
-      <div class="menu-conteneur">
-        <div class="menu">
-          <ng-container *ngFor="let item of menuItems[0].children">
-            <!-- Un bouton pour chaque axe du CENCA -->
-            <button
-              mat-button
-              [ngStyle]="{
-                'border-radius': '20px'
-              }"
-              [ngClass]="item.class_color"
-              [matMenuTriggerFor]="menu"
-            >
-              {{ item.name }}
-            </button>
-
-            <!-- Elements de l'axe en question -->
-            <mat-menu #menu="matMenu">
-              <ng-container *ngFor="let child of item.children">
-                <button
-                  mat-menu-item
-                  [ngClass]="item.class_color"
-                  *ngIf="!child.children"
-                >
-                  {{ child.name }}
-                </button>
-              </ng-container>
-            </mat-menu>
-          </ng-container>
+  <div *ngIf="isMobile; then mobile; else desktop"></div>
+  <!-- Desktop -->
+  <ng-template #desktop>
+    <div class="conteneur">
+      <nav>
+        <div class="logo-conteneur">
+          <img
+            class="logoGrand"
+            src="../assets/images/logo/logo_couleur.jpg"
+            alt="logo du CENCA"
+            (click)="navigateToHome()"
+          />
         </div>
-      </div>
-      <div class="connection">
-        <img
-          src="https://randomuser.me/api/portraits/med/women/56.jpg"
-          alt="Icône de connexion"
-        />
-        <!--
-        <div class="hamburger" (click)="onOpenMenu()">
-          <img src="../assets/images/icons/menu/hamburger.png" alt="menu" />
-        </div> -->
-        <div class="hamburger">
-          <!-- Menu hamburger -->
-          <!-- Boucle principale pour le menu -->
-          <ng-container *ngFor="let item of menuItems">
-            <!-- Bouton pour les menus principaux -->
-            <button mat-icon-button [matMenuTriggerFor]="menuMap[item.name]">
-              <mat-icon
+        <div class="menu-conteneur">
+          <div class="menu">
+            <ng-container *ngFor="let item of menuItems[0].children">
+              <!-- Un bouton pour chaque axe du CENCA -->
+              <button
+                mat-button
                 [ngStyle]="{
-                  color: 'white',
-                  border: '1px solid white',
-                  'border-radius': '100px'
+                  'border-radius': '20px'
                 }"
+                [ngClass]="item.class_color"
+                [matMenuTriggerFor]="menuButtons"
               >
-                more_vert</mat-icon
-              >
-            </button>
-
-            <!-- Menu principal -->
-            <mat-menu [id]="item.name">
-              <ng-container *ngFor="let child of item.children">
-                <button
-                  mat-menu-item
-                  [ngClass]="child.class_color"
-                  *ngIf="child.children"
-                  [matMenuTriggerFor]="menuMap[child.name]"
-                >
-                  {{ child.name }}
-                </button>
-              </ng-container>
-            </mat-menu>
-
-            <!-- Sous-menus récursifs -->
-            <ng-container *ngFor="let child of item.children">
-              <mat-menu *ngIf="child.children" [id]="child.name">
-                <ng-container *ngFor="let grandChild of child.children">
-                  <button mat-menu-item [ngClass]="child.class_color">
-                    {{ grandChild.name }}
+                {{ item.name }}
+              </button>
+              <!-- Elements de l'axe en question -->
+              <mat-menu #menuButtons="matMenu">
+                <ng-container *ngFor="let child of item.children">
+                  <button
+                    mat-menu-item
+                    [ngClass]="item.class_color"
+                    *ngIf="!child.children"
+                    [routerLink]="child.route"
+                  >
+                    <span>{{ child.name }}</span>
                   </button>
                 </ng-container>
               </mat-menu>
             </ng-container>
-          </ng-container>
+          </div>
         </div>
-      </div>
-    </nav>
-  </div>
+        <div class="connection">
+          <img
+            src="https://randomuser.me/api/portraits/med/women/56.jpg"
+            alt="Icône de connexion"
+          />
+        </div>
+      </nav>
+    </div>
+  </ng-template>
+
+  <ng-template #mobile>
+    <!-- Mobile -->
+    <div class="conteneur">
+      <nav>
+        <div class="logo-conteneur">
+          <img
+            class="logoPetit"
+            src="../assets/images/logo/logocen-color-petit.png"
+            alt="logo du CENCA"
+            (click)="navigateToHome()"
+          />
+        </div>
+        <div class="connection">
+          <img
+            src="https://randomuser.me/api/portraits/med/women/56.jpg"
+            alt="Icône de connexion"
+          />
+          <!-- Bouton du menu hamburger visible uniquement en version mobile -->
+          <!-- Bouton du menu hamburger -->
+          <div class="hamburger" *ngIf="isMobile">
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="hamburgerMenu"
+              class="btn-hamburger"
+            >
+              <mat-icon>menu</mat-icon>
+            </button>
+
+            <!-- Menu principal -->
+            <mat-menu #hamburgerMenu="matMenu">
+              <ng-container *ngFor="let item of menuItems[0].children">
+                <button
+                  mat-menu-item
+                  [ngClass]="item.class_color"
+                  [matMenuTriggerFor]="item.children?.length ? subMenu : null"
+                >
+                  <span>{{ item.name }}</span>
+                </button>
+                <mat-menu #subMenu="matMenu">
+                  <ng-container *ngFor="let child of item.children">
+                    <button
+                      mat-menu-item
+                      [ngClass]="item.class_color"
+                      [routerLink]="child.route"
+                      [matMenuTriggerFor]="
+                        child.children?.length ? childSubMenu : null
+                      "
+                    >
+                      <span>{{ child.name }}</span>
+                    </button>
+                    <mat-menu #childSubMenu="matMenu">
+                      <!-- Appel récursif du template pour les sous-sous-menus -->
+                      <ng-container *ngFor="let subChild of child.children">
+                        <button mat-menu-item [ngClass]="item.class_color">
+                          subchild {{ subChild.name }}
+                        </button>
+                      </ng-container>
+                    </mat-menu>
+                  </ng-container>
+                </mat-menu>
+              </ng-container>
+            </mat-menu>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </ng-template>
 </header>

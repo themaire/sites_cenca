@@ -1,0 +1,120 @@
+@import "../../../styles/mixins.scss";
+@import "../../../styles/variables.scss";
+
+.container {
+  display: grid;
+  grid-template-columns: 6fr 6fr;
+  flex-wrap: wrap;
+  grid-gap: 131px;
+  margin: 20px auto;
+  @include align(top, center);
+}
+.container-champ {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 30px;
+  @include dim(100%, auto);
+
+  h2 {
+    @include Typo($p14, $normal, $couleur-flore);
+    margin-bottom: 0;
+  }
+
+  .infos {
+    width: 100%;
+  }
+  .parties-consernées,
+  input {
+    @include input($couleur-faune, black);
+  }
+  .ligne2,
+  .ligne3,
+  .ligne5 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .ligne4 {
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+    gap: 16px;
+  }
+  .ligne6 {
+    display: grid;
+    grid-template-columns: 3fr 3fr;
+    gap: 16px;
+  }
+  .zh {
+    mat-slide-toggle {
+      margin: 8px 0;
+      display: block;
+      text-align: center;
+    }
+    ::ng-deep mat-slide-toggle {
+      transform: scale(1.5); /* Agrandit l'élément */
+    }
+    ::ng-deep mat-slide-toggle .mat-slide-toggle-bar {
+      height: 4px; /* Change la hauteur de la barre du slider */
+      background-color: rgba(
+        248,
+        244,
+        186,
+        0.5
+      ); /* Change la couleur de la barre du slider */
+    }
+    ::ng-deep mat-slide-toggle .mat-slide-toggle-thumb {
+      width: 20px; /* Ajuste la taille du "bouton" circulaire */
+      height: 20px;
+    }
+  }
+
+  .commune {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
+
+.container-carte {
+  @include dim(100%, auto);
+}
+.edit {
+  @include btn-edit();
+}
+
+
+
+@media screen and (max-width: $mobile) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-gap: 50px;
+    h2 {
+      font-size: 12px;
+    }
+    .ligne3,
+    .ligne5 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .infos {
+      min-height: 36px;
+      height: auto;
+    }
+  }
+}
+
+@media screen and (max-width: $tablette) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-gap: 50px;
+    h2 {
+      font-size: 12px;
+    }
+    .infos {
+      min-height: 36px;
+      height: auto;
+    }
+  }
+}

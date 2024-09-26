@@ -1,0 +1,157 @@
+<div class="example-input-wrapper">
+    <!-- <label for="duration">Animation duration:</label> -->
+    <input hidden id="duration" value="1000" type="number" min="0" step="100" #duration>
+</div>
+
+<div>
+  <button type="button" (click)="toggleEditMode()">Passer en edition</button>
+  <label>EDIT MODE : {{ editMode }}</label>
+</div>
+  
+  <mat-vertical-stepper [linear]="false" #stepper [animationDuration]="duration.value">
+    <mat-step [stepControl]="descriptionFormGroup">
+      <ng-template matStepLabel>Description du projetV</ng-template>
+      <!-- Affichage en mode consultation (editMode == false) -->
+      <ng-container *ngIf="!editMode">
+        <div>
+          <label>Type de projet : {{ ope.action }}</label>
+        </div>
+        <div>
+          <label>Titre : {{ ope.projet }}</label>
+        </div>
+        <div>
+          <label>Code : #CodeProjet</label>
+        </div>
+        <div>
+          <label>Responsable : {{ ope.responsable }}</label>
+        </div>
+        <div>
+          <label>Maitre d'ouvrage : #MaitreOuvrage</label>
+        </div>
+        <div>
+          <label>Année début : {{ ope.annee }}</label>
+        </div>
+        <div>
+          <label>Année fin : {{ ope.date_deb }}</label>
+        </div>
+        <div>
+          <label>Objectif du projet 99 : #Objectifs</label>
+        </div>
+      </ng-container>
+
+      <!-- Affichage en mode édition (editMode == true) -->
+      <ng-container *ngIf="editMode">
+        <form [formGroup]="descriptionFormGroup">
+          <mat-form-field>
+            <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+          </mat-form-field>
+        </form>
+      </ng-container>
+    </mat-step>
+
+
+    <mat-step [stepControl]="ENPFormGroup">
+      <ng-template matStepLabel>ENP concerné</ng-template>
+      
+      <form *ngIf="editMode == true" [formGroup]="ENPFormGroup">
+
+        <!-- <mat-form-field>
+          <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
+        </mat-form-field> -->
+
+      </form>
+      <div>
+        <button mat-button matStepperPrevious>Précédent</button>
+        <button mat-button matStepperNext>Suivant</button>
+      </div>
+    </mat-step>
+
+
+    <mat-step [stepControl]="UGFormGroup">
+      <ng-template matStepLabel>Unités de gestion</ng-template>
+
+      <form *ngIf="editMode == true" [formGroup]="UGFormGroup">
+        <mat-form-field>
+          <input matInput placeholder="Address" formControlName="secondCtrl" required>
+        </mat-form-field>
+      </form>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+
+    <mat-step [stepControl]="indicateursFormGroup">
+      <ng-template matStepLabel>Indicateurs projet</ng-template>
+      
+      <form *ngIf="editMode == true" [formGroup]="indicateursFormGroup">
+        <mat-form-field>
+          <input matInput placeholder="Address" formControlName="secondCtrl" required>
+        </mat-form-field>
+      </form>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+
+    <mat-step [stepControl]="financementFormGroup">
+      <ng-template matStepLabel>Financements</ng-template>
+      
+      <form *ngIf="editMode == true" [formGroup]="financementFormGroup">
+        <mat-form-field>
+          <input matInput placeholder="Address" formControlName="secondCtrl" required>
+        </mat-form-field>
+      </form>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+
+    <mat-step [stepControl]="operationsFormGroup">
+      <ng-template matStepLabel>Opérations</ng-template>
+      
+      <form *ngIf="editMode == true" [formGroup]="operationsFormGroup">
+        <mat-form-field>
+          <input matInput placeholder="Address" formControlName="secondCtrl" required>
+        </mat-form-field>
+      </form>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+
+
+    <mat-step>
+      <ng-template matStepLabel>Bilan d'execution</ng-template>
+      You are now done.
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="stepper.reset()">Retour desciption projet</button>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+  
+
+
+<p>Projet Vieux works!</p>
+
+<div>
+    <ul>
+        <li>
+          Responsable : {{ ope.responsable }}<br>
+          Année : {{ ope.annee }}<br>
+          Date début : {{ ope.date_deb }}<br>
+          Projet : {{ ope.projet }}<br>
+          Action: {{ ope.action }} ha<br>
+          Type d'intervenant : {{ ope.typ_interv }}<br>
+          Statut: {{ ope.statut }}<br>
+        </li>
+      </ul>
+</div>
