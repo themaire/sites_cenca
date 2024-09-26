@@ -19,20 +19,13 @@
     @include Typo($p14, $normal, $couleur-flore);
     margin-bottom: 0;
   }
+  
   textarea,
   a,
   input {
-    display: flex;
-    @include align(center, start);
-    @include Typo($p16, $normal, black);
-    background-color: rgba(248, 244, 186, 0.5);
-    border: 1px solid $couleur-faune;
-    border-radius: 5px;
-    min-height: 36px;
-    height: auto;
-    width: 100%;
-    padding: 5px;
+    @include input($couleur-faune, black);
   }
+
   .ligne2,
   .ligne3,
   .ligne5 {

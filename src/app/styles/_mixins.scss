@@ -85,3 +85,17 @@
     @include btn(white, $couleur-faune, white, $orangeM);
   }
 }
+
+@mixin input($borderColor, $typoColor) {
+  display: flex;
+  @include align(center, start);
+  @include Typo($p16, $normal, $typoColor);
+  background-color: rgba(248, 244, 186, 0.5);
+  border: 1px solid $borderColor;
+  border-radius: 5px;
+  min-height: 36px;
+  height: auto;
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
