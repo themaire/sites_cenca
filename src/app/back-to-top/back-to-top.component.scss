@@ -4,7 +4,7 @@
 button {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  right: 80px;
   z-index: 999;
   @include btn-img($couleur-faune);
   // display: none; /* Caché par défaut */
@@ -13,4 +13,19 @@ button {
 }
 button.visible {
   display: block;
+}
+
+@media screen and (max-width: $mobile) {
+  button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+    @include btn-img($couleur-faune);
+    color: white;
+    width: auto;
+  }
+  button.visible {
+    display: block;
+  }
 }

@@ -8,15 +8,19 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { DetailSite } from '../../site-detail';
-import { Acte } from './acte';
+// import interface
+import { Acte, FicheMFU } from './acte';
 import { SitesService } from '../../sites.service'; // service de données
 
+import { FicheMfuComponent } from './fiche-mfu/fiche-mfu.component';
+
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-detail-mfu',
   standalone: true,
-  imports: [CommonModule, MatTableModule],
+  imports: [CommonModule, FicheMfuComponent, MatTableModule],
   templateUrl: './detail-mfu.component.html',
   styleUrl: './detail-mfu.component.scss',
 })
@@ -63,5 +67,39 @@ export class DetailMfuComponent {
         console.error('Error fetching documents', error);
       }
     }
+  }
+  onSelect(ficheMFU: FicheMFU): void {
+    // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
+    // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
+
+    // Ca se passe dans la vue du component dialog-operation
+    if (ficheMFU.uuid_acte !== undefined) {
+      // OUVRIR LA FENETRE DE DIALOGUE
+      this.openDialog(ficheMFU);
+    } else {
+      console.log('Pas de acte au bout : ' + ficheMFU.site);
+    }
+  }
+  // Pour l'affichage de la fenetre de dialogue
+  dialog = inject(MatDialog);
+
+  openDialog(ficheMFU: FicheMFU): void {
+    // // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
+    let dialogComponent: any;
+
+    // if (projetlite.webapp === true) {
+    //   // Si c'est un projet webapp c'est a dire un projet
+    //   // nouvelle genetation
+
+    //   // dialogComponent = ProjetVComponent;
+    dialogComponent = FicheMfuComponent;
+    // }
+    // // else{
+    // // dialogComponent = ProjetVComponent;
+    // // }
+
+    this.dialog.open(dialogComponent, {
+      data: ficheMFU,
+    });
   }
 }

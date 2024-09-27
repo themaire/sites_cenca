@@ -2,7 +2,6 @@
   *ngIf="actes.length > 0; then thenBlock; else elseBlock"
   class="detail-mfu"
 ></div>
-<!---->
 <ng-template #thenBlock>
   <h2>Nb d'actes : {{ actes.length }}</h2>
   <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
@@ -66,52 +65,11 @@
       </td>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (click)="onSelect(row)"
+    ></mat-row>
   </table>
 </ng-template>
 
 <ng-template #elseBlock> Il n'y a pas d'acte MFU sur ce site. </ng-template>
-
-<!-- <ng-template #thenBlock>
-  <ul>
-    <li *ngFor="let acte of actes">
-      Type : {{ acte.typ_mfu }}<br />
-      Année début : {{ acte.debut }}<br />
-      Année fin : {{ acte.fin }}<br />
-      Tacite.r : {{ acte.tacit_rec }}<br />
-      Surface totale : {{ acte.surface }} ha<br />
-      Type prop. : {{ acte.type_prop }}<br />
-
-      Lien du document :
-      <a [href]="acte.url" target="_blank">Télécharger</a>
-    </li>
-  </ul>
-</ng-template>
-
-<ng-template #elseBlock> Il n'y a pas d'acte MFU sur ce site. </ng-template>
-
-      <div *ngIf="Mfus !== undefined">
-    <table>
-        <tr>
-            <td colspan="2">
-                Actes du site :
-            </td>
-        </tr>
-
-        <tr>
-            <section>---Tableau à venir---</section>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                --
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                Actes obsolètes :
-            </td>
-        </tr>
-      </table>
-</div> -->

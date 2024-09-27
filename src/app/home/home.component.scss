@@ -9,6 +9,13 @@
   flex-wrap: wrap;
   gap: 20px;
 }
+
+.map {
+  margin: 50px;
+  h2 {
+    @include Typo($p30, $normal, $couleur-flore);
+  }
+}
 //RESPONSIVE
 
 @media screen and (max-width: $mobile) {
@@ -16,10 +23,24 @@
     grid-template-columns: repeat(2, 1fr);
     margin: 50px 25px;
   }
+
+  .map {
+    margin: 0 25px 25px 25px;
+    h2 {
+      @include Typo($p20, $normal, $couleur-flore);
+    }
+  }
 }
 
 @media screen and (min-width: $mobile) and (max-width: $tablette) {
   .home {
     margin: 50px 25px;
+  }
+
+  .map {
+    margin: 0 25px 25px 25px;
+    h2 {
+      @include Typo($p20, $normal, $couleur-flore);
+    }
   }
 }

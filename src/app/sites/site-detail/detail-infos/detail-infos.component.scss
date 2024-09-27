@@ -80,12 +80,14 @@
 
 .container-carte {
   @include dim(100%, auto);
+  .map {
+    width: 100%;
+    height: 100%;
+  }
 }
 .edit {
   @include btn-edit();
 }
-
-
 
 @media screen and (max-width: $mobile) {
   .container {
@@ -101,6 +103,13 @@
     .infos {
       min-height: 36px;
       height: auto;
+    }
+  }
+  .container-carte {
+    @include dim(100%, 400px);
+    .map {
+      width: 100%;
+      height: 100%;
     }
   }
 }
