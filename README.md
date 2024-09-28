@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 # sites_cenca
-Application web sous Angular et Node.JS pour exploiter la base de données des sites du CENCA. :-)
+Application web sous Angular et Node.JS pour exploiter la base de données des sites du CENCA. :-))
 =======
 # SiteCenca
 
