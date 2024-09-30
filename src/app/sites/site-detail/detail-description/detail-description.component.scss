@@ -19,7 +19,7 @@
     @include Typo($p14, $normal, $couleur-flore);
     margin-bottom: 0;
   }
-  
+
   textarea,
   a,
   input {
@@ -42,12 +42,18 @@
 
 @media screen and (max-width: $mobile) {
   .container {
+    margin: 20px auto;
     h2 {
       font-size: 12px;
     }
     .infos {
       min-height: 36px;
       height: auto;
+    }
+    .ligne2,
+    .ligne3,
+    .ligne5 {
+      grid-template-columns: 1fr;
     }
   }
 }
