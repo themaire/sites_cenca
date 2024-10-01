@@ -2,7 +2,9 @@
 @import "../../styles/mixins.scss";
 
 .site-detail {
-  margin: 0px 50px 50px 29px;
+  // margin: 0px 50px 50px 29px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 //groupe d'onglets
@@ -10,9 +12,11 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  width: 100%;
 }
 mat-tab {
   width: 100%;
+  max-width: 100%;
 }
 .container-btn-h {
   display: flex;
@@ -61,13 +65,16 @@ mat-tab {
 }
 //RESPONSIVE
 @media (max-width: $tablette) {
-  .site-detail {
-    margin: 0px 5px 25px 5px;
-  }
+  // .site-detail {
+  //   margin: 0px 25px 25px 5px;
+  // }
   .mobile {
-    .bloc1 {
+    .bloc1,
+    .bloc2,
+    .bloc3 {
       display: flex;
       width: 100%;
+      padding: 0 10px;
       mat-tab-group {
         width: 100%;
       }

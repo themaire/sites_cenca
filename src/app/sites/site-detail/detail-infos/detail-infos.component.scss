@@ -6,7 +6,7 @@
   grid-template-columns: 6fr 6fr;
   flex-wrap: wrap;
   grid-gap: 131px;
-  margin: 20px auto;
+  padding: 30px;
   @include align(top, center);
 }
 .container-champ {
@@ -89,10 +89,11 @@
   @include btn-edit();
 }
 
-@media screen and (max-width: $mobile) {
+@media screen and (max-width: $tablette) {
   .container {
     grid-template-columns: 1fr;
     grid-gap: 50px;
+    padding: 0 10px;
     h2 {
       font-size: 12px;
     }
@@ -106,24 +107,13 @@
     }
   }
   .container-carte {
-    @include dim(100%, 400px);
+    display: flex;
+    @include dim(100%, auto);
+    @include align(center, center);
+    // padding: 0 20px;
     .map {
-      width: 100%;
+      width: 90%;
       height: 100%;
-    }
-  }
-}
-
-@media screen and (max-width: $tablette) {
-  .container {
-    grid-template-columns: 1fr;
-    grid-gap: 50px;
-    h2 {
-      font-size: 12px;
-    }
-    .infos {
-      min-height: 36px;
-      height: auto;
     }
   }
 }

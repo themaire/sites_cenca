@@ -1,56 +1,50 @@
 <div class="site-detail web">
-  <div class="fond">
-    <!-- Bouton Retour -->
-    <div class="container-btn-h">
-      <button class="btn" type="button" (click)="resetSelectedd()">
-        Retour
-      </button>
-    </div>
-    <!-- Titre -->
-    <h2 *ngIf="siteDetail !== undefined">
-      {{ siteDetail.description_site }}
-    </h2>
+  <!-- Bouton Retour -->
+  <div class="container-btn-h">
+    <button class="btn" type="button" (click)="resetSelectedd()">Retour</button>
+  </div>
+  <!-- Titre -->
+  <h2 *ngIf="siteDetail !== undefined">
+    {{ siteDetail.description_site }}
+  </h2>
 
+  <div *ngIf="isMobile; then mobile; else desktop" class="site-detail"></div>
 
-    <div *ngIf="isMobile; then mobile; else desktop" class="site-detail"></div>
+  <ng-template #desktop>
+    <!-- Onglets supérieurs -->
+    <mat-tab-group class="top-tabs">
+      <mat-tab label="Infos générales">
+        <app-detail-infos [inputDetail]="siteDetail"> </app-detail-infos>
+      </mat-tab>
 
-    <ng-template #desktop>
-      <!-- Onglets supérieurs -->
-      <mat-tab-group class="top-tabs">
-        <mat-tab label="Infos générales">
-          <app-detail-infos [inputDetail]="siteDetail"> </app-detail-infos>
-        </mat-tab>
+      <mat-tab label="Description et Ouverture">
+        <app-detail-description [inputDetail]="siteDetail">
+        </app-detail-description>
+      </mat-tab>
 
-        <mat-tab label="Description et Ouverture">
-          <app-detail-description [inputDetail]="siteDetail">
-          </app-detail-description>
-        </mat-tab>
+      <mat-tab label="Actes MFU">
+        <app-detail-mfu [inputDetail]="siteDetail"> </app-detail-mfu>
+      </mat-tab>
 
-        <mat-tab label="Actes MFU">
-          <app-detail-mfu [inputDetail]="siteDetail"> </app-detail-mfu>
-        </mat-tab>
+      <mat-tab label="Projets">
+        <app-detail-projets [inputDetail]="siteDetail"> </app-detail-projets>
+      </mat-tab>
 
-        <mat-tab label="Projets">
-          <app-detail-projets [inputDetail]="siteDetail"> </app-detail-projets>
-        </mat-tab>
+      <mat-tab label="Gestion">
+        <app-detail-gestion [inputDetail]="siteDetail"> </app-detail-gestion>
+      </mat-tab>
 
-        <mat-tab label="Gestion">
-          <app-detail-gestion [inputDetail]="siteDetail"> </app-detail-gestion>
-        </mat-tab>
+      <mat-tab label="Habitats">
+        <app-detail-habitats [inputDetail]="siteDetail"> </app-detail-habitats>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-template>
 
-        <mat-tab label="Habitats">
-          <app-detail-habitats [inputDetail]="siteDetail">
-          </app-detail-habitats>
-        </mat-tab>
-      </mat-tab-group>
-    </ng-template>
-
-    <!--  <div class="container-btn-b">
+  <!--  <div class="container-btn-b">
       <button class="btn" type="button" (click)="resetSelectedd()">
         Retour
       </button>
     </div>-->
-  </div>
 </div>
 
 <div class="mobile site-detail">
@@ -58,7 +52,6 @@
     <!--   Onglets supérieurs -->
     <mat-tab-group class="bloc1">
       <mat-tab label="Infos gén.">
-
         <app-detail-infos [inputDetail]="siteDetail"> </app-detail-infos>
       </mat-tab>
 
@@ -88,5 +81,4 @@
       </mat-tab>
     </mat-tab-group>
   </ng-template>
-
 </div>
