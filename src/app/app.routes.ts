@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
 
 export const routes: Routes = [
@@ -7,8 +8,12 @@ export const routes: Routes = [
     path: '',
     component: HomeComponent,
     resolve: {
-        menuItems: MenuItemResolver // Association du resolver à cette route
-    }
+      menuItems: MenuItemResolver, // Association du resolver à cette route
+    },
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
   },
 
   // Lazy-load

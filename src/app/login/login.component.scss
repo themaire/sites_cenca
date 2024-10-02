@@ -1,0 +1,60 @@
+@import "../../app/styles/variables.scss";
+@import "../../app/styles/mixins.scss";
+
+#container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  @include fond-bleu();
+  padding: 50px 50px 0 50px;
+  border-radius: 20px;
+  width: 500px;
+  height: auto;
+
+  .titre {
+    .mat-typography,
+    h3 {
+      @include Typo($p20, $semiGras, white);
+      text-align: center;
+      text-transform: uppercase;
+      padding: 20px;
+    }
+  }
+
+  .connexion {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+  }
+  mat-error {
+    text-align: center;
+  }
+}
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  .mat-mdc-unelevated-button:not(:disabled) {
+    @include btn($couleur-flore, white, white, $couleur-territoire);
+  }
+  .mat-mdc-unelevated-button[disabled],
+  .mat-mdc-unelevated-button.mat-mdc-button-disabled {
+    @include btn(white, gray, white, gray);
+  }
+}
+.mdp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  a {
+    @include Typo($p14, $normal, white);
+    text-decoration: none;
+  }
+}
