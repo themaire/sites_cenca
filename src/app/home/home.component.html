@@ -1,3 +1,9 @@
+<div class="bienvenue" *ngIf="loginService.user()">
+  <p>
+    Bienvenue {{ loginService.user()?.nom }}
+    {{ loginService.user()?.prenom }}
+  </p>
+</div>
 <div class="home">
   <ng-container *ngFor="let item of menuItems[0].children">
     <ng-container *ngFor="let subItem of item.children">

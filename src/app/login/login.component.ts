@@ -27,7 +27,7 @@ import { User } from './user.model';
 export class LoginComponent implements OnDestroy {
   loginFormGroup: FormGroup;
   invalidCredentials = false;
-  private loginSubscription: Subscription | null = null;
+  loginSubscription: Subscription | null = null;
 
   // Injection des services dans le constructeur
   constructor(

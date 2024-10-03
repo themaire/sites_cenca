@@ -43,23 +43,29 @@
           </div>
         </div>
         <div class="connection">
-          <img
-            src="https://randomuser.me/api/portraits/med/women/56.jpg"
-            alt="Icône de connexion"
-          />
+          <!-- -->
+          <div class="user" *ngIf="loginService.user()">
+            <img
+              src="https://randomuser.me/api/portraits/med/women/56.jpg"
+              alt="Icône de connexion"
+            />
+            <button mat-icon-button class="btn-deconnexion" (click)="logout()">
+              <mat-icon>logout</mat-icon>
+            </button>
+          </div>
         </div>
       </nav>
     </div>
   </ng-template>
 
+  <!-- Mobile -->
   <ng-template #mobile>
-    <!-- Mobile -->
     <div class="conteneur">
       <nav>
         <div class="logo-conteneur">
           <img
             class="logoPetit"
-            src="../assets/images/logo/logocen-color-petit.png"
+            src="../../assets/images/logo/logocen-color-petit.png"
             alt="logo du CENCA"
             (click)="navigateToHome()"
           />
@@ -114,6 +120,10 @@
                 </mat-menu>
               </ng-container>
             </mat-menu>
+            <!-- Bouton deconnexion 
+            <button mat-icon-button class="btn-deconnexion" (click)="logout()">
+              <mat-icon>logout</mat-icon>
+            </button>-->
           </div>
         </div>
       </nav>
