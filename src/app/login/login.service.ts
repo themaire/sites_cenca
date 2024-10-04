@@ -27,15 +27,21 @@ export class LoginService {
     );
   }
   getUsers(): Observable<User | undefined | null> {
+    console.log('on est entré dans getUsers');
     return this.http.get(backendAdress + 'auth/me').pipe(
       tap((result: any) => {
         const user = Object.assign(new User(), result);
         this.user.set(user);
+        console.log('Voici le contenu de user : ');
+        console.log(this.user());
+        console.log('on est sorti de getUsers');
       }),
       map((result: any) => {
+        
         return this.user();
       })
     );
+    
   }
 
   logout(): Observable<null> {

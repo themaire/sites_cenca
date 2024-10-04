@@ -17,16 +17,14 @@ import { LoginService } from '../login/login.service';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
-  console.log("loginService.user()?.nom" + this.loginService.user()?.nom);
-
-
-
   menuItems!: MenuItem[];
 
   constructor(
     private route: ActivatedRoute,
-    private loginService: LoginService,
-  ) {}
+    public loginService: LoginService,
+  ) {
+    console.log("loginService.user()?.nom" + loginService.user()?.nom);
+  }
 
   ngOnInit(): void {
     // Abonnement à l'Observable pour obtenir les données résolues
