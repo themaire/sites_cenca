@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { OperationComponent } from './operation/operation.component';
+import { MapComponent } from '../../../../map/map.component';
 
 import { ProjetLite, Projet } from '../projets';
 import { Operation } from './operation/operations';
@@ -24,6 +25,7 @@ import { ProjetService } from '../projets.service';
   standalone: true,
   imports: [
     CommonModule,
+    MapComponent,
     MatDialogModule,
     MatDialogTitle,
     MatDialogContent,
