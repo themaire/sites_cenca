@@ -23,8 +23,7 @@ import { User } from './login/user.model';
 export class AppComponent implements OnInit {
   token: string | null = localStorage.getItem('token');
 
-  constructor( private router: Router,
-               private loginService: LoginService) {}
+  constructor(private router: Router, private loginService: LoginService) {}
 
   ngOnInit() {
     this.checkToken();
@@ -45,10 +44,10 @@ export class AppComponent implements OnInit {
           this.navigate('login'); // Rediriger vers la page de connexion
         },
       });
-
     } else {
       // Action à effectuer si le token n'existe pas
       console.log('No token found');
+      this.navigate('login'); // Rediriger vers la page de connexion
     }
   }
 
@@ -59,11 +58,11 @@ export class AppComponent implements OnInit {
    * If the route is 'home', navigates to the root path ('/').
    * Otherwise, navigates to the specified route.
    */
-  navigate(route:string = 'home') {
+  navigate(route: string = 'home') {
     if (route === 'home') {
       this.router.navigate(['/']);
-    }else {
-    this.router.navigate(['/' + route]);
+    } else {
+      this.router.navigate(['/' + route]);
     }
   }
 }

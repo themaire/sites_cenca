@@ -1,7 +1,6 @@
 <div class="bienvenue" *ngIf="loginService.user()">
   <p>
-    Bienvenue {{ loginService.user()?.nom }}
-    {{ loginService.user()?.prenom }}
+    Bienvenue {{ loginService.user()?.prenom }} {{ loginService.user()?.nom }} !
   </p>
 </div>
 <div class="home">

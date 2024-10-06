@@ -38,6 +38,7 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   public logoutSubscription: Subscription | null = null;
+  initials: string | null = null;
 
   constructor(
     private router: Router,
@@ -107,5 +108,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.logoutSubscription?.unsubscribe();
+  }
+
+  initialsName() {
+    if (this.loginService.user()) {
+      this.initials =
+        this.loginService.user()!.nom[0] + this.loginService.user()!.prenom[0];
+      console.log('coucou' + this.initials);
+    }
   }
 }

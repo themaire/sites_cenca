@@ -2,7 +2,10 @@
 @import "../../app/styles/mixins.scss";
 
 .bienvenue {
-  display: flex;
+  p {
+    @include Typo($p24, $semiGras, black);
+    margin: 50px;
+  }
 }
 
 .home {

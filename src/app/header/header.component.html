@@ -43,12 +43,14 @@
           </div>
         </div>
         <div class="connection">
-          <!-- -->
           <div class="user" *ngIf="loginService.user()">
-            <img
+            <button class="btn-initiales">
+              {{ loginService.user()?.initiales }}
+            </button>
+            <!--   <img
               src="https://randomuser.me/api/portraits/med/women/56.jpg"
               alt="Icône de connexion"
-            />
+            />-->
             <button mat-icon-button class="btn-deconnexion" (click)="logout()">
               <mat-icon>logout</mat-icon>
             </button>

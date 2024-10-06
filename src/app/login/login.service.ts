@@ -14,11 +14,12 @@ export class LoginService {
   user = signal<User | undefined | null>(undefined);
 
   login(credentials: Credentials): Observable<User | undefined | null> {
-    console.log(backendAdress);
+    // console.log(backendAdress);
     return this.http.post(backendAdress + 'auth/login', credentials).pipe(
       tap((result: any) => {
         localStorage.setItem('token', result['token']);
-        const user = Object.assign(new User(), result['user']);
+        let user = Object.assign(new User(), result['user']);
+        user.initiales = this.getInitials();
         this.user.set(user);
       }),
       map((result: any) => {
@@ -27,29 +28,37 @@ export class LoginService {
     );
   }
   getUsers(): Observable<User | undefined | null> {
-    console.log('on est entré dans getUsers');
     return this.http.get(backendAdress + 'auth/me').pipe(
       tap((result: any) => {
-        const user = Object.assign(new User(), result);
+        let user = Object.assign(new User(), result);
+        user.initiales = this.getInitials(result['nom'], result['prenom']);
         this.user.set(user);
-        console.log('Voici le contenu de user : ');
-        console.log(this.user());
-        console.log('on est sorti de getUsers');
       }),
       map((result: any) => {
-        
         return this.user();
       })
     );
-    
+  }
+
+  // Méthode pour récupérer les initiales du nom et prénom
+  getInitials(nom?: string, prenom?: string): string | null {
+    // verifie qu'il y a bien un nom et un prénom (user= signal)
+    if (nom && prenom) {
+      // Extrait le premier caractère du nom et du prénom
+      const nomInitial = nom.split(' ')[0][0];
+      const prenomInitial = prenom.split(' ')[0][0];
+      return prenomInitial! + nomInitial!;
+    }
+    // Retourne null si l'utilisateur ou les champs ne sont pas disponibles
+    return null;
   }
 
   logout(): Observable<null> {
-    console.log('on est entrer dans logout');
+    // console.log('on est entrer dans logout');
     return this.http.get(backendAdress + 'auth/logout').pipe(
       tap((result: any) => {
-        console.log('on est entrer dans tap logout');
-        console.log('on va supprimer le token');
+        // console.log('on est entrer dans tap logout');
+        // console.log('on va supprimer le token');
         localStorage.removeItem('token');
         this.user.set(null);
       })

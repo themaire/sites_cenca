@@ -53,11 +53,15 @@ header {
         display: flex;
         @include align(center, center);
         gap: 10px;
-        img {
-          @include dim(40px, 40px);
+        .btn-initiales {
+          @include dim(auto, 40px);
+          display: flex;
+          @include align(center, center);
+          padding: 10px;
+          @include Typo($p16, $semiGras, white);
           border: 1px solid white;
           border-radius: 100px;
-          object-fit: cover;
+          background-color: $couleur-flore;
         }
         .btn-deconnexion {
           display: flex;
@@ -66,6 +70,7 @@ header {
           @include dim(auto, 40px);
           border-radius: 100px;
           color: white;
+          background-color: $couleur-flore;
         }
         .icon {
           display: flex;
