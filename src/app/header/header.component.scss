@@ -36,25 +36,19 @@ header {
 
       .menu {
         display: flex;
-        // @include typo($p16, $semiGras, black);
         @include dim(100%, 100%);
         @include align(center, center);
         gap: 35px;
       }
     }
 
-    .connection {
-      display: flex;
-      margin-left: auto;
-      align-items: end;
-      gap: 10px;
-
+    .connexion {
       .user {
         display: flex;
         @include align(center, center);
         gap: 10px;
         .btn-initiales {
-          @include dim(auto, 40px);
+          @include dim(48px, 40px);
           display: flex;
           @include align(center, center);
           padding: 10px;
@@ -62,6 +56,9 @@ header {
           border: 1px solid white;
           border-radius: 100px;
           background-color: $couleur-flore;
+        }
+        .mdc-button {
+          min-width: 48px;
         }
         .btn-deconnexion {
           display: flex;
@@ -81,93 +78,92 @@ header {
       }
     }
   }
+}
 
-  .c-proteger {
-    @include btn-menu(
-      $proteger
-    ); // Inclut les styles de base comme padding et border-radius
-  }
+.c-proteger {
+  @include btn-menu(
+    $proteger
+  ); // Inclut les styles de base comme padding et border-radius
+}
 
-  .c-connaitre {
-    @include btn-menu(
-      $connaitre
-    ); // Inclut les styles de base comme padding et border-radius
-  }
+.c-connaitre {
+  @include btn-menu(
+    $connaitre
+  ); // Inclut les styles de base comme padding et border-radius
+}
 
-  .c-gerer {
-    @include btn-menu(
-      $gerer
-    ); // Inclut les styles de base comme padding et border-radius
-  }
+.c-gerer {
+  @include btn-menu(
+    $gerer
+  ); // Inclut les styles de base comme padding et border-radius
+}
 
-  .c-valoriser {
-    @include btn-menu(
-      $valoriser
-    ); // Inclut les styles de base comme padding et border-radius
-  }
+.c-valoriser {
+  @include btn-menu(
+    $valoriser
+  ); // Inclut les styles de base comme padding et border-radius
+}
 
-  .c-accompagner {
-    @include btn-menu(
-      $accompagner
-    ); // Inclut les styles de base comme padding et border-radius
-  }
+.c-accompagner {
+  @include btn-menu(
+    $accompagner
+  ); // Inclut les styles de base comme padding et border-radius
+}
 
-  .c-administratif {
-    @include btn-menu(
-      $administrafif
-    ); // Inclut les styles de base comme padding et border-radius
-  }
-  .c-liens-utiles {
-    @include btn-menu(
-      $liens-utiles
-    ); // Inclut les styles de base comme padding et border-radius
-  }
-  span {
-    color: black !important;
-  }
+.c-administratif {
+  @include btn-menu(
+    $administrafif
+  ); // Inclut les styles de base comme padding et border-radius
+}
+.c-liens-utiles {
+  @include btn-menu(
+    $liens-utiles
+  ); // Inclut les styles de base comme padding et border-radius
+}
+span {
+  color: black !important;
+}
 
-  // RESPONSIVE
-  @media screen and (max-width: $tablette) {
-    header {
-      nav {
-        grid-template-columns: 1fr 1fr;
-        margin: 0 25px;
-        gap: 0;
+// RESPONSIVE
+@media screen and (max-width: $tablette) {
+  header {
+    nav {
+      grid-template-columns: 1fr 1fr;
+      margin: 0 25px;
+      gap: 0;
 
-        .logo-conteneur {
+      .logo-conteneur {
+        @include dim(60px, 70px);
+        .logoPetit {
+          display: block;
           @include dim(60px, 70px);
-          .logoPetit {
-            display: block;
-            @include dim(60px, 70px);
-            object-fit: cover;
-          }
+          object-fit: cover;
         }
-        .connection {
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
+      }
+      .connexion {
+        display: flex; /* Make the container a flexbox */
+      }
+      .connexion {
+        margin-left: auto;
+        gap: 10px;
+
+        .btn-hamburger,
+        .btn-deconnexion {
+          display: flex;
+          @include align(center, center);
+          border: 1px solid white;
+          @include dim(auto, 40px);
+          border-radius: 100px;
+          color: white;
         }
-        .connection {
-          gap: 20px;
-          .hamburger {
-            .btn-hamburger {
-              display: flex;
-              @include align(center, center);
-              border: 1px solid white;
-              @include dim(auto, 40px);
-              border-radius: 100px;
-              color: white;
-              background-color: $couleur-flore;
-            }
-            .icon {
-              display: flex;
-              @include align(center, center);
-              @include dim(25px, 25px);
-              text-align: center;
-            }
-            span {
-              @include dim(40px, 40px);
-            }
-          }
+        .icon {
+          display: flex;
+          @include align(center, center);
+          @include dim(25px, 25px);
+          text-align: center;
+        }
+        span {
+          @include dim(40px, 40px);
         }
       }
     }

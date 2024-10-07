@@ -42,7 +42,7 @@
             </ng-container>
           </div>
         </div>
-        <div class="connection">
+        <div class="connexion">
           <div class="user" *ngIf="loginService.user()">
             <button class="btn-initiales">
               {{ loginService.user()?.initiales }}
@@ -72,24 +72,41 @@
             (click)="navigateToHome()"
           />
         </div>
-        <div class="connection" *ngIf="loginService.user()">
+        <div class="connexion" *ngIf="loginService.user()">
           <!--   <img
             src="https://randomuser.me/api/portraits/med/women/56.jpg"
             alt="Icône de connexion"
           />-->
-
           <div class="user" *ngIf="loginService.user()">
-            <button class="btn-initiales">
-              {{ loginService.user()?.initiales }}
-            </button>
+            <div class="deconnexion">
+              <button
+                mat-button
+                class="btn-initiales"
+                [matMenuTriggerFor]="login"
+              >
+                {{ loginService.user()?.initiales }}
+              </button>
+              <mat-menu #login="matMenu">
+                <!-- Bouton deconnexion -->
+                <button
+                  mat-menu-item
+                  class="btn-deconnexion"
+                  (click)="logout()"
+                >
+                  <mat-icon>logout</mat-icon>
+                  Déconnexion
+                </button>
+              </mat-menu>
+            </div>
+
             <!--   <img
-              src="https://randomuser.me/api/portraits/med/women/56.jpg"
+                src="https://randomuser.me/api/portraits/med/women/56.jpg"
               alt="Icône de connexion"
             />-->
           </div>
 
           <!--  Bouton du menu hamburger visible uniquement en version mobile 
-           Bouton du menu hamburger -->
+            Bouton du menu hamburger -->
           <div class="hamburger" *ngIf="isMobile">
             <button
               mat-icon-button
@@ -133,10 +150,6 @@
                 </mat-menu>
               </ng-container>
             </mat-menu>
-            <!-- Bouton deconnexion -->
-            <button mat-icon-button class="btn-deconnexion" (click)="logout()">
-              <mat-icon>logout</mat-icon>
-            </button>
           </div>
         </div>
       </nav>

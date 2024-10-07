@@ -31,8 +31,8 @@ export class LoginComponent implements OnDestroy {
 
   // Injection des services dans le constructeur
   constructor(
-    private formBuilder: FormBuilder,
     private loginService: LoginService,
+    private formBuilder: FormBuilder,
     private router: Router
   ) {
     // Initialisation du formGroup

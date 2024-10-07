@@ -58,3 +58,10 @@ form {
     text-decoration: none;
   }
 }
+
+@media screen and (max-width: $tablette) {
+  form {
+    width: auto;
+    height: auto;
+  }
+}

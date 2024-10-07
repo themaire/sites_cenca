@@ -11,8 +11,7 @@ import { LoginService } from '../login/login.service';
   styleUrl: './footer.component.scss',
 })
 export class FooterComponent {
-  loginService: any;
-  constructor(private router: Router) {}
+  constructor(private router: Router, public loginService: LoginService) {}
 
   nagigateToHome() {
     this.router.navigate(['/']);

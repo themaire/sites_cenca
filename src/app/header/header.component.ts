@@ -75,8 +75,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Si ce n'est pas déjà fait, charger les données
     this.menuService.loadMenuItems();
 
-    console.log('Menu Items at end of onInit() :');
-    console.log(this.menuItems);
+    // console.log('Menu Items at end of onInit() :');
+    // console.log(this.menuItems);
 
     // Détecter si c'est la version mobile
     this.breakpointObserver
@@ -114,7 +114,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.loginService.user()) {
       this.initials =
         this.loginService.user()!.nom[0] + this.loginService.user()!.prenom[0];
-      console.log('coucou' + this.initials);
     }
   }
 }
