@@ -12,7 +12,7 @@
             (click)="navigateToHome()"
           />
         </div>
-        <div class="menu-conteneur">
+        <div class="menu-conteneur" *ngIf="loginService.user()">
           <div class="menu">
             <ng-container *ngFor="let item of menuItems[0].children">
               <!-- Un bouton pour chaque axe du CENCA -->
@@ -72,13 +72,24 @@
             (click)="navigateToHome()"
           />
         </div>
-        <div class="connection">
-          <img
+        <div class="connection" *ngIf="loginService.user()">
+          <!--   <img
             src="https://randomuser.me/api/portraits/med/women/56.jpg"
             alt="Icône de connexion"
-          />
-          <!-- Bouton du menu hamburger visible uniquement en version mobile -->
-          <!-- Bouton du menu hamburger -->
+          />-->
+
+          <div class="user" *ngIf="loginService.user()">
+            <button class="btn-initiales">
+              {{ loginService.user()?.initiales }}
+            </button>
+            <!--   <img
+              src="https://randomuser.me/api/portraits/med/women/56.jpg"
+              alt="Icône de connexion"
+            />-->
+          </div>
+
+          <!--  Bouton du menu hamburger visible uniquement en version mobile 
+           Bouton du menu hamburger -->
           <div class="hamburger" *ngIf="isMobile">
             <button
               mat-icon-button
@@ -122,10 +133,10 @@
                 </mat-menu>
               </ng-container>
             </mat-menu>
-            <!-- Bouton deconnexion 
+            <!-- Bouton deconnexion -->
             <button mat-icon-button class="btn-deconnexion" (click)="logout()">
               <mat-icon>logout</mat-icon>
-            </button>-->
+            </button>
           </div>
         </div>
       </nav>

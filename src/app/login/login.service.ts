@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Credentials } from './credentials';
 import { User } from './user.model';
 import { backendAdress } from '../backendAdress';
-import { Observable, pipe, tap, map } from 'rxjs';
+import { Observable, pipe, tap, map, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +22,8 @@ export class LoginService {
         user.initiales = this.getInitials();
         this.user.set(user);
       }),
+      // Appel à getUsers() après avoir enregistré le token
+      switchMap(() => this.getUsers()),
       map((result: any) => {
         return this.user();
       })

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
+import { isLoggedInGuard } from './guards/is-logged-in.guard';
 
 export const routes: Routes = [
   {
@@ -10,6 +11,7 @@ export const routes: Routes = [
     resolve: {
       menuItems: MenuItemResolver, // Association du resolver à cette route
     },
+    canActivate: [isLoggedInGuard],
   },
   {
     path: 'login',
@@ -22,6 +24,7 @@ export const routes: Routes = [
     // component : SitesComponent // Avant
     loadChildren: () =>
       import('./sites/sites.routes').then((mod) => mod.SITES_ROUTES),
+    canActivate: [isLoggedInGuard],
   },
 
   // Lazy-load
@@ -29,5 +32,6 @@ export const routes: Routes = [
     path: 'admin',
     loadChildren: () =>
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),
+    canActivate: [isLoggedInGuard],
   },
 ];

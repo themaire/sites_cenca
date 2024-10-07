@@ -156,6 +156,7 @@ header {
               @include dim(auto, 40px);
               border-radius: 100px;
               color: white;
+              background-color: $couleur-flore;
             }
             .icon {
               display: flex;
