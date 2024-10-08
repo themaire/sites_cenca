@@ -3,10 +3,9 @@
 
 .container {
   display: flex;
-  flex-wrap: wrap;
-  grid-gap: 131px;
-  margin: 20px auto;
-  @include align(top, center);
+  width: 772.5px;
+  margin: 20px 0;
+  @include align(top, start);
 }
 .container-champ {
   display: flex;
@@ -19,46 +18,53 @@
     @include Typo($p14, $normal, $couleur-flore);
     margin-bottom: 0;
   }
-  
+
+  .infos {
+    width: 100%;
+  }
   textarea,
   a,
   input {
     @include input($couleur-faune, black);
   }
-
   .ligne2,
-  .ligne3,
-  .ligne5 {
+  .ligne3 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     flex-wrap: wrap;
     gap: 16px;
   }
-}
 
-.edit {
-  @include btn-edit();
-}
-
-@media screen and (max-width: $mobile) {
-  .container {
-    h2 {
-      font-size: 12px;
+  .edition {
+    display: flex;
+    @include align(center, start);
+    margin-bottom: 20px;
+    gap: 20px;
+    .btn-edition {
+      @include btn-icon($couleur-faune, $orangeC);
+      @include icon(white, black);
     }
-    .infos {
-      min-height: 36px;
-      height: auto;
+    .btn-sauvegarde {
+      @include btn-icon(white, $couleur-territoire);
+      @include icon($couleur-flore, white);
+    }
+    .btn-annulation {
+      @include btn-icon(white, red);
+      @include icon(red, white);
     }
   }
-}
-@media screen and (max-width: $tablette) {
-  .container {
-    h2 {
-      font-size: 12px;
-    }
-    .infos {
-      min-height: 36px;
-      height: auto;
+
+  @media screen and (max-width: $tablette) {
+    .container {
+      display: flex;
+      width: 330px;
+      h2 {
+        font-size: 12px;
+      }
+      .infos {
+        min-height: 36px;
+        height: auto;
+      }
     }
   }
 }

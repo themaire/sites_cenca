@@ -1,10 +1,31 @@
 <div *ngIf="inputDetail !== undefined" class="container">
   <div class="container-champ">
     <div class="champ">
-      <!--
-      <div class="edit">
-        <button mat-icon-button class="btn-edit" (click)="editDetail()">
+      <!-- 
+      <div class="edition">
+        <button
+          mat-icon-button
+          *ngIf="!isEditMode"
+          class="btn-edition"
+          (click)="toggleEditMode()"
+        >
           <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          mat-button
+          *ngIf="isEditMode"
+          class="btn-sauvegarde"
+          (click)="saveChanges()"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+        <button
+          mat-button
+          *ngIf="isEditMode"
+          class="btn-annulation"
+          (click)="toggleEditMode()"
+        >
+          <mat-icon>close</mat-icon>
         </button>
       </div>-->
 
