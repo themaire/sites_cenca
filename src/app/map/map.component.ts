@@ -26,7 +26,7 @@ export class MapComponent implements AfterViewInit {
     // Personnalisation de l'icône de marqueur avec les chemins d'icônes personnalisés
     const customIconMarkers = L.icon({
       iconUrl: 'assets/images/leaflet/marker-icon.png',  // Chemin vers l'icône dans assets
-      iconRetinaUrl: 'assets/images/leaflet/marker-icon-x2.png',  // Chemin vers l'icône dans assets
+      iconRetinaUrl: 'assets/images/leaflet/marker-icon-2x.png',  // Chemin vers l'icône dans assets
       shadowUrl: 'assets/images/leaflet/marker-shadow.png',  // Chemin vers l'ombre dans assets
       iconSize: [25, 41],  // Taille de l'icône
       iconAnchor: [12, 41],  // Point où l'icône est ancrée
