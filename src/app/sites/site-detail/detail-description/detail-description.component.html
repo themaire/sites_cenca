@@ -1,10 +1,11 @@
 <div *ngIf="inputDetail !== undefined" class="container">
   <div class="container-champ">
     <div class="champ">
-      <!-- 
+      <!-- -->
       <div class="edition">
         <button
           mat-icon-button
+          matTooltip="Modifier"
           *ngIf="!isEditMode"
           class="btn-edition"
           (click)="toggleEditMode()"
@@ -13,6 +14,7 @@
         </button>
         <button
           mat-button
+          matTooltip="Sauvegarder"
           *ngIf="isEditMode"
           class="btn-sauvegarde"
           (click)="saveChanges()"
@@ -21,19 +23,23 @@
         </button>
         <button
           mat-button
+          matTooltip="Annuler"
           *ngIf="isEditMode"
           class="btn-annulation"
           (click)="toggleEditMode()"
         >
           <mat-icon>close</mat-icon>
         </button>
-      </div>-->
+      </div>
 
       <div class="ligne1">
         <div class="description">
           <h2>Description du site:</h2>
           <div class="infos">
-            <textarea [(ngModel)]="inputDetail.description_site"></textarea>
+            <textarea
+              [(ngModel)]="inputDetail.description_site"
+              [disabled]="!isEditMode"
+            ></textarea>
           </div>
         </div>
       </div>
@@ -41,13 +47,19 @@
         <div class="sensible">
           <h2>Site sensible:</h2>
           <div class="infos">
-            <input [(ngModel)]="inputDetail.sensibilite" />
+            <input
+              [(ngModel)]="inputDetail.sensibilite"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
         <div class="des-sensible">
           <h2>Description sensibilité:</h2>
           <div class="infos">
-            <input [(ngModel)]="inputDetail.remq_sensibilite" />
+            <input
+              [(ngModel)]="inputDetail.remq_sensibilite"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
       </div>
@@ -55,7 +67,10 @@
         <div class="typ_ouverture">
           <h2>Site ouvert au public:</h2>
           <div class="infos">
-            <input [(ngModel)]="inputDetail.typ_ouverture" />
+            <input
+              [(ngModel)]="inputDetail.typ_ouverture"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
       </div>
@@ -67,17 +82,57 @@
           </div>
         </div>
       </div>
-      <div class="ligne5">
+      <div class="ligne5" *ngIf="!isMobile && !isEditMode">
         <div class="description">
           <h2>Lien CEN:</h2>
           <div class="infos">
-            <a href="{{ inputDetail.url_cen }}">{{ inputDetail.url_cen }}</a>
+            <a class="lien" href="{{ inputDetail.url_cen }}">{{
+              inputDetail.url_cen
+            }}</a>
           </div>
         </div>
         <div class="description">
           <h2>Lien MNHN:</h2>
           <div class="infos">
-            <a href="{{ inputDetail.url_mnhn }}">{{ inputDetail.url_mnhn }}</a>
+            <a class="lien" href="{{ inputDetail.url_mnhn }}">{{
+              inputDetail.url_mnhn
+            }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="ligne5" *ngIf="isEditMode">
+        <div class="description">
+          <h2>Lien CEN:</h2>
+          <div class="infos">
+            <input [(ngModel)]="inputDetail.url_cen" [disabled]="!isEditMode" />
+            <div class="description">
+              <h2>Lien MNHN:</h2>
+              <div class="infos">
+                <input
+                  [(ngModel)]="inputDetail.url_mnhn"
+                  [disabled]="!isEditMode"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isMobile">
+        <div class="ligne5-btn" *ngIf="!isEditMode">
+          <div class="description">
+            <button mat-button *ngIf="!isEditMode">
+              <a mat-button href="{{ inputDetail.url_cen }}" target="_blank"
+                >Lien CEN</a
+              >
+            </button>
+          </div>
+          <div class="description">
+            <button mat-button>
+              <a mat-button href="{{ inputDetail.url_mnhn }}" target="_blank"
+                >Lien MNHN</a
+              >
+            </button>
           </div>
         </div>
       </div>

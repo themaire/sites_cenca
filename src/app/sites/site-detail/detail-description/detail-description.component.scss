@@ -23,7 +23,7 @@
     width: 100%;
   }
   textarea,
-  a,
+  .lien,
   input {
     @include input($couleur-faune, black);
   }
@@ -53,17 +53,83 @@
       @include icon(red, white);
     }
   }
-
-  @media screen and (max-width: $tablette) {
-    .container {
+}
+@media screen and (max-width: $mobile) {
+  .container {
+    display: flex;
+    width: 100%;
+    h2 {
+      font-size: 12px;
+    }
+    .ligne2 {
+      grid-template-columns: 1fr;
+      gap: 0px;
+    }
+    .ligne5-btn {
       display: flex;
-      width: 330px;
-      h2 {
-        font-size: 12px;
+      gap: 20px;
+      @include align(center, start);
+      button {
+        @include btn(black, rgba(248, 244, 186, 0.5), white, $couleur-faune);
+        border: 1px solid $couleur-faune;
+        a {
+          color: inherit; /* Prend la couleur de l'élément parent */
+          text-decoration: none; /* Retire le soulignement */
+        }
+
+        a:hover,
+        a:visited,
+        a:active {
+          color: inherit; /* Assure que la couleur reste la même pour les états */
+          text-decoration: none; /* Toujours pas de soulignement */
+        }
       }
-      .infos {
-        min-height: 36px;
-        height: auto;
+    }
+
+    .infos {
+      min-height: 36px;
+      height: auto;
+    }
+  }
+}
+@media screen and (max-width: $tablette) {
+  .container {
+    display: flex;
+    width: 100%;
+    h2 {
+      font-size: 12px;
+    }
+
+    .infos {
+      min-height: 36px;
+      height: auto;
+    }
+
+    .ligne5-btn {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      flex-wrap: wrap;
+      width: 100%;
+      gap: 20px;
+
+      .description {
+        @include align(center, center);
+        margin: auto;
+        button {
+          @include btn(black, rgba(248, 244, 186, 0.5), white, $couleur-faune);
+          border: 1px solid $couleur-faune;
+          a {
+            color: inherit; /* Prend la couleur de l'élément parent */
+            text-decoration: none; /* Retire le soulignement */
+          }
+
+          a:hover,
+          a:visited,
+          a:active {
+            color: inherit; /* Assure que la couleur reste la même pour les états */
+            text-decoration: none; /* Toujours pas de soulignement */
+          }
+        }
       }
     }
   }
