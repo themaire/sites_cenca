@@ -6,9 +6,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MenuItem } from '../menuItem';
 import { CardComponent } from './card/card.component';
 
-
 import { MapComponent } from '../map/map.component';
-
+import { LoginService } from '../login/login.service';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +19,12 @@ import { MapComponent } from '../map/map.component';
 export class HomeComponent {
   menuItems!: MenuItem[];
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    public loginService: LoginService,
+  ) {
+    console.log("loginService.user()?.nom" + loginService.user()?.nom);
+  }
 
   ngOnInit(): void {
     // Abonnement à l'Observable pour obtenir les données résolues

@@ -1,3 +1,8 @@
+<div class="bienvenue" *ngIf="loginService.user()">
+  <p>
+    Bienvenue {{ loginService.user()?.prenom }} {{ loginService.user()?.nom }} !
+  </p>
+</div>
 <div class="home">
   <ng-container *ngFor="let item of menuItems[0].children">
     <ng-container *ngFor="let subItem of item.children">
@@ -13,7 +18,7 @@
   </ng-container>
 </div>
 
-<div>
+<div class="map">
   <h2>Les antennes du CENCA.</h2>
   <app-map></app-map>
 </div>

@@ -3,7 +3,7 @@ import { backendAdress } from '../backendAdress';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 // prototypes utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
@@ -21,6 +21,17 @@ import { Selector } from './selector';
 })
 export class SitesService {
   private activeUrl: string = backendAdress + 'sites/'; // Bureau
+
+  // Modifications des formulaires
+  //Ajouter un BehaviorSubject pour gérer et partager les données du site.
+  private siteDetailSubject = new BehaviorSubject<any>(null);
+  // Observable pour que les composants puissent s'abonner aux changements de siteDetail
+  siteDetail = this.siteDetailSubject.asObservable();
+
+  // Méthode pour mettre à jour les détails d'un site
+  updateSiteDetail(newData: any) {
+    this.siteDetailSubject.next(newData);
+  }
 
   // Recherche une liste de plans de gestion par l'UUID d'un site
   // async getDocPlannn(siteUUID: string): Promise<DocPlan[]> {
@@ -90,6 +101,33 @@ export class SitesService {
   async getSelectors(): Promise<Selector[]> {
     const data = await fetch(this.activeUrl + 'selectors');
     return (await data.json()) ?? [];
+  }
+
+  // Sauvegarde les modifications
+  async updateDetail(siteDetail: DetailSite): Promise<void> {
+    const url = `${this.activeUrl}${siteDetail.uuid_site}`; // Construire l'URL avec le UUID du site
+
+    try {
+      const response = await fetch(url, {
+        // Méthode PUT pour mettre à jour
+        method: 'PUT',
+        headers: {
+          // Indiquer que le corps est en JSON
+          'Content-Type': 'application/json',
+        },
+        // Convertir l'objet siteDetail en chaîne JSON
+        body: JSON.stringify(siteDetail),
+      });
+
+      // Vérifier si la requête a réussi
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP : ${response.status}`);
+      }
+
+      console.log('------------------------> Modifications sauvegardées');
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du site :', error);
+    }
   }
 }
 

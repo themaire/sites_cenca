@@ -23,6 +23,7 @@ h2 {
 
 // Responsive
 @media screen and (max-width: $mobile) {
+  .tacit_rec,
   .surface,
   .url {
     display: none;

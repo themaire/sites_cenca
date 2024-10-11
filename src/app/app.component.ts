@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { SitesComponent } from './sites/sites.component';
-import { MenuItem } from './menuItem';
+
+import { LoginService } from './login/login.service';
+import { User } from './login/user.model';
 
 @Component({
   selector: 'app-root',
@@ -15,77 +16,53 @@ import { MenuItem } from './menuItem';
     RouterModule,
     HeaderComponent,
     FooterComponent,
-    SitesComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
-  title = 'site_cenca';
-  menuItems: MenuItem[] = [
-    {
-      name: 'Axes du CENCA',
-      class_color: 'c-menu',
-      children: [
-        {
-          name: 'Protéger',
-          class_color: 'c-proteger',
-          children: [
-            { name: 'Stratégie, animation et veille foncière' },
-            { name: 'Liste des sites', route: '/sites' },
-            { name: 'Police et surveillance' },
-            { name: 'Classements de sites' },
-            { name: 'Patrtenariats et foncier' },
-          ],
+export class AppComponent implements OnInit {
+  token: string | null = localStorage.getItem('token');
+
+  constructor(private router: Router, private loginService: LoginService) {}
+
+  ngOnInit() {
+    this.checkToken();
+  }
+
+  checkToken() {
+    if (this.token) {
+      // Action à effectuer si le token existe
+      console.log('Token exists:', this.token);
+
+      this.loginService.getUsers().subscribe({
+        next: (result: User | undefined | null) => {
+          console.log('User:', result);
+          this.navigate(); // Rediriger vers la page d'accueil
         },
-        {
-          name: 'Connaitre',
-          class_color: 'c-connaitre',
-          children: [
-            { name: 'Tableau de bord' },
-            { name: 'Inventaires et suivis scientifique' },
-            { name: 'Plans de gestion' },
-          ],
+        error: (error: Error) => {
+          console.log('Error:', error);
+          this.navigate('login'); // Rediriger vers la page de connexion
         },
-        {
-          name: 'Gérer',
-          class_color: 'c-gerer',
-          children: [
-            { name: 'Travaux de gestion' },
-            { name: 'Libre évolution' },
-            { name: 'Partenariat et ancrage territorial' },
-            { name: 'Partenariats et sources de financement' },
-          ],
-        },
-        {
-          name: 'Valoriser',
-          class_color: 'c-valoriser',
-          children: [
-            { name: "Traveaux d'aménagement" },
-            { name: 'Sembilisations' },
-          ],
-        },
-        {
-          name: 'Accompagner',
-          class_color: 'c-accompagner',
-          children: [
-            { name: 'Mesure compensatoires' },
-            { name: 'Natura 2000' },
-            { name: 'Assistance technique' },
-          ],
-        },
-        {
-          name: 'Administratif',
-          class_color: 'c-administratif',
-          children: [],
-        },
-        { name: 'Liens utiles', class_color: 'c-liens-utils', children: [] },
-      ],
-    },
-    // {
-    //   name: 'Gerer',
-    //   class_color: 'c-gerer',
-    //   children: [{ name: 'Insects' }, { name: 'Molluscs' }],
-    // },
-  ];
+      });
+    } else {
+      // Action à effectuer si le token n'existe pas
+      console.log('No token found');
+      this.navigate('login'); // Rediriger vers la page de connexion
+    }
+  }
+
+  /**
+   * Navigates to a specified route.
+   *
+   * @param {string} [route='home'] - The route to navigate to. Defaults to 'home'.
+   * If the route is 'home', navigates to the root path ('/').
+   * Otherwise, navigates to the specified route.
+   */
+  navigate(route: string = 'home') {
+    if (route === 'home') {
+      this.router.navigate(['/']);
+    } else {
+      this.router.navigate(['/' + route]);
+    }
+  }
 }

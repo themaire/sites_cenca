@@ -2,7 +2,12 @@
   <div class="fond">
     <!-- Bouton Retour -->
     <div class="container-btn-h">
-      <button class="btn" type="button" (click)="resetSelectedd()">
+      <button
+        mat-button-flat
+        class="btn"
+        type="button"
+        (click)="resetSelectedd()"
+      >
         Retour
       </button>
     </div>
@@ -10,7 +15,6 @@
     <h2 *ngIf="siteDetail !== undefined">
       {{ siteDetail.description_site }}
     </h2>
-
 
     <div *ngIf="isMobile; then mobile; else desktop" class="site-detail"></div>
 
@@ -58,7 +62,6 @@
     <!--   Onglets supérieurs -->
     <mat-tab-group class="bloc1">
       <mat-tab label="Infos gén.">
-
         <app-detail-infos [inputDetail]="siteDetail"> </app-detail-infos>
       </mat-tab>
 
@@ -88,5 +91,4 @@
       </mat-tab>
     </mat-tab-group>
   </ng-template>
-
 </div>

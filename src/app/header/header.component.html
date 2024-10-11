@@ -12,7 +12,7 @@
             (click)="navigateToHome()"
           />
         </div>
-        <div class="menu-conteneur">
+        <div class="menu-conteneur" *ngIf="loginService.user()">
           <div class="menu">
             <ng-container *ngFor="let item of menuItems[0].children">
               <!-- Un bouton pour chaque axe du CENCA -->
@@ -42,35 +42,71 @@
             </ng-container>
           </div>
         </div>
-        <div class="connection">
-          <img
-            src="https://randomuser.me/api/portraits/med/women/56.jpg"
-            alt="Icône de connexion"
-          />
+        <div class="connexion">
+          <div class="user" *ngIf="loginService.user()">
+            <button class="btn-initiales">
+              {{ loginService.user()?.initiales }}
+            </button>
+            <!--   <img
+              src="https://randomuser.me/api/portraits/med/women/56.jpg"
+              alt="Icône de connexion"
+            />-->
+            <button mat-icon-button class="btn-deconnexion" (click)="logout()">
+              <mat-icon>logout</mat-icon>
+            </button>
+          </div>
         </div>
       </nav>
     </div>
   </ng-template>
 
+  <!-- Mobile -->
   <ng-template #mobile>
-    <!-- Mobile -->
     <div class="conteneur">
       <nav>
         <div class="logo-conteneur">
           <img
             class="logoPetit"
-            src="../assets/images/logo/logocen-color-petit.png"
+            src="../../assets/images/logo/logocen-color-petit.png"
             alt="logo du CENCA"
             (click)="navigateToHome()"
           />
         </div>
-        <div class="connection">
-          <img
+        <div class="connexion" *ngIf="loginService.user()">
+          <!--   <img
             src="https://randomuser.me/api/portraits/med/women/56.jpg"
             alt="Icône de connexion"
-          />
-          <!-- Bouton du menu hamburger visible uniquement en version mobile -->
-          <!-- Bouton du menu hamburger -->
+          />-->
+          <div class="user">
+            <div class="deconnexion">
+              <button
+                mat-button
+                class="btn-initiales"
+                [matMenuTriggerFor]="login"
+              >
+                {{ loginService.user()?.initiales }}
+              </button>
+              <mat-menu #login="matMenu">
+                <!-- Bouton deconnexion -->
+                <button
+                  mat-menu-item
+                  class="btn-deconnexion"
+                  (click)="logout()"
+                >
+                  <mat-icon>logout</mat-icon>
+                  Déconnexion
+                </button>
+              </mat-menu>
+            </div>
+
+            <!--   <img
+                src="https://randomuser.me/api/portraits/med/women/56.jpg"
+              alt="Icône de connexion"
+            />-->
+          </div>
+
+          <!--  Bouton du menu hamburger visible uniquement en version mobile 
+            Bouton du menu hamburger -->
           <div class="hamburger" *ngIf="isMobile">
             <button
               mat-icon-button
