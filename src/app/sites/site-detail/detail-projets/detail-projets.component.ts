@@ -85,6 +85,7 @@ export class DetailProjetsComponent {
   openDialog(projetlite: ProjetLite): void {
     // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
     let dialogComponent: any
+    console.log("--------------ProjetLite : ", projetlite);
 
     if(projetlite.webapp === true){
       // Si c'est un projet webapp c'est a dire un projet 
