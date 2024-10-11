@@ -1,37 +1,80 @@
-import { Component, ChangeDetectorRef, OnInit, inject, Inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, Validators, FormsModule, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableDataSource, MatTableModule} from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
-import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatIconModule } from '@angular/material/icon';
+import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+
+import { MatInputModule } from '@angular/material/input'; 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+import 'moment/locale/fr';
+
 import { AsyncPipe } from '@angular/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { OperationComponent } from './operation/operation.component';
+import { MapComponent } from '../../../../map/map.component';
 
 import { ProjetLite, Projet } from '../projets';
 import { Operation } from './operation/operations';
 import { ProjetService } from '../projets.service';
 
+// Configuration des formats de date
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
 @Component({
   selector: 'app-dialog-operation',
   standalone: true,
+  providers: [
+    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+
+    // Moment can be provided globally to your app by adding `provideMomentDateAdapter`
+    // to your app config. We provide it at the component level here, due to limitations
+    // of our example generation script.
+    provideMomentDateAdapter(),
+
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: {displayDefaultIndicatorType: false},
+    },
+  ],
   imports: [
     CommonModule,
+    MapComponent,
     MatDialogModule,
     MatDialogTitle,
     MatDialogContent,
+    MatIconModule,
     MatStepperModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTableModule,
@@ -41,12 +84,15 @@ import { ProjetService } from '../projets.service';
   styleUrls: ['./projet.component.scss'], // Correct 'styleUrl' to 'styleUrls'
 })
 export class ProjetComponent implements OnInit { // Implements OnInit to use the lifecycle method
+  private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
+  private readonly _intl = inject(MatDatepickerIntl);
+  private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
+  readonly dateFormatString = this._locale() === 'fr';
+  
   operations!: Operation[];
   public dataSource!: MatTableDataSource<Operation>;
   // Pour la liste des opérations : le tableau Material
   public displayedColumns: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
-
-  private _formBuilder = inject(FormBuilder);
   
   projetLite: ProjetLite;
   projet!: Projet;
@@ -54,23 +100,15 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
   loadingDelay: number = 300;
   editMode: boolean = false;
 
-  // Tous en mode ! puisque initialisé dans le constructor
-  descriptionFormGroup!: FormGroup;
-  ENPFormGroup!: FormGroup;
-  UGFormGroup!: FormGroup;
-  indicateursFormGroup!: FormGroup;
-  financementFormGroup!: FormGroup;
-  operationsFormGroup!: FormGroup;
+  projetForm!: FormGroup;
   
   stepperOrientation: Observable<StepperOrientation>;
 
   constructor(
     private cdr: ChangeDetectorRef,
+    private fb: FormBuilder,
     private research: ProjetService, // Inject service via constructor
     @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
-
-    
-
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
       this.projetLite = data;
@@ -80,28 +118,7 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
       const breakpointObserver = inject(BreakpointObserver);
       this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)').pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
 
-      // Les form_groups correspondant aux steps
-      // Sert a defini les valeurs par defaut et si obligatoire
-      this.descriptionFormGroup = this._formBuilder.group({
-        Type: ['', Validators.required],
-        Titre: ['', Validators.required],
-        }
-      );
-      this.ENPFormGroup = this._formBuilder.group({
-        secondCtrl: ['', Validators.required],
-      });
-      this.UGFormGroup = this._formBuilder.group({
-        thirdCtrl: ['', Validators.required],
-      });
-      this.indicateursFormGroup = this._formBuilder.group({
-        firstCtrl: ['', Validators.required],
-      });
-      this.financementFormGroup = this._formBuilder.group({
-        secondCtrl: ['', Validators.required],
-      });
-      this.operationsFormGroup = this._formBuilder.group({
-        thirdCtrl: ['', Validators.required],
-      });
+      
       
       console.log("this.projetLite dans le dialog :", this.projetLite);
 
@@ -115,7 +132,7 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
   async ngOnInit() {
     let subroute: string = "";
     
-    if (this.projetLite !== undefined) {
+    if (this.projetLite?.uuid_proj) {
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
@@ -127,6 +144,25 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
           if (Array.isArray(projetArray) && projetArray.length > 0) {
             this.projet = projetArray[0]; // Assigner l'objet projet directement
             console.log('Projet après extraction :', this.projet);
+
+            // Les form_groups correspondant aux steps
+            // Sert a defini les valeurs par defaut et si obligatoire
+            this.projetForm = this.fb.group({
+              type: [this.projet.typ_projet || '', Validators.required],
+              nom: [this.projet.nom || '', Validators.required],
+              code: [this.projet.code || '', Validators.required],
+              responsable: [this.projet.code || '', Validators.required],
+              pro_maitre_ouvrage: [this.projet.pro_maitre_ouvrage || '', Validators.required],
+              pro_debut: [this.projet.pro_debut || '', Validators.required],
+              pro_fin: [this.projet.pro_fin || '', Validators.required],
+              statut: [this.projet.statut || '', Validators.required],
+              pro_obj_projet: [this.projet.pro_obj_projet || '',],
+              surface: [this.projet.pro_surf_totale || '', Validators.required],
+              pro_enjeux_eco: [this.projet.pro_enjeux_eco || '', Validators.required],
+              pro_nv_enjeux: [this.projet.pro_nv_enjeux || '', Validators.required],
+              pro_pression_ciblee: [this.projet.pro_pression_ciblee || '', Validators.required],
+              pro_results_attendus: [this.projet.pro_results_attendus || '', Validators.required]
+            });
             
             this.isLoading = false;  // Le chargement est terminé
 
@@ -177,5 +213,12 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
     this.dialog.open(dialogComponent, {
       data : operation
     });
+  }
+
+  onSubmit(): void {
+    if (this.projetForm.valid) {
+      // Logique de soumission du formulaire global
+      console.log(this.projetForm.value);
+    }
   }
 }

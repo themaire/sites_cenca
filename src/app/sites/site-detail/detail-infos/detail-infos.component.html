@@ -1,19 +1,43 @@
 <div *ngIf="inputDetail !== undefined" class="container">
   <div class="container-champ">
     <div class="champ">
-      <!--
-      <div class="edit">
-        <button mat-icon-button class="btn-edit" (click)="editDetail()">
+      <!---->
+      <div class="edition">
+        <button
+          mat-icon-button
+          matTooltip="Modifier"
+          *ngIf="!isEditMode"
+          class="btn-edition"
+          (click)="toggleEditMode()"
+        >
           <mat-icon>edit</mat-icon>
         </button>
-      </div>-->
+        <button
+          mat-button
+          matTooltip="Sauvegarder"
+          *ngIf="isEditMode"
+          class="btn-sauvegarde"
+          (click)="saveChanges()"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+        <button
+          mat-button
+          matTooltip="Annuler"
+          *ngIf="isEditMode"
+          class="btn-annulation"
+          (click)="toggleEditMode()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
 
       <div class="ligne1">
         <div class="nom">
           <h2>Nom:</h2>
           <div class="infos">
             <!--{{ inputDetail.nom }}-->
-            <input [(ngModel)]="inputDetail.nom" />
+            <input [(ngModel)]="inputDetail.nom" [disabled]="!isEditMode" />
           </div>
         </div>
       </div>
@@ -22,21 +46,24 @@
           <h2>Code:</h2>
           <div class="infos">
             <!--{{ inputDetail.code }}-->
-            <input [(ngModel)]="inputDetail.code" />
+            <input [(ngModel)]="inputDetail.code" [disabled]="!isEditMode" />
           </div>
         </div>
         <div class="surface">
           <h2>Surface:</h2>
           <div class="infos">
             <!--{{ inputDetail.surface }}-->
-            <input [(ngModel)]="inputDetail.surface" />
+            <input [(ngModel)]="inputDetail.surface" [disabled]="!isEditMode" />
           </div>
         </div>
         <div class="responsable">
           <h2>Responsable:</h2>
           <div class="infos">
             <!-- {{ inputDetail.responsable }}-->
-            <input [(ngModel)]="inputDetail.responsable" />
+            <input
+              [(ngModel)]="inputDetail.responsable"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
       </div>
@@ -45,21 +72,30 @@
           <h2>Catégorie:</h2>
           <div class="infos">
             <!-- {{ inputDetail.typ_site }}-->
-            <input [(ngModel)]="inputDetail.typ_site" />
+            <input
+              [(ngModel)]="inputDetail.typ_site"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
         <div class="statut">
           <h2>Status:</h2>
           <div class="infos">
             <!--{{ inputDetail.validite }}-->
-            <input [(ngModel)]="inputDetail.validite" />
+            <input
+              [(ngModel)]="inputDetail.validite"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
         <div class="1er_ctr">
           <h2>Première année contrat:</h2>
           <div class="infos">
             <!-- {{ inputDetail.prem_ctr }}-->
-            <input [(ngModel)]="inputDetail.prem_ctr" />
+            <input
+              [(ngModel)]="inputDetail.prem_ctr"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
       </div>
@@ -75,7 +111,10 @@
           <h2>Site ref.public:</h2>
           <div class="infos">
             <!-- {{ inputDetail.ref_public }}-->
-            <input [(ngModel)]="inputDetail.ref_public" />
+            <input
+              [(ngModel)]="inputDetail.ref_public"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
       </div>
@@ -84,14 +123,20 @@
           <h2>Type d'espace:</h2>
           <div class="infos">
             <!--{{ inputDetail.typ_espace }}-->
-            <input [(ngModel)]="inputDetail.typ_espace" />
+            <input
+              [(ngModel)]="inputDetail.typ_espace"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
         <div class="bassin">
           <h2>Bassin d'agence:</h2>
           <div class="infos">
             <!--{{ inputDetail.bassin_agence }}-->
-            <input [(ngModel)]="inputDetail.bassin_agence" />
+            <input
+              [(ngModel)]="inputDetail.bassin_agence"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
         <div class="zone-humide">
@@ -113,14 +158,17 @@
           <h2>Ref. MNHN:</h2>
           <div class="infos">
             <!--     {{ inputDetail.id_mnhn }}-->
-            <input [(ngModel)]="inputDetail.id_mnhn" />
+            <input [(ngModel)]="inputDetail.id_mnhn" [disabled]="!isEditMode" />
           </div>
         </div>
         <div class="refF">
           <h2>Ref. FCEN:</h2>
           <div class="infos">
             <!--   {{ inputDetail.ref_fcen }}-->
-            <input [(ngModel)]="inputDetail.ref_fcen" />
+            <input
+              [(ngModel)]="inputDetail.ref_fcen"
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
       </div>
@@ -129,7 +177,7 @@
           <h2>RGTP:</h2>
           <div class="infos">
             <!--  {{ inputDetail.rgpt }}-->
-            <input [(ngModel)]="inputDetail.rgpt" />
+            <input [(ngModel)]="inputDetail.rgpt" [disabled]="!isEditMode" />
           </div>
         </div>
       </div>
@@ -144,7 +192,7 @@
       <h2>Commune(s) concernée(s)</h2>
       <div class="commune">
         <p *ngFor="let comm of communes" class="infos">
-          <input [(ngModel)]="comm.nom" />
+          <input [(ngModel)]="comm.nom" [disabled]="!isEditMode" />
           <!--{{ comm.nom }}-->
         </p>
       </div>
@@ -155,6 +203,4 @@
       <app-map [geojson]="inputDetail.geojson"></app-map>
     </div>
   </div>
-
-  
 </div>

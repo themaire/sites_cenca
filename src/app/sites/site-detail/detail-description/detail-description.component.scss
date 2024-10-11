@@ -3,10 +3,9 @@
 
 .container {
   display: flex;
-  flex-wrap: wrap;
-  grid-gap: 131px;
-  margin: 20px auto;
-  @include align(top, center);
+  width: 772.5px;
+  margin: 20px 0;
+  @include align(top, start);
 }
 .container-champ {
   display: flex;
@@ -19,32 +18,74 @@
     @include Typo($p14, $normal, $couleur-flore);
     margin-bottom: 0;
   }
-  
+
+  .infos {
+    width: 100%;
+  }
   textarea,
-  a,
+  .lien,
   input {
     @include input($couleur-faune, black);
   }
-
   .ligne2,
-  .ligne3,
-  .ligne5 {
+  .ligne3 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     flex-wrap: wrap;
     gap: 16px;
   }
-}
 
-.edit {
-  @include btn-edit();
+  .edition {
+    display: flex;
+    @include align(center, start);
+    margin-bottom: 20px;
+    gap: 20px;
+    .btn-edition {
+      @include btn-icon($couleur-faune, $orangeC);
+      @include icon(white, black);
+    }
+    .btn-sauvegarde {
+      @include btn-icon(white, $couleur-territoire);
+      @include icon($couleur-flore, white);
+    }
+    .btn-annulation {
+      @include btn-icon(white, red);
+      @include icon(red, white);
+    }
+  }
 }
-
 @media screen and (max-width: $mobile) {
   .container {
+    display: flex;
+    width: 100%;
     h2 {
       font-size: 12px;
     }
+    .ligne2 {
+      grid-template-columns: 1fr;
+      gap: 0px;
+    }
+    .ligne5-btn {
+      display: flex;
+      gap: 20px;
+      @include align(center, start);
+      button {
+        @include btn(black, rgba(248, 244, 186, 0.5), white, $couleur-faune);
+        border: 1px solid $couleur-faune;
+        a {
+          color: inherit; /* Prend la couleur de l'élément parent */
+          text-decoration: none; /* Retire le soulignement */
+        }
+
+        a:hover,
+        a:visited,
+        a:active {
+          color: inherit; /* Assure que la couleur reste la même pour les états */
+          text-decoration: none; /* Toujours pas de soulignement */
+        }
+      }
+    }
+
     .infos {
       min-height: 36px;
       height: auto;
@@ -53,12 +94,43 @@
 }
 @media screen and (max-width: $tablette) {
   .container {
+    display: flex;
+    width: 100%;
     h2 {
       font-size: 12px;
     }
+
     .infos {
       min-height: 36px;
       height: auto;
+    }
+
+    .ligne5-btn {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      flex-wrap: wrap;
+      width: 100%;
+      gap: 20px;
+
+      .description {
+        @include align(center, center);
+        margin: auto;
+        button {
+          @include btn(black, rgba(248, 244, 186, 0.5), white, $couleur-faune);
+          border: 1px solid $couleur-faune;
+          a {
+            color: inherit; /* Prend la couleur de l'élément parent */
+            text-decoration: none; /* Retire le soulignement */
+          }
+
+          a:hover,
+          a:visited,
+          a:active {
+            color: inherit; /* Assure que la couleur reste la même pour les états */
+            text-decoration: none; /* Toujours pas de soulignement */
+          }
+        }
+      }
     }
   }
 }

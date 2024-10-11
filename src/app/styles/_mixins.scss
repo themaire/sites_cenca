@@ -67,7 +67,7 @@
   }
 }
 // Boutons image
-@mixin btn-img($bgColor) {
+@mixin btn-icon($bgColor, $bgHover) {
   background-color: $bgColor;
   @include dim(40px, 40px);
   @include align(center, center);
@@ -76,13 +76,17 @@
   padding: 8px 10px;
   cursor: pointer;
   box-shadow: 5px 5px 5px 0px rgb(0 0 0 / 25%);
+  &:hover {
+    background-color: $bgHover;
+  }
 }
-@mixin btn-edit() {
-  display: flex;
-  @include align(center, start);
-  margin-bottom: 20px;
-  .btn-edit {
-    @include btn(white, $couleur-faune, white, $orangeM);
+
+@mixin icon($color, $colorHover) {
+  @include Typo($p16, $normal, $color);
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    @include Typo($p16, $normal, $colorHover);
   }
 }
 

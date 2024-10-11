@@ -3,14 +3,15 @@ import {
   Input,
   SimpleChanges,
   ChangeDetectorRef,
-  AfterViewInit, 
-  inject
+  AfterViewInit,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { MapComponent } from '../../../map/map.component';
 
@@ -21,31 +22,39 @@ import { SitesService } from '../../sites.service';
 @Component({
   selector: 'app-detail-infos',
   standalone: true,
-  imports: [CommonModule, MatIconModule, FormsModule, MatSlideToggleModule, MapComponent],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    FormsModule,
+    MatSlideToggleModule,
+    MapComponent,
+    MatTooltipModule,
+  ],
   templateUrl: './detail-infos.component.html',
-  styleUrls: ['./detail-infos.component.scss'],  // Attention ici c'était styleUrl sans 's'
+  styleUrls: ['./detail-infos.component.scss'], // Attention ici c'était styleUrl sans 's'
 })
 export class DetailInfosComponent {
-  @Input() inputDetail?: DetailSite;  
+  @Input() inputDetail?: DetailSite;
 
+  // Pour le bouton "Modifier"
+  // Variable pour activer/désactiver le mode édition
+  isEditMode: boolean = false;
+  // Stocker les changements temporaires
+  editedDetail: DetailSite | null = null;
 
+  constructor(private sitesService: SitesService) {}
+
+  // Pour les communes
   public communes: Commune[] = [];
-  
 
   research: SitesService = inject(SitesService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
-  constructor() {}
-
-
   async ngOnChanges(changes: SimpleChanges) {
-    
-    
     if (this.inputDetail !== undefined) {
       // console.log('geojson ' + this.inputDetail.geojson);
     }
-    
-    
+
     // Ce component est chargé en meme temps que sitesDetail.
     let subroute: string = '';
 
@@ -68,25 +77,26 @@ export class DetailInfosComponent {
       }
     }
   }
-  // Vous pouvez ajouter une fonction de sauvegarde ici qui persiste les données modifiées
-  // editDetail() {
-  //   if (this.inputDetail) {
-  //     // You can use your service to send updates to the backend
-  //     this.research.updateDetailSite(this.inputDetail).subscribe(
-  //       (response) => {
-  //         console.log('Update successful:', response);
-  //       },
-  //       (error) => {
-  //         console.error('Update failed:', error);
-  //       }
-  //     );
-  //   }
-  // }
 
-  isEditMode = false; // Par défaut, le mode est désactivé
-
+  // Pour le bouton "Modifier"
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
+    if (this.isEditMode) {
+      // Créer une copie des données pour l'édition
+      this.editedDetail = { ...this.inputDetail } as DetailSite;
+    } else {
+      this.editedDetail = null; // Annuler les modifications
+    }
+    console.log('-------------------->', this.editedDetail);
   }
 
+  saveChanges() {
+    if (this.editedDetail) {
+      // Appeler le service pour sauvegarder les modifications
+      this.sitesService.updateDetail(this.editedDetail).then(() => {
+        this.inputDetail = this.editedDetail!;
+        this.isEditMode = false;
+      });
+    }
+  }
 }

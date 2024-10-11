@@ -6,9 +6,10 @@ button {
   bottom: 20px;
   right: 20px;
   z-index: 999;
-  @include btn-img($couleur-faune);
+  @include btn-icon($couleur-faune, $orangeC);
+  @include icon(white, black);
   // display: none; /* Caché par défaut */
-  color: white;
+
   width: auto;
 }
 button.visible {

@@ -1,0 +1,30 @@
+<div id="container">
+  <form (submit)="login()" [formGroup]="loginFormGroup">
+    <div class="titre">
+      <h3>Connectez-vous</h3>
+    </div>
+    <div class="connexion">
+      <mat-form-field>
+        <mat-label>Identifiant</mat-label>
+        <input matInput formControlName="username" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Mot de passe</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+    </div>
+    <div class="btn">
+      <button mat-flat-button [disabled]="loginFormGroup.invalid">
+        Connexion
+      </button>
+    </div>
+    <div class="erreur">
+      <mat-error *ngIf="invalidCredentials"
+        >Identifiant ou mot de passe incorrect</mat-error
+      >
+    </div>
+    <div class="mdp">
+      <a href="#">Mot de passe oublié ?</a>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+@use '@angular/material/core/theming/_all' as mat-core;
+@use '@angular/material/core/theming/_palette' as mat-palettes;
+
+// Définir une palette de couleurs personnalisée
+$custom-primary: mat-palettes.$indigo-palette;
+$custom-accent: mat-palettes.$pink-palette;
+$custom-warn: mat-palettes.$red-palette;
+
+// Créer un thème personnalisé
+$custom-theme: mat-core.mat-light-theme(
+  (
+    color: (
+      primary: $custom-primary,
+      accent: $custom-accent,
+      warn: $custom-warn,
+    ),
+  )
+);
+
+// Appliquer le thème personnalisé
+@include mat-core.all-component-themes($custom-theme);
+
+// Styles supplémentaires pour les composants
+.custom-mat-form-field {
+  .mat-form-field-wrapper {
+    .mat-form-field-flex {
+      background-color: #f0f0f0; // Couleur de fond du champ
+      border-radius: 4px; // Coins arrondis
+    }
+
+    .mat-form-field-label {
+      color: #3f51b5; // Couleur du label
+    }
+
+    .mat-input-element {
+      color: #3f51b5; // Couleur du texte
+    }
+
+    .mat-form-field-underline {
+      background-color: #3f51b5; // Couleur de la ligne de soulignement
+    }
+
+    .mat-form-field-ripple {
+      background-color: #3f51b5; // Couleur de l'effet ripple
+    }
+  }
+}
