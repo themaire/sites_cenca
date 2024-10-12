@@ -1,198 +1,210 @@
 <div *ngIf="inputDetail !== undefined" class="container">
   <div class="container-champ">
     <div class="champ">
-      <!---->
-      <div class="edition">
-        <button
-          mat-icon-button
-          matTooltip="Modifier"
-          *ngIf="!isEditMode"
-          class="btn-edition"
-          (click)="toggleEditMode()"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button
-          mat-button
-          matTooltip="Sauvegarder"
-          *ngIf="isEditMode"
-          class="btn-sauvegarde"
-          (click)="saveChanges()"
-        >
-          <mat-icon>save</mat-icon>
-        </button>
-        <button
-          mat-button
-          matTooltip="Annuler"
-          *ngIf="isEditMode"
-          class="btn-annulation"
-          (click)="toggleEditMode()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
 
-      <div class="ligne1">
-        <div class="nom">
-          <h2>Nom:</h2>
-          <div class="infos">
-            <!--{{ inputDetail.nom }}-->
-            <input [(ngModel)]="inputDetail.nom" [disabled]="!isEditMode" />
+      <!-- Formulaire form: FormGroup -->
+      <ng-container [formGroup]="form">
+
+        <!-- Boutons edit/save/cancel -->
+        <div class="edition">
+          <button
+            mat-icon-button
+            matTooltip="Modifier"
+            *ngIf="!isEditMode"
+            class="btn-edition"
+            (click)="toggleEditMode()"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          
+          <button
+            mat-button
+            matTooltip="Sauvegarder"
+            *ngIf="isEditMode"
+            class="btn-sauvegarde"
+            (click)="saveChanges()"
+          >
+            <mat-icon>save</mat-icon>
+          </button>
+          
+          <button
+            mat-button
+            matTooltip="Annuler"
+            *ngIf="isEditMode"
+            class="btn-annulation"
+            (click)="toggleEditMode()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="ligne1">
+          <div class="nom">
+            <h2>Nom:</h2>
+            <div class="infos">
+              <!--{{ inputDetail.nom }}-->
+              <input formControlName="nom"/>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="ligne2">
-        <div class="code">
-          <h2>Code:</h2>
-          <div class="infos">
-            <!--{{ inputDetail.code }}-->
-            <input [(ngModel)]="inputDetail.code" [disabled]="!isEditMode" />
+        <div class="ligne2">
+          <div class="code">
+            <h2>Code:</h2>
+            <div class="infos">
+              <!--{{ inputDetail.code }}-->
+              <input formControlName="code"/>
+            </div>
+          </div>
+          <div class="surface">
+            <h2>Surface:</h2>
+            <div class="infos">
+              <!--{{ inputDetail.surface }}-->
+              <input formControlName="surface"/>
+            </div>
+          </div>
+          <div class="responsable">
+            <h2>Responsable:</h2>
+            <div class="infos">
+              <!-- {{ inputDetail.responsable }}-->
+              <input
+                formControlName="responsable"
+                [disabled]="!isEditMode"
+              />
+            </div>
           </div>
         </div>
-        <div class="surface">
-          <h2>Surface:</h2>
-          <div class="infos">
-            <!--{{ inputDetail.surface }}-->
-            <input [(ngModel)]="inputDetail.surface" [disabled]="!isEditMode" />
+        <div class="ligne3">
+          <div class="categorie">
+            <h2>Catégorie:</h2>
+            <div class="infos">
+              <!-- {{ inputDetail.typ_site }}-->
+              <input
+                formControlName="typ_site"
+                [disabled]="!isEditMode"
+              />
+            </div>
+          </div>
+          <div class="statut">
+            <h2>Status:</h2>
+            <div class="toggle">
+              <!--{{ inputDetail.validite }}-->
+              <!-- <input
+                [(ngModel)]="inputDetail.validite"
+                [disabled]="!isEditMode"
+              /> -->
+              <mat-slide-toggle class="toggle"
+                formControlName="validite"
+                [disabled]="!isEditMode"
+              >
+              </mat-slide-toggle>
+            </div>
+          </div>
+          <div class="1er_ctr">
+            <h2>Première année contrat:</h2>
+            <div class="infos">
+              <!-- {{ inputDetail.prem_ctr }}-->
+              <input
+                formControlName="prem_ctr"
+                [disabled]="!isEditMode"
+              />
+            </div>
           </div>
         </div>
-        <div class="responsable">
-          <h2>Responsable:</h2>
-          <div class="infos">
-            <!-- {{ inputDetail.responsable }}-->
-            <input
-              [(ngModel)]="inputDetail.responsable"
-              [disabled]="!isEditMode"
-            />
+        <div class="ligne4">
+          <div class="parties">
+            <h2>Parties consernée(s):</h2>
+            <div class="parties-consernées">
+              <!-- <input [(ngModel)]="" />-->
+              ---
+            </div>
+          </div>
+          <div class="site">
+            <h2>Site ref.public:</h2>
+            <div class="infos">
+              <!-- {{ inputDetail.ref_public }}-->
+              <input
+                formControlName="ref_public"
+                [disabled]="!isEditMode"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="ligne3">
-        <div class="categorie">
-          <h2>Catégorie:</h2>
-          <div class="infos">
-            <!-- {{ inputDetail.typ_site }}-->
-            <input
-              [(ngModel)]="inputDetail.typ_site"
-              [disabled]="!isEditMode"
-            />
+        <div class="ligne5">
+          <div class="espace">
+            <h2>Type d'espace:</h2>
+            <div class="infos">
+              <!--{{ inputDetail.typ_espace }}-->
+              <input
+                formControlName="typ_espace"
+                [disabled]="!isEditMode"
+              />
+            </div>
+          </div>
+          <div class="bassin">
+            <h2>Bassin d'agence:</h2>
+            <div class="infos">
+              <!--{{ inputDetail.bassin_agence }}-->
+              <input
+                formControlName="bassin_agence"
+                [disabled]="!isEditMode"
+              />
+            </div>
+          </div>
+          <div class="zone-humide">
+            <h2>Zone humide:</h2>
+            <div class="toggle">
+              <!--  {{ inputDetail.zh }}
+                <input [(ngModel)]="inputDetail.zh" />-->
+              <mat-slide-toggle class="toggle" 
+                formControlName="zh" [disabled]="!isEditMode">
+              </mat-slide-toggle>
+            </div>
           </div>
         </div>
-        <div class="statut">
-          <h2>Status:</h2>
-          <div class="infos">
-            <!--{{ inputDetail.validite }}-->
-            <input
-              [(ngModel)]="inputDetail.validite"
-              [disabled]="!isEditMode"
-            />
+        <div class="ligne6">
+          <div class="refM">
+            <h2>Ref. MNHN:</h2>
+            <div class="infos">
+              <!--     {{ inputDetail.id_mnhn }}-->
+              <input formControlName="id_mnhn"/>
+            </div>
+          </div>
+          <div class="refF">
+            <h2>Ref. FCEN:</h2>
+            <div class="infos">
+              <!--   {{ inputDetail.ref_fcen }}-->
+              <input
+                formControlName="ref_fcen"
+                [disabled]="!isEditMode"
+              />
+            </div>
           </div>
         </div>
-        <div class="1er_ctr">
-          <h2>Première année contrat:</h2>
-          <div class="infos">
-            <!-- {{ inputDetail.prem_ctr }}-->
-            <input
-              [(ngModel)]="inputDetail.prem_ctr"
-              [disabled]="!isEditMode"
-            />
+        <div class="ligne7">
+          <div class="rgpt">
+            <h2>RGTP:</h2>
+            <div class="infos">
+              <!--  {{ inputDetail.rgpt }}-->
+              <input formControlName="rgpt"/>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="ligne4">
-        <div class="parties">
-          <h2>Parties consernée(s):</h2>
-          <div class="parties-consernées">
-            <!-- <input [(ngModel)]="" />-->
-            ---
-          </div>
-        </div>
-        <div class="site">
-          <h2>Site ref.public:</h2>
-          <div class="infos">
-            <!-- {{ inputDetail.ref_public }}-->
-            <input
-              [(ngModel)]="inputDetail.ref_public"
-              [disabled]="!isEditMode"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="ligne5">
-        <div class="espace">
-          <h2>Type d'espace:</h2>
-          <div class="infos">
-            <!--{{ inputDetail.typ_espace }}-->
-            <input
-              [(ngModel)]="inputDetail.typ_espace"
-              [disabled]="!isEditMode"
-            />
-          </div>
-        </div>
-        <div class="bassin">
-          <h2>Bassin d'agence:</h2>
-          <div class="infos">
-            <!--{{ inputDetail.bassin_agence }}-->
-            <input
-              [(ngModel)]="inputDetail.bassin_agence"
-              [disabled]="!isEditMode"
-            />
-          </div>
-        </div>
-        <div class="zone-humide">
-          <h2>Zone humide:</h2>
-          <div class="zh">
-            <!--  {{ inputDetail.zh }}
-              <input [(ngModel)]="inputDetail.zh" />-->
-            <mat-slide-toggle
-              class="zh"
-              [(ngModel)]="inputDetail.zh"
-              [disabled]="!isEditMode"
-            >
-            </mat-slide-toggle>
-          </div>
-        </div>
-      </div>
-      <div class="ligne6">
-        <div class="refM">
-          <h2>Ref. MNHN:</h2>
-          <div class="infos">
-            <!--     {{ inputDetail.id_mnhn }}-->
-            <input [(ngModel)]="inputDetail.id_mnhn" [disabled]="!isEditMode" />
-          </div>
-        </div>
-        <div class="refF">
-          <h2>Ref. FCEN:</h2>
-          <div class="infos">
-            <!--   {{ inputDetail.ref_fcen }}-->
-            <input
-              [(ngModel)]="inputDetail.ref_fcen"
-              [disabled]="!isEditMode"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="ligne7">
-        <div class="rgpt">
-          <h2>RGTP:</h2>
-          <div class="infos">
-            <!--  {{ inputDetail.rgpt }}-->
-            <input [(ngModel)]="inputDetail.rgpt" [disabled]="!isEditMode" />
-          </div>
+      </ng-container>
+      <!-- Fin du formulaire -->
+
+      <div class="a-venir">
+        <div>Mesures compensatoires : projets associés :</div>
+        <div>
+          <div>---Tableau à venir---</div>
         </div>
       </div>
     </div>
-    <div class="a-venir">
-      <div>Mesures compensatoires : projets associés :</div>
-      <div>
-        <div>---Tableau à venir---</div>
-      </div>
-    </div>
+
     <div *ngIf="communes !== undefined" class="container-commune">
       <h2>Commune(s) concernée(s)</h2>
       <div class="commune">
         <p *ngFor="let comm of communes" class="infos">
-          <input [(ngModel)]="comm.nom" [disabled]="!isEditMode" />
+          <input [(ngModel)]="comm.nom"/>
           <!--{{ comm.nom }}-->
         </p>
       </div>

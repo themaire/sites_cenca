@@ -128,7 +128,7 @@ export class SitesResearchComponent implements OnInit {
     // console.log(this.params);
   }
 
-  productSelection() {
+  siteSelection() {
     // console.log("Dans productSelection avec " + this.params.type + "/" + this.params.code + "/" + this.params.nom + "/" + this.params.commune + "/" + this.params.milieux_naturels + "/" + this.params.responsable);
     // console.log("Liste de sites demandée.");
 

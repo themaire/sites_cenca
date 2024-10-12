@@ -3,7 +3,7 @@ import { backendAdress } from '../backendAdress';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
-import { BehaviorSubject, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 // prototypes utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
@@ -20,28 +20,20 @@ import { Selector } from './selector';
   providedIn: 'root',
 })
 export class SitesService {
-  private activeUrl: string = backendAdress + 'sites/'; // Bureau
+  private activeUrl: string = backendAdress + 'sites/';
 
-  // Modifications des formulaires
-  //Ajouter un BehaviorSubject pour gérer et partager les données du site.
-  private siteDetailSubject = new BehaviorSubject<any>(null);
-  // Observable pour que les composants puissent s'abonner aux changements de siteDetail
-  siteDetail = this.siteDetailSubject.asObservable();
+  constructor(private http: HttpClient) {}
 
-  // Méthode pour mettre à jour les détails d'un site
-  updateSiteDetail(newData: any) {
-    this.siteDetailSubject.next(newData);
+  // fonction modèle de base réutilisée pour les différentes methode de ce fichier
+  async getData<T>(subroute: string): Promise<T> {
+    const url = `${this.activeUrl}${subroute}`;
+    console.log(`Dans getData() avec ${url}`);
+
+    const data = await fetch(url);
+    return await data.json() ?? [];
   }
 
-  // Recherche une liste de plans de gestion par l'UUID d'un site
-  // async getDocPlannn(siteUUID: string): Promise<DocPlan[]> {
-  //   console.log("Dans la fonction getDocPlan(" + siteUUID + ')');
-  //   const data = await fetch(this.url + siteUUID);
-  //   return await data.json() ?? [];
-  // }
-
   // Recherche des détails d'un site par son UUID
-
   async getSiteUUID(paramUUID: string): Promise<DetailSite> {
     console.log('Dans la fonction getSiteUUID du service avec ' + paramUUID);
 
@@ -50,52 +42,29 @@ export class SitesService {
   }
 
   async getCommune(subroute: string): Promise<Commune[]> {
-    const url = `${this.activeUrl}${subroute}`;
-    console.log('Dans getCommune() avec ' + url);
-
-    const data = await fetch(this.activeUrl + subroute);
-    return (await data.json()) ?? [];
+    return this.getData<Commune[]>(subroute);
   }
 
   async getDocPlan(subroute: string): Promise<DocPlan[]> {
-    const url = `${this.activeUrl}${subroute}`;
-    console.log('Dans getDocPlan() avec ' + url);
-
-    const data = await fetch(this.activeUrl + subroute);
-    return (await data.json()) ?? [];
+    return this.getData<DocPlan[]>(subroute);
   }
 
   async getMilNat(subroute: string): Promise<MilNat[]> {
-    const url = `${this.activeUrl}${subroute}`;
-    console.log('Dans getMilNat() avec ' + url);
-
-    const data = await fetch(this.activeUrl + subroute);
-    return (await data.json()) ?? [];
+    return this.getData<MilNat[]>(subroute);
   }
 
   async getMfu(subroute: string): Promise<Acte[]> {
-    const url = `${this.activeUrl}${subroute}`;
-    console.log('Dans getMfu() avec ' + url);
-
-    const data = await fetch(url);
-    return (await data.json()) ?? [];
+    return this.getData<Acte[]>(subroute);
   }
 
   async getProjets(subroute: string): Promise<ProjetLite[]> {
-    const url = `${this.activeUrl}${subroute}`;
-    console.log('Dans getProjets() avec ' + url);
-
-    const data = await fetch(this.activeUrl + subroute);
-    return (await data.json()) ?? [];
+    return this.getData<ProjetLite[]>(subroute);
   }
-
-  // Recherche par critères ou par mots clefs
-  // Pour la recherche de sites uniquement
-  async getSites(parametres: string): Promise<ListSite[]> {
-    // console.log("Dans getSites avec " + parametres);
-
-    const data = await fetch(this.activeUrl + parametres);
-    return (await data.json()) ?? [];
+  
+    // Recherche par critères ou par mots clefs
+    // Pour la recherche de sites uniquement
+  async getSites(subroute: string): Promise<ListSite[]> {
+    return this.getData<ListSite[]>(subroute);
   }
 
   async getSelectors(): Promise<Selector[]> {
@@ -103,61 +72,10 @@ export class SitesService {
     return (await data.json()) ?? [];
   }
 
+
   // Sauvegarde les modifications
-  async updateDetail(siteDetail: DetailSite): Promise<void> {
-    const url = `${this.activeUrl}${siteDetail.uuid_site}`; // Construire l'URL avec le UUID du site
-
-    try {
-      const response = await fetch(url, {
-        // Méthode PUT pour mettre à jour
-        method: 'PUT',
-        headers: {
-          // Indiquer que le corps est en JSON
-          'Content-Type': 'application/json',
-        },
-        // Convertir l'objet siteDetail en chaîne JSON
-        body: JSON.stringify(siteDetail),
-      });
-
-      // Vérifier si la requête a réussi
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP : ${response.status}`);
-      }
-
-      console.log('------------------------> Modifications sauvegardées');
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour du site :', error);
-    }
+  updateDetail(siteDetail: DetailSite): Observable<DetailSite> {
+    const url = `${this.activeUrl}put/table=espace_site/uuid=${siteDetail.uuid_site}`; // Construire l'URL avec le UUID du site
+    return this.http.put<DetailSite>(url, siteDetail);
   }
 }
-
-// Voici un exemple de comment tu pourrais refactoriser ton code :
-
-// typescript
-// CopyInsert
-// async getData<T>(subroute: string): Promise<T[]> {
-//   const url = `${this.url}${subroute}`;
-//   console.log(`Dans getData() avec ${url}`);
-
-//   const data = await fetch(url);
-//   return await data.json() ?? [];
-// }
-// Dans cette méthode, T est un type générique qui représente le type de retour. Tu peux ensuite appeler cette méthode avec le type de retour et le sous-chemin de l'URL comme paramètres.
-
-// Par exemple, pour récupérer les communes, tu pourrais appeler :
-
-// typescript
-// CopyInsert
-// async getCommune(subroute: string): Promise<Commune[]> {
-//   return this.getData<Commune[]>(subroute);
-// }
-// Et pour récupérer les plans de gestion, tu pourrais appeler :
-
-// typescript
-// CopyInsert
-// async getDocPlan(subroute: string): Promise<DocPlan[]> {
-//   return this.getData<DocPlan[]>(subroute);
-// }
-// Cela te permet de réduire la quantité de code dupliqué et de rendre ton code plus générique et plus facile à maintenir.
-
-// Qu'en penses-tu ? Est-ce que cela te convient ?

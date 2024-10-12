@@ -27,7 +27,7 @@
         [formControl]="codeFormControl"
         (change)="stringChange($event)"
         [(ngModel)]="codeFormControl.value"
-        (keyup.enter)="productSelection()"
+        (keyup.enter)="siteSelection()"
       />
       <mat-error *ngIf="codeFormControl.hasError('minlength')"
         ><li>Code trop court</li></mat-error
@@ -58,7 +58,7 @@
         [formControl]="nameFormControl"
         (change)="stringChange($event)"
         [(ngModel)]="nameFormControl.value"
-        (keyup.enter)="productSelection()"
+        (keyup.enter)="siteSelection()"
       />
       <mat-error *ngIf="nameFormControl.hasError('minlength')"
         ><li>Minimum 3 caractères</li></mat-error
@@ -104,7 +104,7 @@
 
   <!-- Validation du filtre.-->
   <div class="btn">
-    <button mat-button-flat (click)="productSelection()">
+    <button mat-button-flat (click)="siteSelection()">
       Sélection des sites
     </button>
   </div>
