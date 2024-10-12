@@ -1,9 +1,9 @@
-import { Injectable, Inject, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Credentials } from './credentials';
 import { User } from './user.model';
 import { backendAdress } from '../backendAdress';
-import { Observable, pipe, tap, map, switchMap } from 'rxjs';
+import { Observable, tap, map, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

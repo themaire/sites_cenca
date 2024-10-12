@@ -1,6 +1,7 @@
 import { GeoJsonObject } from 'geojson';
 
 export interface DetailSite {
+    message: string;
     uuid_site: string;
     code: string;
     prem_ctr: string;
@@ -8,7 +9,7 @@ export interface DetailSite {
     pourc_gere: string;
     surf_actes: string; 
     url_cen: string;
-    validite: string;
+    validite: boolean;
     espace: string;
     typ_site: string; 
     responsable: string;
@@ -22,7 +23,7 @@ export interface DetailSite {
     description_site: string;
     sensibilite: string;
     remq_sensibilite: string;
-    ref_public: string;
+    ref_public: boolean;
 
     uuid_espace: string;
     date_crea_espace: Date;

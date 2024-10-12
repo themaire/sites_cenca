@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -26,6 +26,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 })
 export class DetailDescriptionComponent {
   @Input() inputDetail?: DetailSite; // Le site selectionné pour voir son détail
+  form: FormGroup;
 
   // Pour le bouton "Modifier"
   // Variable pour activer/désactiver le mode édition
@@ -35,31 +36,49 @@ export class DetailDescriptionComponent {
   isMobile: boolean = false;
 
   constructor(
-    private sitesService: SitesService,
+    private sitesService: SitesService, 
+    private fb: FormBuilder,
     private breakpointObserver: BreakpointObserver
-  ) {}
+  ) {this.form = this.fb.group({
+    // Initialiser le formulaire avec des contrôles vides
+    description_site: ['', Validators.required],
+    sensibilite: ['', Validators.required],
+    remq_sensibilite: [''],
+    ref_public: [''],
+    typ_site: [''],
+    url: ['']
+    })
+  }
 
-  // Pour le bouton "Modifier"
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
     if (this.isEditMode) {
-      // Créer une copie des données pour l'édition
-      this.editedDetail = { ...this.inputDetail } as DetailSite;
+      this.form.enable();
+      console.log('Nous sommes en mode édition');
     } else {
-      this.editedDetail = null; // Annuler les modifications
+      this.form.disable();
+      console.log('Nous sortons du mode édition');
     }
-    console.log('-------------------->', this.editedDetail);
   }
 
   saveChanges() {
-    if (this.editedDetail) {
-      // Appeler le service pour sauvegarder les modifications
-      this.sitesService.updateDetail(this.editedDetail).then(() => {
-        this.inputDetail = this.editedDetail!;
-        this.isEditMode = false;
-      });
+    if (this.form.valid) {
+      const updatedDetail = this.form.value;
+      console.log('Données du formulaire:', updatedDetail);
+      this.sitesService.updateDetail(updatedDetail).subscribe(
+        response => {
+          console.log('Détails mis à jour avec succès:', response);
+          this.toggleEditMode(); // Sortir du mode édition après la sauvegarde
+        },
+        error => {
+          console.error('Erreur lors de la mise à jour des détails:', error);
+        }
+      );
+    } else {
+      console.error('Formulaire invalide');
     }
   }
+
   ngOnInit() {
     // Détecter si c'est la version mobile
     this.breakpointObserver
