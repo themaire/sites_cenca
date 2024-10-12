@@ -11,13 +11,6 @@ import { MapComponent } from '../../../map/map.component';
 
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
-import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
-
-import { MapComponent } from '../../../map/map.component';
-
 import { DetailSite } from '../../site-detail';
 import { Commune } from './commune';
 import { SitesService } from '../../sites.service';
