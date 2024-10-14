@@ -1,4 +1,4 @@
-export interface Acte {
+export interface FicheMFUlite {
   uuid_acte: string;
   site: string;
   typ_mfu: string;
@@ -24,7 +24,9 @@ export interface FicheMFU {
   remarque: string;
   notaire: string;
   cout: string;
-
+  date_crea: Date;
+  date_modif: Date;
+  actuel: boolean;
   // surface: string;
   // type_prop: string;
   // url: string;

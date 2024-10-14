@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 
 import { DetailSite } from '../../site-detail';
 // import interface
-import { Acte, FicheMFU } from './acte';
+import { FicheMFUlite } from './acte';
 import { SitesService } from '../../sites.service'; // service de données
 
 import { FicheMfuComponent } from './fiche-mfu/fiche-mfu.component';
@@ -26,9 +26,9 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class DetailMfuComponent {
   @Input() inputDetail?: DetailSite; // Le site selectionné pour voir son détail
-  public actes: Acte[] = [];
+  public actes: FicheMFUlite[] = [];
   // Pour la liste des sites : le tableau Material
-  public dataSource!: MatTableDataSource<Acte>;
+  public dataSource!: MatTableDataSource<FicheMFUlite>;
   // Pour la liste des opérations : le tableau Material
   public displayedColumns: string[] = [
     'typ_mfu',
@@ -68,7 +68,7 @@ export class DetailMfuComponent {
       }
     }
   }
-  onSelect(ficheMFU: FicheMFU): void {
+  onSelect(ficheMFU: FicheMFUlite): void {
     // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
     // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
 
@@ -83,7 +83,7 @@ export class DetailMfuComponent {
   // Pour l'affichage de la fenetre de dialogue
   dialog = inject(MatDialog);
 
-  openDialog(ficheMFU: FicheMFU): void {
+  openDialog(ficheMFU: FicheMFUlite): void {
     // // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
     let dialogComponent: any;
 

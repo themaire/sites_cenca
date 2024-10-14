@@ -1,0 +1,90 @@
+@import "../../../../styles/mixins.scss";
+@import "../../../../styles/variables.scss";
+
+.fiche-mfu {
+  display: flex;
+}
+.proteger {
+  padding-bottom: 15px;
+  @include bandeau($couleur-faune);
+}
+.conteneur {
+  padding: 20px;
+}
+.container {
+  display: grid;
+  grid-template-columns: 6fr 6fr;
+  flex-wrap: wrap;
+  grid-gap: 131px;
+  padding: 30px;
+  @include align(top, center);
+}
+.container-champ {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 30px;
+  @include dim(100%, auto);
+
+  h2 {
+    @include Typo($p14, $normal, $couleur-flore);
+    margin-bottom: 0;
+  }
+
+  .infos {
+    width: 100%;
+  }
+  textarea,
+  input {
+    @include input($couleur-faune, black);
+  }
+  .ligne2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .ligne3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .ligne4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .edit {
+    @include btn-edit();
+  }
+}
+
+@media screen and (max-width: $tablette) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-gap: 50px;
+    padding: 0 10px;
+    h2 {
+      font-size: 12px;
+    }
+    .ligne3,
+    .ligne5 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .infos {
+      min-height: 36px;
+      height: auto;
+    }
+  }
+  .container-carte {
+    display: flex;
+    @include dim(100%, auto);
+    @include align(center, center);
+    // padding: 0 20px;
+    .map {
+      width: 90%;
+      height: 100%;
+    }
+  }
+}

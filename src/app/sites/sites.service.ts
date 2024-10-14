@@ -10,7 +10,7 @@ import { ListSite } from './site'; // prototype d'un site
 import { Commune } from './site-detail/detail-infos/commune';
 import { DocPlan } from './site-detail/detail-gestion/docplan';
 import { MilNat } from './site-detail/detail-habitats/docmilnat';
-import { Acte } from './site-detail/detail-mfu/acte';
+import { FicheMFUlite } from './site-detail/detail-mfu/acte';
 import { ProjetLite } from './site-detail/detail-projets/projets';
 import { DetailSite } from './site-detail';
 
@@ -62,7 +62,7 @@ export class SitesService {
     return (await data.json()) ?? [];
   }
 
-  async getMfu(subroute: string): Promise<Acte[]> {
+  async getMfu(subroute: string): Promise<FicheMFUlite[]> {
     const url = `${this.activeUrl}${subroute}`;
     console.log('Dans getMfu() avec ' + url);
 

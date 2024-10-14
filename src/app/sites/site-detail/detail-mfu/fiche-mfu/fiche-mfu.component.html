@@ -1,3 +1,117 @@
-<p>fiche-mfu works!</p>
+<div class="fiche-mfu">
+  <div class="proteger">Protéger</div>
+  <div class="conteneur">
+    <div class="container-champ">
+      <div class="champ">
+        <h1>ACTE DE MAITRISE FONCIERE OU D'USAGE</h1>
+        <!-- Formulaire form: FormGroup -->
+        <ng-container [formGroup]="form">
+          <!-- Boutons edit/save/cancel 
 
-<p>{{ ficheMfu.uuid_acte }}</p>
+          <div class="edition">
+            <button
+              mat-icon-button
+              matTooltip="Modifier"
+              *ngIf="!isEditMode"
+              class="btn-edition"
+              (click)="toggleEditMode()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-button
+              matTooltip="Sauvegarder"
+              *ngIf="isEditMode"
+              class="btn-sauvegarde"
+              (click)="saveChanges()"
+            >
+              <mat-icon>save</mat-icon>
+            </button>
+
+            <button
+              mat-button
+              matTooltip="Annuler"
+              *ngIf="isEditMode"
+              class="btn-annulation"
+              (click)="toggleEditMode()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          -->
+          <div class="ligne1">
+            <div class="site">
+              <h2>Site:</h2>
+              <div class="infos">
+                <input formControlName="site" />
+              </div>
+            </div>
+          </div>
+          <div class="ligne2">
+            <div class="nature">
+              <h2>Nature de l'acte:</h2>
+              <div class="infos">
+                <input formControlName="typ_mfu_lib" />
+              </div>
+            </div>
+            <div class="statut">
+              <h2>Statut:</h2>
+              <div class="infos">
+                <input formControlName="validite" />
+              </div>
+            </div>
+          </div>
+          <div class="ligne3">
+            <div class="debut">
+              <h2>Date debut:</h2>
+              <div class="infos">
+                <input formControlName="debut" />
+              </div>
+            </div>
+            <div class="fin">
+              <h2>Date fin:</h2>
+              <div class="infos">
+                <input formControlName="fin" />
+              </div>
+            </div>
+            <div class="tacit">
+              <h2>Tacitement reconductible:</h2>
+              <div class="infos">
+                <input formControlName="tacit_rec" />
+              </div>
+            </div>
+          </div>
+          <div class="ligne4">
+            <div class="clause">
+              <h2>Clause reconduction:</h2>
+              <div class="infos">
+                <input formControlName="detail_rec" />
+              </div>
+            </div>
+            <div class="notaire">
+              <h2>Notaire:</h2>
+              <div class="infos">
+                <input formControlName="notaire" />
+              </div>
+            </div>
+            <div class="cout">
+              <h2>Coût:</h2>
+              <div class="infos">
+                <input formControlName="cout" />
+              </div>
+            </div>
+          </div>
+          <div class="ligne5">
+            <div class="parties">
+              <h2>Remarque:</h2>
+              <div class="parties-consernées">
+                <textarea formControlName="remarque"></textarea>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
