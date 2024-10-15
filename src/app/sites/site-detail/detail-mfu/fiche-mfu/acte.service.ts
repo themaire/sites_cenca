@@ -15,7 +15,7 @@ export class ActeService {
   private activeUrl: string = backendAdress + 'sites/';
 
   // Recherche des détails d'un site par son UUID
-  async getFullMfu(subroute: string): Promise<FicheMFU> {
+  async getFullMFU(subroute: string): Promise<FicheMFU> {
     const url = `${this.activeUrl}${subroute}`;
     console.log('Dans getFullMfu() avec ' + url);
 

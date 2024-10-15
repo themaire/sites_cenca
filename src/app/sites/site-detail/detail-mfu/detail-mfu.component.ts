@@ -49,7 +49,7 @@ export class DetailMfuComponent {
 
     if (this.inputDetail !== undefined) {
       // Cas d'une recherche sur critères
-      subroute = `mfu/uuid=${this.inputDetail.uuid_site}`;
+      subroute = `miniacte/uuid=${this.inputDetail.uuid_site}`;
       console.log(
         "Ouais on est dans le OnChanges 'onglet MFU' . UUID:" +
           this.inputDetail['uuid_site']
@@ -57,11 +57,13 @@ export class DetailMfuComponent {
 
       // ChatGPT 19/07/2024
       try {
+        // remplir notre tableau actes du site en question
         this.actes = await this.research.getMfu(subroute);
-        // remplir le tableau
+        // console.log('Données de this.actes après assignation :', this.actes);
+
+        // remplir le tableau mat-table
         this.dataSource = new MatTableDataSource(this.actes);
 
-        // console.log('Données de this.Mfus après assignation :', this.actes);
         this.cdr.detectChanges(); // Forcer la détection des changements
       } catch (error) {
         console.error('Error fetching documents', error);
@@ -98,8 +100,8 @@ export class DetailMfuComponent {
     // // dialogComponent = ProjetVComponent;
     // // }
 
-    this.dialog.open(dialogComponent, {
-      data: ficheMFU,
-    });
+    this.dialog.open( dialogComponent, 
+                     {data: ficheMFU,}
+    );
   }
 }

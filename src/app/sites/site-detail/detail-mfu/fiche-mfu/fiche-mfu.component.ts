@@ -23,7 +23,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-fiche-mfu',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, MatDialogModule, FormsModule, ReactiveFormsModule, MatDialogTitle],
   templateUrl: './fiche-mfu.component.html',
   styleUrl: './fiche-mfu.component.scss',
 })
@@ -33,14 +33,15 @@ export class FicheMfuComponent implements OnInit {
   form: FormGroup;
   isMobile: boolean = false;
 
-  // Inject le service de recherche des sites
-  acteMFU: ActeService = Inject(ActeService);
-  private cdr: ChangeDetectorRef = Inject(ChangeDetectorRef);
-
   constructor(
+    // Inject le service de recherche des sites
+    private serviceActeMFU: ActeService,
+    private cdr: ChangeDetectorRef, // Injecter ChangeDetectorRef
+
     @Inject(MAT_DIALOG_DATA) public data: FicheMFUlite,
     private fb: FormBuilder,
-    private breakpointObserver: BreakpointObserver
+    
+    private breakpointObserver: BreakpointObserver,
   ) {
     this.form = this.fb.group({
       // Initialiser le formulaire avec des contrôles vides
@@ -63,32 +64,35 @@ export class FicheMfuComponent implements OnInit {
   }
 
   async ngOnInit() {
-    // Désactiver le formulaire si on n'est pas en mode édition
+    // Désactiver le formulaire avant toute choses car 
+    // nous ne sommes pas en mode édition au moment de l'instantiation (init)
     if (!this.isEditMode) {
       this.form.disable();
     }
 
-    // Détecter si c'est la version mobile
+    // Détecter si l'utilisateur est sur un appareil mobile
     this.breakpointObserver
       .observe([Breakpoints.Handset])
       .subscribe((result) => {
         this.isMobile = result.matches;
       });
 
-    // Ce component est chargé en meme temps que sitesDetail.
-    if (this.data !== undefined) {
-      // Cas d'une recherche sur critères
-      const subroute = `fullmfu/uuid=${this.ficheMFU.uuid_acte}`;
+    // Va chercher les données de la fiche MFU en utilisant l'UUID d'un acte
+    // au travers du service de recherche des actes
+    if (this.data !== undefined) { // si on a des données ( si data n'est pas undefined)
+
+      const subroute = `fullmfu/uuid=${this.data.uuid_acte}`;
       console.log(
         "Ouais on est dans le OnInit 'boite de dialog MFU' . UUID:" +
-          this.ficheMFU['uuid_acte']
+          this.data.uuid_acte
       );
 
       // ChatGPT 19/07/2024
       try {
-        this.ficheMFU = await this.acteMFU.getFullMfu(subroute);
+        this.ficheMFU = await this.serviceActeMFU.getFullMFU(subroute);
+        console.log('Données de this.Mfus avant assignation dans le formulaire :', this.ficheMFU);
+
         this.form.patchValue({
-          uuid_espace: this.ficheMFU.uuid_acte,
           site: this.ficheMFU.site,
           typ_mfu: this.ficheMFU.typ_mfu,
           typ_mfu_lib: this.ficheMFU.typ_mfu_lib,
