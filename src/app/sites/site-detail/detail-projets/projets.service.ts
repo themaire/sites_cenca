@@ -18,15 +18,11 @@ export class ProjetService {
   // Reste a completer l'interface à utiliser
 
   async getProjet(subroute: string): Promise<Projet> {
-    const url = `${this.activeUrl}${subroute}`;
-    
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
   
   async getOperations(subroute: string): Promise<Operation[]> {
-    const url = `${this.activeUrl}${subroute}`;
-    
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }

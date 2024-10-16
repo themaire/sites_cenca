@@ -14,6 +14,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { DetailSite } from '../../site-detail';
 import { Commune } from './commune';
 import { SitesService } from '../../sites.service';
+import { FormService } from '../../../services/form.service';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 
 @Component({
@@ -39,13 +40,16 @@ export class DetailInfosComponent implements OnChanges, OnInit {
   research: SitesService = inject(SitesService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   form: FormGroup;
-  initialFormValues: any; // Propriété pour stocker les valeurs initiales du formulaire
+  initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire
   isMobile: boolean = false;
   private snackBar = inject(MatSnackBar); // Injecter MatSnackBar
 
-  constructor(private sitesService: SitesService, 
+  constructor(
+    private sitesService: SitesService, 
     private fb: FormBuilder,
-    private breakpointObserver: BreakpointObserver) {
+    private formService: FormService,
+    private breakpointObserver: BreakpointObserver
+  ) {
     this.form = this.fb.group({
       // Initialiser le formulaire avec des contrôles vides
       uuid_espace: [''],
@@ -119,30 +123,12 @@ export class DetailInfosComponent implements OnChanges, OnInit {
     }
   }
 
-  toggleEditMode() {
-  // Cette fonction permet de basculer entre le mode édition et le mode lecture seule
-  // Utilisée pour rentrer et sortir du mode édition
-  // Réinitialise le formulaire aux valeurs initiales si on sort du mode édition
-    if (this.isEditMode) {
-      this.form.patchValue(this.initialFormValues); // Réinitialiser le formulaire aux valeurs initiales
-      this.form.disable();
-      console.log('Nous sortons du mode édition');
-    } else {
-      this.form.enable();
-      console.log('Nous sommes en mode édition');
-    }
-    this.isEditMode = !this.isEditMode;
+  toggleEditMode(): void {
+    this.isEditMode = this.formService.toggleEditMode(this.form, this.isEditMode, this.initialFormValues);
   }
 
   getInvalidFields(): string[] {
-    const invalidFields: string[] = [];
-    const controls = this.form.controls;
-    for (const name in controls) {
-      if (controls[name].invalid) {
-        invalidFields.push(name);
-      }
-    }
-    return invalidFields;
+    return this.formService.getInvalidFields(this.form);
   }
 
   isFormChanged(): boolean {
@@ -197,6 +183,9 @@ export class DetailInfosComponent implements OnChanges, OnInit {
           });
         }
       );
+      // Stocker les valeurs initiales du formulaire
+      this.initialFormValues = this.form.value;
+      this.form.disable(); // Désactiver le formulaire après la sauvegarde
     } else {
       console.error('Formulaire invalide');
       const invalidFields = this.getInvalidFields();

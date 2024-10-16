@@ -15,7 +15,7 @@
 
   <div>
     <button type="button" (click)="toggleEditMode()">Passer en edition</button>
-    <label>EDIT MODE : {{ editMode }}</label>
+    <label>EDIT MODE : {{ isEditMode }}</label>
   </div>
     
   <mat-stepper labelPosition="bottom" 
@@ -26,10 +26,11 @@
                 [orientation]="(stepperOrientation | async)!">
 
     <!-- <mat-step [stepControl]="descriptionFormGroup"> -->
+    <!-- state="info" est l'icone a utiliser pour le step -->
     <mat-step state="info">
       <ng-template matStepLabel>Description du projet</ng-template>
       <!-- Affichage en mode consultation (editMode == false) -->
-      <ng-container *ngIf="!editMode">
+      <ng-container *ngIf="!isEditMode">
         <div>
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Type</mat-label>
@@ -93,7 +94,7 @@
       </ng-container>
 
       <!-- Affichage en mode édition (editMode == true) -->
-      <ng-container *ngIf="editMode">
+      <ng-container *ngIf="isEditMode">
         <form [formGroup]="projetForm">
           <ng-container>
             <div>
@@ -151,13 +152,16 @@
     <mat-step state="landscape">
       <ng-template matStepLabel>ENP concerné</ng-template>
       
-      <form *ngIf="editMode == true">
+      <form *ngIf="isEditMode == true">
 
         <!-- <mat-form-field>
           <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
         </mat-form-field> -->
 
       </form>
+
+      <app-detail-gestion [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
+
       <div>
         <button mat-button matStepperPrevious>Précédent</button>
         <button mat-button matStepperNext>Suivant</button>
@@ -175,7 +179,7 @@
       </div>
 
       <!-- Affichage en mode consultation (editMode == false) -->
-      <ng-container *ngIf="!editMode">
+      <ng-container *ngIf="!isEditMode">
         <div>
           <div>
             <div>
@@ -233,7 +237,7 @@
       </ng-container>
 
       <!-- Affichage en mode édition (editMode == true) -->
-      <ng-container *ngIf="editMode">
+      <ng-container *ngIf="isEditMode">
         <form [formGroup]="projetForm">
           <ng-container>
             <mat-form-field>
@@ -277,7 +281,7 @@
         Tableau des indicateurs projet
       </div>
 
-      <form *ngIf="editMode == true">
+      <form *ngIf="isEditMode == true">
         Ajouter un indicateur dans le tableau
       </form>
 
@@ -294,7 +298,7 @@
         Tableau des financements
       </div>
 
-      <form *ngIf="editMode == true">
+      <form *ngIf="isEditMode == true">
         Ajouter un financement dans le tableau
       </form>
       <div>
@@ -314,34 +318,34 @@
         <ng-template #thenOperationBlock>
           <div>
             Nb opérations : {{ operations.length }}<br>
-            <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+            <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8">
               <ng-container matColumnDef="code">
                 <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.responsable }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.code }} </mat-cell>
               </ng-container>
               
               <ng-container matColumnDef="titre">
                 <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.titre }} </mat-cell>
               </ng-container>
               
               <ng-container matColumnDef="description">
                 <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.description }} </mat-cell>
               </ng-container>
               
               <ng-container matColumnDef="surf">
                 <mat-header-cell *matHeaderCellDef> Surface </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.surf }} </mat-cell>
               </ng-container>
               
               <ng-container matColumnDef="date_debut">
                 <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.annee }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.date_debut }} </mat-cell>
               </ng-container>
               
-              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-              <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onSelect(row)"></mat-row>
+              <mat-header-row *matHeaderRowDef="displayedColumnsOperations"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumnsOperations;" (click)="onSelect(row)"></mat-row>
             </mat-table>
           </div>
 
@@ -354,7 +358,7 @@
 
       </div>
 
-      <form *ngIf="editMode == true" [formGroup]="projetForm">
+      <form *ngIf="isEditMode == true" [formGroup]="projetForm">
         Ajouter une opération dans le tableau
       </form>
       <div>
@@ -372,7 +376,7 @@
         <button mat-button (click)="stepper.reset()">Retour au début</button>
       </div>
 
-      <ng-container *ngIf="editMode"></ng-container>
+      <ng-container *ngIf="isEditMode"></ng-container>
         <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
           <ng-container>
             <!-- Ajoutez d'autres champs si nécessaire -->

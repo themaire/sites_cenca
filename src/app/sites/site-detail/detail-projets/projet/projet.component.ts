@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
+import { DetailGestionComponent } from '../../detail-gestion/detail-gestion.component'; 
+
 import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
@@ -31,6 +33,7 @@ import { MapComponent } from '../../../../map/map.component';
 import { ProjetLite, Projet } from '../projets';
 import { Operation } from './operation/operations';
 import { ProjetService } from '../projets.service';
+import { FormService } from '../../../../services/form.service';
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -62,6 +65,7 @@ export const MY_DATE_FORMATS = {
     },
   ],
   imports: [
+    DetailGestionComponent,
     CommonModule,
     MapComponent,
     MatDialogModule,
@@ -90,46 +94,61 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
   readonly dateFormatString = this._locale() === 'fr';
   
   operations!: Operation[];
-  public dataSource!: MatTableDataSource<Operation>;
+  
+  public dataSourceOperations!: MatTableDataSource<Operation>;
   // Pour la liste des opérations : le tableau Material
-  public displayedColumns: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
+  public displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
   
   projetLite: ProjetLite;
   projet!: Projet;
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 300;
-  editMode: boolean = false;
+  isEditMode: boolean = false;
+  isAddingOperation: boolean = false;
 
   projetForm!: FormGroup;
+  initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
+
+  operationForm: any;
   
   stepperOrientation: Observable<StepperOrientation>;
+  
 
   constructor(
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
-    private research: ProjetService, // Inject service via constructor
+    private formService: FormService,
+    private research: ProjetService,
     @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
       this.projetLite = data;
-      console.log("data : " + data);
+      console.log("data : ");
+      console.log(data);
 
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
       this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)').pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
 
-      
-      
       console.log("this.projetLite dans le dialog :", this.projetLite);
 
+      this.operationForm = this.formService.newOperationForm();
+    }
+    
+  toggleEditMode(): void {
+    this.isEditMode = this.formService.toggleEditMode(this.projetForm, this.isEditMode, this.initialFormValues);
   }
 
-  toggleEditMode() {
-    this.editMode = !this.editMode;
-    this.cdr.detectChanges();
+  toggleAddingOperation(): void {
+    this.isAddingOperation = this.formService.toggleEditMode(this.projetForm, this.isAddingOperation, this.initialFormValues);
+  }
+
+  getInvalidFields(): string[] {
+    return this.formService.getInvalidFields(this.projetForm);
   }
 
   async ngOnInit() {
+    // Initialiser les valeurs du formulaire principal quand on le composant a fini de s'initialiser
     let subroute: string = "";
     
     if (this.projetLite?.uuid_proj) {
@@ -166,15 +185,16 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
             
             this.isLoading = false;  // Le chargement est terminé
 
-            subroute = `projets/uuid=${this.projet.uuid_proj}`;
+            subroute = `operations/uuid=${this.projet.uuid_proj}`;
             console.log("Récupération des opérations avec l'UUID du projet :" + this.projet.uuid_proj);
             
-            const operationArray = await this.research.getOperations(subroute);
+            this.operations = await this.research.getOperations(subroute);
+            console.log("Operations : ");
+            console.log(this.operations);
 
             // Accéder à la liste des opérations
-            if (Array.isArray(operationArray) && operationArray.length > 0) {
-                this.operations = operationArray; // Assigner l'objet projet directement
-                this.dataSource = new MatTableDataSource(this.operations);
+            if (Array.isArray(this.operations) && this.operations.length > 0) {
+                this.dataSourceOperations = new MatTableDataSource(this.operations);
 
                 console.log('Projet après extraction :', this.projet);
 
@@ -216,8 +236,8 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
   }
 
   onSubmit(): void {
+    // Logique de soumission du formulaire global
     if (this.projetForm.valid) {
-      // Logique de soumission du formulaire global
       console.log(this.projetForm.value);
     }
   }

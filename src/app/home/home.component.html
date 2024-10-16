@@ -3,6 +3,7 @@
     Bienvenue {{ loginService.user()?.prenom }} {{ loginService.user()?.nom }} !
   </p>
 </div>
+
 <div class="home">
   <ng-container *ngFor="let item of menuItems[0].children">
     <ng-container *ngFor="let subItem of item.children">
