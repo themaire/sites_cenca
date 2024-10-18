@@ -23,7 +23,13 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-fiche-mfu',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, FormsModule, ReactiveFormsModule, MatDialogTitle],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogTitle,
+  ],
   templateUrl: './fiche-mfu.component.html',
   styleUrl: './fiche-mfu.component.scss',
 })
@@ -40,13 +46,13 @@ export class FicheMfuComponent implements OnInit {
 
     @Inject(MAT_DIALOG_DATA) public data: FicheMFUlite,
     private fb: FormBuilder,
-    
-    private breakpointObserver: BreakpointObserver,
+
+    private breakpointObserver: BreakpointObserver
   ) {
     this.form = this.fb.group({
       // Initialiser le formulaire avec des contrôles vides
       uuid_acte: [''],
-      site: ['', Validators.required],
+      nom_site: ['', Validators.required],
       typ_mfu: ['', Validators.required],
       typ_mfu_lib: ['', Validators.required],
       validite: ['', Validators.required],
@@ -64,7 +70,7 @@ export class FicheMfuComponent implements OnInit {
   }
 
   async ngOnInit() {
-    // Désactiver le formulaire avant toute choses car 
+    // Désactiver le formulaire avant toute choses car
     // nous ne sommes pas en mode édition au moment de l'instantiation (init)
     if (!this.isEditMode) {
       this.form.disable();
@@ -79,7 +85,8 @@ export class FicheMfuComponent implements OnInit {
 
     // Va chercher les données de la fiche MFU en utilisant l'UUID d'un acte
     // au travers du service de recherche des actes
-    if (this.data !== undefined) { // si on a des données ( si data n'est pas undefined)
+    if (this.data !== undefined) {
+      // si on a des données ( si data n'est pas undefined)
 
       const subroute = `fullmfu/uuid=${this.data.uuid_acte}`;
       console.log(
@@ -90,10 +97,13 @@ export class FicheMfuComponent implements OnInit {
       // ChatGPT 19/07/2024
       try {
         this.ficheMFU = await this.serviceActeMFU.getFullMFU(subroute);
-        console.log('Données de this.Mfus avant assignation dans le formulaire :', this.ficheMFU);
+        console.log(
+          'Données de this.Mfus avant assignation dans le formulaire :',
+          this.ficheMFU
+        );
 
         this.form.patchValue({
-          site: this.ficheMFU.site,
+          nom_site: this.ficheMFU.nom_site,
           typ_mfu: this.ficheMFU.typ_mfu,
           typ_mfu_lib: this.ficheMFU.typ_mfu_lib,
           validite: this.ficheMFU.validite,

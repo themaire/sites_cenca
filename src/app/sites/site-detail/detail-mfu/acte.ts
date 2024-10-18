@@ -14,6 +14,7 @@ export interface FicheMFUlite {
 export interface FicheMFU {
   uuid_acte: string;
   site: string;
+  nom_site: string;
   typ_mfu: string;
   typ_mfu_lib: string;
   validite: boolean;
@@ -27,8 +28,7 @@ export interface FicheMFU {
   date_crea: Date;
   date_modif: Date;
   actuel: boolean;
-  // surface: string;
-  // type_prop: string;
-  // url: string;
-  // actuel: string;
+  surface: string;
+  type_prop: string;
+  url: string;
 }

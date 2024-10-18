@@ -44,7 +44,7 @@
             <div class="site">
               <h2>Site:</h2>
               <div class="infos">
-                <input formControlName="site" />
+                <input formControlName="nom_site" />
               </div>
             </div>
           </div>
@@ -57,8 +57,13 @@
             </div>
             <div class="statut">
               <h2>Statut:</h2>
-              <div class="infos">
-                <input formControlName="validite" />
+              <div class="statut">
+                <mat-slide-toggle
+                  class="statut"
+                  [ngModel]="ficheMFU.validite"
+                  [disabled]="!isEditMode"
+                >
+                </mat-slide-toggle>
               </div>
             </div>
           </div>
