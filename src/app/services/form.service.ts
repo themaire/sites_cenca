@@ -8,7 +8,7 @@ export class FormService {
   constructor(private fb: FormBuilder) {}
 
   toggleEditMode(form: FormGroup, isEditMode: boolean, initialFormValues: any): boolean {
-    if (isEditMode) {
+    if (isEditMode) { // Si actuellement on est en mode edition
       form.patchValue(initialFormValues); // Réinitialiser le formulaire aux valeurs initiales
       form.disable();
       console.log('Nous sortons du mode édition');

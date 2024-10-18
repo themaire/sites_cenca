@@ -34,6 +34,7 @@ import { ProjetLite, Projet } from '../projets';
 import { Operation } from './operation/operations';
 import { ProjetService } from '../projets.service';
 import { FormService } from '../../../../services/form.service';
+import { Projection } from 'leaflet';
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -149,19 +150,22 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
 
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand on le composant a fini de s'initialiser
+    // console.log('Initialisation du formulaire principal');
     let subroute: string = "";
     
     if (this.projetLite?.uuid_proj) {
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
-          subroute = `projets/uuid=${this.projetLite.uuid_proj}`;
+          subroute = `projets/uuid=${this.projetLite.uuid_proj}/full`; // Full puisque UN SEUL projet
           console.log("Récupération des données du projet avec l'UUID du projet :" + this.projetLite.uuid_proj);
-          const projetArray = await this.research.getProjet(subroute);
+          const projetObject = await this.research.getProjet(subroute);
+          // console.log("-------------------- Données du Projet : ");
+          // console.log(projetObject);
 
           // Accéder données du projet
-          if (Array.isArray(projetArray) && projetArray.length > 0) {
-            this.projet = projetArray[0]; // Assigner l'objet projet directement
+          if (projetObject.uuid_proj) {
+            this.projet = projetObject; // Assigner l'objet projet directement
             console.log('Projet après extraction :', this.projet);
 
             // Les form_groups correspondant aux steps
@@ -183,23 +187,22 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
               pro_results_attendus: [this.projet.pro_results_attendus || '', Validators.required]
             });
             
-            this.isLoading = false;  // Le chargement est terminé
-
-            subroute = `operations/uuid=${this.projet.uuid_proj}`;
-            console.log("Récupération des opérations avec l'UUID du projet :" + this.projet.uuid_proj);
-            
-            this.operations = await this.research.getOperations(subroute);
-            console.log("Operations : ");
-            console.log(this.operations);
-
             // Accéder à la liste des opérations
+            subroute = `operations/uuid=${this.projet.uuid_proj}/lite`; // Lite puisque PLUSIEURS opérations
+            console.log("Récupération des opérations avec l'UUID du projet :" + this.projet.uuid_proj);
+            this.operations = await this.research.getOperations(subroute);
+            // console.log("Operations : ");
+            // console.log(this.operations);
+            
             if (Array.isArray(this.operations) && this.operations.length > 0) {
-                this.dataSourceOperations = new MatTableDataSource(this.operations);
+              this.dataSourceOperations = new MatTableDataSource(this.operations);
+    
+              // console.log('Opérations après extraction :', this.operations);
+              
+              this.cdr.detectChanges(); // Forcer la mise à jour de la vue
+            }
 
-                console.log('Projet après extraction :', this.projet);
-
-                this.cdr.detectChanges(); // Forcer la mise à jour de la vue
-              }
+            this.isLoading = false;  // Le chargement est terminé
             this.cdr.detectChanges(); // Forcer la mise à jour de la vue
           }
         }, this.loadingDelay);
@@ -208,6 +211,9 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
         this.isLoading = false;  // Même en cas d'erreur, arrêter le spinner
         this.cdr.detectChanges();
       }
+    } else {
+      console.log("Pas de projet à afficher");
+      console.log(this.projetLite);
     }
   }
 

@@ -50,7 +50,7 @@ export class DetailProjetsComponent {
     if (this.inputDetail !== undefined) {  // Si le site selectionné n'est pas vide
       // Cas d'une recherche sur critères
       console.log(this.inputDetail);
-      subroute = `projetslite/uuid=${this.inputDetail.uuid_espace}`;
+      subroute = `projets/uuid=${this.inputDetail.uuid_espace}/lite`;
       console.log("Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" + this.inputDetail["uuid_espace"]);
       
       // ChatGPT 19/07/2024
@@ -75,7 +75,7 @@ export class DetailProjetsComponent {
       // OUVRIR LA FENETRE DE DIALOGUE
       this.openDialog(projetlite);
     }else{
-      console.log("Pas de projet au bout : " + projetlite.projet);
+      console.log("Pas de projet au bout : " + projetlite.uuid_proj);
     }
   }
 
