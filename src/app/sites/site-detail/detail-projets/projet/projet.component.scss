@@ -9,7 +9,7 @@
     height: 100px; /* Ajuste selon ton besoin */
   }
 
-.example-stepper {
+.margin-stepper {
   margin-top: 8px;
 }
 
@@ -19,14 +19,4 @@
 
 .example-input-wrapper {
   margin-bottom: 16px;
-}
-
-.container-carte {
-  h2 {
-    @include Typo($p14, $normal, $couleur-flore);
-    margin-bottom: 0;
-  }
-  img {
-    width: 30%;
-  }
 }

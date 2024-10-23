@@ -1,12 +1,24 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+// Des fonctions sont définies pour gérer les formulaires
 
 @Injectable({
   providedIn: 'root'
 })
 export class FormService {
+    private formValiditySubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   constructor(private fb: FormBuilder) {}
 
+  simpleToggle(bool: boolean): boolean {
+    // Pour ajouter une opération dans le template
+    bool = !bool;
+    return bool;
+  }
+
+  // Activer ou désactiver le mode édition
   toggleEditMode(form: FormGroup, isEditMode: boolean, initialFormValues: any): boolean {
     if (isEditMode) { // Si actuellement on est en mode edition
       form.patchValue(initialFormValues); // Réinitialiser le formulaire aux valeurs initiales
@@ -19,6 +31,8 @@ export class FormService {
     return !isEditMode;
   }
 
+  // Vérifier si le formulaire est valide
+  // Retourne un booléen
   getInvalidFields(form: FormGroup): string[] {
     const invalidFields: string[] = [];
     const controls = form.controls;
@@ -30,6 +44,7 @@ export class FormService {
     return invalidFields;
   }
 
+  // Créer un nouveau formulaire d'opération avec des champs vides
   newOperationForm(): FormGroup {
     return this.fb.group({
       uuid_ope: [''],
@@ -59,5 +74,13 @@ export class FormService {
       ben_participants: [null],
       ben_heures: [null]
     });
+  }
+
+  getFormValidityObservable(): Observable<boolean> {
+    return this.formValiditySubject.asObservable();
+  }
+
+  setFormValidity(isValid: boolean): void {
+    this.formValiditySubject.next(isValid);
   }
 }

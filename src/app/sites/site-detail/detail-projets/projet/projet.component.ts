@@ -1,9 +1,15 @@
-import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
+import { Operation } from './operation/operations';
+import { ProjetLite, Projet } from '../projets';
+import { ProjetService } from '../projets.service';
+import { FormService } from '../../../../services/form.service';
+
 import { DetailGestionComponent } from '../../detail-gestion/detail-gestion.component'; 
+import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 
 import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -30,11 +36,10 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { OperationComponent } from './operation/operation.component';
 import { MapComponent } from '../../../../map/map.component';
 
-import { ProjetLite, Projet } from '../projets';
-import { Operation } from './operation/operations';
-import { ProjetService } from '../projets.service';
-import { FormService } from '../../../../services/form.service';
 import { Projection } from 'leaflet';
+// NE PAS oublier de décommenter la
+import { Subscription } from 'rxjs';
+
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -66,6 +71,7 @@ export const MY_DATE_FORMATS = {
     },
   ],
   imports: [
+    FormButtonsComponent,
     DetailGestionComponent,
     CommonModule,
     MapComponent,
@@ -83,12 +89,14 @@ export const MY_DATE_FORMATS = {
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTableModule,
-    AsyncPipe  // Ajouté pour le spinner
-  ],
+    AsyncPipe // Ajouté pour le spinner
+    ,
+    OperationComponent
+],
   templateUrl: './projet.component.html',
   styleUrls: ['./projet.component.scss'], // Correct 'styleUrl' to 'styleUrls'
 })
-export class ProjetComponent implements OnInit { // Implements OnInit to use the lifecycle method
+export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnInit to use the lifecycle method
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
   private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
@@ -104,17 +112,17 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
   projet!: Projet;
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 300;
+  
   isEditMode: boolean = false;
   isAddingOperation: boolean = false;
 
   projetForm!: FormGroup;
+  isFormValid: boolean = false;
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
-
-  operationForm: any;
+  private formStatusSubscription: Subscription | null = null;
   
   stepperOrientation: Observable<StepperOrientation>;
   
-
   constructor(
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
@@ -124,29 +132,15 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
       this.projetLite = data;
-      console.log("data : ");
-      console.log(data);
+      // console.log("data : ");
+      // console.log(data);
 
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
       this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)').pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
 
-      console.log("this.projetLite dans le dialog :", this.projetLite);
-
-      this.operationForm = this.formService.newOperationForm();
+      // console.log("this.projetLite dans le dialog :", this.projetLite);
     }
-    
-  toggleEditMode(): void {
-    this.isEditMode = this.formService.toggleEditMode(this.projetForm, this.isEditMode, this.initialFormValues);
-  }
-
-  toggleAddingOperation(): void {
-    this.isAddingOperation = this.formService.toggleEditMode(this.projetForm, this.isAddingOperation, this.initialFormValues);
-  }
-
-  getInvalidFields(): string[] {
-    return this.formService.getInvalidFields(this.projetForm);
-  }
 
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand on le composant a fini de s'initialiser
@@ -175,16 +169,27 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
               nom: [this.projet.nom || '', Validators.required],
               code: [this.projet.code || '', Validators.required],
               responsable: [this.projet.code || '', Validators.required],
-              pro_maitre_ouvrage: [this.projet.pro_maitre_ouvrage || '', Validators.required],
-              pro_debut: [this.projet.pro_debut || '', Validators.required],
-              pro_fin: [this.projet.pro_fin || '', Validators.required],
-              statut: [this.projet.statut || '', Validators.required],
+              pro_maitre_ouvrage: [this.projet.pro_maitre_ouvrage || '',],
+              pro_debut: [this.projet.pro_debut || '', ],
+              pro_fin: [this.projet.pro_fin || '', ],
+              statut: [this.projet.statut || '', ],
               pro_obj_projet: [this.projet.pro_obj_projet || '',],
-              surface: [this.projet.pro_surf_totale || '', Validators.required],
-              pro_enjeux_eco: [this.projet.pro_enjeux_eco || '', Validators.required],
-              pro_nv_enjeux: [this.projet.pro_nv_enjeux || '', Validators.required],
-              pro_pression_ciblee: [this.projet.pro_pression_ciblee || '', Validators.required],
-              pro_results_attendus: [this.projet.pro_results_attendus || '', Validators.required]
+              surface: [this.projet.pro_surf_totale || '', ],
+              pro_enjeux_eco: [this.projet.pro_enjeux_eco || '', ],
+              pro_nv_enjeux: [this.projet.pro_nv_enjeux || '', ],
+              pro_pression_ciblee: [this.projet.pro_pression_ciblee || '', ],
+              pro_results_attendus: [this.projet.pro_results_attendus || '', ],
+              pro_obj_ope: [this.projet.pro_obj_ope || '', ]
+            });
+
+            // Souscrire aux changements du statut du formulaire principal (projetForm)
+            this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
+              this.isFormValid = this.projetForm.valid;  // Mettre à jour isFormValid en temps réel
+              // console.log('Statut du formulaire principal :', status);
+              // console.log("this.isFormValid = this.projetForm.valid :");
+              // console.log(this.isFormValid + " = " + this.projetForm.valid);
+              // console.log("isFormValid passé à l'enfant:", this.isFormValid);
+              this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
             });
             
             // Accéder à la liste des opérations
@@ -196,14 +201,13 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
             
             if (Array.isArray(this.operations) && this.operations.length > 0) {
               this.dataSourceOperations = new MatTableDataSource(this.operations);
-    
               // console.log('Opérations après extraction :', this.operations);
               
               this.cdr.detectChanges(); // Forcer la mise à jour de la vue
             }
 
             this.isLoading = false;  // Le chargement est terminé
-            this.cdr.detectChanges(); // Forcer la mise à jour de la vue
+            
           }
         }, this.loadingDelay);
       } catch (error) {
@@ -217,8 +221,13 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
     }
   }
 
-  // Pour l'affichage de la fenetre de dialogue
-  dialog = inject(MatDialog);
+  ngOnDestroy(): void {
+    // Désabonnement lors de la destruction du composant
+    if (this.formStatusSubscription) {
+      this.formStatusSubscription.unsubscribe();
+    }
+    console.log('Destruction du composant, on se désabonne.');
+  }
 
   onSelect(operation: Operation): void {
     // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
@@ -232,7 +241,9 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
       console.log("Pas de d'opération sur ce projet : " + operation.titre);
     }
   }
-  
+
+  // Pour l'affichage de la fenetre de dialogue
+  dialog = inject(MatDialog);
   openDialog(operation: Operation): void {
     let dialogComponent: any = OperationComponent;
 
@@ -241,10 +252,29 @@ export class ProjetComponent implements OnInit { // Implements OnInit to use the
     });
   }
 
+  toggleEditMode(): void {
+    this.isEditMode = this.formService.toggleEditMode(this.projetForm, this.isEditMode, this.initialFormValues);
+    this.cdr.detectChanges(); // Forcer la détection des changements
+  }
+
+  toggleAddingOperation(): void {
+    // Pour ajouter une opération dans le template
+
+    // Logique de basculement du booleen 
+    this.isAddingOperation = this.formService.simpleToggle(this.isAddingOperation);
+    this.cdr.detectChanges(); // Forcer la détection des changements
+  }
+
+  getInvalidFields(): string[] {
+    return this.formService.getInvalidFields(this.projetForm);
+  }
+
   onSubmit(): void {
     // Logique de soumission du formulaire global
     if (this.projetForm.valid) {
       console.log(this.projetForm.value);
+    } else {
+      console.error('Le formulaire principal est invalide');
     }
   }
 }

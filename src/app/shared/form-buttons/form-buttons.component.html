@@ -1,0 +1,60 @@
+<div>
+    <!-- Boutons edit||add / save / cancel -->
+    <div class="edition">
+        
+    <ng-content *ngIf="isActive; then editOn; else editOff"></ng-content>
+        
+    </div>
+</div>
+
+
+<!-- liste de templates -->
+
+<ng-template #editOn>
+    
+    <ng-content *ngIf="isFormValid; then saveBtnEnabled; else saveBtnDisabled"></ng-content>
+    
+    <button
+        mat-icon-button
+        matTooltip="Annuler"
+        class="btn-annulation"
+        (click)="onToggleAction()"
+    >
+        <mat-icon>close</mat-icon>
+    </button>
+</ng-template>
+
+<!-- Template pour le mode edition OFF -->
+<ng-template #editOff>
+    <button
+        mat-icon-button
+        [matTooltip]="tooltip"
+        class="btn-edition"
+        (click)="onToggleAction()"
+    >
+        <mat-icon>{{ iconName }}</mat-icon>
+    </button>
+</ng-template>
+
+<!-- Templates pout le mode edition ON -->
+<ng-template #saveBtnEnabled>
+    <button
+        mat-icon-button
+        matTooltip="Sauvegarder"
+        class="btn-sauvegarde"
+        (click)="onSave()"
+    >
+        <mat-icon>save</mat-icon>
+    </button>
+</ng-template>
+
+<ng-template #saveBtnDisabled>
+    <button
+        mat-icon-button
+        matTooltip="Sauvegarde impossible verifier les champs obligatoires"
+        class="btn-sauvegarde-disabled"
+        disabled
+    >
+        <mat-icon>save</mat-icon>
+    </button>
+</ng-template>

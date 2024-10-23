@@ -1,188 +1,280 @@
-<mat-horizontal-stepper [linear]="true" #stepper>
-  <mat-step [stepControl]="operationForm">
-    <form [formGroup]="operationForm">
-      <ng-template matStepLabel>Step 1</ng-template>
-      <div>
-        <mat-form-field>
-          <mat-label>UUID Operation</mat-label>
-          <input matInput formControlName="uuid_ope">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Ref UUID Project</mat-label>
-          <input matInput formControlName="ref_uuid_proj">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Code</mat-label>
-          <input matInput formControlName="code">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Titre</mat-label>
-          <input matInput formControlName="titre">
-        </mat-form-field>
-      </div>
-      <div>
-        <button mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
 
-  <mat-step [stepControl]="operationForm">
-    <form [formGroup]="operationForm">
-      <ng-template matStepLabel>Step 2</ng-template>
-      <div>
-        <mat-form-field>
-          <mat-label>Inscrit PDG</mat-label>
-          <input matInput formControlName="inscrit_pdg">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Rmq PDG</mat-label>
-          <input matInput formControlName="rmq_pdg">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Description</mat-label>
-          <input matInput formControlName="description">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Interv ZH</mat-label>
-          <input matInput formControlName="interv_zh">
-        </mat-form-field>
-      </div>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
+<!-- FORMULAIRE OPERATION -->
+<ng-template #editButtons>
+  <app-form-buttons
+      [isActive]="isEditMode" 
+      iconName="edit" 
+      [isFormValid]="isFormValid" 
+      message="Il fait beau" 
+      (toggleAddingOperation)="toggleEditMode()" 
+      (onSubmit)="onSubmit()" 
+      ></app-form-buttons>
+</ng-template>
 
-  <mat-step [stepControl]="operationForm">
-    <form [formGroup]="operationForm">
-      <ng-template matStepLabel>Step 3</ng-template>
-      <div>
-        <mat-form-field>
-          <mat-label>Surface</mat-label>
-          <input matInput formControlName="surf">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Lin</mat-label>
-          <input matInput formControlName="lin">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>App Fourr</mat-label>
-          <input matInput formControlName="app_fourr">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Pression Moy</mat-label>
-          <input matInput formControlName="pression_moy">
-        </mat-form-field>
-      </div>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
 
-  <mat-step [stepControl]="operationForm">
-    <form [formGroup]="operationForm">
-      <ng-template matStepLabel>Step 4</ng-template>
-      <div>
-        <mat-form-field>
-          <mat-label>UGB Moy</mat-label>
-          <input matInput formControlName="ugb_moy">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Nbjours</mat-label>
-          <input matInput formControlName="nbjours">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Charge Moy</mat-label>
-          <input matInput formControlName="charge_moy">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Charge Inst</mat-label>
-          <input matInput formControlName="charge_inst">
-        </mat-form-field>
-      </div>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
+<ng-container *ngIf="isEditMode; then editOperation; else listOperations"></ng-container>
 
-  <mat-step [stepControl]="operationForm">
-    <form [formGroup]="operationForm">
-      <ng-template matStepLabel>Step 5</ng-template>
-      <div>
-        <mat-form-field>
-          <mat-label>Remarque</mat-label>
-          <input matInput formControlName="remarque">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Validite</mat-label>
-          <input matInput formControlName="validite">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Action</mat-label>
-          <input matInput formControlName="action">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Objectif</mat-label>
-          <input matInput formControlName="objectif">
-        </mat-form-field>
-      </div>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
 
-  <mat-step [stepControl]="operationForm">
-    <form [formGroup]="operationForm">
-      <ng-template matStepLabel>Step 6</ng-template>
-      <div>
-        <mat-form-field>
-          <mat-label>Typ Intervention</mat-label>
-          <input matInput formControlName="typ_intervention">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Date Debut</mat-label>
-          <input matInput formControlName="date_debut" type="date">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Date Fin</mat-label>
-          <input matInput formControlName="date_fin" type="date">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Date Approx</mat-label>
-          <input matInput formControlName="date_approx">
-        </mat-form-field>
-      </div>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
 
-  <mat-step [stepControl]="operationForm">
-    <form [formGroup]="operationForm">
-      <ng-template matStepLabel>Step 7</ng-template>
-      <div>
-        <mat-form-field>
-          <mat-label>Ben Participants</mat-label>
-          <input matInput formControlName="ben_participants">
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Ben Heures</mat-label>
-          <input matInput formControlName="ben_heures">
-        </mat-form-field>
-      </div>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button (click)="onSubmit()">Submit</button>
-      </div>
-    </form>
-  </mat-step>
-</mat-horizontal-stepper>
+
+
+
+<ng-template #listOperations>
+  <app-form-buttons
+          *ngIf="!isEditMode" 
+          [isActive]="isEditMode" 
+          iconName="add" 
+          [isFormValid]="isFormValid" 
+          (toggleAddingOperation)="toggleAddingOperation()" 
+          (onSubmit)="onSubmit()" 
+        ></app-form-buttons>
+
+        Ajouter une opération (ci dessus)
+
+        <div>
+          <!-- Si le booleen isAddingOperation est sur false, on montre la liste des opérations  -->
+
+          Tableau des opérations. Si pâturé (1 opération par parc).
+          <div *ngIf="operations.length > 0; then thenOperationBlock else elseOperationBlock"></div>
+
+          <ng-template #thenOperationBlock>
+            <div>
+              Nb opérations : {{ operations.length }}<br>
+              <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8">
+                <ng-container matColumnDef="code">
+                  <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.code }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="titre">
+                  <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.titre }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="description">
+                  <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.description }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="surf">
+                  <mat-header-cell *matHeaderCellDef> Surface </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.surf }} </mat-cell>
+                </ng-container>
+                
+                <ng-container matColumnDef="date_debut">
+                  <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
+                  <mat-cell *matCellDef="let element"> {{ element.date_debut }} </mat-cell>
+                </ng-container>
+                
+                <mat-header-row *matHeaderRowDef="displayedColumnsOperations"></mat-header-row>
+                <!-- Ouvrir la fenetre de dialogue d'une opération -->
+                <mat-row *matRowDef="let row; columns: displayedColumnsOperations;" (click)="onSelect(row)"></mat-row>
+              </mat-table>
+            </div>
+          </ng-template>
+
+          <ng-template #elseOperationBlock>
+              Il n'y a pas d'opérations sur ce site.
+          </ng-template>
+
+          <div>
+            <button mat-button matStepperPrevious>Précédent</button>
+            <button mat-button matStepperNext>Suivant</button>
+          </div>
+        </div>
+</ng-template>
+
+
+
+
+<ng-template #editOperation>
+  <mat-horizontal-stepper [linear]="linearMode" #stepper>
+
+      <mat-step [stepControl]="form">
+      <form [formGroup]="form">
+        <ng-template matStepLabel>Step 1</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>UUID Operation</mat-label>
+            <input matInput formControlName="uuid_ope">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Ref UUID Project</mat-label>
+            <input matInput formControlName="ref_uuid_proj">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Titre</mat-label>
+            <input matInput formControlName="titre">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
+        <ng-template matStepLabel>Step 2</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>Inscrit PDG</mat-label>
+            <input matInput formControlName="inscrit_pdg">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Rmq PDG</mat-label>
+            <input matInput formControlName="rmq_pdg">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="description">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Interv ZH</mat-label>
+            <input matInput formControlName="interv_zh">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
+        <ng-template matStepLabel>Step 3</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>Surface</mat-label>
+            <input matInput formControlName="surf">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Lin</mat-label>
+            <input matInput formControlName="lin">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>App Fourr</mat-label>
+            <input matInput formControlName="app_fourr">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Pression Moy</mat-label>
+            <input matInput formControlName="pression_moy">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
+        <ng-template matStepLabel>Step 4</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>UGB Moy</mat-label>
+            <input matInput formControlName="ugb_moy">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Nbjours</mat-label>
+            <input matInput formControlName="nbjours">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Charge Moy</mat-label>
+            <input matInput formControlName="charge_moy">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Charge Inst</mat-label>
+            <input matInput formControlName="charge_inst">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
+        <ng-template matStepLabel>Step 5</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>Remarque</mat-label>
+            <input matInput formControlName="remarque">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Validite</mat-label>
+            <input matInput formControlName="validite">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Action</mat-label>
+            <input matInput formControlName="action">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Objectif</mat-label>
+            <input matInput formControlName="objectif">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
+        <ng-template matStepLabel>Step 6</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>Typ Intervention</mat-label>
+            <input matInput formControlName="typ_intervention">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Date Debut</mat-label>
+            <input matInput formControlName="date_debut" type="date">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Date Fin</mat-label>
+            <input matInput formControlName="date_fin" type="date">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Date Approx</mat-label>
+            <input matInput formControlName="date_approx">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
+        <ng-template matStepLabel>Step 7</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>Ben Participants</mat-label>
+            <input matInput formControlName="ben_participants">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Ben Heures</mat-label>
+            <input matInput formControlName="ben_heures">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="onSubmit()">Submit</button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-horizontal-stepper>
+<ng-template>
