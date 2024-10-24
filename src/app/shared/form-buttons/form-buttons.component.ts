@@ -11,11 +11,13 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './form-buttons.component.scss'
 })
 export class FormButtonsComponent {
-  @Input() iconName: string = 'save';  // Valeur par défaut pour voir si c'est vide
+  @Input() iconName!: string;  // Valeur par défaut pour voir si c'est vide
   @Input() isFormValid!: boolean;
   @Input() isActive!: boolean;
+  @Input() isAdding!: boolean;
 
-  @Output() toggleAddingOperation = new EventEmitter<void>();
+  @Output() toggleAddingOperation = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
+  @Output() makeOperationForm = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<void>();
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -29,13 +31,19 @@ export class FormButtonsComponent {
     }
 
     if (changes['isActive']) {
-      console.log('isActive has changed:', changes['isActive'].currentValue);
+      console.log('isActive du BOUTON has changed:', changes['isActive'].currentValue);
       this.cdr.detectChanges();  // Forcer la détection des changements immédiatement
     }
   }
 
   onToggleAction(): void {
+    console.log('-----------------------!!!!!!!!!!!!--------onToggleAction');
     this.toggleAddingOperation.emit();
+  }
+
+  onAddAction(): void {
+    // OnToggleAction sert se servir de la fonction makeOperationForm de operation component
+    this.makeOperationForm.emit();
   }
 
   onSave(): void {

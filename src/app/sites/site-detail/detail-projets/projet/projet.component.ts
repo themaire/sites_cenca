@@ -101,20 +101,14 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   private readonly _intl = inject(MatDatepickerIntl);
   private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
   readonly dateFormatString = this._locale() === 'fr';
-  
-  operations!: Operation[];
-  
-  public dataSourceOperations!: MatTableDataSource<Operation>;
-  // Pour la liste des opérations : le tableau Material
-  public displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
-  
+
   projetLite: ProjetLite;
   projet!: Projet;
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 300;
   
-  isEditMode: boolean = false;
-  isAddingOperation: boolean = false;
+  isEditProjet: boolean = false;
+  isEditOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
 
   projetForm!: FormGroup;
   isFormValid: boolean = false;
@@ -191,20 +185,6 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
               // console.log("isFormValid passé à l'enfant:", this.isFormValid);
               this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
             });
-            
-            // Accéder à la liste des opérations
-            subroute = `operations/uuid=${this.projet.uuid_proj}/lite`; // Lite puisque PLUSIEURS opérations
-            console.log("Récupération des opérations avec l'UUID du projet :" + this.projet.uuid_proj);
-            this.operations = await this.research.getOperations(subroute);
-            // console.log("Operations : ");
-            // console.log(this.operations);
-            
-            if (Array.isArray(this.operations) && this.operations.length > 0) {
-              this.dataSourceOperations = new MatTableDataSource(this.operations);
-              // console.log('Opérations après extraction :', this.operations);
-              
-              this.cdr.detectChanges(); // Forcer la mise à jour de la vue
-            }
 
             this.isLoading = false;  // Le chargement est terminé
             
@@ -252,17 +232,30 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     });
   }
 
-  toggleEditMode(): void {
-    this.isEditMode = this.formService.toggleEditMode(this.projetForm, this.isEditMode, this.initialFormValues);
+  toggleEditProjet(): void {
+    this.isEditProjet = this.formService.toggleEditMode(this.projetForm, this.isEditProjet, this.initialFormValues);
     this.cdr.detectChanges(); // Forcer la détection des changements
   }
 
-  toggleAddingOperation(): void {
+  toggleEdit(bool: boolean, force: boolean = false): void {
     // Pour ajouter une opération dans le template
 
     // Logique de basculement du booleen 
-    this.isAddingOperation = this.formService.simpleToggle(this.isAddingOperation);
+    // Trop simple pour l'instant je garde au cas où
+    if (!force) { // Si on force pas le changement
+      // Inverser la valeur du booléen
+      bool = this.formService.simpleToggle(bool);
+    } else {
+      // Sinon, forcer le changement de la valeur du booléen
+      bool = force;
+    }
     this.cdr.detectChanges(); // Forcer la détection des changements
+  }
+
+  handleEditModeChange(isEditFromOperation: boolean): void {
+    console.log('handleEditModeChange:', isEditFromOperation);
+    this.isEditOperation = isEditFromOperation;
+    console.log('Mode édition changé:', this.isEditOperation);
   }
 
   getInvalidFields(): string[] {

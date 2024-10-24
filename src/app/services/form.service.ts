@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
 
 // Des fonctions sont définies pour gérer les formulaires
 
@@ -45,34 +46,35 @@ export class FormService {
   }
 
   // Créer un nouveau formulaire d'opération avec des champs vides
-  newOperationForm(): FormGroup {
+  // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  newOperationForm(operation?: Operation): FormGroup {
     return this.fb.group({
-      uuid_ope: [''],
-      ref_uuid_proj: [''],
-      code: [''],
-      titre: ['', Validators.required],
-      inscrit_pdg: [''],
-      rmq_pdg: [''],
-      description: [''],
-      interv_zh: [''],
-      surf: [null],
-      lin: [null],
-      app_fourr: [null],
-      pression_moy: [null],
-      ugb_moy: [null],
-      nbjours: [null],
-      charge_moy: [null],
-      charge_inst: [null],
-      remarque: [''],
-      validite: [false],
-      action: [''],
-      objectif: [''],
-      typ_intervention: [''],
-      date_debut: [null],
-      date_fin: [null],
-      date_approx: [''],
-      ben_participants: [null],
-      ben_heures: [null]
+      uuid_ope: [operation?.uuid_ope || ''],
+      ref_uuid_proj: [operation?.ref_uuid_proj || ''],
+      code: [operation?.code || ''],
+      titre: [operation?.titre || '', Validators.required],
+      inscrit_pdg: [operation?.inscrit_pdg || ''],
+      rmq_pdg: [operation?.rmq_pdg || ''],
+      description: [operation?.description || ''],
+      interv_zh: [operation?.interv_zh || ''],
+      surf: [operation?.surf || null],
+      lin: [operation?.lin || null],
+      app_fourr: [operation?.app_fourr || null],
+      pression_moy: [operation?.pression_moy || null],
+      ugb_moy: [operation?.ugb_moy || null],
+      nbjours: [operation?.nbjours || null],
+      charge_moy: [operation?.charge_moy || null],
+      charge_inst: [operation?.charge_inst || null],
+      remarque: [operation?.remarque || ''],
+      validite: [operation?.validite || false],
+      action: [operation?.action || ''],
+      objectif: [operation?.objectif || ''],
+      typ_intervention: [operation?.typ_intervention || ''],
+      date_debut: [operation?.date_debut || null],
+      date_fin: [operation?.date_fin || null],
+      date_approx: [operation?.date_approx || ''],
+      ben_participants: [operation?.ben_participants || null],
+      ben_heures: [operation?.ben_heures || null]
     });
   }
 

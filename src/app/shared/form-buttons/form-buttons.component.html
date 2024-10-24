@@ -1,19 +1,30 @@
 <div>
     <!-- Boutons edit||add / save / cancel -->
     <div class="edition">
-        
-    <ng-content *ngIf="isActive; then editOn; else editOff"></ng-content>
+    
+    <i>Variable isActive DU BOUTON : {{ isActive }}.</i>
+    <i>Variable isAdding DU BOUTON : {{ isAdding }}.</i>
+
+    <!-- Si isAdding on montre le add, sinon on montre edit -->
+    <ng-container *ngIf="isAdding; else edit">
+        <ng-content [ngTemplateOutlet]="add"></ng-content>
+      </ng-container>
         
     </div>
 </div>
 
 
 <!-- liste de templates -->
-
+<!-- Bouton entrer en mode edition -->
+ <ng-template #edit>
+    <ng-content *ngIf="isActive; then editOn"></ng-content>
+    <ng-content *ngIf="!isActive; then editOff"></ng-content>
+</ng-template>
 <ng-template #editOn>
-    
+    <!-- Bouton sauvegarder conditionnel -->
     <ng-content *ngIf="isFormValid; then saveBtnEnabled; else saveBtnDisabled"></ng-content>
     
+    <!-- Bouton annuler -->
     <button
         mat-icon-button
         matTooltip="Annuler"
@@ -24,7 +35,8 @@
     </button>
 </ng-template>
 
-<!-- Template pour le mode edition OFF -->
+
+<!-- Bouton sortir du mode edition -->
 <ng-template #editOff>
     <button
         mat-icon-button
@@ -36,7 +48,8 @@
     </button>
 </ng-template>
 
-<!-- Templates pout le mode edition ON -->
+<!-- Differents etats de boutons -->
+<!-- Bouton sauvegarder quand formulaire valide -->
 <ng-template #saveBtnEnabled>
     <button
         mat-icon-button
@@ -48,6 +61,7 @@
     </button>
 </ng-template>
 
+<!-- Bouton sauvegarder grisé -->
 <ng-template #saveBtnDisabled>
     <button
         mat-icon-button
@@ -56,5 +70,17 @@
         disabled
     >
         <mat-icon>save</mat-icon>
+    </button>
+</ng-template>
+
+<!-- Bouton pour ajouter -->
+<ng-template #add>
+    <button
+        mat-icon-button
+        matTooltip="Ajouter une opération"
+        class="btn-edition"
+        (click)="onAddAction()"
+    >
+        <mat-icon>{{ iconName }}</mat-icon>
     </button>
 </ng-template>

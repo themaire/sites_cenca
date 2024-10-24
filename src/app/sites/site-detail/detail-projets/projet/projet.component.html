@@ -1,33 +1,27 @@
 <mat-dialog-content *ngIf="!isLoading; else loading">
 
-  <ng-container *ngIf="!isAddingOperation; then stepper; else formAddOperation"></ng-container>
+  -- Variable viewOperation : {{ isEditOperation }}<br>
 
-  <!-- FORMULAIRE OPERATION -->
-  <ng-template #formAddOperation>
-    
-    <h2>Ajouter une opération</h2>
-
-    <app-operation></app-operation>
-
-  </ng-template>
+  <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
+  <ng-container *ngIf="!isEditOperation; then stepper; else operation"></ng-container>
 
   <!-- FORMULAIRE STEPPER (NORMAL) -->
   <ng-template #stepper>
-
-    <h2 *ngIf="!isEditMode">Consultation d'un projet</h2>
-    <h2 *ngIf="isEditMode">Modification d'un projet</h2>
-
+  
+    <h2 *ngIf="!isEditProjet">Consultation d'un projet</h2>
+    <h2 *ngIf="isEditProjet">Modification d'un projet</h2>
+  
     <div class="example-input-wrapper">
         <!-- <label for="duration">Animation duration:</label> -->
         <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
     </div>
-
+  
     <app-form-buttons
-      [isActive]="isEditMode" 
+      [isActive]="isEditProjet" 
       iconName="edit" 
       [isFormValid]="isFormValid" 
       message="Il fait beau" 
-      (toggleAddingOperation)="toggleEditMode()" 
+      (toggleAddingOperation)="toggleEditProjet()" 
       (onSubmit)="onSubmit()" 
     ></app-form-buttons>
       
@@ -37,13 +31,13 @@
                   [animationDuration]="duration.value" 
                   class="margin-stepper"
                   [orientation]="(stepperOrientation | async)!">
-
-
+  
+  
       <!-- state="info" est l'icone a utiliser pour le step -->
       <mat-step state="info">
         <ng-template matStepLabel>Description du projet</ng-template>
         <!-- Affichage en mode consultation (editMode == false) -->
-        <ng-container *ngIf="!isEditMode">
+        <ng-container *ngIf="!isEditProjet">
           <div>
             <mat-form-field class="custom-mat-form-field">
               <mat-label>Type</mat-label>
@@ -105,9 +99,9 @@
             </mat-form-field>
           </div>
         </ng-container>
-
+  
         <!-- Affichage en mode édition (editMode == true) -->
-        <ng-container *ngIf="isEditMode">
+        <ng-container *ngIf="isEditProjet">
           <form [formGroup]="projetForm">
             <ng-container>
               <div>
@@ -159,52 +153,52 @@
         </ng-container>
         <button mat-button matStepperNext>SUIVANT</button>
       </mat-step>
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
       <!-- <mat-step [stepControl]="ENPFormGroup"> -->
       <mat-step state="landscape">
         <ng-template matStepLabel>ENP concerné</ng-template>
         
-        <form *ngIf="isEditMode == true">
-
+        <form *ngIf="isEditProjet == true">
+  
           <!-- <mat-form-field>
             <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
           </mat-form-field> -->
-
+  
         </form>
-
+  
         <app-detail-gestion [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
-
+  
         <div>
           <button mat-button matStepperPrevious>Précédent</button>
           <button mat-button matStepperNext>Suivant</button>
         </div>
       </mat-step>
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
       <mat-step state="pin">
       <!-- <mat-step [stepControl]="UGFormGroup"> -->
         <ng-template matStepLabel>Unités de gestion</ng-template>
-
+  
         <div>
           <button mat-button matStepperPrevious>Précédent</button>
           <button mat-button matStepperNext>Suivant</button>
         </div>
-
+  
         <!-- Affichage en mode consultation (editMode == false) -->
-        <ng-container *ngIf="!isEditMode">
+        <ng-container *ngIf="!isEditProjet">
           <div>
             <div>
               <div>
@@ -254,9 +248,9 @@
             </div>
           </div>
         </ng-container>
-
+  
         <!-- Affichage en mode édition (editMode == true) -->
-        <ng-container *ngIf="isEditMode">
+        <ng-container *ngIf="isEditProjet">
           <form [formGroup]="projetForm">
             <ng-container>
               <mat-form-field>
@@ -292,48 +286,48 @@
           </form>
         </ng-container>
       </mat-step>
-
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
       <mat-step state="troubleshoot">
         <ng-template matStepLabel>Indicateurs projet</ng-template>
         <div class="container-carte">
           Tableau des indicateurs projet
         </div>
-
-        <form *ngIf="isEditMode == true">
+  
+        <form *ngIf="isEditProjet == true">
           Ajouter un indicateur dans le tableau
         </form>
-
+  
         <div>
           <button mat-button matStepperPrevious>Précédent</button>
           <button mat-button matStepperNext>Suivant</button>
         </div>
       </mat-step>
-
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
       <mat-step state="euro">
         <ng-template matStepLabel>Financements</ng-template>
         <div class="container-carte">
           Tableau des financements
         </div>
-
-        <form *ngIf="isEditMode == true">
+  
+        <form *ngIf="isEditProjet == true">
           Ajouter un financement dans le tableau
         </form>
         <div>
@@ -341,31 +335,36 @@
           <button mat-button matStepperNext>Suivant</button>
         </div>
       </mat-step>
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
       <mat-step state="construction">
         <ng-template matStepLabel>Opérations</ng-template>
-
-        <app-operation></app-operation>
-
+  
+        <ng-container *ngIf="!isEditOperation; then operation;"></ng-container>
+  
+        <div>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+  
       </mat-step>
-
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
       <mat-step state="flag">
         <ng-template matStepLabel>Bilan d'execution</ng-template>
         You are now done.
@@ -373,8 +372,8 @@
           <button mat-button matStepperPrevious>Précédent</button>
           <button mat-button (click)="stepper.reset()">Retour au début</button>
         </div>
-
-        <ng-container *ngIf="isEditMode"></ng-container>
+  
+        <ng-container *ngIf="isEditProjet"></ng-container>
           <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
             <ng-container>
               <!-- Ajoutez d'autres champs si nécessaire -->
@@ -382,7 +381,7 @@
             <button mat-button type="submit">SOUMETTRE</button>
           </form>
       </mat-step>
-
+  
       <!-- Icon overrides. -->
       <ng-template matStepperIcon="info">
         <mat-icon>info</mat-icon>
@@ -405,11 +404,23 @@
       <ng-template matStepperIcon="flag">
         <mat-icon>flag</mat-icon>
       </ng-template>
-
+  
     </mat-stepper>
   </ng-template>
-</mat-dialog-content>
+  
+  <!-- Formulaire operation -->
+  <ng-template #operation>
 
+    <!-- isEditFromOperation vien de app-operation et app-projet -->
+    <app-operation (operationEditMode)="isEditOperation" 
+                    [projetEditMode]="isEditProjet" 
+                    [ref_uuid_proj]="projet.uuid_proj"
+                    >
+      </app-operation>
+
+  </ng-template>
+
+</mat-dialog-content>
 
 
 <!-- Template de chargement -->
