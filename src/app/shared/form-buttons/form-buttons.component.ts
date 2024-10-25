@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 
+// import { OperationLite } from '../../sites/site-detail/detail-projets/projet/operation/operations';
+
 @Component({
   selector: 'app-form-buttons',
   standalone: true,
@@ -16,8 +18,8 @@ export class FormButtonsComponent {
   @Input() isActive!: boolean;
   @Input() isAdding!: boolean;
 
-  @Output() toggleAddingOperation = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
-  @Output() makeOperationForm = new EventEmitter<void>();
+  @Output() makeOperationForm = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
+  @Output() toggleAddingOperation = new EventEmitter<{ empty: boolean }>();
   @Output() onSubmit = new EventEmitter<void>();
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -38,7 +40,13 @@ export class FormButtonsComponent {
 
   onToggleAction(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onToggleAction');
-    this.toggleAddingOperation.emit();
+    if (this.isAdding && this.isActive) {
+        // this.toggleAddingOperation.emit();
+        this.toggleAddingOperation.emit();
+        console.log("is active donc on va utiliser this.toggleAddingOperation.emit( {operation} )");
+    } else if (this.isActive === null) {
+      // 
+    }
   }
 
   onAddAction(): void {

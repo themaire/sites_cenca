@@ -2,12 +2,14 @@
     <!-- Boutons edit||add / save / cancel -->
     <div class="edition">
     
-    <i>Variable isActive DU BOUTON : {{ isActive }}.</i>
-    <i>Variable isAdding DU BOUTON : {{ isAdding }}.</i>
+    <b>BOUTON</b><br/>
+    <i>Variable isActive DU BOUTON : {{ isActive }}.</i><br/>
+    <i>Variable isAdding DU BOUTON : {{ isAdding }}.</i><br/>
 
     <!-- Si isAdding on montre le add, sinon on montre edit -->
     <ng-container *ngIf="isAdding; else edit">
-        <ng-content [ngTemplateOutlet]="add"></ng-content>
+        <b>Le bouton ajouter</b>
+        <ng-container *ngTemplateOutlet="add"></ng-container>
       </ng-container>
         
     </div>

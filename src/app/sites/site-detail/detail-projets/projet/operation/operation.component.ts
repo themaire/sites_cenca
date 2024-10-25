@@ -124,7 +124,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   selectedOperation: String | undefined;
   
   // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
-  form: FormGroup | undefined;
+  form: FormGroup;
   @Input() ref_uuid_proj!: String; // liste d'opératons venant du parent (boite de dialogue projet) 
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   isFormValid: boolean = false;
@@ -235,14 +235,15 @@ export class OperationComponent implements OnInit, OnDestroy {
       }
     } else {
       console.error('Le formulaire est introuvable, veuillez le créer.');
+    }
   }
   
   onToggleEditMode(): void {
-    if (this.form !== undefined) {
+
       this.isEditOperation = this.formService.toggleEditMode(this.form, this.isEditOperation, this.initialFormValues);
       this.isEditFromOperation.emit(this.isEditOperation);
       this.cdr.detectChanges(); // Forcer la détection des changements
-    }
+
   }
   
   getInvalidFields(): string[] {
@@ -256,14 +257,16 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   async makeOperationForm({ operation, empty = false }: { operation?: OperationLite, empty?: boolean } = {}): Promise<void> {
     
-    if (this.projetEditMode){
+    this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
+      duration: 3000,});
+    
+      if (this.projetEditMode){
       this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir une  opérations", 'Fermer', { 
         duration: 3000,});
       return;
     }
 
-    this.snackBar.open("Nous rentrons ", 'Fermer', { 
-      duration: 3000,});
+    
     
     console.log("operation passé en paramètre :");
     console.log(operation);
@@ -277,6 +280,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     try {
       if (empty) {
         this.form = this.formService.newOperationForm();
+        console.log("Le formulaire vide vient de se créer");
       } else if (operation === undefined && this.form?.validator === null) {
         //  Cas d'un nouveau formulaire
         this.form = this.formService.newOperationForm(operation);
@@ -292,6 +296,8 @@ export class OperationComponent implements OnInit, OnDestroy {
         this.form = this.formService.newOperationForm(this.operation);
         console.log("this.form après la création du formulaire :");
         console.log(this.form);
+      } else {
+        console.error('Paramètres operation et empty non definis.');
       }
       
       if (this.form!.validator !== null) {

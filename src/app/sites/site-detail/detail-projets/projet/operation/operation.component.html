@@ -6,7 +6,11 @@
 <!-- <ng-container *ngIf="!isEditMode; then listOperations; else addEditOperation"></ng-container> -->
 Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
 Variable (operation) isEditMode: {{ isEditOperation }}<br>
-<ng-container *ngTemplateOutlet="listOperations"></ng-container>
+
+<!-- Permet d'appeller un template -->
+<!-- <ng-container *ngTemplateOutlet="listOperations"></ng-container> -->
+
+<ng-container *ngIf="!isEditOperation; then listOperations; else addEditOperation"></ng-container>
 
 <!-- MODE 1 -->
 <ng-template #listOperations> 
@@ -18,9 +22,12 @@ Variable (operation) isEditMode: {{ isEditOperation }}<br>
     iconName="add" 
     [isActive]="isEditOperation" 
     [isFormValid]="isFormValid" 
-    (toggleAddingOperation)="makeOperationForm({ empty: true })"
+    (makeOperationForm)="makeOperationForm()"
     (onSubmit)="onSubmit('add')" 
   ></app-form-buttons>
+
+  <div *ngIf="!projetEditMode">Toto CACA pas !projetEditMode</div>
+  <div *ngIf="projetEditMode">Toto CACA !projetEditMode</div>
 
   Ajouter une opération (ci dessus)
 
@@ -84,7 +91,7 @@ Variable (operation) isEditMode: {{ isEditOperation }}<br>
       [isActive]="isEditOperation" 
       [isFormValid]="isFormValid" 
       (toggleAddingOperation)="onToggleEditMode()" 
-      (onSubmit)="onSubmit()" 
+      (onSubmit)="onSubmit('add')" 
   ></app-form-buttons>
 
   <mat-horizontal-stepper [linear]="linearMode" #stepper>
@@ -271,7 +278,7 @@ Variable (operation) isEditMode: {{ isEditOperation }}<br>
         </div>
         <div>
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="onSubmit()">Submit</button>
+          <button mat-button (click)="onSubmit('edit')">Submit</button>
         </div>
       </form>
     </mat-step>
