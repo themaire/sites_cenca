@@ -18,11 +18,11 @@ Variable (operation) isEditMode: {{ isEditOperation }}<br>
     
   <app-form-buttons
     *ngIf="!projetEditMode"
-    [isAdding]="true"
+    mode="adding"
     iconName="add" 
     [isActive]="isEditOperation" 
     [isFormValid]="isFormValid" 
-    (makeOperationForm)="makeOperationForm()"
+    (makeOperationForm)="makeOperationForm($event)"
     (onSubmit)="onSubmit('add')" 
   ></app-form-buttons>
 
@@ -86,12 +86,13 @@ Variable (operation) isEditMode: {{ isEditOperation }}<br>
   <!-- (nom_dans_composant)='mathode à utiliser depuis le composant du bouton' -->
   <div *ngIf="!projetEditMode">Toto CACA</div>
   <app-form-buttons
-      *ngIf="!projetEditMode"
-      iconName="add" 
-      [isActive]="isEditOperation" 
-      [isFormValid]="isFormValid" 
-      (toggleAddingOperation)="onToggleEditMode()" 
-      (onSubmit)="onSubmit('add')" 
+    *ngIf="!projetEditMode"
+    mode="editing"
+    iconName="edit" 
+    [isActive]="isEditOperation" 
+    [isFormValid]="isFormValid" 
+    (makeOperationForm)="makeOperationForm($event)"
+    (onSubmit)="onSubmit('edit')" 
   ></app-form-buttons>
 
   <mat-horizontal-stepper [linear]="linearMode" #stepper>

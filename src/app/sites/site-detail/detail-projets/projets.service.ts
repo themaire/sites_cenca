@@ -1,4 +1,4 @@
-import { backendAdress } from '../../../backendAdress';
+import { environment } from '../../../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { Operation, OperationLite } from './projet/operation/operations';
   providedIn: 'root'
 })
 export class ProjetService {
-  private activeUrl: string = backendAdress +"sites/"; // Bureau
+  private activeUrl: string = environment.apiUrl +"sites/"; // Bureau
 
   // Reste a completer l'interface à utiliser
 

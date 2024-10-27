@@ -256,37 +256,33 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   async makeOperationForm({ operation, empty = false }: { operation?: OperationLite, empty?: boolean } = {}): Promise<void> {
-    
-    this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
-      duration: 3000,});
-    
-      if (this.projetEditMode){
+    // Deux grands modes :
+    // 1. Créer un nouveau formulaire vide si ne donne PAS une operation // Mode adding
+    // 2. Créer un formulaire avec les données d'une opération // Mode editing
+
+    if (this.projetEditMode){
       this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir une  opérations", 'Fermer', { 
         duration: 3000,});
       return;
+    } else {
+      this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
+        duration: 3000,});
     }
-
-    
-    
-    console.log("operation passé en paramètre :");
-    console.log(operation);
-
-    console.log("empty passé en paramètre :");
-    console.log(empty);
 
     console.log("this.form avant la création du formulaire :");
     console.log(this.form);
 
     try {
-      if (empty) {
+      if (empty == true) {
         this.form = this.formService.newOperationForm();
         console.log("Le formulaire vide vient de se créer");
-      } else if (operation === undefined && this.form?.validator === null) {
-        //  Cas d'un nouveau formulaire
-        this.form = this.formService.newOperationForm(operation);
-      } else if (operation !== undefined && this.form === undefined) {
-        // Cas d'intégration d'un formulaire existant
+      } else if ( operation !== undefined ) {
+        // Cas d'intégration d'un formulaire d'une opération existante (OperationLite)
         // Sélectionner UNE SEULE opération pour l'afficher dans un dans le formulaire
+
+        console.log("operation passé en paramètre :");
+        console.log(operation);
+
         const subroute = `operations/uuid=${operation!.uuid_ope}/full`; // Lite puisque PLUSIEURS opérations
         console.log("subroute : " + subroute);
         this.operation = await this.research.getOperation(subroute);
@@ -314,7 +310,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         this.unsubForm();
       }
 
-      this.initialFormValues = this.formService.newOperationForm();
+      this.initialFormValues = this.form;
       this.isEditOperation = true;
 
     } catch (error) {

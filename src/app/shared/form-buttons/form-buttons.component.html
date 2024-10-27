@@ -4,10 +4,10 @@
     
     <b>BOUTON</b><br/>
     <i>Variable isActive DU BOUTON : {{ isActive }}.</i><br/>
-    <i>Variable isAdding DU BOUTON : {{ isAdding }}.</i><br/>
+    <i>Variable mode DU BOUTON : {{ mode }}.</i><br/>
 
     <!-- Si isAdding on montre le add, sinon on montre edit -->
-    <ng-container *ngIf="isAdding; else edit">
+    <ng-container *ngIf="mode == 'adding'; else edit">
         <b>Le bouton ajouter</b>
         <ng-container *ngTemplateOutlet="add"></ng-container>
       </ng-container>

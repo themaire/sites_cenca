@@ -7,7 +7,7 @@
 
   <!-- FORMULAIRE STEPPER (NORMAL) -->
   <ng-template #stepper>
-  
+
     <h2 *ngIf="!isEditProjet">Consultation d'un projet</h2>
     <h2 *ngIf="isEditProjet">Modification d'un projet</h2>
   
@@ -15,24 +15,23 @@
         <!-- <label for="duration">Animation duration:</label> -->
         <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
     </div>
-  
+
     <app-form-buttons
       [isActive]="isEditProjet" 
       iconName="edit" 
       [isFormValid]="isFormValid" 
-      message="Il fait beau" 
-      (toggleAddingOperation)="toggleEditProjet()" 
+      (toggle)="toggleEditProjet()" 
       (onSubmit)="onSubmit()" 
     ></app-form-buttons>
-      
+
     <mat-stepper labelPosition="bottom" 
                   [linear]="false"  
                   #stepper 
                   [animationDuration]="duration.value" 
                   class="margin-stepper"
                   [orientation]="(stepperOrientation | async)!">
-  
-  
+
+
       <!-- state="info" est l'icone a utiliser pour le step -->
       <mat-step state="info">
         <ng-template matStepLabel>Description du projet</ng-template>
@@ -154,12 +153,12 @@
         <button mat-button matStepperNext>SUIVANT</button>
       </mat-step>
   
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   
       <!-- <mat-step [stepControl]="ENPFormGroup"> -->
       <mat-step state="landscape">
