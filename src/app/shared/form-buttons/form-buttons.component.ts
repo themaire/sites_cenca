@@ -19,7 +19,8 @@ export class FormButtonsComponent {
   @Input() mode!: String;
 
   @Output() makeOperationForm = new EventEmitter<{ empty: boolean }>();
-  @Output() toggle = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
+  @Output() toggleAction = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
+  @Output() toggleAction2 = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
   @Output() onSubmit = new EventEmitter<void>();
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -45,14 +46,16 @@ export class FormButtonsComponent {
   }
 
   onToggleAction(): void {
-    console.log('-----------------------!!!!!!!!!!!!--------onToggleAction');
-    this.toggle.emit();
+    console.log('-----------------------!!!!!!!!!!!!--------onToggleAction dans le composant bouton');
+    console.log('onToggleAction called');
+    this.toggleAction.emit();
+    this.toggleAction2.emit();
   }
 
   onAddAction(): void {
     // OnToggleAction sert se servir de la fonction makeOperationForm de operation component
-    this.makeOperationForm.emit({ empty: true }); // On envoie un objet vide
     console.log('-----------------------!!!!!!!!!!!!--------onAddAction');
+    this.makeOperationForm.emit({ empty: true }); // On envoie un objet vide
   }
 
   onSave(): void {

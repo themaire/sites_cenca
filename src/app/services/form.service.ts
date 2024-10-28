@@ -29,6 +29,7 @@ export class FormService {
       form.enable();
       console.log('Nous sommes en mode édition');
     }
+    console.log('form.service.ts.toggleEditMode() retourne ' + (!isEditMode).toString());
     return !isEditMode;
   }
 

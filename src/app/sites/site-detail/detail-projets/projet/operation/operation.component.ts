@@ -238,12 +238,16 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
   
-  onToggleEditMode(): void {
+  onToggleEditOpe(): void {
+    console.log('-----------------------!!!!!!!!!!!!--------onToggleEditOpe dans le composant operation');
+    this.isEditOperation = this.formService.toggleEditMode(this.form, this.isEditOperation, this.initialFormValues);
+    this.isEditFromOperation.emit(this.isEditOperation);
+    this.cdr.detectChanges(); // Forcer la détection des changements
+    console.log("isEditOperation apres onToggleEditOpe() :", this.isEditOperation);
+  }
 
-      this.isEditOperation = this.formService.toggleEditMode(this.form, this.isEditOperation, this.initialFormValues);
-      this.isEditFromOperation.emit(this.isEditOperation);
-      this.cdr.detectChanges(); // Forcer la détection des changements
-
+  hello() {
+    console.log('Hello from parent component!'); // Vérifiez que ce message apparaît dans la console
   }
   
   getInvalidFields(): string[] {

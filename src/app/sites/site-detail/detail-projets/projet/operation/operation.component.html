@@ -22,6 +22,7 @@ Variable (operation) isEditMode: {{ isEditOperation }}<br>
     iconName="add" 
     [isActive]="isEditOperation" 
     [isFormValid]="isFormValid" 
+    (toggleAction2)="hello()"
     (makeOperationForm)="makeOperationForm($event)"
     (onSubmit)="onSubmit('add')" 
   ></app-form-buttons>
