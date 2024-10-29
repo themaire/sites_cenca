@@ -219,7 +219,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     console.log('Destruction du composant, on se désabonne.');
   }
 
-  onSubmit(mode: String): void {
+  onSubmit(mode?: String): void {
     // Logique de soumission du formulaire du projet
     if (this.form !== undefined) {
       if (this.form.valid) {
@@ -238,16 +238,12 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
   
-  onToggleEditOpe(): void {
+  toggleEditOperation(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onToggleEditOpe dans le composant operation');
     this.isEditOperation = this.formService.toggleEditMode(this.form, this.isEditOperation, this.initialFormValues);
     this.isEditFromOperation.emit(this.isEditOperation);
     this.cdr.detectChanges(); // Forcer la détection des changements
     console.log("isEditOperation apres onToggleEditOpe() :", this.isEditOperation);
-  }
-
-  hello() {
-    console.log('Hello from parent component!'); // Vérifiez que ce message apparaît dans la console
   }
   
   getInvalidFields(): string[] {
@@ -277,45 +273,49 @@ export class OperationComponent implements OnInit, OnDestroy {
     console.log(this.form);
 
     try {
-      if (empty == true) {
-        this.form = this.formService.newOperationForm();
-        console.log("Le formulaire vide vient de se créer");
-      } else if ( operation !== undefined ) {
-        // Cas d'intégration d'un formulaire d'une opération existante (OperationLite)
-        // Sélectionner UNE SEULE opération pour l'afficher dans un dans le formulaire
+      if (!this.isEditOperation) { // Si nous ne sommes pas encore en mode édition
+        if (empty == true) {
+          this.form = this.formService.newOperationForm();
+          console.log("Le formulaire vide vient de se créer");
+        } else if ( operation !== undefined ) {
+          // Cas d'intégration d'un formulaire d'une opération existante (OperationLite)
+          // Sélectionner UNE SEULE opération pour l'afficher dans un dans le formulaire
 
-        console.log("operation passé en paramètre :");
-        console.log(operation);
+          console.log("operation passé en paramètre :");
+          console.log(operation);
 
-        const subroute = `operations/uuid=${operation!.uuid_ope}/full`; // Lite puisque PLUSIEURS opérations
-        console.log("subroute : " + subroute);
-        this.operation = await this.research.getOperation(subroute);
-        console.log("Operation selectionnée : ");
-        console.log(this.operation);
+          const subroute = `operations/uuid=${operation!.uuid_ope}/full`; // Lite puisque PLUSIEURS opérations
+          console.log("subroute : " + subroute);
+          this.operation = await this.research.getOperation(subroute);
+          console.log("Operation selectionnée : ");
+          console.log(this.operation);
+          
+          this.form = this.formService.newOperationForm(this.operation);
+          console.log("this.form après la création du formulaire :");
+          console.log(this.form);
+        } else {
+          console.error('Paramètres operation et empty non definis.');
+        }
         
-        this.form = this.formService.newOperationForm(this.operation);
-        console.log("this.form après la création du formulaire :");
-        console.log(this.form);
-      } else {
-        console.error('Paramètres operation et empty non definis.');
+        if (this.form!.validator !== null) {
+          // Souscrire aux changements du statut du formulaire principal (projetForm)
+          this.formStatusSubscription = this.form!.statusChanges.subscribe(status => {
+            this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
+            // console.log('Statut du formulaire principal :', status);
+            // console.log("this.isFormValid = this.projetForm.valid :");
+            // console.log(this.isFormValid + " = " + this.projetForm.valid);
+            // console.log("isFormValid passé à l'enfant:", this.isFormValid);
+            this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+          });
+        } else {
+          this.unsubForm();
+        }
+
+        this.initialFormValues = this.form;
       }
       
-      if (this.form!.validator !== null) {
-        // Souscrire aux changements du statut du formulaire principal (projetForm)
-        this.formStatusSubscription = this.form!.statusChanges.subscribe(status => {
-          this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
-          // console.log('Statut du formulaire principal :', status);
-          // console.log("this.isFormValid = this.projetForm.valid :");
-          // console.log(this.isFormValid + " = " + this.projetForm.valid);
-          // console.log("isFormValid passé à l'enfant:", this.isFormValid);
-          this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
-        });
-      } else {
-        this.unsubForm();
-      }
-
-      this.initialFormValues = this.form;
-      this.isEditOperation = true;
+      this.isEditOperation = !this.isEditOperation;
+      console.log("isEditOperation apres makeOperationForm() vaut :", this.isEditOperation);
 
     } catch (error) {
       console.error('Erreur lors de la création du formulaire', error);

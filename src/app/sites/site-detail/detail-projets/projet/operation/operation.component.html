@@ -3,29 +3,25 @@
 <!-- 2 On ajoute ou edite une opération existante -->
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
-<!-- <ng-container *ngIf="!isEditMode; then listOperations; else addEditOperation"></ng-container> -->
 Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
 Variable (operation) isEditMode: {{ isEditOperation }}<br>
 
-<!-- Permet d'appeller un template -->
-<!-- <ng-container *ngTemplateOutlet="listOperations"></ng-container> -->
+<!-- Utilisation du template buttons pour ajouter une opération -->
+<app-form-buttons
+*ngIf="!projetEditMode"
+icone="add" 
+[isActive]="isEditOperation" 
+[isFormValid]="isFormValid" 
+(toggleAction)="toggleEditOperation()"
+(makeOperationForm)="makeOperationForm($event)"
+(onSubmit)="onSubmit($event)" 
+></app-form-buttons>
 
+<!-- Permet d'appeller un template -->
 <ng-container *ngIf="!isEditOperation; then listOperations; else addEditOperation"></ng-container>
 
 <!-- MODE 1 -->
 <ng-template #listOperations> 
-    <!-- Utilisation du template buttons pour ajouter une opération -->
-    
-  <app-form-buttons
-    *ngIf="!projetEditMode"
-    mode="adding"
-    iconName="add" 
-    [isActive]="isEditOperation" 
-    [isFormValid]="isFormValid" 
-    (toggleAction2)="hello()"
-    (makeOperationForm)="makeOperationForm($event)"
-    (onSubmit)="onSubmit('add')" 
-  ></app-form-buttons>
 
   <div *ngIf="!projetEditMode">Toto CACA pas !projetEditMode</div>
   <div *ngIf="projetEditMode">Toto CACA !projetEditMode</div>
@@ -86,15 +82,6 @@ Variable (operation) isEditMode: {{ isEditOperation }}<br>
 
   <!-- (nom_dans_composant)='mathode à utiliser depuis le composant du bouton' -->
   <div *ngIf="!projetEditMode">Toto CACA</div>
-  <app-form-buttons
-    *ngIf="!projetEditMode"
-    mode="editing"
-    iconName="edit" 
-    [isActive]="isEditOperation" 
-    [isFormValid]="isFormValid" 
-    (makeOperationForm)="makeOperationForm($event)"
-    (onSubmit)="onSubmit('edit')" 
-  ></app-form-buttons>
 
   <mat-horizontal-stepper [linear]="linearMode" #stepper>
 

@@ -13,15 +13,14 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './form-buttons.component.scss'
 })
 export class FormButtonsComponent {
-  @Input() iconName!: string;  // Valeur par défaut pour voir si c'est vide
+  @Input() icone!: string;  // Valeur par défaut pour voir si c'est vide
   @Input() isFormValid!: boolean;
   @Input() isActive!: boolean;
   @Input() mode!: String;
 
   @Output() makeOperationForm = new EventEmitter<{ empty: boolean }>();
   @Output() toggleAction = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
-  @Output() toggleAction2 = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
-  @Output() onSubmit = new EventEmitter<void>();
+  @Output() onSubmit = new EventEmitter<String>();
 
   constructor(private cdr: ChangeDetectorRef) {}
   
@@ -49,7 +48,6 @@ export class FormButtonsComponent {
     console.log('-----------------------!!!!!!!!!!!!--------onToggleAction dans le composant bouton');
     console.log('onToggleAction called');
     this.toggleAction.emit();
-    this.toggleAction2.emit();
   }
 
   onAddAction(): void {
@@ -59,6 +57,6 @@ export class FormButtonsComponent {
   }
 
   onSave(): void {
-    this.onSubmit.emit();
+    this.onSubmit.emit(this.icone);
   }
 }
