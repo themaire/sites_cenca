@@ -1,32 +1,73 @@
 @import "../../../../styles/mixins.scss";
 @import "../../../../styles/variables.scss";
 
+*,
+.mat-mdc-dialog-content,
+.mdc-dialog__content ng-star-inserted {
+  padding: 0;
+  margin: 0;
+}
+.conteneur-projet {
+  display: flex;
+}
+.conteneur {
+  padding: 20px;
+}
+// bande sur le coté
+.gerer {
+  padding-bottom: 15px;
+  @include bandeau($gerer);
+}
+//boutons edit/save/cancel
+.edition {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  gap: 15px;
+  .btn-edition {
+    @include btn-icon($couleur-territoire, $vertC);
+    @include icon(white, black);
+  }
+  .btn-sauvegarde {
+    @include btn-icon(white, $couleur-territoire);
+    @include icon($couleur-flore, white);
+  }
+  .btn-annulation {
+    @include btn-icon(white, red);
+    @include icon(red, white);
+  }
+}
+// boutons du stepper
+
 .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100px; /* Ajuste selon ton besoin */
-  }
-
-.example-stepper {
-  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100px; /* Ajuste selon ton besoin */
+}
+.mat-mdc-dialog-container .mat-mdc-dialog-content {
+  padding: 0;
 }
 
-.mat-mdc-form-field {
-  margin-top: 16px;
-}
+// .example-stepper {
+//   margin-top: 8px;
+// }
 
-.example-input-wrapper {
-  margin-bottom: 16px;
-}
+// .mat-mdc-form-field {
+//   margin-top: 16px;
+// }
 
-.container-carte {
-  h2 {
-    @include Typo($p14, $normal, $couleur-flore);
-    margin-bottom: 0;
-  }
-  img {
-    width: 30%;
-  }
-}
+// .example-input-wrapper {
+//   margin-bottom: 16px;
+// }
+
+// .container-carte {
+//   h2 {
+//     @include Typo($p14, $normal, $couleur-flore);
+//     margin-bottom: 0;
+//   }
+//   img {
+//     width: 30%;
+//   }
+// }
