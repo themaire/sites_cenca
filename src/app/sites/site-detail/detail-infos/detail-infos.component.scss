@@ -86,25 +86,6 @@
   }
 }
 
-.edition {
-  display: flex;
-  @include align(center, start);
-  margin-bottom: 20px;
-  gap: 15px;
-  .btn-edition {
-    @include btn-icon($couleur-faune, $orangeC);
-    @include icon(white, black);
-  }
-  .btn-sauvegarde {
-    @include btn-icon(white, $couleur-territoire);
-    @include icon($couleur-flore, white);
-  }
-  .btn-annulation {
-    @include btn-icon(white, red);
-    @include icon(red, white);
-  }
-}
-
 @media screen and (max-width: $mobile) {
   .container {
     grid-template-columns: 1fr;

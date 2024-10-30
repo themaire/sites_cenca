@@ -1,4 +1,4 @@
-import { backendAdress } from '../../../backendAdress';
+import { environment } from '../../../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -7,13 +7,13 @@ import { catchError } from 'rxjs/operators';  
 
 // prototypes utilisés dans la promise de la fonction
 import { Projet } from './projets';
-import { Operation } from './projet/operation/operations';
+import { Operation, OperationLite } from './projet/operation/operations';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjetService {
-  private activeUrl: string = backendAdress +"sites/"; // Bureau
+  private activeUrl: string = environment.apiUrl +"sites/"; // Bureau
 
   // Reste a completer l'interface à utiliser
 
@@ -22,7 +22,12 @@ export class ProjetService {
     return await data.json() ?? [];
   }
   
-  async getOperations(subroute: string): Promise<Operation[]> {
+  async getOperations(subroute: string): Promise<OperationLite[]> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
+  }
+  
+  async getOperation(subroute: string): Promise<Operation> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }

@@ -1,8 +1,9 @@
+import { environment } from '../../environments/environment';
+
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Credentials } from './credentials';
 import { User } from './user.model';
-import { backendAdress } from '../backendAdress';
 import { Observable, tap, map, switchMap } from 'rxjs';
 
 @Injectable({
@@ -15,7 +16,7 @@ export class LoginService {
 
   login(credentials: Credentials): Observable<User | undefined | null> {
     // console.log(backendAdress);
-    return this.http.post(backendAdress + 'auth/login', credentials).pipe(
+    return this.http.post(environment.apiUrl + 'auth/login', credentials).pipe(
       tap((result: any) => {
         localStorage.setItem('token', result['token']);
         let user = Object.assign(new User(), result['user']);
@@ -30,7 +31,7 @@ export class LoginService {
     );
   }
   getUsers(): Observable<User | undefined | null> {
-    return this.http.get(backendAdress + 'auth/me').pipe(
+    return this.http.get(environment.apiUrl + 'auth/me').pipe(
       tap((result: any) => {
         let user = Object.assign(new User(), result);
         user.initiales = this.getInitials(result['nom'], result['prenom']);
@@ -57,7 +58,7 @@ export class LoginService {
 
   logout(): Observable<null> {
     // console.log('on est entrer dans logout');
-    return this.http.get(backendAdress + 'auth/logout').pipe(
+    return this.http.get(environment.apiUrl + 'auth/logout').pipe(
       tap((result: any) => {
         // console.log('on est entrer dans tap logout');
         // console.log('on va supprimer le token');

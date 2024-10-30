@@ -132,3 +132,8 @@ dist
 *workspace
 .vscode/*
 .angular/*
+.idea/*
+
+.DS_Store
+
+src/environments/*.ts

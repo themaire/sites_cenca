@@ -1,4 +1,4 @@
-import { backendAdress } from './backendAdress';
+import { environment } from '../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { MenuItem } from './menuItem';
 })
 export class MenuService {
 
-  private activeUrl: string = backendAdress + "menu/"; // Bureau
+  private activeUrl: string = environment.apiUrl + "menu/"; // Bureau
 
   private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   menuItems$ = this.menuItemsSubject.asObservable();

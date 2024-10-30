@@ -1,4 +1,5 @@
-import { backendAdress } from '../backendAdress';
+import { environment } from '../../environments/environment';
+
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -20,7 +21,7 @@ import { Selector } from './selector';
   providedIn: 'root',
 })
 export class SitesService {
-  private activeUrl: string = backendAdress + 'sites/';
+  private activeUrl: string = environment.apiUrl + 'sites/';
 
   constructor(private http: HttpClient) {}
 

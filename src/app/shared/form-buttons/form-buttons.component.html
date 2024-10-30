@@ -1,0 +1,71 @@
+<div class="edition">
+    <b>BOUTON</b><br/>
+    <i>isEditActive BOUTON : {{ isEditActive }}.</i><br/>
+    <i>isAddActive BOUTON : {{ isAddActive }}.</i><br/>
+    <i>icone BOUTON : {{ icone }}.</i><br/>
+    <i>Variable isFormValid DU FORMULAIRE : {{ isFormValid }}.</i><br/>
+
+    <!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d'édition -->
+    <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive; else edit">
+        <b>Le bouton ajouter</b>
+        <ng-container *ngTemplateOutlet="add"></ng-container>
+    </ng-container>
+</div>
+
+<ng-template #edit>
+    <ng-content *ngIf="isEditActive || isAddActive; then editOn; else editOff"></ng-content>
+</ng-template>
+
+<ng-template #editOn>
+    <!-- Bouton sauvegarder -->
+    <ng-container *ngIf="isFormValid; then saveBtnEnabled; else saveBtnDisabled"></ng-container>
+    
+    <!-- Bouton annuler -->
+    <button
+        mat-icon-button
+        matTooltip="Annuler"
+        class="btn-annulation"
+        (click)="onToggleAction()">
+        <mat-icon>close</mat-icon>
+    </button>
+</ng-template>
+
+<ng-template #editOff>
+    <button
+        mat-icon-button
+        [matTooltip]="tooltip"
+        class="btn-edition"
+        (click)="onToggleAction()">
+        <mat-icon>{{ icone }}</mat-icon>
+    </button>
+</ng-template>
+
+<ng-template #saveBtnEnabled>
+    <button
+        mat-icon-button
+        matTooltip="Sauvegarder"
+        class="btn-sauvegarde"
+        (click)="onSave()">
+        <mat-icon>save</mat-icon>
+    </button>
+</ng-template>
+
+<ng-template #saveBtnDisabled>
+    <button
+        mat-icon-button
+        matTooltip="Sauvegarde impossible, vérifiez les champs obligatoires"
+        class="btn-sauvegarde-disabled"
+        disabled>
+        <mat-icon>save</mat-icon>
+    </button>
+</ng-template>
+
+<ng-template #add>
+    <button
+        mat-icon-button
+        matTooltip="Ajouter une opération"
+        class="btn-edition"
+        (click)="onToggleAction()">
+        <mat-icon>{{ icone }}</mat-icon>
+    </button>
+</ng-template>
