@@ -17,9 +17,10 @@
     </div>
 
     <app-form-buttons
-      [isActive]="isEditProjet" 
+      [isEditActive]="isEditProjet" 
       icone="edit" 
       [isFormValid]="isFormValid" 
+      [isEditActive]="isEditOperation" 
       (toggleAction)="toggleEditProjet()" 
       (onSubmit)="onSubmit()" 
     ></app-form-buttons>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 
-// import { OperationLite } from '../../sites/site-detail/detail-projets/projet/operation/operations';
+import { OperationLite } from '../../sites/site-detail/detail-projets/projet/operation/operations';
 
 @Component({
   selector: 'app-form-buttons',
@@ -15,11 +15,12 @@ import { MatIcon } from '@angular/material/icon';
 export class FormButtonsComponent {
   @Input() icone!: string;  // Valeur par défaut pour voir si c'est vide
   @Input() isFormValid!: boolean;
-  @Input() isActive!: boolean;
-  @Input() mode!: String;
+  @Input() isAddActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
+  @Input() isEditActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
 
-  @Output() makeOperationForm = new EventEmitter<{ empty: boolean }>();
-  @Output() toggleAction = new EventEmitter<void>(); // Est en fait onToggleEditMode() dans operation.component.ts
+
+  @Output() makeOperationForm = new EventEmitter<{ operation?: OperationLite; empty: boolean }>();
+  @Output() toggleAction = new EventEmitter<String>(); // Est en fait onToggleEditMode() dans operation.component.ts
   @Output() onSubmit = new EventEmitter<String>();
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -33,13 +34,13 @@ export class FormButtonsComponent {
       this.cdr.detectChanges();  // Forcer la détection des changements
     }
 
-    if (changes['isActive']) {
-      console.log('isActive du BOUTON has changed:', changes['isActive'].currentValue);
+    if (changes['isAddActive']) {
+      console.log('isActive du BOUTON has changed:', changes['isAddActive'].currentValue);
       this.cdr.detectChanges();  // Forcer la détection des changements immédiatement
     }
 
-    if (changes['isAdding']) {
-    console.log('isAdding du BOUTON has changed:', changes['isAdding'].currentValue);
+    if (changes['isEditActive']) {
+    console.log('isAdding du BOUTON has changed:', changes['isEditActive'].currentValue);
       this.cdr.detectChanges();  // Forcer la détection des changements immédiatement
     }
   }
@@ -47,13 +48,12 @@ export class FormButtonsComponent {
   onToggleAction(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onToggleAction dans le composant bouton');
     console.log('onToggleAction called');
-    this.toggleAction.emit();
+    this.toggleAction.emit(this.icone); // Le nom de l'icon determine quel booléen est modifié
   }
 
-  onAddAction(): void {
-    // OnToggleAction sert se servir de la fonction makeOperationForm de operation component
-    console.log('-----------------------!!!!!!!!!!!!--------onAddAction');
-    this.makeOperationForm.emit({ empty: true }); // On envoie un objet vide
+  onEditAction(operation: OperationLite): void {
+    // OnToggleAction sert se servir de la fonction makeOperationForm dans le ngAfterViewInit de operation.component.ts
+    this.makeOperationForm.emit({ operation, empty: false });
   }
 
   onSave(): void {

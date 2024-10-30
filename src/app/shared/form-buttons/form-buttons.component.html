@@ -1,18 +1,19 @@
 <div class="edition">
     <b>BOUTON</b><br/>
-    <i>Variable isActive DU BOUTON : {{ isActive }}.</i><br/>
-    <i>Variable icone DU BOUTON : {{ icone }}.</i><br/>
+    <i>isEditActive BOUTON : {{ isEditActive }}.</i><br/>
+    <i>isAddActive BOUTON : {{ isAddActive }}.</i><br/>
+    <i>icone BOUTON : {{ icone }}.</i><br/>
     <i>Variable isFormValid DU FORMULAIRE : {{ isFormValid }}.</i><br/>
 
     <!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d'édition -->
-    <ng-container *ngIf="icone === 'add' && !isActive; else edit">
+    <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive; else edit">
         <b>Le bouton ajouter</b>
         <ng-container *ngTemplateOutlet="add"></ng-container>
     </ng-container>
 </div>
 
 <ng-template #edit>
-    <ng-content *ngIf="isActive; then editOn; else editOff"></ng-content>
+    <ng-content *ngIf="isEditActive || isAddActive; then editOn; else editOff"></ng-content>
 </ng-template>
 
 <ng-template #editOn>
@@ -64,7 +65,7 @@
         mat-icon-button
         matTooltip="Ajouter une opération"
         class="btn-edition"
-        (click)="onAddAction()">
+        (click)="onToggleAction()">
         <mat-icon>{{ icone }}</mat-icon>
     </button>
 </ng-template>

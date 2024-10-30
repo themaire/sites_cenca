@@ -4,7 +4,7 @@
 // Les données du formulaire sont passées en entrée via @Input pour modifier
 // Et Si on ne passe pas de données, on crée un nouveau formulaire vide 
 
-import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -100,7 +100,9 @@ export const MY_DATE_FORMATS = {
   templateUrl: './operation.component.html',
   styleUrls: ['./operation.component.scss']
 })
-export class OperationComponent implements OnInit, OnDestroy {
+export class OperationComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
+
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
   private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
@@ -117,8 +119,9 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   // Booleens d'états pour le mode d'affichage
   isEditOperation: boolean = false;
-  @Output() isEditFromOperation = new EventEmitter<boolean>(); // Savoir si le projet est en edition pour masquer les boutons
-  @Input() projetEditMode: boolean = false;
+  isAddOperation:boolean = false;
+  @Output() isEditFromOperation = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
+  @Input() projetEditMode: boolean = false; // Savoir si le projet est en edition pour masquer les boutons
 
   linearMode: boolean = true;
   selectedOperation: String | undefined;
@@ -206,6 +209,19 @@ export class OperationComponent implements OnInit, OnDestroy {
     // Ini s'en sert pas au bon moment
     // this.makeOperationForm({ empty: true });
   }
+
+  ngAfterViewInit(): void {
+    // Apres que la vue viewchild déclarée plus haut soit déclarée
+    // verifie qu'on est en edition et que le template est rendu
+    if (this.addEditOperationTemplate) {
+      if (this.isAddOperation) {
+        console.log('Template addEditOperation est rendu');
+        this.makeOperationForm({ empty: true });
+      } else {
+        console.error('Template addEditOperation non trouvé');
+      }
+    }
+  }
   
   ngOnDestroy(): void {
     this.unsubForm();
@@ -215,8 +231,9 @@ export class OperationComponent implements OnInit, OnDestroy {
   unsubForm(): void {
     if (this.formStatusSubscription) {
       this.formStatusSubscription.unsubscribe();
+      console.log('Destruction du composant, on se désabonne.');
     }
-    console.log('Destruction du composant, on se désabonne.');
+    
   }
 
   onSubmit(mode?: String): void {
@@ -238,12 +255,17 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
   
-  toggleEditOperation(): void {
-    console.log('-----------------------!!!!!!!!!!!!--------onToggleEditOpe dans le composant operation');
-    this.isEditOperation = this.formService.toggleEditMode(this.form, this.isEditOperation, this.initialFormValues);
-    this.isEditFromOperation.emit(this.isEditOperation);
+  toggleEditOperation(mode: String): void {
+    console.log('-----------------------!!!!!!!!!!!!--------toggleEditOperation() dans le composant operation');
+    if (mode === 'edit') {
+      this.isEditOperation = this.formService.toggleEditMode(this.form, this.isEditOperation, this.initialFormValues);
+      this.isEditFromOperation.emit(this.isEditOperation);
+    } else if (mode === 'add') {
+      this.isAddOperation = this.formService.toggleEditMode(this.form, this.isAddOperation, this.initialFormValues);
+      this.isEditFromOperation.emit(this.isAddOperation);
+    }
     this.cdr.detectChanges(); // Forcer la détection des changements
-    console.log("isEditOperation apres onToggleEditOpe() :", this.isEditOperation);
+      console.log("is" + mode.toLocaleUpperCase() + "Operation apres onToggleEditOpe() :", this.isEditOperation);
   }
   
   getInvalidFields(): string[] {
@@ -322,7 +344,3 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 }
-function onToggleEditMode() {
-  throw new Error('Function not implemented.');
-}
-

@@ -4,21 +4,23 @@
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
 Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
-Variable (operation) isEditMode: {{ isEditOperation }}<br>
+Variable (operation) isEditOperation: {{ isEditOperation }}<br>
+Variable (operation) isAddOperation: {{ isAddOperation }}<br>
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <app-form-buttons
-*ngIf="!projetEditMode"
-icone="add" 
-[isActive]="isEditOperation" 
-[isFormValid]="isFormValid" 
-(toggleAction)="toggleEditOperation()"
-(makeOperationForm)="makeOperationForm($event)"
-(onSubmit)="onSubmit($event)" 
+  *ngIf="!projetEditMode"
+  icone="add" 
+  [isEditActive]="isEditOperation" 
+  [isAddActive]="isAddOperation" 
+  [isFormValid]="isFormValid" 
+  (toggleAction)="toggleEditOperation($event)"
+  (makeOperationForm)="makeOperationForm($event)"
+  (onSubmit)="onSubmit($event)" 
 ></app-form-buttons>
 
 <!-- Permet d'appeller un template -->
-<ng-container *ngIf="!isEditOperation; then listOperations; else addEditOperation"></ng-container>
+<ng-container *ngIf="!isEditOperation && !isAddOperation; then listOperations; else addEditOperation"></ng-container>
 
 <!-- MODE 1 -->
 <ng-template #listOperations> 
