@@ -15,7 +15,7 @@ import { Operation, OperationLite } from './projet/operation/operations';
 export class ProjetService {
   private activeUrl: string = environment.apiUrl +"sites/"; // Bureau
 
-  // Reste a completer l'interface à utiliser
+  constructor(private http: HttpClient) {}
 
   async getProjet(subroute: string): Promise<Projet> {
     const data = await fetch(this.activeUrl + subroute);
@@ -32,4 +32,8 @@ export class ProjetService {
     return await data.json() ?? [];
   }
 
+  insertDetail(operation: Operation): Observable<Operation> {
+    const url = `${this.activeUrl}put/table=operation/insert`; // Construire l'URL avec le UUID du site
+    return this.http.put<Operation>(url, operation);
+  }
 }

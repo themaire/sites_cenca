@@ -35,5 +35,6 @@ export interface OperationLite {
     date_approx?: string;
     ben_participants?: number;
     ben_heures?: number;
+    uuid_proj?: string;
   }
   

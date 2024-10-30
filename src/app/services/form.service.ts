@@ -46,7 +46,7 @@ export class FormService {
 
   // Créer un nouveau formulaire d'opération avec des champs vides
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
-  newOperationForm(operation?: Operation): FormGroup {
+  newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     return this.fb.group({
       uuid_ope: [operation?.uuid_ope || ''],
       ref_uuid_proj: [operation?.ref_uuid_proj || ''],
@@ -73,7 +73,8 @@ export class FormService {
       date_fin: [operation?.date_fin || null],
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
-      ben_heures: [operation?.ben_heures || null]
+      ben_heures: [operation?.ben_heures || null],
+      uuid_proj: [uuid_proj || '']
     });
   }
 

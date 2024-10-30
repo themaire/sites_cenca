@@ -122,8 +122,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   @Input() isAddOperation:boolean = false;
   @Output() isEditFromOperation = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
   @Output() isAddFromOperation = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
-  @Input() projetEditMode: boolean = false; // Savoir si le projet est en edition pour masquer les boutons
-
+  @Input() projetEditMode: boolean = false; // Savoir si le projet est en edition pour masquer les boutons  
   linearMode: boolean = true;
   selectedOperation: String | undefined;
   
@@ -247,12 +246,38 @@ export class OperationComponent implements OnInit, OnDestroy {
     if (this.form !== undefined) {
       if (this.form.valid) {
         if (mode === 'add'){
+          console.log("----------!!!!!!!!!!!!--------onSubmit('edit') dans le composant operation");
           console.log(this.form.value);
+          this.research.insertDetail(this.form.value).subscribe(
+            response => {
+              console.log('Détails mis à jour avec succès:', response);
+              console.log("response : " + response);
+              this.isAddOperation = false; // Sortir du mode édition après la sauvegarde
+    
+              // Afficher le message dans le Snackbar
+              const message = "Ajout de l'opération avec succès"; // Message par défaut
+              
+              if (response && 'code' in response && Number(response.code) === 0) {
+                this.snackBar.open(message, 'Fermer', {
+                  duration: 3000,
+                  panelClass: ['snackbar-success']
+                });
+              } else {
+                this.snackBar.open(message, 'Fermer', {
+                  duration: 3000,
+                  panelClass: ['snackbar-error']
+                });
+              }
+            },
+          );
         } else if (mode === 'edit') {
-          console.log(this.form.value);
+          console.log("----------!!!!!!!!!!!!--------onSubmit('edit') dans le composant operation");
         } else if (mode === 'delete') {
           console.log(this.form.value);
         }
+        // Stocker les valeurs initiales du formulaire
+        this.initialFormValues = this.form.value;
+        this.form.disable(); // Désactiver le formulaire après la sauvegarde
       } else {
         console.error('Le formulaire est invalide, veuillez le corriger.');
       }
@@ -317,7 +342,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     try {
       
       if (empty) {
-        this.form = this.formService.newOperationForm() as FormGroup;
+        this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
         if (this.form) {
           console.log("Le formulaire vide vient de se créer");
           console.log(this.form);
