@@ -124,7 +124,8 @@ export class DetailInfosComponent implements OnChanges, OnInit {
   }
 
   toggleEditMode(): void {
-    this.isEditMode = this.formService.toggleEditMode(this.form, this.isEditMode, this.initialFormValues);
+    this.isEditMode = this.formService.simpleToggle(this.isEditMode); // Changer le mode du booleen
+    this.formService.toggleFormState(this.form, this.isEditMode, this.initialFormValues); // Changer l'état du formulaire
   }
 
   getInvalidFields(): string[] {

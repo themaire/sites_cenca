@@ -19,18 +19,16 @@ export class FormService {
     return bool;
   }
 
-  // Activer ou désactiver le mode édition
-  toggleEditMode(form: FormGroup, isEditMode: boolean, initialFormValues: any): boolean {
-    if (isEditMode) { // Si actuellement on est en mode edition
+  // Changer l'état du formulaire
+  toggleFormState(form: FormGroup, isEditMode: boolean, initialFormValues: any): void {
+    if (!isEditMode) { // Si actuellement on est en mode edition
       form.patchValue(initialFormValues); // Réinitialiser le formulaire aux valeurs initiales
       form.disable();
-      console.log('Nous sortons du mode édition');
+      console.log('Formulaire plus en mode édition');
     } else {
       form.enable();
-      console.log('Nous sommes en mode édition');
+      console.log('Formulaire passé en mode édition');
     }
-    console.log('form.service.ts.toggleEditMode() retourne ' + (!isEditMode).toString());
-    return !isEditMode;
   }
 
   // Vérifier si le formulaire est valide

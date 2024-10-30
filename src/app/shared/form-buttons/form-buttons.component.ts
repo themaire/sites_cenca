@@ -35,19 +35,18 @@ export class FormButtonsComponent {
     }
 
     if (changes['isAddActive']) {
-      console.log('isActive du BOUTON has changed:', changes['isAddActive'].currentValue);
+      console.log('isAddActive du BOUTON has changed:', changes['isAddActive'].currentValue);
       this.cdr.detectChanges();  // Forcer la détection des changements immédiatement
     }
 
     if (changes['isEditActive']) {
-    console.log('isAdding du BOUTON has changed:', changes['isEditActive'].currentValue);
+    console.log('isEditActive du BOUTON has changed:', changes['isEditActive'].currentValue);
       this.cdr.detectChanges();  // Forcer la détection des changements immédiatement
     }
   }
 
   onToggleAction(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onToggleAction dans le composant bouton');
-    console.log('onToggleAction called');
     this.toggleAction.emit(this.icone); // Le nom de l'icon determine quel booléen est modifié
   }
 

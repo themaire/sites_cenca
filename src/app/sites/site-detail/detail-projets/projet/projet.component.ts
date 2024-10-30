@@ -109,6 +109,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   
   isEditProjet: boolean = false;
   isEditOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
+  isAddOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
 
   projetForm!: FormGroup;
   isFormValid: boolean = false;
@@ -233,7 +234,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   }
 
   toggleEditProjet(): void {
-    this.isEditProjet = this.formService.toggleEditMode(this.projetForm, this.isEditProjet, this.initialFormValues);
+    this.isEditProjet = this.formService.simpleToggle(this.isEditProjet); // Changer le mode du booleen
+    this.formService.toggleFormState(this.projetForm, this.isEditProjet, this.initialFormValues); // Changer l'état du formulaire
     this.cdr.detectChanges(); // Forcer la détection des changements
   }
 
@@ -252,10 +254,14 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     this.cdr.detectChanges(); // Forcer la détection des changements
   }
 
-  handleEditModeChange(isEditFromOperation: boolean): void {
-    console.log('handleEditModeChange:', isEditFromOperation);
-    this.isEditOperation = isEditFromOperation;
-    console.log('Mode édition changé:', this.isEditOperation);
+  handleEditOperationChange(isEdit: boolean): void {
+    // console.log('État de l\'édition reçu du composant enfant:', isEdit);
+    this.isEditOperation = isEdit;
+  }
+
+  handleAddOperationChange(isAdd: boolean): void {
+    // console.log('État de l\'ajout reçu du composant enfant:', isAdd);
+    this.isAddOperation = isAdd;
   }
 
   getInvalidFields(): string[] {

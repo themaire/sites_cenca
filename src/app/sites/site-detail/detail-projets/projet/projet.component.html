@@ -2,10 +2,11 @@
   <div class="conteneur-projet">
     <div class="gerer">Gérer</div>
 
-    -- Variable viewOperation : {{ isEditOperation }}<br>
+    -- Variable isEditOperation : {{ isEditOperation }}<br>
+    -- Variable isAddOperation : {{ isAddOperation }}<br>
 
     <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
-    <ng-container *ngIf="!isEditOperation; then stepper; else operation"></ng-container>
+    <ng-container *ngTemplateOutlet="stepper"></ng-container>
 
     <!-- FORMULAIRE STEPPER (NORMAL) -->
     <ng-template #stepper>
@@ -19,10 +20,10 @@
       </div>
 
       <app-form-buttons
+        *ngIf="!isEditOperation && !isAddOperation" 
         [isEditActive]="isEditProjet" 
         icone="edit" 
         [isFormValid]="isFormValid" 
-        [isEditActive]="isEditOperation" 
         (toggleAction)="toggleEditProjet()" 
         (onSubmit)="onSubmit()" 
       ></app-form-buttons>
@@ -349,7 +350,7 @@
         <mat-step state="construction">
           <ng-template matStepLabel>Opérations</ng-template>
 
-          <ng-container *ngIf="!isEditOperation; then operation;"></ng-container>
+          <ng-container *ngIf="!isEditOperation || !isAddOperation; then operation;"></ng-container>
 
           <div>
             <button mat-button matStepperPrevious>Précédent</button>
@@ -414,10 +415,14 @@
     <ng-template #operation>
 
       <!-- isEditFromOperation vien de app-operation et app-projet -->
-      <app-operation (operationEditMode)="isEditOperation" 
-                      [projetEditMode]="isEditProjet" 
-                      [ref_uuid_proj]="projet.uuid_proj"
-                      >
+      <app-operation 
+                    (isEditFromOperation)="handleEditOperationChange($event)" 
+                    (isAddFromOperation)="handleAddOperationChange($event)" 
+                    [isEditOperation]="isEditOperation" 
+                    [isAddOperation]="isAddOperation" 
+                    [projetEditMode]="isEditProjet" 
+                    [ref_uuid_proj]="projet.uuid_proj"
+                    >
       </app-operation>
 
     </ng-template>
