@@ -49,7 +49,7 @@ export class FormService {
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     return this.fb.group({
       uuid_ope: [operation?.uuid_ope || ''],
-      ref_uuid_proj: [operation?.ref_uuid_proj || ''],
+      ref_uuid_proj: [uuid_proj || ''],
       code: [operation?.code || ''],
       titre: [operation?.titre || '', Validators.required],
       inscrit_pdg: [operation?.inscrit_pdg || ''],
@@ -66,15 +66,14 @@ export class FormService {
       charge_inst: [operation?.charge_inst || null],
       remarque: [operation?.remarque || ''],
       validite: [operation?.validite || false],
-      action: [operation?.action || ''],
+      action: [operation?.action || '100'],
       objectif: [operation?.objectif || ''],
-      typ_intervention: [operation?.typ_intervention || ''],
+      typ_intervention: [operation?.typ_intervention || 'BEN'],
       date_debut: [operation?.date_debut || null],
       date_fin: [operation?.date_fin || null],
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
-      ben_heures: [operation?.ben_heures || null],
-      uuid_proj: [uuid_proj || '']
+      ben_heures: [operation?.ben_heures || null]
     });
   }
 

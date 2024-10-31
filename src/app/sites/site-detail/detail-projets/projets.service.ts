@@ -8,6 +8,7 @@ import { catchError } from 'rxjs/operators';  
 // prototypes utilisés dans la promise de la fonction
 import { Projet } from './projets';
 import { Operation, OperationLite } from './projet/operation/operations';
+import { ApiResponse } from '../../../shared/interfaces/api';
 
 @Injectable({
   providedIn: 'root'
@@ -32,8 +33,8 @@ export class ProjetService {
     return await data.json() ?? [];
   }
 
-  insertDetail(operation: Operation): Observable<Operation> {
-    const url = `${this.activeUrl}put/table=operation/insert`; // Construire l'URL avec le UUID du site
-    return this.http.put<Operation>(url, operation);
+  insertDetail(operation: Operation): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=operations/insert`; // Construire l'URL avec le UUID du site
+    return this.http.put<ApiResponse>(url, operation);
   }
 }

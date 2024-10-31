@@ -14,6 +14,7 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
 import { OperationLite, Operation } from './operations';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
+import { ApiResponse } from '../../../../../shared/interfaces/api';
 
 
 import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -236,7 +237,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   unsubForm(): void {
     if (this.formStatusSubscription) {
       this.formStatusSubscription.unsubscribe();
-      console.log('Destruction du composant, on se désabonne.');
+      console.log('On se désabonne.');
     }
     
   }
@@ -249,26 +250,27 @@ export class OperationComponent implements OnInit, OnDestroy {
           console.log("----------!!!!!!!!!!!!--------onSubmit('edit') dans le composant operation");
           console.log(this.form.value);
           this.research.insertDetail(this.form.value).subscribe(
-            response => {
-              console.log('Détails mis à jour avec succès:', response);
-              console.log("response : " + response);
+            (response: ApiResponse) => {
+              console.log("Enregistrement de l'opération avec succès :", response);
+              this.unsubForm(); // Se désabonner des changements du formulaire
               this.isAddOperation = false; // Sortir du mode édition après la sauvegarde
-    
-              // Afficher le message dans le Snackbar
-              const message = "Ajout de l'opération avec succès"; // Message par défaut
+              this.isAddFromOperation.emit(this.isAddOperation);
               
-              if (response && 'code' in response && Number(response.code) === 0) {
-                this.snackBar.open(message, 'Fermer', {
-                  duration: 3000,
-                  panelClass: ['snackbar-success']
-                });
-              } else {
-                this.snackBar.open(message, 'Fermer', {
-                  duration: 3000,
-                  panelClass: ['snackbar-error']
-                });
-              }
+              // Afficher le message dans le Snackbar
+              const message = "Opération enregistrée"; // Message par défaut
+              
+              this.snackBar.open(message, 'Fermer', {
+                duration: 3000,
+                panelClass: ['snackbar-success']
+              });
             },
+            (error) => {
+              console.error('Erreur lors de l\'enregistrement de l\'opération', error);
+              this.snackBar.open('Erreur lors de l\'enregistrement de l\'opération', 'Fermer', {
+                duration: 3000,
+                panelClass: ['snackbar-error']
+              });
+            }
           );
         } else if (mode === 'edit') {
           console.log("----------!!!!!!!!!!!!--------onSubmit('edit') dans le composant operation");

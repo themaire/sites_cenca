@@ -3,9 +3,9 @@
 <!-- 2 On ajoute ou edite une opération existante -->
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
-Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
+<!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
 Variable (operation) isEditOperation: {{ isEditOperation }}<br>
-Variable (operation) isAddOperation: {{ isAddOperation }}<br>
+Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <app-form-buttons
@@ -24,8 +24,6 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
 
 <!-- MODE 1 -->
 <ng-template #listOperations> 
-
-  Ajouter une opération (ci dessus)
 
   <div>
     <!-- Si le booleen !isEditOperation && !isAddOperation sont false, on montre la liste des opérations  -->
@@ -88,12 +86,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
         <ng-template matStepLabel>Step 1</ng-template>
         <div>
           <mat-form-field>
-            <mat-label>UUID Operation</mat-label>
-            <input matInput formControlName="uuid_ope">
-          </mat-form-field>
-          <mat-form-field>
             <mat-label>Ref UUID Project</mat-label>
-            <input matInput formControlName="ref_uuid_proj">
+            <input matInput formControlName="ref_uuid_proj" readonly>
           </mat-form-field>
           <mat-form-field>
             <mat-label>Code</mat-label>
