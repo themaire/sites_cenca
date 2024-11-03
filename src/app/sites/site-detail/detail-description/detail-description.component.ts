@@ -6,9 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackBar e
 
 import { DetailSite } from '../../site-detail';
 import { SitesService } from '../../sites.service';
+import { FormService } from '../../../services/form.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
@@ -35,8 +37,13 @@ export class DetailDescriptionComponent {
   editedDetail: DetailSite | null = null;
   isMobile: boolean = false;
 
+  initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire
+
+  private snackBar = inject(MatSnackBar); // Injecter MatSnackBar
+
   constructor(
     private sitesService: SitesService, 
+    private formService: FormService,
     private fb: FormBuilder,
     private breakpointObserver: BreakpointObserver
   ) {this.form = this.fb.group({
@@ -47,7 +54,16 @@ export class DetailDescriptionComponent {
     ref_public: [''],
     typ_site: [''],
     url: ['']
-    })
+  })
+}
+
+ngOnInit() {
+  // Détecter si c'est la version mobile
+  this.breakpointObserver
+    .observe([Breakpoints.Handset])
+    .subscribe((result) => {
+      this.isMobile = result.matches;
+    });
   }
 
   toggleEditMode() {
@@ -61,30 +77,23 @@ export class DetailDescriptionComponent {
     }
   }
 
-  saveChanges() {
-    if (this.form.valid) {
-      const updatedDetail = this.form.value;
-      console.log('Données du formulaire:', updatedDetail);
-      this.sitesService.updateDetail(updatedDetail).subscribe(
-        response => {
-          console.log('Détails mis à jour avec succès:', response);
-          this.toggleEditMode(); // Sortir du mode édition après la sauvegarde
+  onUpdate(): void {
+    // Mettre à jour le formulaire
+
+    const updateObservable = this.formService.onUpdate('espace_site', this.inputDetail!.uuid_site, this.form, this.initialFormValues, this.isEditMode, this.snackBar);
+    // S'abonner à l'observable
+
+    if (updateObservable) {
+      updateObservable.subscribe(
+        (result) => {
+          this.isEditMode = result.isEditMode;
+          this.initialFormValues = result.formValue;
+          console.log('Formulaire mis à jour avec succès:', result.formValue);
         },
-        error => {
-          console.error('Erreur lors de la mise à jour des détails:', error);
+        (error) => {
+          console.error('Erreur lors de la mise à jour du formulaire', error);
         }
       );
-    } else {
-      console.error('Formulaire invalide');
     }
-  }
-
-  ngOnInit() {
-    // Détecter si c'est la version mobile
-    this.breakpointObserver
-      .observe([Breakpoints.Handset])
-      .subscribe((result) => {
-        this.isMobile = result.matches;
-      });
   }
 }

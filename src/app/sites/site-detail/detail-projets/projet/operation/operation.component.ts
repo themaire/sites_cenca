@@ -4,7 +4,7 @@
 // Les données du formulaire sont passées en entrée via @Input pour modifier
 // Et Si on ne passe pas de données, on crée un nouveau formulaire vide 
 
-import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +18,7 @@ import { ApiResponse } from '../../../../../shared/interfaces/api';
 
 
 import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -102,7 +102,9 @@ export const MY_DATE_FORMATS = {
   styleUrls: ['./operation.component.scss']
 })
 export class OperationComponent implements OnInit, OnDestroy {
-  @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
+  // @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
+  // @ViewChild('listOperations', { static: false }) listOperationsTemplate: any;
+  @ViewChild('matTable') table!: MatTable<OperationLite>;
 
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
@@ -132,7 +134,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   @Input() ref_uuid_proj!: String; // liste d'opératons venant du parent (boite de dialogue projet) 
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   isFormValid: boolean = false;
-  private formStatusSubscription: Subscription | null = null;
+  private formOpeSubscription: Subscription | null = null;
 
   stepperOrientation: Observable<StepperOrientation>;
   
@@ -149,55 +151,22 @@ export class OperationComponent implements OnInit, OnDestroy {
       
       // console.log("this.ref_uuid_proj venant du input :", this.ref_uuid_proj);
       this.form = fb.group({});
+
     }
-    
+  
   async ngOnInit() {
     // Remplir this.form soit vide soit avec les données passées en entrée
     // Attendre un certain temps avant de continuer
     // S'abonner aux changements du statut du formulaire principal (projetForm)
     
     console.log("Le composant operation s'initialise..........");  
-    
+        
     try {
       if (this.ref_uuid_proj !== undefined) {
-        // Accéder à la liste des opérations
-        const subroute = `operations/uuid=${this.ref_uuid_proj}/lite`; // Lite puisque PLUSIEURS opérations
-      
+        
         setTimeout(async () => {
-          console.log("Récupération des opérations avec l'UUID du projet :" + this.ref_uuid_proj);
-          this.operations = await this.research.getOperations(subroute);
-          console.log("Operations : ");
-          console.log(this.operations);
-          
-          if (Array.isArray(this.operations) && this.operations.length > 0) {
-            this.dataSourceOperations = new MatTableDataSource(this.operations);
-            // console.log('Opérations après extraction :', this.operations);
-            
-            this.cdr.detectChanges(); // Forcer la mise à jour de la vue
-          }
-
-          // if (this.form === undefined && this.inputForm === undefined) {
-          //   //  Cas d'un nouveau formulaire
-          //   this.form = this.formService.newOperationForm();
-          //   this.initialFormValues = this.formService.newOperationForm();
-          // } else if (this.inputForm !== undefined && this.form === undefined) {
-          //   // Cas d'intégration d'un formulaire existant
-          //   this.form = this.inputForm;
-          //   this.initialFormValues = this.inputForm
-          // }
-
-          // if (this.form !== undefined) {
-          //   // Souscrire aux changements du statut du formulaire principal (projetForm)
-          //   this.formStatusSubscription = this.form.statusChanges.subscribe(status => {
-          //     this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
-          //     // console.log('Statut du formulaire principal :', status);
-          //     // console.log("this.isFormValid = this.projetForm.valid :");
-          //     // console.log(this.isFormValid + " = " + this.projetForm.valid);
-          //     // console.log("isFormValid passé à l'enfant:", this.isFormValid);
-          //     this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
-          //   });
-          //   this.isLoading = false;  // Le chargement est terminé
-          // }  
+          // Accéder à la liste des opérations et remplir le tableau Material des operationLite
+          this.fetchOperations();
         }, this.loadingDelay);// Fin du bloc timeout
         this.isLoading = false;  // Le chargement est terminé
       } else {
@@ -209,22 +178,22 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.isLoading = false;  // Même en cas d'erreur, arrêter le spinner
       this.cdr.detectChanges();
     }
-
-    // Ini s'en sert pas au bon moment
-    // this.makeOperationForm({ empty: true });
   }
 
-  // ngAfterViewInit(): void {
-  //   // Apres que la vue viewchild déclarée plus haut soit déclarée
-  //   // verifie qu'on est en edition et que le template est rendu
-
-  //   // !!! Se déclenche puisque dans projet.component.html, on a un
-  //   // *ngIf="!isEditOperation && !isAddOperation qui fait intervertir les templates stepper ou operation
+  // ngAfterViewInit() {
+  //   // Forcer la détection des changements après l'initialisation de la vue
+  //   this.cdr.detectChanges();
     
-  //   console.log("ngAfterViewInit() s'enclenche dans le composant operation");
+  //   console.log('ngAfterViewInit: table =', this.table);
+  // }
 
-  //   if (this.addEditOperationTemplate) {
-  //     console.log('Template addEditOperation est affiché');
+  // ngAfterViewChecked() {
+  //   // Fait déclencher cet evenement a chaque fois qu'il y a un changement dans la vue
+  //   // Vérifier l'initialisation de la table après chaque changement de vue
+  //   if (this.table) {
+  //     console.log('ngAfterViewChecked: table =', this.table);
+  //   } else {
+  //     console.error('La table n\'a pas été trouvée.');
   //   }
   // }
   
@@ -235,8 +204,8 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   // Désabonnement lors de la destruction du composant
   unsubForm(): void {
-    if (this.formStatusSubscription) {
-      this.formStatusSubscription.unsubscribe();
+    if (this.formOpeSubscription) {
+      this.formOpeSubscription.unsubscribe();
       console.log('On se désabonne.');
     }
     
@@ -263,6 +232,7 @@ export class OperationComponent implements OnInit, OnDestroy {
                 duration: 3000,
                 panelClass: ['snackbar-success']
               });
+              this.fetchOperations();
             },
             (error) => {
               console.error('Erreur lors de l\'enregistrement de l\'opération', error);
@@ -280,6 +250,8 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Stocker les valeurs initiales du formulaire
         this.initialFormValues = this.form.value;
         this.form.disable(); // Désactiver le formulaire après la sauvegarde
+        // Accéder à la liste des opérations et remplir le tableau Material des operationLite
+
       } else {
         console.error('Le formulaire est invalide, veuillez le corriger.');
       }
@@ -288,6 +260,18 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
   
+  subscribeToForm(): void {
+    // Souscrire aux changements du statut du formulaire
+    this.formOpeSubscription = this.form.statusChanges.subscribe(status => {
+      this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
+      console.log('Statut du formulaire principal :', status);
+      console.log("this.isFormValid = this.projetForm.valid :");
+      console.log(this.isFormValid + " = " + this.form.valid);
+      console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
+      this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+    });
+  }
+
   toggleEditOperation(mode: String): void {
     console.log("----------!!!!!!!!!!!!--------toggleEditOperation('" + mode +"') dans le composant operation");
     if (mode === 'edit') {
@@ -310,6 +294,13 @@ export class OperationComponent implements OnInit, OnDestroy {
 
       console.log("isAddOperation apres toggleEditOperation('" + mode +"') :", this.isAddOperation);
 
+    } else {
+      this.form = this.initialFormValues; // Réinitialiser le formulaire aux valeurs initiales
+      this.isEditOperation = false; // Sortir du mode édition
+      this.isAddOperation = false; // Sortir du mode ajout
+      this.isEditFromOperation.emit(this.isEditOperation); // Envoyer l'état de l'édition de l'operation au parent
+      this.isAddFromOperation.emit(this.isAddOperation); // Envoyer l'état de l'édition de l'operation au parent
+      console.log("On vient de sortir du mode édition / ajout d'opération.");
     }
     this.cdr.detectChanges(); // Forcer la détection des changements
     
@@ -324,10 +315,52 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
+  fetchOperations(uuid_ope?: String): void {
+    console.log("----------!!!!!!!!!!!!--------fetchOperations() dans le composant operation");
+    if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
+      // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
+      const uuid = this.ref_uuid_proj;
+      const mode = "lite";
+      const subroute = `operations/uuid=${uuid}/${mode}`;
+      this.research.getOperations(subroute).then(
+        (operations) => {
+          this.operations = operations;
+          if (Array.isArray(this.operations) && this.operations.length > 0) {
+            this.dataSourceOperations = new MatTableDataSource(this.operations);
+            this.cdr.detectChanges();
+            console.log('Liste des opérations bien mises à jour.');
+          }
+        }
+      ).catch(
+        (error) => {
+          console.error('Erreur lors de la récupération des opérations', error);
+        }
+      );
+    } else if (uuid_ope !== undefined) {
+      // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
+      const uuid = this.ref_uuid_proj;
+      const mode = "lite";
+      const subroute = `operations/uuid=${uuid}/${mode}`;
+      this.research.getOperation(subroute).then(
+        (operation) => {
+          this.operation = operation;
+          
+          console.log('Liste des opérations bien mises à jour.');
+        }
+      ).catch(
+        (error) => {
+          console.error('Erreur lors de la récupération des opérations', error);
+        }
+      );
+    } else {
+      console.error('Aucun identifiant de projet ou d\'opération n\'a été trouvé.');
+    }
+  }
+
   async makeOperationForm({ operation, empty = false }: { operation?: OperationLite, empty?: boolean } = {}): Promise<void> {
     // Deux grands modes :
-    // 1. Créer un nouveau formulaire vide si ne donne PAS une operation // Mode adding
-    // 2. Créer un formulaire avec les données d'une opération // Mode editing
+    // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
+    // 2. Créer un formulaire avec les données d'une opération
 
     if (this.projetEditMode){
       this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir une  opérations", 'Fermer', { 
@@ -337,57 +370,39 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
         duration: 3000,});
     }
-
-    console.log("this.form avant la création du formulaire :");
-    console.log(this.form);
-
-    try {
+    
+    this.unsubForm(); // Se désabonner des changements du formulaire
       
-      if (empty) {
+    if (empty) {
+      // Création d'un formulaire vide
+      try {
         this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
-        if (this.form) {
-          console.log("Le formulaire vide vient de se créer");
-          console.log(this.form);
-          console.log("Erreurs de validation du champ titre :", this.form.get('titre')?.errors);
-        } else {
-          console.error("Le formulaire n'a pas été créé.");
-        }
-
-
-      } else if ( operation !== undefined ) {
-        // Cas d'intégration d'un formulaire d'une opération existante (OperationLite)
-        // Sélectionner UNE SEULE opération pour l'afficher dans un dans le formulaire
-
-        console.log("operation passé en paramètre :");
-        console.log(operation);
-
-        const subroute = `operations/uuid=${operation!.uuid_ope}/full`; // Lite puisque PLUSIEURS opérations
-        console.log("subroute : " + subroute);
-        this.operation = await this.research.getOperation(subroute);
-        console.log("Operation selectionnée : ");
-        console.log(this.operation);
-        
-        this.form = this.formService.newOperationForm(this.operation);
-        console.log("this.form après la création du formulaire :");
-        console.log(this.form);
-      } else {
-        console.error('Paramètres operation et empty non definis.');
+        this.subscribeToForm() // S'abonner aux changements du formulaire créé juste avant
+      } catch (error) {
+        console.error('Erreur lors de la création du formulaire', error);
+        return;
       }
 
+    } else if ( operation !== undefined ) {
+      // Chargement d'un formulaire avec une opération
+      this.linearMode = false; // Passer en mode non linéaire du stepper
       
-      // Souscrire aux changements du statut du formulaire principal (projetForm)
-      this.formStatusSubscription = this.form.statusChanges.subscribe(status => {
-        this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
-        console.log('Statut du formulaire principal :', status);
-        console.log("this.isFormValid = this.projetForm.valid :");
-        console.log(this.isFormValid + " = " + this.form.valid);
-        console.log("isFormValid passé à l'enfant:", this.isFormValid);
-        this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
-      });
-      
+      console.log("operation passé en paramètre :");
+      console.log(operation);
+      try {
+        this.form = this.formService.newOperationForm(operation);
+        console.log("this.form après la création du formulaire :");
+        console.log(this.form);
+        this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
 
-    } catch (error) {
-      console.error('Erreur lors de la création du formulaire', error);
+        this.toggleEditOperation("edit")
+      } catch (error) {
+        console.error('Erreur lors de la création du formulaire', error);
+      }
+    } else {
+      console.error('Paramètres operation et empty non definis.');
+      return;
     }
+
   }
 }

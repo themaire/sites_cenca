@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
+
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { SitesService } from '../sites/sites.service';
 
 // Des fonctions sont définies pour gérer les formulaires
 
@@ -11,14 +16,18 @@ import { Operation } from '../sites/site-detail/detail-projets/projet/operation/
 export class FormService {
     private formValiditySubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(private fb: FormBuilder) {}
-
+  constructor(
+    private sitesService: SitesService, 
+    private fb: FormBuilder, 
+    private snackBar: MatSnackBar,
+  ) {}
+  
   simpleToggle(bool: boolean): boolean {
     // Pour ajouter une opération dans le template
     bool = !bool;
     return bool;
   }
-
+  
   // Changer l'état du formulaire
   toggleFormState(form: FormGroup, isEditMode: boolean, initialFormValues: any): void {
     if (!isEditMode) { // Si actuellement on est en mode edition
@@ -30,7 +39,7 @@ export class FormService {
       console.log('Formulaire passé en mode édition');
     }
   }
-
+  
   // Vérifier si le formulaire est valide
   // Retourne un booléen
   getInvalidFields(form: FormGroup): string[] {
@@ -43,7 +52,7 @@ export class FormService {
     }
     return invalidFields;
   }
-
+  
   // Créer un nouveau formulaire d'opération avec des champs vides
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
@@ -83,5 +92,79 @@ export class FormService {
 
   setFormValidity(isValid: boolean): void {
     this.formValiditySubject.next(isValid);
+  }
+
+  isFormChanged(form: FormGroup, initialFormValue: FormGroup): boolean {
+    // Vérifie si le formulaire a été modifié
+    return JSON.stringify(form.value) !== JSON.stringify(initialFormValue);
+  }
+
+  onUpdate(table: String, uuid: String, form: FormGroup, initialFormValues: any, isEditMode: boolean, snackbar: MatSnackBar): Observable<{ isEditMode: boolean, formValue: any }> | undefined {
+    // Cette fonction permet de sauvegarder les modifications
+    // Vérifie si le formulaire est valide
+    // Envoie les modifications au serveur
+    // Affiche un message dans le Snackbar
+    // Sort du mode édition après la sauvegarde (passe this.isEditMode à false)à false en cas de succès)
+    
+    // Vérifier si le formulaire a été modifié
+    if (!this.isFormChanged(form, initialFormValues)) {
+      // Si pas changé
+      this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
+        duration: 3000,
+        panelClass: ['snackbar-info']
+      });
+      isEditMode = false; // Sortir du mode édition tout simplement
+      return of({
+        isEditMode: false,
+        formValue: form.value
+      });
+    }
+  
+    if (form.valid) {
+      console.log('Données du formulaire:', form.value);
+      return this.sitesService.updateTable(table, uuid, form.value).pipe(
+        map(response => {
+          console.log('Détails mis à jour avec succès:', response);
+          isEditMode = false; // Sortir du mode édition après la sauvegarde
+
+          // Afficher le message dans le Snackbar
+          const message = String(response.message); // Conversion en string
+          if (Number(response.code) === 0) {
+            this.snackBar.open(message, 'Fermer', {
+              duration: 3000,
+              panelClass: ['snackbar-success']
+            });
+          } else {
+            this.snackBar.open(message, 'Fermer', {
+              duration: 3000,
+              panelClass: ['snackbar-error']
+            });
+          }
+
+          form.disable(); // Désactiver le formulaire après la sauvegarde
+          // Retourner l'objet avec isEditMode et formValue
+          return {
+            isEditMode: false,
+            formValue: form.value
+          };
+        }),
+        tap(() => {
+          console.log('Mise à jour réussie');
+        }),
+        catchError(error => {
+          console.error('Erreur lors de la mise à jour', error);
+          throw error;
+        })
+      );
+    } else {
+      console.error('Formulaire invalide');
+      const invalidFields = this.getInvalidFields(form);
+      const message = `Formulaire invalide. Champs obligatoires manquants : ${invalidFields.join(', ')}`;
+      this.snackBar.open(message, 'Fermer', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+      return undefined;
+    }
   }
 }

@@ -28,6 +28,8 @@ import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } f
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
+import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackBar
+
 import { AsyncPipe } from '@angular/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -119,10 +121,11 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
+    private sitesService: ProjetService,
+    private formService: FormService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
-    private formService: FormService,
-    private research: ProjetService,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
@@ -148,7 +151,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         setTimeout(async () => {
           subroute = `projets/uuid=${this.projetLite.uuid_proj}/full`; // Full puisque UN SEUL projet
           console.log("Récupération des données du projet avec l'UUID du projet :" + this.projetLite.uuid_proj);
-          const projetObject = await this.research.getProjet(subroute);
+          const projetObject = await this.sitesService.getProjet(subroute);
           // console.log("-------------------- Données du Projet : ");
           // console.log(projetObject);
 
@@ -268,12 +271,23 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     return this.formService.getInvalidFields(this.projetForm);
   }
 
-  onSubmit(): void {
-    // Logique de soumission du formulaire global
-    if (this.projetForm.valid) {
-      console.log(this.projetForm.value);
-    } else {
-      console.error('Le formulaire principal est invalide');
+  onUpdate(): void {
+    // Mettre à jour le formulaire
+
+    const updateObservable = this.formService.onUpdate('projets', this.projetLite.uuid_proj, this.projetForm, this.initialFormValues, this.isEditProjet, this.snackBar);
+    // S'abonner à l'observable
+
+    if (updateObservable) {
+      updateObservable.subscribe(
+        (result) => {
+          this.isEditProjet = result.isEditMode;
+          this.initialFormValues = result.formValue;
+          console.log('Formulaire mis à jour avec succès:', result.formValue);
+        },
+        (error) => {
+          console.error('Erreur lors de la mise à jour du formulaire', error);
+        }
+      );
     }
   }
 }

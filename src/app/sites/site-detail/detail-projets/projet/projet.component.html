@@ -2,8 +2,8 @@
   <div class="conteneur-projet">
     <div class="gerer">Gérer</div>
 
-    <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
-    -- Variable isAddOperation : {{ isAddOperation }}<br> -->
+    -- Variable isEditOperation : {{ isEditOperation }}<br>
+    -- Variable isAddOperation : {{ isAddOperation }}<br>
 
     <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
     <ng-container *ngTemplateOutlet="stepper"></ng-container>
@@ -25,7 +25,7 @@
         icone="edit" 
         [isFormValid]="isFormValid" 
         (toggleAction)="toggleEditProjet()" 
-        (onSubmit)="onSubmit()" 
+        (onSubmit)="onUpdate()" 
       ></app-form-buttons>
 
       <mat-stepper labelPosition="bottom" 
@@ -377,7 +377,7 @@
           </div>
 
           <ng-container *ngIf="isEditProjet"></ng-container>
-            <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
+            <form [formGroup]="projetForm" (ngSubmit)="onUpdate()">
               <ng-container>
                 <!-- Ajoutez d'autres champs si nécessaire -->
               </ng-container>

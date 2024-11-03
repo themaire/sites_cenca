@@ -47,15 +47,16 @@ export class FormButtonsComponent {
 
   onToggleAction(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onToggleAction dans le composant bouton');
-    this.toggleAction.emit(this.icone); // Le nom de l'icon determine quel booléen est modifié
+    this.toggleAction.emit(); // Le nom de l'icon determine quel booléen est modifié
   }
 
-  onEditAction(operation: OperationLite): void {
-    // OnToggleAction sert se servir de la fonction makeOperationForm dans le ngAfterViewInit de operation.component.ts
-    this.makeOperationForm.emit({ operation, empty: false });
+  onCancelAction(): void {
+    console.log('-----------------------!!!!!!!!!!!!--------onCancelAction dans le composant bouton');
+    this.toggleAction.emit(); // Le nom de l'icon determine quel booléen est modifié
   }
 
   onSave(): void {
-    this.onSubmit.emit(this.icone);
+    console.log("Va utiliser this.onSubmit.emit(this.icone); depuis le bouton sauvegarder");
+    this.onSubmit.emit();
   }
 }

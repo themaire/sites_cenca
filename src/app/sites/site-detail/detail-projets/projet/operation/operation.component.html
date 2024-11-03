@@ -3,9 +3,9 @@
 <!-- 2 On ajoute ou edite une opération existante -->
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
-<!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
+Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
 Variable (operation) isEditOperation: {{ isEditOperation }}<br>
-Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
+Variable (operation) isAddOperation: {{ isAddOperation }}<br>
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <app-form-buttons
@@ -34,7 +34,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     <ng-template #table>
       <div>
         Nb opérations : {{ operations.length }}<br>
-        <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8">
+        <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8" #matTable>
           <ng-container matColumnDef="code">
             <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{ element.code }} </mat-cell>
