@@ -163,16 +163,16 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
             // Les form_groups correspondant aux steps
             // Sert a defini les valeurs par defaut et si obligatoire
             this.projetForm = this.fb.group({
-              type: [this.projet.typ_projet || '', Validators.required],
+              typ_projet: [this.projet.typ_projet || '', Validators.required],
               nom: [this.projet.nom || '', Validators.required],
               code: [this.projet.code || '', Validators.required],
-              responsable: [this.projet.code || '', Validators.required],
+              responsable: [this.projet.responsable || '', Validators.required],
               pro_maitre_ouvrage: [this.projet.pro_maitre_ouvrage || '',],
               pro_debut: [this.projet.pro_debut || '', ],
               pro_fin: [this.projet.pro_fin || '', ],
               statut: [this.projet.statut || '', ],
               pro_obj_projet: [this.projet.pro_obj_projet || '',],
-              surface: [this.projet.pro_surf_totale || '', ],
+              pro_surf_totale: [this.projet.pro_surf_totale || '', ],
               pro_enjeux_eco: [this.projet.pro_enjeux_eco || '', ],
               pro_nv_enjeux: [this.projet.pro_nv_enjeux || '', ],
               pro_pression_ciblee: [this.projet.pro_pression_ciblee || '', ],

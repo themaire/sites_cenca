@@ -99,6 +99,16 @@ export class FormService {
     return JSON.stringify(form.value) !== JSON.stringify(initialFormValue);
   }
 
+  cleanFormValues(formValue: any, fields: string[]): any {
+    const cleanedFormValue = { ...formValue };
+    fields.forEach(field => {
+      if (!cleanedFormValue[field]) {
+        cleanedFormValue[field] = null; // ou une valeur par défaut
+      }
+    });
+    return cleanedFormValue;
+  }
+
   onUpdate(table: String, uuid: String, form: FormGroup, initialFormValues: any, isEditMode: boolean, snackbar: MatSnackBar): Observable<{ isEditMode: boolean, formValue: any }> | undefined {
     // Cette fonction permet de sauvegarder les modifications
     // Vérifie si le formulaire est valide
@@ -121,8 +131,22 @@ export class FormService {
     }
   
     if (form.valid) {
-      console.log('Données du formulaire:', form.value);
-      return this.sitesService.updateTable(table, uuid, form.value).pipe(
+
+      // Champs à nettoyer
+      const fieldsToClean = [
+        'pro_debut',
+        'pro_fin',
+        'pro_pression_ciblee',
+        'pro_typ_objectif',
+        'pro_obj_ope',
+        'pro_results_attendus'
+      ];
+
+      // Nettoyer les champs de date
+      const cleanedFormValue = this.cleanFormValues(form.value, fieldsToClean);
+
+      console.log('Données du formulaire:', cleanedFormValue);
+      return this.sitesService.updateTable(table, uuid, cleanedFormValue).pipe(
         map(response => {
           console.log('Détails mis à jour avec succès:', response);
           isEditMode = false; // Sortir du mode édition après la sauvegarde

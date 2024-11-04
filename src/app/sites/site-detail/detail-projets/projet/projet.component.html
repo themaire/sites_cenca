@@ -43,8 +43,8 @@
           <ng-container *ngIf="!isEditProjet">
             <div>
               <mat-form-field class="custom-mat-form-field">
-                <mat-label>Type</mat-label>
-                <input matInput [value]="projetForm.get('type')?.value || 'Non renseignée'" readonly>
+                <mat-label>Type de projet</mat-label>
+                <input matInput [value]="projetForm.get('type_projet')?.value || 'Non renseignée'" readonly>
               </mat-form-field>
             </div>
             <div>
@@ -207,7 +207,7 @@
                 <div>
                   <mat-form-field>
                     <mat-label>Surface</mat-label>
-                    <input matInput [value]="projetForm.get('surface')?.value || 'Non renseignée'" readonly>
+                    <input matInput [value]="projetForm.get('pro_surf_totale')?.value || 'Non renseignée'" readonly>
                   </mat-form-field>
                 </div>
                 <div>
@@ -258,7 +258,7 @@
               <ng-container>
                 <mat-form-field>
                   <mat-label>Surface</mat-label>
-                  <textarea matInput formControlName="surface" ></textarea>
+                  <textarea matInput formControlName="pro_surf_totale" ></textarea>
                 </mat-form-field>
                 <mat-form-field>
                   <mat-label>Niveau enjeu écologique</mat-label>
