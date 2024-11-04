@@ -139,7 +139,8 @@ export class FormService {
         'pro_pression_ciblee',
         'pro_typ_objectif',
         'pro_obj_ope',
-        'pro_results_attendus'
+        'pro_results_attendus',
+        'pro_surf_totale'
       ];
 
       // Nettoyer les champs de date

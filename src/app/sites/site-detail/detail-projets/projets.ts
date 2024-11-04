@@ -54,7 +54,7 @@ export interface Projet {
     pro_nv_enjeux: string;
     pro_obj_ope: string;
     pro_obj_projet: string;
-    pro_surf_totale: string;
+    pro_surf_totale: number;
     pro_results_attendus: number;
     pro_maitre_ouvrage: number;
     pro_webapp: boolean

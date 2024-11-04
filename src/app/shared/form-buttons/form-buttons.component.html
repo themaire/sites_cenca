@@ -1,9 +1,9 @@
 <div class="edition">
-    <b>BOUTON</b><br/>
+    <!-- <b>BOUTON</b><br/>
     <i>isEditActive BOUTON : {{ isEditActive }}.</i><br/>
     <i>isAddActive BOUTON : {{ isAddActive }}.</i><br/>
     <i>icone : {{ icone }}.</i><br/>
-    <i>isFormValid FORMULAIRE : {{ isFormValid }}.</i><br/>
+    <i>isFormValid FORMULAIRE : {{ isFormValid }}.</i><br/> -->
 
     <!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d'édition -->
     <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive; else edit">
