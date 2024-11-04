@@ -1,9 +1,10 @@
-import { backendAdress } from '../backendAdress';
+import { environment } from '../../environments/environment';
+
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
 
 // prototypes utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
@@ -12,6 +13,7 @@ import { DocPlan } from './site-detail/detail-gestion/docplan';
 import { MilNat } from './site-detail/detail-habitats/docmilnat';
 import { Acte } from './site-detail/detail-mfu/acte';
 import { ProjetLite } from './site-detail/detail-projets/projets';
+import { Operation, OperationLite } from './site-detail/detail-projets/projet/operation/operations';
 import { DetailSite } from './site-detail';
 
 import { Selector } from './selector';
@@ -20,7 +22,7 @@ import { Selector } from './selector';
   providedIn: 'root',
 })
 export class SitesService {
-  private activeUrl: string = backendAdress + 'sites/';
+  private activeUrl: string = environment.apiUrl + 'sites/';
 
   constructor(private http: HttpClient) {}
 
@@ -74,8 +76,50 @@ export class SitesService {
 
 
   // Sauvegarde les modifications
-  updateDetail(siteDetail: DetailSite): Observable<DetailSite> {
-    const url = `${this.activeUrl}put/table=espace_site/uuid=${siteDetail.uuid_site}`; // Construire l'URL avec le UUID du site
-    return this.http.put<DetailSite>(url, siteDetail);
+  updateTable(tableName: String, uuid: String, formData: any): Observable<any> {
+    const url = `${this.activeUrl}put/table=${tableName}/uuid=${uuid}`; // Construire l'URL avec le UUID du site
+    console.log('Dans updateTable() avec ' + url);
+    
+    return this.http.put<any>(url, formData).pipe(
+      tap(response => {
+        console.log('Mise à jour réussie:', response);
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la mise à jour', error);
+        throw error;
+      })
+    );
+  }
+
+  getOperations(subroute: string): Observable<OperationLite[]> {
+    // Est utilisé dans le step "Operations" de la page détail d'un projet pour lister les opérations du projet actuel
+    const url = `${this.activeUrl}${subroute}`;
+    return this.http.get<OperationLite[]>(url).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la récupération des opérations', error);
+        throw error;
+      })
+    );
+  }
+
+  getOperation(subroute: string): Observable<Operation> {
+    // Est utilisé dans le step "Operations" de la page détail d'un projet pour lister les opérations du projet actuel
+    const url = `${this.activeUrl}${subroute}`;
+    return this.http.get<Operation>(url).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la récupération des opérations', error);
+        throw error;
+      })
+    );
+  }
+
+  deleteOperation(ope_uuid: string): Observable<void> {
+    const url = `${this.activeUrl}delete/operations/uuid=${ope_uuid}`;
+    return this.http.delete<void>(url).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression de l\'opération', error);
+        throw error;
+      })
+    );
   }
 }

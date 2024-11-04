@@ -45,7 +45,7 @@ export class DetailMfuComponent {
 
     if (this.inputDetail !== undefined) {
       // Cas d'une recherche sur critères
-      subroute = `mfu/uuid=${this.inputDetail.uuid_site}`;
+      subroute = `mfu/uuid=${this.inputDetail.uuid_site}/lite`;
       console.log(
         "Ouais on est dans le OnChanges 'onglet MFU' . UUID:" +
           this.inputDetail['uuid_site']

@@ -46,158 +46,6 @@
     grid-template-columns: 3fr 3fr;
     gap: 16px;
   }
-  .toggle {
-    mat-slide-toggle {
-      margin: 8px 0;
-      display: block;
-      text-align: center;
-    }
-    ::ng-deep mat-slide-toggle {
-      transform: scale(1.5); /* Agrandit l'élément */
-    }
-    ::ng-deep mat-slide-toggle .mat-slide-toggle-bar {
-      height: 4px; /* Change la hauteur de la barre du slider */
-      background-color: rgba(
-        248,
-        244,
-        186,
-        0.5
-      ); /* Change la couleur de la barre du slider */
-    }
-    ::ng-deep mat-slide-toggle .mat-slide-toggle-thumb {
-      width: 20px; /* Ajuste la taille du "bouton" circulaire */
-      height: 20px;
-    }
-  }
-
-  .commune {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-}
-
-.container-carte {
-  @include dim(100%, auto);
-  .map {
-    width: 100%;
-    height: 100%;
-  }
-}
-
-.edition {
-  display: flex;
-  @include align(center, start);
-  margin-bottom: 20px;
-  gap: 15px;
-  .btn-edition {
-    @include btn-icon($couleur-faune, $orangeC);
-    @include icon(white, black);
-  }
-  .btn-sauvegarde {
-    @include btn-icon(white, $couleur-territoire);
-    @include icon($couleur-flore, white);
-  }
-  .btn-annulation {
-    @include btn-icon(white, red);
-    @include icon(red, white);
-  }
-}
-
-@media screen and (max-width: $mobile) {
-  .container {
-    grid-template-columns: 1fr;
-    grid-gap: 50px;
-    h2 {
-      font-size: 12px;
-    }
-    .ligne3,
-    .ligne5 {
-      grid-template-columns: 1fr 1fr;
-    }
-    .infos {
-      min-height: 36px;
-      height: auto;
-    }
-  }
-  .container-carte {
-    @include dim(100%, auto);
-    .map {
-      width: 50%;
-      height: 50%;
-    }
-  }
-}
-
-@media screen and (max-width: $tablette) {
-  .container {
-    grid-template-columns: 1fr;
-    grid-gap: 50px;
-    h2 {
-      font-size: 12px;
-    }
-    .infos {
-      min-height: 36px;
-      height: auto;
-    }
-  }
-  .container-carte {
-    @include dim(100%, auto);
-    .map {
-      width: 70%;
-      height: 70%;
-    }
-  }
-}
-@import "../../../styles/mixins.scss";
-@import "../../../styles/variables.scss";
-
-.container {
-  display: grid;
-  grid-template-columns: 6fr 6fr;
-  flex-wrap: wrap;
-  grid-gap: 131px;
-  margin: 20px auto;
-  @include align(top, center);
-}
-.container-champ {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: 30px;
-  @include dim(100%, auto);
-
-  h2 {
-    @include Typo($p14, $normal, $couleur-flore);
-    margin-bottom: 0;
-  }
-
-  .infos {
-    width: 100%;
-  }
-  .parties-consernées,
-  input {
-    @include input($couleur-faune, black);
-  }
-  .ligne2,
-  .ligne3,
-  .ligne5 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .ligne4 {
-    display: grid;
-    grid-template-columns: 4fr 2fr;
-    gap: 16px;
-  }
-  .ligne6 {
-    display: grid;
-    grid-template-columns: 3fr 3fr;
-    gap: 16px;
-  }
   .zh {
     mat-slide-toggle {
       margin: 8px 0;
@@ -238,6 +86,7 @@
   }
 }
 
+
 .edition {
   display: flex;
   @include align(center, start);
@@ -251,10 +100,21 @@
     @include btn-icon(white, $couleur-territoire);
     @include icon($couleur-flore, white);
   }
+
+  .btn-sauvegarde-disabled {
+    // Couleur fond :  normal / hover
+    @include btn-icon(grey, rgb(87, 87, 87));
+
+    // Couleur icone :  normal / hover
+    @include icon(rgb(223, 223, 223), rgb(194, 194, 194));
+    
+
+
   .btn-annulation {
     @include btn-icon(white, red);
     @include icon(red, white);
   }
+
 }
 
 @media screen and (max-width: $mobile) {
@@ -301,4 +161,6 @@
       height: 70%;
     }
   }
+}
+
 }

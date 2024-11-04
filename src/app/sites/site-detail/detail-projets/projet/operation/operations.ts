@@ -1,4 +1,14 @@
-export interface Operation {
+export interface OperationLite {
+    uuid_ope: string;
+    ref_uuid_proj: string;
+    code?: string;
+    titre?: string;
+    description?: string;
+    surf?: number;
+    date_debut?: Date;
+  }
+
+  export interface Operation {
     uuid_ope: string;
     ref_uuid_proj: string;
     code?: string;

@@ -1,40 +1,33 @@
-<!-- Il y a 2 MODES d'affichage de ce composant -->
+<!-- Il y a 3 MODES d'affichage de ce composant -->
 <!-- 1 On liste les opérations existantes - grace a l'appel au backend sur les operations lite -->
 <!-- 2 On ajoute ou edite une opération existante -->
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
-<!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
-Variable (operation) isEditOperation: {{ isEditOperation }}<br>
-Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
-
-<!-- Utilisation du template buttons pour ajouter une opération -->
-<app-form-buttons
-  *ngIf="!projetEditMode"
-  icone="add" 
-  [isEditActive]="isEditOperation" 
-  [isAddActive]="isAddOperation" 
-  [isFormValid]="isFormValid" 
-  (toggleAction)="toggleEditOperation($event)"
-  (makeOperationForm)="makeOperationForm($event)"
-  (onSubmit)="onSubmit($event)" 
-></app-form-buttons>
-
-<!-- Permet d'appeller un template -->
-<ng-container *ngIf="!isEditOperation && !isAddOperation; then listOperations; else addEditOperation"></ng-container>
+<ng-container *ngIf="!isEditMode; then listOperations; else addEditOperation"></ng-container>
 
 <!-- MODE 1 -->
 <ng-template #listOperations> 
+    <!-- Utilisation du template buttons pour ajouter une opération -->
+    <ng-container *ngTemplateOutlet="buttons; 
+    context: {iconName: 'add',
+              isActive: isEditMode, 
+              isFormValid: isFormValid,
+              toggefunction: toggleEditMode()
+              }">
+    </ng-container>
+
+  Ajouter une opération (ci dessus)
 
   <div>
-    <!-- Si le booleen !isEditOperation && !isAddOperation sont false, on montre la liste des opérations  -->
+    <!-- Si le booleen isAddingOperation est sur false, on montre la liste des opérations  -->
 
     Tableau des opérations. Si pâturé (1 opération par parc).
-    <ng-container *ngIf="operations !== undefined && operations.length > 0; then table else noOperations"></ng-container>
+    <div *ngIf="operations.length > 0; then thenOperationBlock else elseOperationBlock"></div>
 
-    <ng-template #table>
+    <ng-template #thenOperationBlock>
       <div>
         Nb opérations : {{ operations.length }}<br>
-        <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8" #matTable>
+        <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8">
           <ng-container matColumnDef="code">
             <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{ element.code }} </mat-cell>
@@ -62,32 +55,46 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           
           <mat-header-row *matHeaderRowDef="displayedColumnsOperations"></mat-header-row>
           <!-- Ouvrir la fenetre de dialogue d'une opération -->
-          <mat-row *matRowDef="let operation; columns: displayedColumnsOperations;" (click)="this.makeOperationForm({ operation })"></mat-row>
+          <mat-row *matRowDef="let row; columns: displayedColumnsOperations;" (click)="selectOperation(row)"></mat-row>
         </mat-table>
       </div>
     </ng-template>
 
-    <ng-template #noOperations>
+    <ng-template #elseOperationBlock>
         Il n'y a pas d'opérations sur ce site.
     </ng-template>
 
+    <div>
+      <button mat-button matStepperPrevious>Précédent</button>
+      <button mat-button matStepperNext>Suivant</button>
+    </div>
   </div>
 </ng-template>
 
 <!-- MODE 2 -->
 <ng-template #addEditOperation>
 
-  <!-- (nom_dans_composant)='mathode à utiliser depuis le composant du bouton' -->
+  <!-- Utilisation du template buttons -->
+  <ng-container *ngTemplateOutlet="buttons; 
+                context: {iconName: 'edit',
+                          isActive: isEditMode, 
+                          isFormValid: isFormValid
+                          }">
+  </ng-container>
 
-  <mat-horizontal-stepper [linear]="linearMode">
+  <mat-horizontal-stepper [linear]="linearMode" #stepper>
 
-      <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+      <mat-step [stepControl]="form">
+      <form [formGroup]="form">
         <ng-template matStepLabel>Step 1</ng-template>
         <div>
           <mat-form-field>
+            <mat-label>UUID Operation</mat-label>
+            <input matInput formControlName="uuid_ope">
+          </mat-form-field>
+          <mat-form-field>
             <mat-label>Ref UUID Project</mat-label>
-            <input matInput formControlName="ref_uuid_proj" readonly>
+            <input matInput formControlName="ref_uuid_proj">
           </mat-form-field>
           <mat-form-field>
             <mat-label>Code</mat-label>
@@ -104,8 +111,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
         <ng-template matStepLabel>Step 2</ng-template>
         <div>
           <mat-form-field>
@@ -132,8 +139,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
         <ng-template matStepLabel>Step 3</ng-template>
         <div>
           <mat-form-field>
@@ -160,8 +167,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
         <ng-template matStepLabel>Step 4</ng-template>
         <div>
           <mat-form-field>
@@ -188,8 +195,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
         <ng-template matStepLabel>Step 5</ng-template>
         <div>
           <mat-form-field>
@@ -216,8 +223,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
         <ng-template matStepLabel>Step 6</ng-template>
         <div>
           <mat-form-field>
@@ -244,8 +251,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="form">
+      <form [formGroup]="form">
         <ng-template matStepLabel>Step 7</ng-template>
         <div>
           <mat-form-field>
@@ -259,9 +266,19 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
         </div>
         <div>
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="onSubmit('edit')">Submit</button>
+          <button mat-button (click)="onSubmit()">Submit</button>
         </div>
       </form>
     </mat-step>
   </mat-horizontal-stepper>
+</ng-template>
+
+<ng-template #buttons let-iconName="iconName" let-isActive="isActive" let-isFormValid="isFormValid" let-toggleFunction="toggleFunction">
+  <app-form-buttons
+      [isActive]="isEditMode" 
+      iconName="iconName"
+      [isFormValid]="isFormValid"
+      (toggleAddingOperation)="toggleFunction" 
+      (onSubmit)="onSubmit()" 
+      ></app-form-buttons>
 </ng-template>

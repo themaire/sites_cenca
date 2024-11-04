@@ -89,6 +89,10 @@ export class SitesDisplayComponent {
 
         this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
           this.sites = sitesGuetted;
+
+          // console.log('sitesGuetted : ');
+          // console.log(sitesGuetted);
+
           this.dataSource = new MatTableDataSource(this.sites);
           this.dataSource.paginator = this.paginator;
         });

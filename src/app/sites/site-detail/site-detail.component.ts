@@ -19,12 +19,12 @@ import { ListSite } from '../site'; // prototype d'un site
 import { DetailSite } from '../site-detail';
 import { SitesService } from '../sites.service'; // service de données
 
-import { DetailInfosComponent } from './detail-infos/detail-infos.component'; // service de données
-import { DetailDescriptionComponent } from './detail-description/detail-description.component'; // service de données
-import { DetailMfuComponent } from './detail-mfu/detail-mfu.component'; // service de données
-import { DetailGestionComponent } from './detail-gestion/detail-gestion.component'; // service de données
-import { DetailHabitatsComponent } from './detail-habitats/detail-habitats.component'; // service de données
-import { DetailProjetsComponent } from './detail-projets/detail-projets.component'; // service de données
+import { DetailInfosComponent } from './detail-infos/detail-infos.component';
+import { DetailDescriptionComponent } from './detail-description/detail-description.component';
+import { DetailMfuComponent } from './detail-mfu/detail-mfu.component';
+import { DetailGestionComponent } from './detail-gestion/detail-gestion.component'; 
+import { DetailHabitatsComponent } from './detail-habitats/detail-habitats.component'; 
+import { DetailProjetsComponent } from './detail-projets/detail-projets.component'; 
 // Composant qui affiche une fiche site (6 sous-composants).
 
 @Component({

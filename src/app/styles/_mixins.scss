@@ -103,3 +103,11 @@
   padding: 5px;
   box-sizing: border-box;
 }
+@mixin btn-edition() {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  .btn-edition {
+    @include btn(white, $couleur-faune, white, $orangeM);
+  }
+}
