@@ -100,5 +100,8 @@ export class MapComponent implements AfterViewInit {
     L.marker([50.1368422, 4.8253037], { icon: customIconMarkers })
       .addTo(map)
       .bindPopup('Givet');
+    L.marker([48.1172003, 5.1431961], { icon: customIconMarkers })
+      .addTo(map)
+      .bindPopup('Chaumont');
   }
 }

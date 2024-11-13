@@ -114,11 +114,11 @@ export class OperationComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   loadingDelay: number = 50;
 
-  operations!: OperationLite[];
+  operations!: OperationLite[]; // Pour la liste des opérations : tableau material
   dataSourceOperations!: MatTableDataSource<Operation>;
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
-  operation!: Operation;
+  operation!: Operation | void; // Pour les détails d'une opération
 
   // Booleens d'états pour le mode d'affichage
   @Input() isEditOperation: boolean = false;
@@ -266,10 +266,10 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
-  fetchOperations(uuid_ope?: String): void {
-    console.log("----------!!!!!!!!!!!!--------fetchOperations() dans le composant operation");
+  async fetchOperations(uuid_ope?: String): Promise<Operation | void> {
     if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
       // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
+      console.log("----------!!!!!!!!!!!!--------fetchOperations() dans le composant operation");
       const uuid = this.ref_uuid_proj;
       const mode = "lite";
       const subroute = `operations/uuid=${uuid}/${mode}`;
@@ -289,14 +289,15 @@ export class OperationComponent implements OnInit, OnDestroy {
       );
     } else if (uuid_ope !== undefined) {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
-      const uuid = this.ref_uuid_proj;
-      const mode = "lite";
+      console.log("----------!!!!!!!!!!!!--------fetchOperations(" + uuid_ope + ") dans le composant operation");
+      const uuid = uuid_ope;
+      const mode = "full";
       const subroute = `operations/uuid=${uuid}/${mode}`;
       this.research.getOperation(subroute).then(
         (operation) => {
-          this.operation = operation;
-          
-          console.log('Liste des opérations bien mises à jour.');
+          console.log("Détails complets de l'opération récupéré.");
+          console.log(operation);
+          return operation
         }
       ).catch(
         (error) => {
@@ -317,43 +318,45 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir une  opérations", 'Fermer', { 
         duration: 3000,});
         return;
-      } else {
-        this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
-        duration: 3000,});
-      }
-      
-      this.unsubForm(); // Se désabonner des changements du formulaire
-      
-      if (empty) {
-        // Création d'un formulaire vide
-        try {
-          this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
-          this.subscribeToForm() // S'abonner aux changements du formulaire créé juste avant
-        } catch (error) {
-          console.error('Erreur lors de la création du formulaire', error);
-          return;
-        }
-        
-      } else if ( operation !== undefined ) {
-        // Chargement d'un formulaire avec une opération
-        this.linearMode = false; // Passer en mode non linéaire du stepper
-        
-        console.log("operation passé en paramètre :");
-        console.log(operation);
-        try {
-          this.form = this.formService.newOperationForm(operation); // Remplir this.form
-          this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
-          this.toggleEditOperation("edit")
-          
-          console.log("this.form après la création du formulaire :");
-          console.log(this.form);
-        } catch (error) {
-        console.error('Erreur lors de la création du formulaire', error);
-      }
     } else {
-      console.error('Paramètres operation et empty non definis.');
-      return;
+      this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
+      duration: 3000,});
     }
+      
+    this.unsubForm(); // Se désabonner des changements du formulaire
+    
+    if (empty) {
+      // Création d'un formulaire vide
+      try {
+        this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
+        this.subscribeToForm() // S'abonner aux changements du formulaire créé juste avant
+      } catch (error) {
+        console.error('Erreur lors de la création du formulaire', error);
+        return;
+      }
+      
+    } else if ( operation !== undefined ) {
+      // Chargement d'un formulaire avec une opération
+      this.linearMode = false; // Passer en mode non linéaire du stepper
+      
+      console.log("operation passé en paramètre :");
+      console.log(operation);
+      try {
+        this.operation = await this.fetchOperations(operation.uuid_ope) // Récupérer les détails de l'opération dans this.operation
+        this.form = this.formService.newOperationForm(operation); // Remplir this.form avec notre this.operation
+        this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
+
+        this.toggleEditOperation("edit")
+        
+        console.log("this.form après la création du formulaire :");
+        console.log(this.form);
+      } catch (error) {
+      console.error('Erreur lors de la création du formulaire', error);
+      }
+      } else {
+        console.error('Paramètres operation et empty non definis.');
+        return;
+      }
   }
   
   onSubmit(mode?: String): void {
