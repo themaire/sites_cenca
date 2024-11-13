@@ -3,9 +3,9 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { RouterModule, Router } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-
 import { LoginService } from './login/login.service';
 import { User } from './login/user.model';
+import { RGPDtarteaucitronService } from './services/rgpdtarteaucitron.service'; // Import du service
 
 @Component({
   selector: 'app-root',
@@ -18,15 +18,26 @@ import { User } from './login/user.model';
     FooterComponent,
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   token: string | null = localStorage.getItem('token');
 
-  constructor(private router: Router, private loginService: LoginService) {}
+  constructor(
+    private router: Router,
+    private loginService: LoginService,
+    private rgpdService: RGPDtarteaucitronService // Injection du service
+  ) {}
 
   ngOnInit() {
     this.checkToken();
+    this.rgpdService.init(); // Initialisation de tarteaucitron
+
+    // Démonstration de la gestion des cookies
+    this.rgpdService.setCookie('testCookie', 'testValueTrooopBiennnn!', 7);
+    const cookieValue = this.rgpdService.getCookie('testCookie');
+    console.log('Cookie Value:', cookieValue);
+    // this.rgpdService.deleteCookie('testCookie');
   }
 
   checkToken() {
