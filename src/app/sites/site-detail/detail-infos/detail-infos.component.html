@@ -1,10 +1,8 @@
 <div *ngIf="inputDetail !== undefined" class="container">
   <div class="container-champ">
     <div class="champ">
-
       <!-- Formulaire form: FormGroup -->
       <ng-container [formGroup]="form">
-
         <!-- Boutons edit/save/cancel -->
         <div class="edition">
           <button
@@ -16,7 +14,7 @@
           >
             <mat-icon>edit</mat-icon>
           </button>
-          
+
           <button
             mat-button
             matTooltip="Sauvegarder"
@@ -26,7 +24,7 @@
           >
             <mat-icon>save</mat-icon>
           </button>
-          
+
           <button
             mat-button
             matTooltip="Annuler"
@@ -43,7 +41,7 @@
             <h2>Nom:</h2>
             <div class="infos">
               <!--{{ inputDetail.nom }}-->
-              <input formControlName="nom"/>
+              <input formControlName="nom" />
             </div>
           </div>
         </div>
@@ -52,24 +50,21 @@
             <h2>Code:</h2>
             <div class="infos">
               <!--{{ inputDetail.code }}-->
-              <input formControlName="code"/>
+              <input formControlName="code" />
             </div>
           </div>
           <div class="surface">
             <h2>Surface:</h2>
             <div class="infos">
               <!--{{ inputDetail.surface }}-->
-              <input formControlName="surface"/>
+              <input formControlName="surface" />
             </div>
           </div>
           <div class="responsable">
             <h2>Responsable:</h2>
             <div class="infos">
               <!-- {{ inputDetail.responsable }}-->
-              <input
-                formControlName="responsable"
-                [disabled]="!isEditMode"
-              />
+              <input formControlName="responsable" [disabled]="!isEditMode" />
             </div>
           </div>
         </div>
@@ -78,10 +73,7 @@
             <h2>Catégorie:</h2>
             <div class="infos">
               <!-- {{ inputDetail.typ_site }}-->
-              <input
-                formControlName="typ_site"
-                [disabled]="!isEditMode"
-              />
+              <input formControlName="typ_site" [disabled]="!isEditMode" />
             </div>
           </div>
           <div class="statut">
@@ -92,7 +84,8 @@
                 [(ngModel)]="inputDetail.validite"
                 [disabled]="!isEditMode"
               /> -->
-              <mat-slide-toggle class="toggle"
+              <mat-slide-toggle
+                class="toggle"
                 formControlName="validite"
                 [disabled]="!isEditMode"
               >
@@ -103,10 +96,7 @@
             <h2>Première année contrat:</h2>
             <div class="infos">
               <!-- {{ inputDetail.prem_ctr }}-->
-              <input
-                formControlName="prem_ctr"
-                [disabled]="!isEditMode"
-              />
+              <input formControlName="prem_ctr" [disabled]="!isEditMode" />
             </div>
           </div>
         </div>
@@ -122,10 +112,7 @@
             <h2>Site ref.public:</h2>
             <div class="infos">
               <!-- {{ inputDetail.ref_public }}-->
-              <input
-                formControlName="ref_public"
-                [disabled]="!isEditMode"
-              />
+              <input formControlName="ref_public" [disabled]="!isEditMode" />
             </div>
           </div>
         </div>
@@ -134,20 +121,14 @@
             <h2>Type d'espace:</h2>
             <div class="infos">
               <!--{{ inputDetail.typ_espace }}-->
-              <input
-                formControlName="typ_espace"
-                [disabled]="!isEditMode"
-              />
+              <input formControlName="typ_espace" [disabled]="!isEditMode" />
             </div>
           </div>
           <div class="bassin">
             <h2>Bassin d'agence:</h2>
             <div class="infos">
               <!--{{ inputDetail.bassin_agence }}-->
-              <input
-                formControlName="bassin_agence"
-                [disabled]="!isEditMode"
-              />
+              <input formControlName="bassin_agence" [disabled]="!isEditMode" />
             </div>
           </div>
           <div class="zone-humide">
@@ -155,8 +136,11 @@
             <div class="toggle">
               <!--  {{ inputDetail.zh }}
                 <input [(ngModel)]="inputDetail.zh" />-->
-              <mat-slide-toggle class="toggle" 
-                formControlName="zh" [disabled]="!isEditMode">
+              <mat-slide-toggle
+                class="toggle"
+                formControlName="zh"
+                [disabled]="!isEditMode"
+              >
               </mat-slide-toggle>
             </div>
           </div>
@@ -166,17 +150,14 @@
             <h2>Ref. MNHN:</h2>
             <div class="infos">
               <!--     {{ inputDetail.id_mnhn }}-->
-              <input formControlName="id_mnhn"/>
+              <input formControlName="id_mnhn" />
             </div>
           </div>
           <div class="refF">
             <h2>Ref. FCEN:</h2>
             <div class="infos">
               <!--   {{ inputDetail.ref_fcen }}-->
-              <input
-                formControlName="ref_fcen"
-                [disabled]="!isEditMode"
-              />
+              <input formControlName="ref_fcen" [disabled]="!isEditMode" />
             </div>
           </div>
         </div>
@@ -185,7 +166,7 @@
             <h2>RGTP:</h2>
             <div class="infos">
               <!--  {{ inputDetail.rgpt }}-->
-              <input formControlName="rgpt"/>
+              <input formControlName="rgpt" />
             </div>
           </div>
         </div>
@@ -204,7 +185,7 @@
       <h2>Commune(s) concernée(s)</h2>
       <div class="commune">
         <p *ngFor="let comm of communes" class="infos">
-          <input [(ngModel)]="comm.nom"/>
+          <input [(ngModel)]="comm.nom" [disabled]="!isEditMode" />
           <!--{{ comm.nom }}-->
         </p>
       </div>

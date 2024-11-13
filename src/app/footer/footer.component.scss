@@ -29,6 +29,7 @@ footer {
         background-color: white;
         @include dim(auto, 70px);
         object-fit: cover;
+        cursor: pointer;
       }
     }
     .contact {
@@ -66,10 +67,20 @@ footer {
     }
   }
   .droits {
-    p {
+    display: flex;
+    // flex-direction: column;
+    color: white;
+    @include align(center, center);
+    gap: 10px;
+    a {
       @include Typo($p14, $normal, white);
       text-align: center;
     }
+  }
+  .copyright {
+    padding-top: 20px;
+    @include Typo($p14, $normal, white);
+    text-align: center;
   }
 }
 
