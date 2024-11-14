@@ -135,5 +135,3 @@ dist
 .idea/*
 
 .DS_Store
-
-src/environments/*.ts
