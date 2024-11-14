@@ -213,28 +213,28 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     console.log('Destruction du composant, on se désabonne.');
   }
 
-  onSelect(operation: Operation): void {
-    // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
-    // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
+  // onSelect(operation: Operation): void {
+  //   // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
+  //   // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
 
-    // Ca se passe dans la vue du component dialog-operation
-    if(operation.uuid_ope !== undefined){
-      // OUVRIR LA FENETRE DE DIALOGUE
-      this.openDialog(operation);
-    }else{
-      console.log("Pas de d'opération sur ce projet : " + operation.titre);
-    }
-  }
+  //   // Ca se passe dans la vue du component dialog-operation
+  //   if(operation.uuid_ope !== undefined){
+  //     // OUVRIR LA FENETRE DE DIALOGUE
+  //     this.openDialog(operation);
+  //   }else{
+  //     console.log("Pas de d'opération sur ce projet : " + operation.titre);
+  //   }
+  // }
 
-  // Pour l'affichage de la fenetre de dialogue
-  dialog = inject(MatDialog);
-  openDialog(operation: Operation): void {
-    let dialogComponent: any = OperationComponent;
+  // // Pour l'affichage de la fenetre de dialogue
+  // dialog = inject(MatDialog);
+  // openDialog(operation: Operation): void {
+  //   let dialogComponent: any = OperationComponent;
 
-    this.dialog.open(dialogComponent, {
-      data : operation
-    });
-  }
+  //   this.dialog.open(dialogComponent, {
+  //     data : operation
+  //   });
+  // }
 
   toggleEditProjet(): void {
     this.isEditProjet = this.formService.simpleToggle(this.isEditProjet); // Changer le mode du booleen
@@ -275,8 +275,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // Mettre à jour le formulaire
 
     const updateObservable = this.formService.onUpdate('projets', this.projetLite.uuid_proj, this.projetForm, this.initialFormValues, this.isEditProjet, this.snackBar);
+    
     // S'abonner à l'observable
-
     if (updateObservable) {
       updateObservable.subscribe(
         (result) => {
