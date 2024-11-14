@@ -114,11 +114,11 @@ export class OperationComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   loadingDelay: number = 50;
 
-  operations!: OperationLite[]; // Pour la liste des opérations : tableau material
+  operations!: OperationLite[];
   dataSourceOperations!: MatTableDataSource<Operation>;
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
-  operation!: Operation | void; // Pour les détails d'une opération
+  operation!: Operation;
 
   // Booleens d'états pour le mode d'affichage
   @Input() isEditOperation: boolean = false;
@@ -210,6 +210,55 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
     
   }
+
+  onSubmit(mode?: String): void {
+    // Logique de soumission du formulaire du projet
+    if (this.form !== undefined) {
+      if (this.form.valid) {
+        if (mode === 'add'){
+          console.log("----------!!!!!!!!!!!!--------onSubmit('edit') dans le composant operation");
+          console.log(this.form.value);
+          this.research.insertDetail(this.form.value).subscribe(
+            (response: ApiResponse) => {
+              console.log("Enregistrement de l'opération avec succès :", response);
+              this.unsubForm(); // Se désabonner des changements du formulaire
+              this.isAddOperation = false; // Sortir du mode édition après la sauvegarde
+              this.isAddFromOperation.emit(this.isAddOperation);
+              
+              // Afficher le message dans le Snackbar
+              const message = "Opération enregistrée"; // Message par défaut
+              
+              this.snackBar.open(message, 'Fermer', {
+                duration: 3000,
+                panelClass: ['snackbar-success']
+              });
+              this.fetchOperations();
+            },
+            (error) => {
+              console.error('Erreur lors de l\'enregistrement de l\'opération', error);
+              this.snackBar.open('Erreur lors de l\'enregistrement de l\'opération', 'Fermer', {
+                duration: 3000,
+                panelClass: ['snackbar-error']
+              });
+            }
+          );
+        } else if (mode === 'edit') {
+          console.log("----------!!!!!!!!!!!!--------onSubmit('edit') dans le composant operation");
+        } else if (mode === 'delete') {
+          console.log(this.form.value);
+        }
+        // Stocker les valeurs initiales du formulaire
+        this.initialFormValues = this.form.value;
+        this.form.disable(); // Désactiver le formulaire après la sauvegarde
+        // Accéder à la liste des opérations et remplir le tableau Material des operationLite
+
+      } else {
+        console.error('Le formulaire est invalide, veuillez le corriger.');
+      }
+    } else {
+      console.error('Le formulaire est introuvable, veuillez le créer.');
+    }
+  }
   
   subscribeToForm(): void {
     // Souscrire aux changements du statut du formulaire
@@ -222,7 +271,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
     });
   }
-  
+
   toggleEditOperation(mode: String): void {
     console.log("----------!!!!!!!!!!!!--------toggleEditOperation('" + mode +"') dans le composant operation");
     if (mode === 'edit') {
@@ -233,18 +282,18 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("isEditOperation apres toggleEditOperation('" + mode +"') :", this.isEditOperation);
     } else if (mode === 'add') {
       console.log('Appel de makeOperationForm() pour créer un nouveau formulaire vide');
-      
+
       if (!this.isAddOperation) { // Création du formulaire on est pas en mode ajout
         this.makeOperationForm({ empty: true });
       }
-
+        
       this.isAddOperation = this.formService.simpleToggle(this.isAddOperation); // Changer le mode du booleen
       this.formService.toggleFormState(this.form, this.isAddOperation, this.initialFormValues); // Changer l'état du formulaire
       
       this.isAddFromOperation.emit(this.isAddOperation); // Envoyer l'état de l'édition de l'operation au parent
-      
+
       console.log("isAddOperation apres toggleEditOperation('" + mode +"') :", this.isAddOperation);
-      
+
     } else {
       this.form = this.initialFormValues; // Réinitialiser le formulaire aux valeurs initiales
       this.isEditOperation = false; // Sortir du mode édition
@@ -266,10 +315,10 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
-  async fetchOperations(uuid_ope?: String): Promise<Operation | void> {
+  fetchOperations(uuid_ope?: String): void {
+    console.log("----------!!!!!!!!!!!!--------fetchOperations() dans le composant operation");
     if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
       // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
-      console.log("----------!!!!!!!!!!!!--------fetchOperations() dans le composant operation");
       const uuid = this.ref_uuid_proj;
       const mode = "lite";
       const subroute = `operations/uuid=${uuid}/${mode}`;
@@ -289,15 +338,14 @@ export class OperationComponent implements OnInit, OnDestroy {
       );
     } else if (uuid_ope !== undefined) {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
-      console.log("----------!!!!!!!!!!!!--------fetchOperations(" + uuid_ope + ") dans le composant operation");
-      const uuid = uuid_ope;
-      const mode = "full";
+      const uuid = this.ref_uuid_proj;
+      const mode = "lite";
       const subroute = `operations/uuid=${uuid}/${mode}`;
       this.research.getOperation(subroute).then(
         (operation) => {
-          console.log("Détails complets de l'opération récupéré.");
-          console.log(operation);
-          return operation
+          this.operation = operation;
+          
+          console.log('Liste des opérations bien mises à jour.');
         }
       ).catch(
         (error) => {
@@ -308,7 +356,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.error('Aucun identifiant de projet ou d\'opération n\'a été trouvé.');
     }
   }
-  
+
   async makeOperationForm({ operation, empty = false }: { operation?: OperationLite, empty?: boolean } = {}): Promise<void> {
     // Deux grands modes :
     // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
@@ -317,14 +365,14 @@ export class OperationComponent implements OnInit, OnDestroy {
     if (this.projetEditMode){
       this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir une  opérations", 'Fermer', { 
         duration: 3000,});
-        return;
+      return;
     } else {
       this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
-      duration: 3000,});
+        duration: 3000,});
     }
-      
-    this.unsubForm(); // Se désabonner des changements du formulaire
     
+    this.unsubForm(); // Se désabonner des changements du formulaire
+      
     if (empty) {
       // Création d'un formulaire vide
       try {
@@ -334,7 +382,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         console.error('Erreur lors de la création du formulaire', error);
         return;
       }
-      
+
     } else if ( operation !== undefined ) {
       // Chargement d'un formulaire avec une opération
       this.linearMode = false; // Passer en mode non linéaire du stepper
@@ -342,90 +390,19 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("operation passé en paramètre :");
       console.log(operation);
       try {
-        this.operation = await this.fetchOperations(operation.uuid_ope) // Récupérer les détails de l'opération dans this.operation
-        this.form = this.formService.newOperationForm(operation); // Remplir this.form avec notre this.operation
+        this.form = this.formService.newOperationForm(operation);
+        console.log("this.form après la création du formulaire :");
+        console.log(this.form);
         this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
 
         this.toggleEditOperation("edit")
-        
-        console.log("this.form après la création du formulaire :");
-        console.log(this.form);
       } catch (error) {
-      console.error('Erreur lors de la création du formulaire', error);
-      }
-      } else {
-        console.error('Paramètres operation et empty non definis.');
-        return;
-      }
-  }
-  
-  onSubmit(mode?: String): void {
-    // Logique de soumission du formulaire du projet
-    if (this.form !== undefined) {
-      if (this.form.valid) {
-        console.log("----------!!!!!!!!!!!!--------onSubmit('" + mode + "') dans le composant operation");
-        console.log(this.form.value);
-        if (this.isAddOperation === true){
-          this.research.insertDetail(this.form.value).subscribe(
-            (response: ApiResponse) => {
-              console.log("Enregistrement de l'opération avec succès :", response);
-              this.unsubForm(); // Se désabonner des changements du formulaire
-              
-              
-              // Afficher le message dans le Snackbar
-              const message = "Opération enregistrée"; // Message par défaut
-              
-              this.snackBar.open(message, 'Fermer', {
-                duration: 3000,
-                panelClass: ['snackbar-success']
-              });
-              this.fetchOperations();
-            },
-            (error) => {
-              console.error('Erreur lors de l\'enregistrement de l\'opération', error);
-              this.snackBar.open('Erreur lors de l\'enregistrement de l\'opération', 'Fermer', {
-                duration: 3000,
-                panelClass: ['snackbar-error']
-              });
-            }
-          );
-
-          // Changer l'état dans ce composant et celui du parent
-          this.isAddOperation = false; // Changer le mode du booleen
-          this.isAddFromOperation.emit(this.isAddOperation);
-        } else if (this.isEditOperation === true) {
-          console.log('Enregistrement de l\'opération en cours suite à demande de validation...');
-          
-          const updateObservable = this.formService.onUpdate('operations', this.form.value.uuid_ope, this.form, this.initialFormValues, this.isEditOperation, this.snackBar);
-          // S'abonner à l'observable
-
-          if (updateObservable) {
-            updateObservable.subscribe(
-              (result) => {
-                this.isEditOperation = result.isEditMode;
-                this.isAddFromOperation.emit(this.isAddOperation);
-                this.initialFormValues = result.formValue;
-                console.log('Formulaire mis à jour avec succès:', result.formValue);
-              },
-              (error) => {
-                console.error('Erreur lors de la mise à jour du formulaire', error);
-              }
-            );
-          }
-
-        } else if (mode === 'delete') {
-          console.log(this.form.value);
-        }
-        // Stocker les valeurs initiales du formulaire
-        this.initialFormValues = this.form.value;
-        this.form.disable(); // Désactiver le formulaire après la sauvegarde
-        // Accéder à la liste des opérations et remplir le tableau Material des operationLite
-        
-      } else {
-        console.error('Le formulaire est invalide, veuillez le corriger.');
+        console.error('Erreur lors de la création du formulaire', error);
       }
     } else {
-      console.error('Le formulaire est introuvable, veuillez le créer.');
+      console.error('Paramètres operation et empty non definis.');
+      return;
     }
+
   }
 }

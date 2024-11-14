@@ -37,9 +37,4 @@ export class ProjetService {
     const url = `${this.activeUrl}put/table=operations/insert`; // Construire l'URL avec le UUID du site
     return this.http.put<ApiResponse>(url, operation);
   }
-
-  updateDetail(operation: Operation): Observable<ApiResponse> {
-    const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`; // Construire l'URL avec le UUID du site
-    return this.http.put<ApiResponse>(url, operation);
-  }
 }

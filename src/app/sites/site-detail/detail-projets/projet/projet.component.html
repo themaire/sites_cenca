@@ -2,8 +2,8 @@
   <div class="conteneur-projet">
     <div class="gerer">Gérer</div>
 
-    -- Variable isEditOperation : {{ isEditOperation }}<br>
-    -- Variable isAddOperation : {{ isAddOperation }}<br>
+    <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
+    -- Variable isAddOperation : {{ isAddOperation }}<br> -->
 
     <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
     <ng-container *ngTemplateOutlet="stepper"></ng-container>
@@ -44,7 +44,7 @@
             <div>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Type de projet</mat-label>
-                <input matInput [value]="projetForm.get('typ_projet')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="projetForm.get('type_projet')?.value || 'Non renseignée'" readonly>
               </mat-form-field>
             </div>
             <div>
@@ -110,7 +110,7 @@
                 <div>
                   <mat-form-field>
                     <mat-label>Type</mat-label>
-                    <input matInput formControlName="typ_projet">
+                    <input matInput formControlName="type">
                   </mat-form-field>
                   <mat-form-field>
                     <mat-label>Nom</mat-label>
@@ -350,10 +350,7 @@
         <mat-step state="construction">
           <ng-template matStepLabel>Opérations</ng-template>
 
-          <!-- Si dans aucun mode d'edition ou d'ajout -->
-          <ng-container *ngIf="!isEditOperation || !isAddOperation; then operation;">
-
-          </ng-container>
+          <ng-container *ngIf="!isEditOperation || !isAddOperation; then operation;"></ng-container>
 
           <div>
             <button mat-button matStepperPrevious>Précédent</button>
@@ -376,7 +373,7 @@
           You are now done.
           <div>
             <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button>
+            <button mat-button (click)="stepper.reset()">Retour au début</button>
           </div>
 
           <ng-container *ngIf="isEditProjet"></ng-container>
@@ -384,7 +381,7 @@
               <ng-container>
                 <!-- Ajoutez d'autres champs si nécessaire -->
               </ng-container>
-              <!-- <button mat-button type="submit">SOUMETTRE</button> -->
+              <button mat-button type="submit">SOUMETTRE</button>
             </form>
         </mat-step>
 

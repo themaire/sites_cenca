@@ -45,11 +45,9 @@ export class FormButtonsComponent {
     }
   }
 
-  // Attention ici this.icone determine le comportement des methodes appelées !!!
-
   onToggleAction(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onToggleAction dans le composant bouton');
-    this.toggleAction.emit(this.icone); // Le nom de l'icon determine quel booléen est modifié
+    this.toggleAction.emit(); // Le nom de l'icon determine quel booléen est modifié
   }
 
   onCancelAction(): void {
@@ -58,7 +56,7 @@ export class FormButtonsComponent {
   }
 
   onSave(): void {
-    console.log("Va utiliser this.onSubmit.emit('" + this.icone + "'); depuis le bouton sauvegarder");
-    this.onSubmit.emit(this.icone);
+    console.log("Va utiliser this.onSubmit.emit(this.icone); depuis le bouton sauvegarder");
+    this.onSubmit.emit();
   }
 }
