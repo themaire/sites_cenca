@@ -74,21 +74,7 @@ export class SitesService {
   }
 
 
-  // Sauvegarde les modifications
-  updateTable(tableName: String, uuid: String, formData: any): Observable<any> {
-    const url = `${this.activeUrl}put/table=${tableName}/uuid=${uuid}`; // Construire l'URL avec le UUID du site
-    console.log('Dans updateTable() avec ' + url);
-    
-    return this.http.put<any>(url, formData).pipe(
-      tap(response => {
-        console.log('Mise à jour réussie:', response);
-      }),
-      catchError(error => {
-        console.error('Erreur lors de la mise à jour', error);
-        throw error;
-      })
-    );
-  }
+  
 
   getOperations(subroute: string): Observable<OperationLite[]> {
     // Est utilisé dans le step "Operations" de la page détail d'un projet pour lister les opérations du projet actuel
@@ -107,6 +93,22 @@ export class SitesService {
     return this.http.get<Operation>(url).pipe(
       catchError(error => {
         console.error('Erreur lors de la récupération des opérations', error);
+        throw error;
+      })
+    );
+  }
+
+  // Sauvegarde les modifications
+  updateTable(tableName: String, uuid: String, formData: any): Observable<any> {
+    const url = `${this.activeUrl}put/table=${tableName}/uuid=${uuid}`; // Construire l'URL avec le UUID du site
+    console.log('Dans updateTable() avec ' + url);
+    
+    return this.http.put<any>(url, formData).pipe(
+      tap(response => {
+        console.log('Mise à jour réussie:', response);
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la mise à jour', error);
         throw error;
       })
     );

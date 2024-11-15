@@ -58,7 +58,7 @@ export class FormService {
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     return this.fb.group({
       uuid_ope: [operation?.uuid_ope || ''],
-      ref_uuid_proj: [uuid_proj || ''],
+      ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
       code: [operation?.code || ''],
       titre: [operation?.titre || '', Validators.required],
       inscrit_pdg: [operation?.inscrit_pdg || ''],
@@ -131,23 +131,36 @@ export class FormService {
     }
   
     if (form.valid) {
+      let value = {};
 
-      // Champs à nettoyer
-      const fieldsToClean = [
-        'pro_debut',
-        'pro_fin',
-        'pro_pression_ciblee',
-        'pro_typ_objectif',
-        'pro_obj_ope',
-        'pro_results_attendus',
-        'pro_surf_totale'
-      ];
+      if (table === 'projets') {
+        // Champs à nettoyer
+        const fieldsToClean = [
+          'pro_debut',
+          'pro_fin',
+          'pro_pression_ciblee',
+          'pro_typ_objectif',
+          'pro_obj_ope',
+          'pro_results_attendus',
+          'pro_surf_totale'
+        ];
 
-      // Nettoyer les champs de date
-      const cleanedFormValue = this.cleanFormValues(form.value, fieldsToClean);
+        // Nettoyer les champs de date
+        const value = this.cleanFormValues(form.value, fieldsToClean);
 
-      console.log('Données du formulaire:', cleanedFormValue);
-      return this.sitesService.updateTable(table, uuid, cleanedFormValue).pipe(
+        console.log('Données du formulaire:', value);
+      } else {
+        console.log('------- DEBUG :');
+        console.log('Données du formulaire form.value :', form.value);
+
+        value = form.value;
+      }
+
+      console.log('------- DEBUG :');
+      console.log('Données du formulaire value tout court :', value);
+
+      // Envoi des modifications au serveur
+      return this.sitesService.updateTable(table, uuid, value).pipe(
         map(response => {
           console.log('Détails mis à jour avec succès:', response);
           isEditMode = false; // Sortir du mode édition après la sauvegarde

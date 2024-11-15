@@ -12,7 +12,6 @@ import { User } from './login/user.model';
   standalone: true,
   imports: [
     RouterOutlet,
-    RouterLink,
     RouterModule,
     HeaderComponent,
     FooterComponent,
