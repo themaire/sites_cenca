@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
@@ -25,6 +26,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./sites/sites.routes').then((mod) => mod.SITES_ROUTES),
     canActivate: [isLoggedInGuard],
+  },
+
+  // Lazy-load
+  {
+    path: 'foncier',
+    loadChildren: () =>
+      import('./sites/foncier/foncier.routes').then((mod) => mod.FONCIER_ROUTES),
   },
 
   // Lazy-load
