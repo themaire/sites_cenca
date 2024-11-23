@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { FoncierComponent } from './foncier.component';
-import { FonDemandesComponent } from './fon-demandes/fon-demandes.component';
+import { FonExtractionComponent } from './fon-extractions/fon-extractions.component';
 
 export const FONCIER_ROUTES: Route[] = [
   {
@@ -10,8 +10,8 @@ export const FONCIER_ROUTES: Route[] = [
     providers: [],
   },
   {
-    path: 'demandes',
-    component: FonDemandesComponent,
+    path: 'extractions',
+    component: FonExtractionComponent,
     pathMatch: 'prefix',
     providers: [],
   },

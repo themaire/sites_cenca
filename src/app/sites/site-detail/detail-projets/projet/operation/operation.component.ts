@@ -5,7 +5,7 @@
 // Et Si on ne passe pas de données, on crée un nouveau formulaire vide 
 
 import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -37,15 +37,11 @@ import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } f
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
-import { AsyncPipe } from '@angular/common';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { MapComponent } from '../../../../../map/map.component';
-
-import { Subscription } from 'rxjs';
-
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -209,7 +205,6 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.formOpeSubscription.unsubscribe();
       console.log('On se désabonne.');
     }
-    
   }
   
   subscribeToForm(): void {

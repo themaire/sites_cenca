@@ -1,0 +1,73 @@
+<!-- Il y a 2 MODES d'affichage de ce composant -->
+<!-- 1 On liste les extractions existantes - grace a l'appel au backend sur les extractions -->
+<!-- 2 On ajoute ou edite une extraction existante -->
+<!-- this.extractionForm est généré vide OU BIEN est rempli d'une demande d'extraction existante -->
+
+<ng-container *ngIf="!isEditExtraction; then listDemandes; else addEditDemandes"></ng-container>
+
+<!-- MODE 1 -->
+<ng-template #listDemandes> 
+  <!-- Utilisation du template buttons pour ajouter une opération -->
+  Variable (operation) isEditExtraction: {{ isEditExtraction }}<br>
+  Variable (operation) isAddExtraction: {{ isAddExtraction }}<br>
+
+  
+  <!-- Spinner de chargement -->
+  <div *ngIf="isLoading" class="spinner-container">
+    <mat-spinner></mat-spinner>
+  </div>
+  
+  <!-- Tableau des extractions -->
+  <div *ngIf="!isLoading">
+    
+    <app-form-buttons
+    *ngIf="!isEditExtraction && !isAddExtraction" 
+    [isEditActive]="isEditExtraction" 
+    icone="edit" 
+    [isFormValid]="isFormValid" 
+    (toggleAction)="toggleEditExtraction('edit')" 
+    (onSubmit)="onSubmit()" 
+    ></app-form-buttons>
+      
+      <div>
+          Nb de demandes d'extraction : {{ extractions.length }}<br>
+          <mat-table [dataSource]="dataSourceExtractions" class="mat-elevation-z8">
+            <ng-container matColumnDef="ext_id">
+              <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.ext_id }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="nom_complet">
+              <mat-header-cell *matHeaderCellDef> Demandeur </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.nom_complet }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="ext_code_site">
+              <mat-header-cell *matHeaderCellDef> Code site </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.ext_code_site }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="ext_description">
+              <mat-header-cell *matHeaderCellDef> Description</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.ext_description }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="date">
+              <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.date }} </mat-cell>
+            </ng-container>
+            
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <!-- Ouvrir la fenetre de dialogue d'une opération -->
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openDetailDialog(row)"></mat-row>
+          </mat-table>
+      </div>
+  </div>
+</ng-template>
+
+<!-- MODE 2 -->
+<ng-template #addEditDemandes>
+
+ en cours de développement
+  
+</ng-template>

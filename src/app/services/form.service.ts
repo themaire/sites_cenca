@@ -2,11 +2,14 @@ import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+
 import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
+import { Extraction } from '../sites/foncier/foncier';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../sites/sites.service';
+import { FoncierService } from '../sites/foncier/foncier.service';
 
 // Des fonctions sont définies pour gérer les formulaires
 
@@ -83,6 +86,17 @@ export class FormService {
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null]
+    });
+  }
+  
+  // Créer un nouveau formulaire d'extraction foncier avec des champs vides
+  // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  newExtractionForm(extraction?: Extraction): FormGroup {
+    return this.fb.group({
+      ext_id: [extraction?.ext_id || null],
+      ref_cd_salarie: [extraction?.ref_cd_salarie || '', Validators.required],
+      ext_code_site: [extraction?.ext_code_site || '', Validators.required],
+      ext_description: [extraction?.ext_description || '', Validators.required],
     });
   }
 
