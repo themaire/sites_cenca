@@ -5,6 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
+// import { MatCheckboxModule } from '@angular/material/checkbox'; // Importer MatCheckboxModule
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input'; 
@@ -27,6 +28,7 @@ import { Extraction } from '../foncier';
     FormButtonsComponent,
     DetailExtractionComponent,
     MatSnackBarModule,
+    // MatCheckboxModule,
     MatTable,
     FormsModule,
     ReactiveFormsModule,

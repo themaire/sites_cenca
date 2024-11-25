@@ -3,71 +3,102 @@
 <!-- 2 On ajoute ou edite une extraction existante -->
 <!-- this.extractionForm est généré vide OU BIEN est rempli d'une demande d'extraction existante -->
 
-<ng-container *ngIf="!isEditExtraction; then listDemandes; else addEditDemandes"></ng-container>
+<!-- On affiche les templates #content ou #loading -->
+<ng-container *ngIf="!isLoading; then content; else loading"></ng-container>
 
-<!-- MODE 1 -->
+
+<!-- Ici l'affichage conditionnel est basé UNIQUEMENT sur le mode ADD car le mode edit est dans la fenetre de dialog -->
+<ng-template #content>
+
+  <app-form-buttons
+    [isEditActive]="isAddExtraction" 
+    icone="add" 
+    [isFormValid]="isFormValid" 
+    (toggleAction)="toggleEditExtraction('add')" 
+    (onSubmit)="onSubmit()" 
+  ></app-form-buttons>
+
+  <ng-container *ngIf="!isAddExtraction; then listDemandes; else addEditDemandes"></ng-container>
+</ng-template>
+
+<!-- MODE 1 - Liste des demandes -->
 <ng-template #listDemandes> 
   <!-- Utilisation du template buttons pour ajouter une opération -->
   Variable (operation) isEditExtraction: {{ isEditExtraction }}<br>
   Variable (operation) isAddExtraction: {{ isAddExtraction }}<br>
-
   
-  <!-- Spinner de chargement -->
+  <!-- Tableau des extractions -->
+  <div>
+      Nb de demandes d'extraction : {{ extractions.length }}<br>
+      <mat-table [dataSource]="dataSourceExtractions" class="mat-elevation-z8">
+        <ng-container matColumnDef="ext_id">
+          <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.ext_id }} </mat-cell>
+        </ng-container>
+        
+        <ng-container matColumnDef="nom_complet">
+          <mat-header-cell *matHeaderCellDef> Demandeur </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.nom_complet }} </mat-cell>
+        </ng-container>
+        
+        <ng-container matColumnDef="ext_code_site">
+          <mat-header-cell *matHeaderCellDef> Code site </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.ext_code_site }} </mat-cell>
+        </ng-container>
+        
+        <ng-container matColumnDef="ext_description">
+          <mat-header-cell *matHeaderCellDef> Description</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.ext_description }} </mat-cell>
+        </ng-container>
+        
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.date }} </mat-cell>
+        </ng-container>
+        
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <!-- Ouvrir la fenetre de dialogue d'une opération -->
+        <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openDetailDialog(row)"></mat-row>
+      </mat-table>
+  </div>
+
+</ng-template>
+
+<!-- MODE 2 - Ajout d'une demande -->
+<ng-template #addEditDemandes>
+
+  <h2 *ngIf="isAddExtraction">Formulaire d'ajout d'une nouvelle demande d'extraction foncière.</h2>
+  <h2 *ngIf="isEditExtraction">Formulaire de modification d'une demande d'extraction foncière.</h2>
+
+  <form [formGroup]="extractionForm">
+  
+    <mat-form-field>
+      <mat-label>Code Site</mat-label>
+      <input matInput id="ext_code_site" formControlName="ext_code_site" type="text" />
+      <mat-error *ngIf="extractionForm.get('ext_code_site')?.invalid">
+        <ng-container *ngIf="extractionForm.get('ext_code_site')?.errors?.['required'] && !extractionForm.get('ext_code_inconnu')?.value">Le code site est requis.</ng-container>
+        <ng-container *ngIf="extractionForm.get('ext_code_site')?.errors?.['invalidCodeSite']">Le code site doit être un nombre entre 8000 et 52999 ou un code à 8 caractères pour les CAST (08XXXXXX, 10XXXXXX, 51XXXXXX, 52XXXXXX).</ng-container>
+      </mat-error>
+      <mat-hint align="start" *ngIf="!extractionForm.get('ext_code_site')?.value"><strong>Laisser vide si il s'agit d'un projet de site</strong> </mat-hint>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput id="description" formControlName="ext_description"></textarea>
+      <mat-error *ngIf="extractionForm.get('ext_description')?.invalid && extractionForm.get('ext_description')?.touched">
+        <ng-container *ngIf="extractionForm.get('ext_description')?.errors?.['required']">La description est requise.</ng-container>
+        <ng-container *ngIf="extractionForm.get('ext_description')?.errors?.['minlength']">La description doit comporter au moins 5 caractères.</ng-container>
+        <ng-container *ngIf="extractionForm.get('ext_description')?.errors?.['maxlength']">La description ne doit pas dépasser 255 caractères.</ng-container>
+      </mat-error>
+    </mat-form-field>
+
+  <!-- <button mat-raised-button color="primary" type="submit" [disabled]="extractionForm.invalid">Soumettre</button> -->
+</form>  
+</ng-template>
+
+<!-- Spinner de chargement -->
+<ng-template #loading>
   <div *ngIf="isLoading" class="spinner-container">
     <mat-spinner></mat-spinner>
   </div>
-  
-  <!-- Tableau des extractions -->
-  <div *ngIf="!isLoading">
-    
-    <app-form-buttons
-    *ngIf="!isEditExtraction && !isAddExtraction" 
-    [isEditActive]="isEditExtraction" 
-    icone="edit" 
-    [isFormValid]="isFormValid" 
-    (toggleAction)="toggleEditExtraction('edit')" 
-    (onSubmit)="onSubmit()" 
-    ></app-form-buttons>
-      
-      <div>
-          Nb de demandes d'extraction : {{ extractions.length }}<br>
-          <mat-table [dataSource]="dataSourceExtractions" class="mat-elevation-z8">
-            <ng-container matColumnDef="ext_id">
-              <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{ element.ext_id }} </mat-cell>
-            </ng-container>
-            
-            <ng-container matColumnDef="nom_complet">
-              <mat-header-cell *matHeaderCellDef> Demandeur </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{ element.nom_complet }} </mat-cell>
-            </ng-container>
-            
-            <ng-container matColumnDef="ext_code_site">
-              <mat-header-cell *matHeaderCellDef> Code site </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{ element.ext_code_site }} </mat-cell>
-            </ng-container>
-            
-            <ng-container matColumnDef="ext_description">
-              <mat-header-cell *matHeaderCellDef> Description</mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{ element.ext_description }} </mat-cell>
-            </ng-container>
-            
-            <ng-container matColumnDef="date">
-              <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{ element.date }} </mat-cell>
-            </ng-container>
-            
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <!-- Ouvrir la fenetre de dialogue d'une opération -->
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openDetailDialog(row)"></mat-row>
-          </mat-table>
-      </div>
-  </div>
-</ng-template>
-
-<!-- MODE 2 -->
-<ng-template #addEditDemandes>
-
- en cours de développement
-  
 </ng-template>

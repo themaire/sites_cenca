@@ -10,6 +10,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../sites/sites.service';
 import { FoncierService } from '../sites/foncier/foncier.service';
+import { LoginService } from '../login/login.service';
+
+// Validateurs personnalisé
+import { codeSiteValidator } from './custom_validators'; // Assurez-vous que le chemin est correct
 
 // Des fonctions sont définies pour gérer les formulaires
 
@@ -20,6 +24,7 @@ export class FormService {
     private formValiditySubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
+    private loginService: LoginService,
     private sitesService: SitesService, 
     private fb: FormBuilder, 
     private snackBar: MatSnackBar,
@@ -94,9 +99,9 @@ export class FormService {
   newExtractionForm(extraction?: Extraction): FormGroup {
     return this.fb.group({
       ext_id: [extraction?.ext_id || null],
-      ref_cd_salarie: [extraction?.ref_cd_salarie || '', Validators.required],
-      ext_code_site: [extraction?.ext_code_site || '', Validators.required],
-      ext_description: [extraction?.ext_description || '', Validators.required],
+      ref_identifiant: [extraction?.ref_identifiant || this.loginService.user()?.identifiant],
+      ext_code_site: [extraction?.ext_code_site || '', [Validators.required, codeSiteValidator()]],
+      ext_description: [extraction?.ext_description || '', [Validators.required, Validators.minLength(5), Validators.maxLength(255)]],
     });
   }
 

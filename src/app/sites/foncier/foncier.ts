@@ -1,10 +1,11 @@
 export interface Extraction {
   ext_id: number;
-  ref_cd_salarie: string;
+  ref_identifiant: string;
   nom_complet: string;
   ext_code_site?: string;
   ext_description: string;
   date: string;
+  ext_code_inconnu?: boolean
 }
 
 export interface ParcelleExtraction {

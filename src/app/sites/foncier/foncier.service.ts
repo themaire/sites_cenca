@@ -17,6 +17,14 @@ export class FoncierService {
 
   constructor(private http: HttpClient) {}
 
+  // Sert à utiliser le fichier excel donné par l'utilisateur et l'info de l'historique pour les envoyer au backend
+  processFile(file: File, writeHisto: boolean): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+    formData.append('writeHisto', String(writeHisto));
+
+    return this.http.post(`${this.activeUrl}/process`, formData);
+  }
 
   getExtractions(subroute: string): Observable<Extraction[]> {
     // Est utilisé dans le step "Operations" de la page détail d'un projet pour lister les opérations du projet actuel
