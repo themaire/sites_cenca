@@ -12,14 +12,12 @@ import { CommonModule } from '@angular/common';
 })
 export class CardComponent implements OnInit {
   @Input() menuItem!: MenuItem;
-  @Input() parentItem!: string;
-  @Input() parentColor!: string;
-  @Input() route!: string;
-  @Input() date!: Date;
+
   isNew: boolean = false;
 
   ngOnInit(): void {
     // Comparaison de la date de publication
+
     if (this.menuItem.date_added) {
       const publicationDate = new Date(this.menuItem.date_added);
       const oneMonthAgo = new Date();

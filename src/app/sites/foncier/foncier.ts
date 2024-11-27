@@ -5,7 +5,6 @@ export interface Extraction {
   ext_code_site?: string;
   ext_description: string;
   date: string;
-  ext_code_inconnu?: boolean
 }
 
 export interface ParcelleExtraction {

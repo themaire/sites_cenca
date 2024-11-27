@@ -6,7 +6,6 @@
 <!-- On affiche les templates #content ou #loading -->
 <ng-container *ngIf="!isLoading; then content; else loading"></ng-container>
 
-
 <!-- Ici l'affichage conditionnel est basé UNIQUEMENT sur le mode ADD car le mode edit est dans la fenetre de dialog -->
 <ng-template #content>
 
@@ -15,7 +14,7 @@
     icone="add" 
     [isFormValid]="isFormValid" 
     (toggleAction)="toggleEditExtraction('add')" 
-    (onSubmit)="onSubmit()" 
+    (onSubmit)="onSubmit('add')" 
   ></app-form-buttons>
 
   <ng-container *ngIf="!isAddExtraction; then listDemandes; else addEditDemandes"></ng-container>
@@ -77,7 +76,7 @@
       <input matInput id="ext_code_site" formControlName="ext_code_site" type="text" />
       <mat-error *ngIf="extractionForm.get('ext_code_site')?.invalid">
         <ng-container *ngIf="extractionForm.get('ext_code_site')?.errors?.['required'] && !extractionForm.get('ext_code_inconnu')?.value">Le code site est requis.</ng-container>
-        <ng-container *ngIf="extractionForm.get('ext_code_site')?.errors?.['invalidCodeSite']">Le code site doit être un nombre entre 8000 et 52999 ou un code à 8 caractères pour les CAST (08XXXXXX, 10XXXXXX, 51XXXXXX, 52XXXXXX).</ng-container>
+        <ng-container *ngIf="extractionForm.get('ext_code_site')?.errors?.['invalidCodeSite']">Ceci n'est pas un vrai code site ou un code CAST (08XXXXXX, 10XXXXXX, 51XXXXXX, 52XXXXXX).</ng-container>
       </mat-error>
       <mat-hint align="start" *ngIf="!extractionForm.get('ext_code_site')?.value"><strong>Laisser vide si il s'agit d'un projet de site</strong> </mat-hint>
     </mat-form-field>
@@ -93,7 +92,7 @@
     </mat-form-field>
 
   <!-- <button mat-raised-button color="primary" type="submit" [disabled]="extractionForm.invalid">Soumettre</button> -->
-</form>  
+  </form>  
 </ng-template>
 
 <!-- Spinner de chargement -->

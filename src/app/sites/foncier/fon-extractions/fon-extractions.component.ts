@@ -26,7 +26,6 @@ import { Extraction } from '../foncier';
   imports: [
     CommonModule,
     FormButtonsComponent,
-    DetailExtractionComponent,
     MatSnackBarModule,
     // MatCheckboxModule,
     MatTable,
@@ -43,7 +42,7 @@ import { Extraction } from '../foncier';
 })
 export class FonExtractionComponent implements OnInit, OnDestroy {
   // Déclarer les variables
-  public extractions!: Extraction[];
+  public extractions: Extraction[] = [];
   public isEditExtraction: boolean = false;
   public isAddExtraction: boolean = false;
   public displayedColumns: string[] = [
@@ -51,7 +50,7 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
   public dataSourceExtractions!: MatTableDataSource<Extraction>;
 
   // spinner
-  isLoading: boolean = false;
+  isLoading: boolean = true;
   loadingDelay: number = 50;
 
   // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
@@ -81,12 +80,13 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
     
     try {
       await this.fetchExtractions();
-      
     } catch (error) {
       console.error('Erreur lors de la récupération des données du projet', error);
-      this.isLoading = false;  // Même en cas d'erreur, arrêter le spinner
       this.cdr.detectChanges();
+      this.isLoading = false;
     }
+
+    ;  // Même en cas d'erreur, arrêter le spinner
   }
 
   ngOnDestroy(): void {
@@ -142,19 +142,11 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges(); // Forcer la détection des changements
   }
 
-  getInvalidFields(): string[] {
-    // Pour le stepper et le bouton MAJ
-    if (this.extractionForm !== undefined) {
-      return this.formService.getInvalidFields(this.extractionForm);
-    } else {
-      return [];
-    }
-  }
-
   async fetchExtractions(cd_salarie?: String): Promise<Extraction | void> {
     console.log("----------!!!!!!!!!!!!--------fetchExtractions() dans le composant extractions");
     let subroute: string;
     
+    // Préparer la fin de la route que l'on va utiliser (backend)
     if (cd_salarie == undefined) {
       subroute = `extraction=null`;      
     } else if (cd_salarie !== undefined) {
@@ -166,22 +158,30 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
 
     try {
       this.foncierService.getExtractions(subroute).subscribe(
-        (extractions: Extraction[]) => {
+        (ResutatsExtractions: Extraction[]) => {
           console.log('Extractions récupérées avec succès :');
-          console.log(extractions);
-          this.extractions = extractions;
+          console.log(ResutatsExtractions);
+          this.extractions = ResutatsExtractions;
           this.dataSourceExtractions = new MatTableDataSource(this.extractions);
-          this.isLoading = false; // Arrêter le spinner
           this.cdr.detectChanges(); // Forcer la détection des changements
         },
         (error) => {
           console.error('Erreur lors de la récupération des extractions', error);
-          this.isLoading = false; // Arrêter le spinner
           this.cdr.detectChanges(); // Forcer la détection des changements
         }
       );
+      this.isLoading = false; // Arrêter le spinner
     } catch (error) {
       console.error('Erreur lors de la récupération des extractions', error);
+    }
+  }
+
+  getInvalidFields(): string[] {
+    // Pour le stepper et le bouton MAJ
+    if (this.extractionForm !== undefined) {
+      return this.formService.getInvalidFields(this.extractionForm);
+    } else {
+      return [];
     }
   }
 
@@ -234,7 +234,7 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
         data: { extraction }
     });
 }
-  
+
   onSubmit(mode?: String): void {
     // Logique de soumission du formulaire du projet
     if (this.extractionForm !== undefined) {
@@ -310,6 +310,5 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
       console.error('Le formulaire est introuvable, veuillez le créer.');
     }
   }
-
 
 }

@@ -100,7 +100,7 @@ export class FormService {
     return this.fb.group({
       ext_id: [extraction?.ext_id || null],
       ref_identifiant: [extraction?.ref_identifiant || this.loginService.user()?.identifiant],
-      ext_code_site: [extraction?.ext_code_site || '', [Validators.required, codeSiteValidator()]],
+      ext_code_site: [extraction?.ext_code_site || '', [codeSiteValidator()]],
       ext_description: [extraction?.ext_description || '', [Validators.required, Validators.minLength(5), Validators.maxLength(255)]],
     });
   }

@@ -6,6 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 
+import { ApiResponse } from '../../shared/interfaces/api';
+
 // interfaces utilisées dans la promise de la fonction
 import { Extraction } from './foncier';
 
@@ -49,14 +51,12 @@ export class FoncierService {
   }
 
   // A VERIFIER - TOUT NEUF
-  insertExtraction(formData: any): Observable<any> {
-    const url = `${this.activeUrl}post/operations`;
-    console.log('Dans insertExtraction() avec ' + url);
-    return this.http.post<any>(url, formData).pipe(
+  insertExtraction(extraction: any): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=extractions/insert`;
+    return this.http.put<ApiResponse>(url, extraction).pipe(
       tap(response => {
         console.log('Insertion réussie:', response);
-      }
-      ),
+      }),
       catchError(error => {
         console.error('Erreur lors de l\'insertion', error);
         throw error;
