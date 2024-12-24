@@ -4,6 +4,8 @@
 
     -- Variable isEditOperation : {{ isEditOperation }}<br>
     -- Variable isAddOperation : {{ isAddOperation }}<br>
+    -- Variable isEditProjet : {{ isEditProjet }}<br>
+    -- Variable newProjet : {{ newProjet }}<br>
 
     <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
     <ng-container *ngTemplateOutlet="stepper"></ng-container>
@@ -11,8 +13,9 @@
     <!-- FORMULAIRE STEPPER (NORMAL) -->
     <ng-template #stepper>
 
-      <h2 *ngIf="!isEditProjet">Consultation d'un projet</h2>
-      <h2 *ngIf="isEditProjet">Modification d'un projet</h2>
+      <h2 *ngIf="!isEditProjet && !newProjet">Consultation d'un projet</h2>
+      <h2 *ngIf="isEditProjet && !newProjet">Modification d'un projet</h2>
+      <h2 *ngIf="newProjet && isEditProjet">Création d'un projet</h2>
 
       <div class="example-input-wrapper">
           <!-- <label for="duration">Animation duration:</label> -->
@@ -25,7 +28,7 @@
         icone="edit" 
         [isFormValid]="isFormValid" 
         (toggleAction)="toggleEditProjet()" 
-        (onSubmit)="onUpdate()" 
+        (onSubmit)="onSubmit()" 
       ></app-form-buttons>
 
       <mat-stepper labelPosition="bottom" 
@@ -109,7 +112,7 @@
               <ng-container>
                 <div>
                   <mat-form-field>
-                    <mat-label>Type</mat-label>
+                    <mat-label>Type de projet</mat-label>
                     <input matInput formControlName="typ_projet">
                   </mat-form-field>
                   <mat-form-field>
@@ -147,8 +150,8 @@
                     <textarea matInput formControlName="statut" ></textarea>
                   </mat-form-field>
                   <mat-form-field>
-                    <mat-label>Objectif du projet</mat-label>
-                    <textarea matInput formControlName="pro_obj_projet" ></textarea>
+                    <mat-label>Validité</mat-label>
+                    <textarea matInput formControlName="validite" ></textarea>
                   </mat-form-field>
                 </div>
                 </ng-container>
@@ -285,7 +288,9 @@
                   <textarea matInput formControlName="pro_results_attendus" ></textarea>
                 </mat-form-field>
               </ng-container>
-              <button mat-button matStepperNext>SUIVANT</button>
+
+              <!-- Bouton visible uniquement avec un projet existant -->
+              <button *ngIf="!newProjet" mat-button matStepperNext>SUIVANT</button>
             </form>
           </ng-container>
         </mat-step>
@@ -299,7 +304,7 @@
 
 
 
-        <mat-step state="troubleshoot">
+        <mat-step state="troubleshoot" *ngIf="projet && projet.uuid_proj !== null">
           <ng-template matStepLabel>Indicateurs projet</ng-template>
           <div class="container-carte">
             Tableau des indicateurs projet
@@ -324,7 +329,7 @@
 
 
 
-        <mat-step state="euro">
+        <mat-step state="euro" *ngIf="projet && projet.uuid_proj !== null">
           <ng-template matStepLabel>Financements</ng-template>
           <div class="container-carte">
             Tableau des financements
@@ -347,7 +352,7 @@
 
 
 
-        <mat-step state="construction">
+        <mat-step state="construction" *ngIf="projet && projet.uuid_proj !== null">
           <ng-template matStepLabel>Opérations</ng-template>
 
           <!-- Si dans aucun mode d'edition ou d'ajout -->
@@ -371,7 +376,7 @@
 
 
 
-        <mat-step state="flag">
+        <mat-step state="flag" *ngIf="projet && projet.uuid_proj !== null">
           <ng-template matStepLabel>Bilan d'execution</ng-template>
           You are now done.
           <div>
@@ -380,7 +385,7 @@
           </div>
 
           <ng-container *ngIf="isEditProjet"></ng-container>
-            <form [formGroup]="projetForm" (ngSubmit)="onUpdate()">
+            <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
               <ng-container>
                 <!-- Ajoutez d'autres champs si nécessaire -->
               </ng-container>
@@ -419,12 +424,12 @@
 
       <!-- isEditFromOperation vien de app-operation et app-projet -->
       <app-operation 
-                    (isEditFromOperation)="handleEditOperationChange($event)" 
-                    (isAddFromOperation)="handleAddOperationChange($event)" 
-                    [isEditOperation]="isEditOperation" 
-                    [isAddOperation]="isAddOperation" 
-                    [projetEditMode]="isEditProjet" 
-                    [ref_uuid_proj]="projet.uuid_proj"
+                    (isEditFromOperation)="handleEditOperationChange($event)"
+                    (isAddFromOperation)="handleAddOperationChange($event)"
+                    [isEditOperation]="isEditOperation"
+                    [isAddOperation]="isAddOperation"
+                    [projetEditMode]="isEditProjet"
+                    [ref_uuid_proj]="projet.uuid_proj"                                                                                                                                                      
                     >
       </app-operation>
 

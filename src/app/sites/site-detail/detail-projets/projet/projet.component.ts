@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
-import { Operation } from './operation/operations';
+import { ApiResponse } from '../../../../shared/interfaces/api';
 import { ProjetLite, Projet } from '../projets';
 import { ProjetService } from '../projets.service';
 import { FormService } from '../../../../services/form.service';
@@ -109,6 +109,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 300;
   
+  newProjet: boolean = false;
   isEditProjet: boolean = false;
   isEditOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
   isAddOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
@@ -123,6 +124,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   constructor(
     private sitesService: ProjetService,
     private formService: FormService,
+    private projetService: ProjetService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
@@ -141,7 +143,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     }
 
   async ngOnInit() {
-    // Initialiser les valeurs du formulaire principal quand on le composant a fini de s'initialiser
+    // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     // console.log('Initialisation du formulaire principal');
     let subroute: string = "";
     
@@ -163,21 +165,16 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
             // Les form_groups correspondant aux steps
             // Sert a defini les valeurs par defaut et si obligatoire
             this.projetForm = this.fb.group({
+              code: [this.projet.code || '', Validators.required],
               typ_projet: [this.projet.typ_projet || '', Validators.required],
               nom: [this.projet.nom || '', Validators.required],
-              code: [this.projet.code || '', Validators.required],
               responsable: [this.projet.responsable || '', Validators.required],
               pro_maitre_ouvrage: [this.projet.pro_maitre_ouvrage || '',],
               pro_debut: [this.projet.pro_debut || '', ],
               pro_fin: [this.projet.pro_fin || '', ],
               statut: [this.projet.statut || '', ],
-              pro_obj_projet: [this.projet.pro_obj_projet || '',],
-              pro_surf_totale: [this.projet.pro_surf_totale || '', ],
-              pro_enjeux_eco: [this.projet.pro_enjeux_eco || '', ],
-              pro_nv_enjeux: [this.projet.pro_nv_enjeux || '', ],
               pro_pression_ciblee: [this.projet.pro_pression_ciblee || '', ],
-              pro_results_attendus: [this.projet.pro_results_attendus || '', ],
-              pro_obj_ope: [this.projet.pro_obj_ope || '', ]
+              pro_results_attendus: [this.projet.pro_results_attendus || '', ]
             });
 
             // Souscrire aux changements du statut du formulaire principal (projetForm)
@@ -200,8 +197,36 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         this.cdr.detectChanges();
       }
     } else {
-      console.log("Pas de projet à afficher");
+      console.log("Nous avons visiblement un projet neuf à créer. Pas de uuid_proj dans this.projetLite.");
       console.log(this.projetLite);
+      try {
+        this.newProjet = true;
+        // Passer directement en mode edition
+        this.isEditProjet = true; // On est en mode édition
+        
+        // Créer un formulaire vide
+        if (this.projetLite.uuid_site) {
+          // Le form_group correspondant aux projet neuf à créer
+          this.projetForm = this.formService.newProjetForm(undefined, this.projetLite.uuid_site);
+
+          // Souscrire aux changements du statut du formulaire principal (projetForm)
+          this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
+            this.isFormValid = this.projetForm.valid;  // Mettre à jour isFormValid en temps réel
+            // console.log('Statut du formulaire principal :', status);
+            // console.log("this.isFormValid = this.projetForm.valid :");
+            // console.log(this.isFormValid + " = " + this.projetForm.valid);
+            // console.log("isFormValid passé à l'enfant:", this.isFormValid);
+            this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+          });
+
+          this.isLoading = false;  // Le chargement est terminé
+          
+        }
+      } catch (error) {
+        console.error('Erreur lors de la création du formulaire du nouveau projet.', error);
+        this.isLoading = false;  // Même en cas d'erreur, arrêter le spinner
+        this.cdr.detectChanges();
+      }
     }
   }
 
@@ -271,23 +296,51 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     return this.formService.getInvalidFields(this.projetForm);
   }
 
-  onUpdate(): void {
+
+  // Désabonnement lors de la destruction du composant
+  unsubForm(): void {
+    if (this.formStatusSubscription) {
+      this.formStatusSubscription.unsubscribe();
+      console.log('On se désabonne.');
+    }
+    
+  }
+
+  onSubmit(): void {
     // Mettre à jour le formulaire
 
-    const updateObservable = this.formService.onUpdate('projets', this.projetLite.uuid_proj, this.projetForm, this.initialFormValues, this.isEditProjet, this.snackBar);
-    
-    // S'abonner à l'observable
-    if (updateObservable) {
-      updateObservable.subscribe(
-        (result) => {
-          this.isEditProjet = result.isEditMode;
-          this.initialFormValues = result.formValue;
-          console.log('Formulaire mis à jour avec succès:', result.formValue);
-        },
-        (error) => {
-          console.error('Erreur lors de la mise à jour du formulaire', error);
-        }
-      );
+    if(!this.newProjet){
+      const submitObservable = this.formService.putBdd('update', 'projets', this.projetForm, this.isEditProjet, this.snackBar, this.projetLite.uuid_proj, this.initialFormValues);
+
+      // S'abonner à l'observable
+      if (submitObservable) {
+        submitObservable.subscribe(
+          (result) => {
+            this.isEditProjet = result.isEditMode;
+            this.initialFormValues = result.formValue;
+            console.log('Projet mis à jour avec succès:', result.formValue);
+          },
+          (error) => {
+            console.error('Erreur lors de la mise à jour du formulaire', error);
+          }
+        );
+      }
+    }else if (this.newProjet){
+      const submitObservable = this.formService.putBdd('insert', 'projets', this.projetForm, this.isEditProjet, this.snackBar);
+      
+      // S'abonner à l'observable
+      if (submitObservable) {
+        submitObservable.subscribe(
+          (result) => {
+            this.isEditProjet = result.isEditMode;
+            this.initialFormValues = result.formValue;
+            console.log('Nouveau projet enregistré avec succès:', result.formValue);
+          },
+          (error) => {
+            console.error('Erreur lors de la mise à jour du formulaire', error);
+          }
+        );
+      }
     }
   }
 }

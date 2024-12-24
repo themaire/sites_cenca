@@ -10,7 +10,6 @@ export interface OperationLite {
 
   export interface Operation {
     uuid_ope: string;
-    ref_uuid_proj: string;
     code?: string;
     titre?: string;
     inscrit_pdg?: string;
@@ -35,5 +34,8 @@ export interface OperationLite {
     date_approx?: string;
     ben_participants?: number;
     ben_heures?: number;
+    ref_uuid_proj: string;
+    date_ajout?: Date;
+    ref_loc_id?: Number;
   }
   

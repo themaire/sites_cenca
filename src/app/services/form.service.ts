@@ -3,12 +3,14 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
+import { Projet } from '../sites/site-detail/detail-projets/projets';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../sites/sites.service';
+import { ProjetService } from '../sites/site-detail/detail-projets/projets.service';
 
-// Des fonctions sont définies pour gérer les formulaires
+// Des fonctions generalistes sont définies pour gérer les formulaires
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +20,7 @@ export class FormService {
 
   constructor(
     private sitesService: SitesService, 
+    private projetService: ProjetService, 
     private fb: FormBuilder, 
     private snackBar: MatSnackBar,
   ) {}
@@ -53,6 +56,33 @@ export class FormService {
     return invalidFields;
   }
   
+  // Créer un nouveau formulaire de projet avec des champs vides
+  // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  newProjetForm(projet?: Projet, site?: String): FormGroup {
+    return this.fb.group({
+      uuid_proj: [projet?.uuid_proj || ''],
+      site: [site || projet?.site],
+      code: [projet?.code || ''],
+      itin_tech: [projet?.itin_tech || ''],
+      validite: [projet?.validite || '', Validators.required],
+      document: [projet?.document || ''],
+      programme: [projet?.programme || ''],
+      nom: [projet?.nom || ''],
+      perspectives: [projet?.perspectives || ''],
+      annee: [projet?.annee || null],
+      statut: [projet?.statut || null],
+      responsable: [projet?.responsable || null],
+      typ_projet: [projet?.typ_projet || null, Validators.required],
+      createur: [projet?.createur || null],
+      date_crea: [projet?.date_crea || null],
+      pro_debut: [projet?.pro_debut || null],
+      pro_fin: [projet?.pro_fin || ''],
+      pro_pression_ciblee: [projet?.pro_pression_ciblee || false],
+      pro_results_attendus: [projet?.pro_results_attendus || null],
+      pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
+      pro_webapp: [projet?.pro_webapp || true]
+    });
+  }
   // Créer un nouveau formulaire d'opération avec des champs vides
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
@@ -109,7 +139,22 @@ export class FormService {
     return cleanedFormValue;
   }
 
-  onUpdate(table: String, uuid: String, form: FormGroup, initialFormValues: any, isEditMode: boolean, snackbar: MatSnackBar): Observable<{ isEditMode: boolean, formValue: any }> | undefined {
+  snackMessage(message: string, code: number, snackbar: MatSnackBar): void {
+    // Afficher le message dans le Snackbar
+    if (Number(code) === 0) {
+      this.snackBar.open(message, 'Fermer', {
+        duration: 3000,
+        panelClass: ['snackbar-success']
+      });
+    } else {
+      this.snackBar.open(message, 'Fermer', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
+
+  putBdd(mode: String, table: String, form: FormGroup, isEditMode: boolean, snackbar: MatSnackBar, uuid?: String, initialFormValues?: any): Observable<{ isEditMode: boolean, formValue: any }> | undefined {
     // Cette fonction permet de sauvegarder les modifications
     // Vérifie si le formulaire est valide
     // Envoie les modifications au serveur
@@ -117,17 +162,19 @@ export class FormService {
     // Sort du mode édition après la sauvegarde (passe this.isEditMode à false)à false en cas de succès)
     
     // Vérifier si le formulaire a été modifié
-    if (!this.isFormChanged(form, initialFormValues)) {
-      // Si pas changé
-      this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
-        duration: 3000,
-        panelClass: ['snackbar-info']
-      });
-      isEditMode = false; // Sortir du mode édition tout simplement
-      return of({
-        isEditMode: false,
-        formValue: form.value
-      });
+    if(mode === 'update' && initialFormValues != null) {
+      if (!this.isFormChanged(form, initialFormValues)) {
+        // Si pas changé
+        this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
+          duration: 3000,
+          panelClass: ['snackbar-info']
+        });
+        isEditMode = false; // Sortir du mode édition tout simplement
+        return of({
+          isEditMode: false,
+          formValue: form.value
+        });
+      }
     }
   
     if (form.valid) {
@@ -136,6 +183,7 @@ export class FormService {
       if (table === 'projets') {
         // Champs à nettoyer
         const fieldsToClean = [
+          'document',
           'pro_debut',
           'pro_fin',
           'pro_pression_ciblee',
@@ -146,9 +194,9 @@ export class FormService {
         ];
 
         // Nettoyer les champs de date
-        const value = this.cleanFormValues(form.value, fieldsToClean);
+        value = this.cleanFormValues(form.value, fieldsToClean);
 
-        console.log('Données du formulaire:', value);
+        console.log('Données du formulaire nettoyé :', value);
       } else {
         console.log('------- DEBUG :');
         console.log('Données du formulaire form.value :', form.value);
@@ -159,41 +207,60 @@ export class FormService {
       console.log('------- DEBUG :');
       console.log('Données du formulaire value tout court :', value);
 
+      
       // Envoi des modifications au serveur
-      return this.sitesService.updateTable(table, uuid, value).pipe(
-        map(response => {
-          console.log('Détails mis à jour avec succès:', response);
-          isEditMode = false; // Sortir du mode édition après la sauvegarde
+      if (mode === 'update' && uuid != null) {
+        return this.sitesService.updateTable(table, uuid, value).pipe(
+          map(response => {
+            console.log(table + ' mis à jour avec succès:', response);
+            isEditMode = false; // Sortir du mode édition après la sauvegarde
 
-          // Afficher le message dans le Snackbar
-          const message = String(response.message); // Conversion en string
-          if (Number(response.code) === 0) {
-            this.snackBar.open(message, 'Fermer', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
-          } else {
-            this.snackBar.open(message, 'Fermer', {
-              duration: 3000,
-              panelClass: ['snackbar-error']
-            });
-          }
+            // Afficher le message dans le Snackbar
+            const message = String(response.message); // Conversion en string
+            this.snackMessage(message, response.code, snackbar);
 
-          form.disable(); // Désactiver le formulaire après la sauvegarde
-          // Retourner l'objet avec isEditMode et formValue
-          return {
-            isEditMode: false,
-            formValue: form.value
-          };
-        }),
-        tap(() => {
-          console.log('Mise à jour réussie');
-        }),
-        catchError(error => {
-          console.error('Erreur lors de la mise à jour', error);
-          throw error;
-        })
-      );
+            form.disable(); // Désactiver le formulaire après la sauvegarde
+            // Retourner l'objet avec isEditMode et formValue
+            return {
+              isEditMode: false,
+              formValue: form.value
+            };
+          }),
+          tap(() => {
+            console.log('Mise à jour réussie');
+          }),
+          catchError(error => {
+            console.error('Erreur lors de la mise à jour', error);
+            throw error;
+          })
+        );
+      }else if (mode = 'insert') {
+        return this.sitesService.insertTable(table, value).pipe(
+          map(response => {
+            console.log(table + ' insérés avec succès:', response);
+            isEditMode = false; // Sortir du mode édition après la sauvegarde
+
+            // Afficher le message dans le Snackbar
+            const message = String(response.message); // Conversion en string
+            this.snackMessage(message, response.code, snackbar);
+
+            form.disable(); // Désactiver le formulaire après la sauvegarde
+            // Retourner l'objet avec isEditMode et formValue
+            return {
+              isEditMode: false,
+              formValue: form.value
+            };
+          }),
+          tap(() => {
+            console.log('Insertion réussie');
+          }),
+          catchError(error => {
+            console.error('Erreur lors de l\'insertion', error);
+            throw error;
+          })
+        );
+      }
+      return;
     } else {
       console.error('Formulaire invalide');
       const invalidFields = this.getInvalidFields(form);

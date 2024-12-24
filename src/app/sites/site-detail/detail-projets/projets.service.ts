@@ -18,28 +18,41 @@ export class ProjetService {
 
   constructor(private http: HttpClient) {}
 
+  // PROJETS
+  // Utilisé dans projet.component.ts
   async getProjet(subroute: string): Promise<Projet> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
-  
+
+  // Utilisé dans x.component.ts
+  insertProjet(projet: Projet): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=projets/insert`;
+    return this.http.put<ApiResponse>(url, projet);
+  }
+
+
+  // OPERATIONS
+  // Utilisé dans operation.component.ts
   async getOperations(subroute: string): Promise<OperationLite[]> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
   
+  // Utilisé dans operation.component.ts
   async getOperation(subroute: string): Promise<Operation> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
 
-  insertDetail(operation: Operation): Observable<ApiResponse> {
-    const url = `${this.activeUrl}put/table=operations/insert`; // Construire l'URL avec le UUID du site
+  // Utilisé dans operation.component.ts
+  insertOperation(operation: Operation): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=operations/insert`;
     return this.http.put<ApiResponse>(url, operation);
   }
 
-  updateDetail(operation: Operation): Observable<ApiResponse> {
-    const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`; // Construire l'URL avec le UUID du site
-    return this.http.put<ApiResponse>(url, operation);
-  }
+  // updateOperation(operation: Operation): Observable<ApiResponse> {
+  //   const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`;
+  //   return this.http.put<ApiResponse>(url, operation);
+  // }
 }

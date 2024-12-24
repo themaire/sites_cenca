@@ -80,7 +80,7 @@ ngOnInit() {
   onUpdate(): void {
     // Mettre à jour le formulaire
 
-    const updateObservable = this.formService.onUpdate('espace_site', this.inputDetail!.uuid_site, this.form, this.initialFormValues, this.isEditMode, this.snackBar);
+    const updateObservable = this.formService.putBdd('update', 'espace_site', this.form, this.isEditMode, this.snackBar, this.inputDetail!.uuid_site, this.initialFormValues);
     // S'abonner à l'observable
 
     if (updateObservable) {

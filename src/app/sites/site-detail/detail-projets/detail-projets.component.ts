@@ -8,9 +8,12 @@ import { DetailSite } from '../../site-detail';
 import { ProjetLite } from './projets';
 import { SitesService } from '../../sites.service'; // service de données
 
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
 
 import {
   MatDialog,
@@ -24,12 +27,13 @@ import {
   standalone: true,
   imports: [CommonModule,
             MatTableModule, 
-            ProjetComponent,
+            MatTooltipModule, 
+            MatIcon,
 
             MatFormFieldModule, MatInputModule, 
   ],
   templateUrl: './detail-projets.component.html',
-  styleUrl: './detail-projets.component.scss'
+  styleUrls: ['./detail-projets.component.scss', '../../../shared/form-buttons/form-buttons.component.scss']
 })
 export class DetailProjetsComponent {
   @Input() inputDetail?: DetailSite; // Le site selectionné pour voir son détail
@@ -66,38 +70,55 @@ export class DetailProjetsComponent {
     }
   }
 
-  onSelect(projetlite: ProjetLite): void {
+  onSelect(projetlite?: ProjetLite): void {
     // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
     // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
 
-    // Ca se passe dans la vue du component dialog-operation
-    if(projetlite.responsable !== undefined){
-      // OUVRIR LA FENETRE DE DIALOGUE
-      this.openDialog(projetlite);
+    if(projetlite !== undefined){
+      // Ca se passe dans la vue du component dialog-operation
+      if(projetlite.uuid_proj !== undefined){
+        // OUVRIR LA FENETRE DE DIALOGUE
+        this.openDialog(projetlite);
+      }else{
+        console.log("Pas un vrai projet passé en parametre. uuid_proj : " + projetlite.uuid_proj);
+      }
     }else{
-      console.log("Pas de projet au bout : " + projetlite.uuid_proj);
+      this.openDialog();
     }
   }
 
   // Pour l'affichage de la fenetre de dialogue
   dialog = inject(MatDialog);
 
-  openDialog(projetlite: ProjetLite): void {
+  openDialog(projetlite?: ProjetLite): void {
     // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
-    let dialogComponent: any
-    console.log("--------------ProjetLite : ", projetlite);
 
-    if(projetlite.webapp === true){
-      // Si c'est un projet webapp c'est a dire un projet 
-      // nouvelle genetation
+    // Le but est de donner un projetLite à la fenetre de dialogue
+    // Si le projetLite est vide alors on ouvre une fenetre de dialogue vide
+    // Ce qui veut dire que l'on doit créé un projetLite vide mais qui
+    // contient l'uuid du site selectionné
 
-      // dialogComponent = ProjetVComponent;
-      dialogComponent = ProjetComponent;
+    let dialogComponent: any;
+    
+    // Si on fournit un projetLite en paramètre
+    if(projetlite !== undefined){
+      if(projetlite.webapp === true){
+        console.log("--------------ProjetLite : ", projetlite);
+        // Si c'est un projet webapp c'est a dire un projet 
+        // nouvelle genetation
+      }
+    }else{
+      // Sinon on charge un projet vide
+      console.log("Charge un projet vide");
+      projetlite = {
+        uuid_site: this.inputDetail?.uuid_site
+      } as ProjetLite;
+      
+      console.log("--------------ProjetLite : ");
+      console.log(projetlite);
     }
-    // else{
-      // dialogComponent = ProjetVComponent;
-    // }
-
+    
+    dialogComponent = ProjetComponent;
     this.dialog.open(dialogComponent, {
       data : projetlite
     });
