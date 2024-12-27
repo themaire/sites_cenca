@@ -10,6 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SitesService } from '../sites/sites.service';
 import { ProjetService } from '../sites/site-detail/detail-projets/projets.service';
 
+import { v4 as uuidv4 } from 'uuid';
+
 // Des fonctions generalistes sont définies pour gérer les formulaires
 
 @Injectable({
@@ -58,9 +60,10 @@ export class FormService {
   
   // Créer un nouveau formulaire de projet avec des champs vides
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
   newProjetForm(projet?: Projet, site?: String): FormGroup {
     return this.fb.group({
-      uuid_proj: [projet?.uuid_proj || ''],
+      uuid_proj: [projet?.uuid_proj || uuidv4()],
       site: [site || projet?.site],
       code: [projet?.code || ''],
       itin_tech: [projet?.itin_tech || ''],
@@ -78,6 +81,10 @@ export class FormService {
       pro_debut: [projet?.pro_debut || null],
       pro_fin: [projet?.pro_fin || ''],
       pro_pression_ciblee: [projet?.pro_pression_ciblee || false],
+      pro_surf_totale: [projet?.pro_surf_totale || false],
+      pro_nv_enjeux: [projet?.pro_nv_enjeux || false],
+      pro_enjeux_eco: [projet?.pro_enjeux_eco || false],
+      pro_obj_ope: [projet?.pro_obj_ope || false],
       pro_results_attendus: [projet?.pro_results_attendus || null],
       pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
       pro_webapp: [projet?.pro_webapp || true]

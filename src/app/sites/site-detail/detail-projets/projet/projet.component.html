@@ -2,10 +2,10 @@
   <div class="conteneur-projet">
     <div class="gerer">Gérer</div>
 
-    -- Variable isEditOperation : {{ isEditOperation }}<br>
+    <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
     -- Variable isAddOperation : {{ isAddOperation }}<br>
     -- Variable isEditProjet : {{ isEditProjet }}<br>
-    -- Variable newProjet : {{ newProjet }}<br>
+    -- Variable newProjet : {{ newProjet }}<br> -->
 
     <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
     <ng-container *ngTemplateOutlet="stepper"></ng-container>
@@ -47,25 +47,27 @@
             <div>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Type de projet</mat-label>
-                <input matInput [value]="projetForm.get('typ_projet')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="projetForm.get('typ_projet')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
-            </div>
-            <div>
+
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Nom</mat-label>
-                <input matInput [value]="projetForm.get('nom')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="projetForm.get('nom')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
-            </div>
-            <div>
+
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Code</mat-label>
-                <input matInput [value]="projetForm.get('code')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="projetForm.get('code')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
-            </div>
-            <div>
+
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Responsable</mat-label>
-                <input matInput [value]="projetForm.get('responsable')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="projetForm.get('responsable')?.value || 'Non renseigné'" readonly>
+              </mat-form-field>
+
+              <mat-form-field class="custom-mat-form-field">
+                <mat-label>Maitre d'ouvrage</mat-label>
+                <input matInput [value]="projetForm.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
             </div>
             <!-- <div>
@@ -91,17 +93,20 @@
                 </mat-date-range-input>
                 <mat-date-range-picker #picker></mat-date-range-picker>
               </mat-form-field>
-            </div>
-            <div>
+
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Statut</mat-label>
-                <input matInput [value]="projetForm.get('statut')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="projetForm.get('statut')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
-            </div>
-            <div>
+
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Objectif</mat-label>
-                <input matInput [value]="projetForm.get('pro_obj_projet')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="projetForm.get('pro_obj_projet')?.value || 'Non renseigné'" readonly>
+              </mat-form-field>
+
+              <mat-form-field class="custom-mat-form-field">
+                <mat-label>Validité</mat-label>
+                <input matInput [value]="projetForm.get('validite')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
             </div>
           </ng-container>
@@ -113,8 +118,14 @@
                 <div>
                   <mat-form-field>
                     <mat-label>Type de projet</mat-label>
-                    <input matInput formControlName="typ_projet">
+                    <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
+                      @for (type of projectTypes; track type) {
+                        <mat-option [value]="type.value">{{type.viewValue}}</mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
+
+                  
                   <mat-form-field>
                     <mat-label>Nom</mat-label>
                     <textarea matInput formControlName="nom"></textarea>
@@ -179,7 +190,7 @@
 
           </form>
 
-          <app-detail-gestion [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
+          <app-detail-gestion *ngIf="!newProjet" [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
 
           <div>
             <button mat-button matStepperPrevious>Précédent</button>
@@ -216,13 +227,13 @@
                 <div>
                   <mat-form-field>
                     <mat-label>Niveau Enjeu Ecologique</mat-label>
-                    <input matInput [value]="projetForm.get('pro_nv_enjeux')?.value || 'Non renseignée'" readonly>
+                    <input matInput [value]="projetForm.get('pro_nv_enjeux')?.value || 'Non renseigné'" readonly>
                   </mat-form-field>
                 </div>
                 <div>
                   <mat-form-field >
                     <mat-label>Enjeux Ecologiques</mat-label>
-                    <input matInput [value]="projetForm.get('pro_enjeux_eco')?.value || 'Non renseignée'" readonly>
+                    <input matInput [value]="projetForm.get('pro_enjeux_eco')?.value || 'Non renseigné'" readonly>
                   </mat-form-field>
                 </div>
                 <div>
@@ -234,13 +245,13 @@
                 <div>
                   <mat-form-field >
                     <mat-label>Type d'objectif opérationnel</mat-label>
-                    <input matInput [value]="projetForm.get('pro_obj_ope')?.value || 'Non renseignée'" readonly>
+                    <input matInput [value]="projetForm.get('pro_obj_ope')?.value || 'Non renseigné'" readonly>
                   </mat-form-field>
                 </div>
                 <div>
                   <mat-form-field >
                     <mat-label>Résultats attendus</mat-label>
-                    <input matInput [value]="projetForm.get('pro_results_attendus')?.value || 'Non renseignée'" readonly>
+                    <input matInput [value]="projetForm.get('pro_results_attendus')?.value || 'Non renseigné'" readonly>
                   </mat-form-field>
                 </div>
               </div>
@@ -304,7 +315,7 @@
 
 
 
-        <mat-step state="troubleshoot" *ngIf="projet && projet.uuid_proj !== null">
+        <mat-step state="troubleshoot" *ngIf="newProjet === false">
           <ng-template matStepLabel>Indicateurs projet</ng-template>
           <div class="container-carte">
             Tableau des indicateurs projet
@@ -329,7 +340,7 @@
 
 
 
-        <mat-step state="euro" *ngIf="projet && projet.uuid_proj !== null">
+        <mat-step state="euro" *ngIf="projet && newProjet === false">
           <ng-template matStepLabel>Financements</ng-template>
           <div class="container-carte">
             Tableau des financements
@@ -352,7 +363,7 @@
 
 
 
-        <mat-step state="construction" *ngIf="projet && projet.uuid_proj !== null">
+        <mat-step state="construction" *ngIf="projet && newProjet === false">
           <ng-template matStepLabel>Opérations</ng-template>
 
           <!-- Si dans aucun mode d'edition ou d'ajout -->
@@ -376,7 +387,7 @@
 
 
 
-        <mat-step state="flag" *ngIf="projet && projet.uuid_proj !== null">
+        <mat-step state="flag" *ngIf="projet && newProjet === false">
           <ng-template matStepLabel>Bilan d'execution</ng-template>
           You are now done.
           <div>

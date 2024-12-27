@@ -119,8 +119,17 @@ export class DetailProjetsComponent {
     }
     
     dialogComponent = ProjetComponent;
-    this.dialog.open(dialogComponent, {
+
+    // Ouverture de la fenetre de dialogue
+    // tout en créant la constante dialogRef
+    const dialogRef = this.dialog.open(dialogComponent, {
       data : projetlite
+    });
+
+    // Préparer à l'avance quand la fenetre de dialogue se ferme
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('La fenetre de dialogue vient de se fermer');
+      this.ngOnChanges({}); // Mettre à jour la liste des projets (mat-table)
     });
 
   }

@@ -52,6 +52,14 @@ export interface Projet {
     pro_results_attendus?: number;
     pro_maitre_ouvrage?: number;
     pro_surf_totale?: number;
+    pro_nv_enjeux?: string;
+    pro_enjeux_eco?: string;
+    pro_obj_ope?: string;
     ref_loc_id?: number;
     geom?: string;
 }
+
+export interface SelectOption {
+    value: string;
+    viewValue: string;
+  }

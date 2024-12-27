@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { MatButtonModule } from '@angular/material/button';
 
 import { ApiResponse } from '../../../../shared/interfaces/api';
-import { ProjetLite, Projet } from '../projets';
+import { ProjetLite, Projet, SelectOption } from '../projets';
 import { ProjetService } from '../projets.service';
 import { FormService } from '../../../../services/form.service';
 
@@ -21,6 +21,7 @@ import { MatStepperModule, StepperOrientation } from '@angular/material/stepper'
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 import { MatInputModule } from '@angular/material/input'; 
+import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
@@ -86,6 +87,7 @@ export const MY_DATE_FORMATS = {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
@@ -106,6 +108,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   projetLite: ProjetLite;
   projet!: Projet;
+  selectedProjetType: string = '';
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 300;
   
@@ -119,6 +122,14 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   private formStatusSubscription: Subscription | null = null;
   
+  projectTypes: SelectOption[] = [
+    {value: 'TRV', viewValue: 'Travaux'},
+    {value: 'ETU', viewValue: 'Etude scientifique'},
+    {value: 'FON', viewValue: 'Foncier'},
+    {value: 'PAR', viewValue: 'Partenariat et Ancrage territorial'},
+    {value: 'SEN', viewValue: 'Sensibilisation et Communication'},
+  ];
+
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
@@ -142,6 +153,15 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       // console.log("this.projetLite dans le dialog :", this.projetLite);
     }
 
+    async fetchProjet(uuid_proj: String): Promise<Projet> {
+      const subroute = `projets/uuid=${uuid_proj}/full`; // Full puisque UN SEUL projet
+          console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
+          const projet = await this.sitesService.getProjet(subroute);
+          if (projet.typ_projet) this.selectedProjetType = projet.typ_projet;
+          
+          return projet;
+    }
+
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     // console.log('Initialisation du formulaire principal');
@@ -151,9 +171,13 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
-          subroute = `projets/uuid=${this.projetLite.uuid_proj}/full`; // Full puisque UN SEUL projet
-          console.log("Récupération des données du projet avec l'UUID du projet :" + this.projetLite.uuid_proj);
-          const projetObject = await this.sitesService.getProjet(subroute);
+
+          const projetObject = await this.fetchProjet(this.projetLite.uuid_proj);
+
+          // subroute = `projets/uuid=${this.projetLite.uuid_proj}/full`; // Full puisque UN SEUL projet
+          // console.log("Récupération des données du projet avec l'UUID du projet :" + this.projetLite.uuid_proj);
+          // const projetObject = await this.sitesService.getProjet(subroute);
+          
           // console.log("-------------------- Données du Projet : ");
           // console.log(projetObject);
 
@@ -164,18 +188,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
             // Les form_groups correspondant aux steps
             // Sert a defini les valeurs par defaut et si obligatoire
-            this.projetForm = this.fb.group({
-              code: [this.projet.code || '', Validators.required],
-              typ_projet: [this.projet.typ_projet || '', Validators.required],
-              nom: [this.projet.nom || '', Validators.required],
-              responsable: [this.projet.responsable || '', Validators.required],
-              pro_maitre_ouvrage: [this.projet.pro_maitre_ouvrage || '',],
-              pro_debut: [this.projet.pro_debut || '', ],
-              pro_fin: [this.projet.pro_fin || '', ],
-              statut: [this.projet.statut || '', ],
-              pro_pression_ciblee: [this.projet.pro_pression_ciblee || '', ],
-              pro_results_attendus: [this.projet.pro_results_attendus || '', ]
-            });
+            this.projetForm = this.formService.newProjetForm(this.projet);
 
             // Souscrire aux changements du statut du formulaire principal (projetForm)
             this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
@@ -310,6 +323,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // Mettre à jour le formulaire
 
     if(!this.newProjet){
+      // Si modification d'un projet existant
       const submitObservable = this.formService.putBdd('update', 'projets', this.projetForm, this.isEditProjet, this.snackBar, this.projetLite.uuid_proj, this.initialFormValues);
 
       // S'abonner à l'observable
@@ -326,6 +340,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         );
       }
     }else if (this.newProjet){
+      // Si création d'un nouveau projet
       const submitObservable = this.formService.putBdd('insert', 'projets', this.projetForm, this.isEditProjet, this.snackBar);
       
       // S'abonner à l'observable
@@ -334,6 +349,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
           (result) => {
             this.isEditProjet = result.isEditMode;
             this.initialFormValues = result.formValue;
+            this.newProjet = false; // On n'est plus en mode création, donc maintenant le formulaire s'affiche normalement
+            this.projet = result.formValue;
             console.log('Nouveau projet enregistré avec succès:', result.formValue);
           },
           (error) => {
