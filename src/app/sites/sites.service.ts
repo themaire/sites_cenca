@@ -15,6 +15,8 @@ import { ProjetLite } from './site-detail/detail-projets/projets';
 import { Operation, OperationLite } from './site-detail/detail-projets/projet/operation/operations';
 import { DetailSite } from './site-detail';
 
+import { ApiResponse } from '../shared/interfaces/api';
+
 import { Selector } from './selector';
 
 @Injectable({
@@ -99,11 +101,29 @@ export class SitesService {
   }
 
   // Sauvegarde les modifications
+  // Fonction utilisée dans updateTable() de form.service.ts
   updateTable(tableName: String, uuid: String, formData: any): Observable<any> {
     const url = `${this.activeUrl}put/table=${tableName}/uuid=${uuid}`; // Construire l'URL avec le UUID du site
     console.log('Dans updateTable() avec ' + url);
     
     return this.http.put<any>(url, formData).pipe(
+      tap(response => {
+        console.log('Mise à jour réussie:', response);
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la mise à jour', error);
+        throw error;
+      })
+    );
+  }
+
+  // Insertion d'enregistrements
+  // Fonction utilisée dans updateTable() de form.service.ts
+  insertTable(tableName: String, formData: any): Observable<any> {
+    const url = `${this.activeUrl}put/table=${tableName}/insert`; // Construire l'URL avec le UUID du site
+    console.log('Dans updateTable() avec ' + url);
+    
+    return this.http.put<ApiResponse>(url, formData).pipe(
       tap(response => {
         console.log('Mise à jour réussie:', response);
       }),

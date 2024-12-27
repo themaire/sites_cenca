@@ -21,8 +21,7 @@
     <ng-container *ngIf="isFormValid; then saveBtnEnabled; else saveBtnDisabled"></ng-container>
     
     <!-- Bouton annuler -->
-    <button
-        mat-icon-button
+    <button mat-icon-button
         matTooltip="Annuler"
         class="btn-annulation"
         (click)="onCancelAction()">
@@ -32,8 +31,7 @@
 
 <!-- Bouton pour rentrer en mode add ou edit -->
 <ng-template #editOff>
-    <button
-        mat-icon-button
+    <button mat-icon-button
         [matTooltip]="tooltip"
         class="btn-edition"
         (click)="onToggleAction()">
@@ -42,8 +40,7 @@
 </ng-template>
 
 <ng-template #saveBtnEnabled>
-    <button
-        mat-icon-button
+    <button mat-icon-button
         matTooltip="Sauvegarder"
         class="btn-sauvegarde"
         (click)="onSave()">
@@ -52,8 +49,7 @@
 </ng-template>
 
 <ng-template #saveBtnDisabled>
-    <button
-        mat-icon-button
+    <button mat-icon-button
         matTooltip="Sauvegarde impossible, vérifiez les champs obligatoires"
         class="btn-sauvegarde-disabled"
         disabled>
@@ -62,8 +58,7 @@
 </ng-template>
 
 <ng-template #add>
-    <button
-        mat-icon-button
+    <button mat-icon-button
         matTooltip="Ajouter une opération"
         class="btn-edition"
         (click)="onToggleAction()">

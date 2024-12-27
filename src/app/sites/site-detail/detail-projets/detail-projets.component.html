@@ -4,6 +4,16 @@
   <ng-template #thenBlock>
     <div>
       <h2>Nb opérations : {{ projetsLite.length }}</h2>
+      
+      <section class="edition">
+        Ajouter un nouveau projet : <button mat-icon-button
+            matTooltip="Ajouter un projet"
+            class="btn-edition"
+            (click)="onSelect()">
+            <mat-icon>add</mat-icon>
+        </button>
+      </section>
+
       <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="responsable" class="responsable">
           <mat-header-cell *matHeaderCellDef class="responsable">

@@ -142,7 +142,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private formService: FormService,
     private fb: FormBuilder,
-    private research: ProjetService,
+    private projetService: ProjetService,
     private snackBar: MatSnackBar, // Injecter MatSnackBar
     ) {
       // Sert pour le stepper
@@ -273,7 +273,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("----------!!!!!!!!!!!!--------fetchOperations() dans le composant operation");
       const uuid = this.ref_uuid_proj;
       const subroute = `operations/uuid=${uuid}/lite`;
-      this.research.getOperations(subroute).then(
+      this.projetService.getOperations(subroute).then(
         (operations) => {
           this.operations = operations;
           if (Array.isArray(this.operations) && this.operations.length > 0) {
@@ -292,7 +292,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("----------!!!!!!!!!!!!--------fetchOperations(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
       try {
-        const operation = await this.research.getOperation(subroute);
+        const operation = await this.projetService.getOperation(subroute);
         console.log('Opération avant le return de fetchOperations() :', operation);
         return operation;
       } catch (error) {
@@ -373,7 +373,7 @@ export class OperationComponent implements OnInit, OnDestroy {
 
         // Nouvelle opération
         if (this.isAddOperation === true){
-          this.research.insertDetail(this.form.value).subscribe(
+          this.projetService.insertOperation(this.form.value).subscribe(
             (response: ApiResponse) => {
               console.log("Enregistrement de l'opération avec succès :", response);
               this.unsubForm(); // Se désabonner des changements du formulaire
@@ -406,7 +406,7 @@ export class OperationComponent implements OnInit, OnDestroy {
           console.log('Enregistrement de l\'opération en cours suite à demande de validation...');
           
           console.log('Formulaire juste avant le onUpdate :', this.form.value);
-          const updateObservable = this.formService.onUpdate('operations', this.form.value.uuid_ope, this.form, this.initialFormValues, this.isEditOperation, this.snackBar);
+          const updateObservable = this.formService.putBdd('update', 'operations', this.form, this.isEditOperation, this.snackBar, this.form.value.uuid_ope, this.initialFormValues);
           // S'abonner à l'observable. onUpdate 
 
           if (updateObservable) {
