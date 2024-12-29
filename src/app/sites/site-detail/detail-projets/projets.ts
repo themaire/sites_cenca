@@ -58,8 +58,3 @@ export interface Projet {
     ref_loc_id?: number;
     geom?: string;
 }
-
-export interface SelectOption {
-    value: string;
-    viewValue: string;
-  }

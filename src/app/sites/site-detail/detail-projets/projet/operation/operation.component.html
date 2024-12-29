@@ -3,9 +3,9 @@
 <!-- 2 On ajoute ou edite une opération existante -->
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
-Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
+<!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
 Variable (operation) isEditOperation: {{ isEditOperation }}<br>
-Variable (operation) isAddOperation: {{ isAddOperation }}<br>
+Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <app-form-buttons
@@ -79,7 +79,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
 
   <!-- (nom_dans_composant)='mathode à utiliser depuis le composant du bouton' -->
 
-  <mat-horizontal-stepper [linear]="linearMode">
+  <mat-horizontal-stepper [linear]="linearMode" #stepper>
 
       <mat-step [stepControl]="form!">
       <form [formGroup]="form!">
@@ -96,6 +96,36 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
           <mat-form-field>
             <mat-label>Titre</mat-label>
             <input matInput formControlName="titre">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Type d'intervention</mat-label>
+            <mat-select [(ngModel)]="selectedIntervType" formControlName="typ_intervention">
+              @for (type of intervTypes; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Remarque</mat-label>
+            <input matInput formControlName="remarque">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Validite</mat-label>
+            <input matInput formControlName="validite">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Type d'action</mat-label>
+            <mat-select [(ngModel)]="selectedActionType" formControlName="action">
+              @for (type of actionTypes; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Objectif</mat-label>
+            <input matInput formControlName="objectif">
           </mat-form-field>
         </div>
         <div>
@@ -137,7 +167,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
         <ng-template matStepLabel>Step 3</ng-template>
         <div>
           <mat-form-field>
-            <mat-label>Surface</mat-label>
+            <mat-label>Surface (ha)</mat-label>
             <input matInput formControlName="surf">
           </mat-form-field>
           <mat-form-field>
@@ -190,40 +220,9 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
 
     <mat-step [stepControl]="form!">
       <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 5</ng-template>
-        <div>
-          <mat-form-field>
-            <mat-label>Remarque</mat-label>
-            <input matInput formControlName="remarque">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Validite</mat-label>
-            <input matInput formControlName="validite">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Action</mat-label>
-            <input matInput formControlName="action">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Objectif</mat-label>
-            <input matInput formControlName="objectif">
-          </mat-form-field>
-        </div>
-        <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
-        </div>
-      </form>
-    </mat-step>
-
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
         <ng-template matStepLabel>Step 6</ng-template>
         <div>
-          <mat-form-field>
-            <mat-label>Typ Intervention</mat-label>
-            <input matInput formControlName="typ_intervention">
-          </mat-form-field>
+
           <mat-form-field>
             <mat-label>Date Debut</mat-label>
             <input matInput formControlName="date_debut" type="date">

@@ -1,9 +1,13 @@
+import { environment } from '../../environments/environment';
+
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
 import { Projet } from '../sites/site-detail/detail-projets/projets';
+import { SelectValue } from '../shared/interfaces/formValues';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -18,15 +22,32 @@ import { v4 as uuidv4 } from 'uuid';
   providedIn: 'root'
 })
 export class FormService {
-    private formValiditySubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private activeUrl: string = environment.apiUrl;
+  private formValiditySubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
+    private http: HttpClient,
     private sitesService: SitesService, 
     private projetService: ProjetService, 
     private fb: FormBuilder, 
     private snackBar: MatSnackBar,
   ) {}
+
+  // Récupérer les valeurs de la liste déroulante
+  getSelectValues$(subroute: string): Observable<SelectValue[] | undefined> {
+    const url = `${this.activeUrl}${subroute}`;
+    return this.http.get<SelectValue[]>(url).pipe(
+      tap(response => {
+        console.log('Valeurs de la liste déroulante récupérées avec succès:', response);
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la récupération des valeurs de la liste déroulante', error);
+        throw error;
+      })
+    );
+  }
   
+  // Fonction pour basculer entre deux états
   simpleToggle(bool: boolean): boolean {
     // Pour ajouter une opération dans le template
     bool = !bool;
@@ -94,6 +115,7 @@ export class FormService {
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     return this.fb.group({
+
       uuid_ope: [operation?.uuid_ope || ''],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
       code: [operation?.code || ''],
@@ -102,6 +124,7 @@ export class FormService {
       rmq_pdg: [operation?.rmq_pdg || ''],
       description: [operation?.description || ''],
       interv_zh: [operation?.interv_zh || ''],
+
       surf: [operation?.surf || null],
       lin: [operation?.lin || null],
       app_fourr: [operation?.app_fourr || null],
@@ -112,14 +135,16 @@ export class FormService {
       charge_inst: [operation?.charge_inst || null],
       remarque: [operation?.remarque || ''],
       validite: [operation?.validite || false],
-      action: [operation?.action || '100'],
+      action: [operation?.action || '', Validators.required],
       objectif: [operation?.objectif || ''],
-      typ_intervention: [operation?.typ_intervention || 'BEN'],
+
+      typ_intervention: [operation?.typ_intervention || 'NR', Validators.required],
       date_debut: [operation?.date_debut || null],
       date_fin: [operation?.date_fin || null],
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null]
+
     });
   }
 

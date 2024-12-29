@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
 import { OperationLite, Operation } from './operations';
+import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
@@ -30,6 +31,7 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { MatInputModule } from '@angular/material/input'; 
+import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
@@ -84,6 +86,7 @@ export const MY_DATE_FORMATS = {
     MatDialogModule,
     MatDialogTitle,
     MatDialogContent,
+    MatSelectModule,
     MatIconModule,
     MatStepperModule,
     FormsModule,
@@ -119,6 +122,12 @@ export class OperationComponent implements OnInit, OnDestroy {
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
   operation!: Operation | void; // Pour les détails d'une opération
+
+  // Listes de choix du formulaire
+  intervTypes!: SelectValue[];
+  selectedIntervType: string = '';
+  actionTypes!: SelectValue[];
+  selectedActionType: string = '';
 
   // Booleens d'états pour le mode d'affichage
   @Input() isEditOperation: boolean = false;
@@ -160,7 +169,31 @@ export class OperationComponent implements OnInit, OnDestroy {
     // S'abonner aux changements du statut du formulaire principal (projetForm)
     
     console.log("Le composant operation s'initialise..........");  
-        
+    
+    // Récuperer les listes de choix
+    const subrouteTypesInter = `sites/selectvalues=${'ope.typ_interventions'}`;
+    this.formService.getSelectValues$(subrouteTypesInter).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix typ_interventions récupérée avec succès :');
+        console.log(selectValues);
+        this.intervTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+    const subrouteActions = `sites/selectvalues=${'ope.actions'}`;
+    this.formService.getSelectValues$(subrouteActions).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix actions récupérée avec succès :');
+        console.log(selectValues);
+        this.actionTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
     try {
       if (this.ref_uuid_proj !== undefined) {
         // Si on a bien une uuid de projet passé en paramètre pour recuperer les opérations lite
@@ -220,6 +253,10 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("this.isFormValid = this.projetForm.valid :");
       console.log(this.isFormValid + " = " + this.form.valid);
       console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
+      
+      // Afficher la liste des champs invalides
+      console.log('Champs invalides :', this.getInvalidFields());
+
       this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
     });
   }
@@ -266,6 +303,27 @@ export class OperationComponent implements OnInit, OnDestroy {
       return [];
     }
   }
+
+  // isStepCompleted(stepIndex: number): boolean {
+  //   // Pour utiliser cette méthode dans le stepper
+  //   // il faut que le stepper soit en mode linear
+  //   // Fonctionn comme ceci dans le html :
+  //   // <mat-step [stepControl]="form" [completed]="isStepCompleted(2)">
+  //   switch (stepIndex) {
+  //     case 1:
+  //       return this.form.get('titre')?.valid || false;
+  //     case 2:
+  //       // return true || false;
+  //       return true;
+  //     case 3:
+  //       return true;
+  //     case 4:
+  //       return this.form.get('typ_intervention')?.valid || false;
+
+  //     default:
+  //       return false;
+  //   }
+  // }
 
   async fetchOperations(uuid_ope?: String): Promise<Operation | void> {
     // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.

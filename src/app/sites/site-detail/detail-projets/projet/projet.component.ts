@@ -4,7 +4,8 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { MatButtonModule } from '@angular/material/button';
 
 import { ApiResponse } from '../../../../shared/interfaces/api';
-import { ProjetLite, Projet, SelectOption } from '../projets';
+import { ProjetLite, Projet } from '../projets';
+import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { ProjetService } from '../projets.service';
 import { FormService } from '../../../../services/form.service';
 
@@ -108,7 +109,6 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   projetLite: ProjetLite;
   projet!: Projet;
-  selectedProjetType: string = '';
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 300;
   
@@ -116,26 +116,32 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   isEditProjet: boolean = false;
   isEditOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
   isAddOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
-
+  
   projetForm!: FormGroup;
   isFormValid: boolean = false;
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   private formStatusSubscription: Subscription | null = null;
   
-  projectTypes: SelectOption[] = [
-    {value: 'TRV', viewValue: 'Travaux'},
-    {value: 'ETU', viewValue: 'Etude scientifique'},
-    {value: 'FON', viewValue: 'Foncier'},
-    {value: 'PAR', viewValue: 'Partenariat et Ancrage territorial'},
-    {value: 'SEN', viewValue: 'Sensibilisation et Communication'},
-  ];
+  // Listes de choix du formulaire
+  projectTypes!: SelectValue[];
+  selectedProjetType: string = '';
+  projectEnjeux!: SelectValue[];
+  selectedEnjeuxType: string = '';
+  
+  // projectTypes: SelectValue[] = [
+  //   {value: 'TRV', viewValue: 'Travaux'},
+  //   {value: 'ETU', viewValue: 'Etude scientifique'},
+  //   {value: 'FON', viewValue: 'Foncier'},
+  //   {value: 'PAR', viewValue: 'Partenariat et Ancrage territorial'},
+  //   {value: 'SEN', viewValue: 'Sensibilisation et Communication'},
+  // ];
 
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
     private sitesService: ProjetService,
     private formService: FormService,
-    private projetService: ProjetService,
+    // private projetService: ProjetService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
@@ -153,20 +159,21 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       // console.log("this.projetLite dans le dialog :", this.projetLite);
     }
 
-    async fetchProjet(uuid_proj: String): Promise<Projet> {
-      const subroute = `projets/uuid=${uuid_proj}/full`; // Full puisque UN SEUL projet
-          console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
-          const projet = await this.sitesService.getProjet(subroute);
-          if (projet.typ_projet) this.selectedProjetType = projet.typ_projet;
-          
-          return projet;
-    }
+  async fetchProjet(uuid_proj: String): Promise<Projet> {
+    const subroute = `projets/uuid=${uuid_proj}/full`; // Full puisque UN SEUL projet
+        console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
+        const projet = await this.sitesService.getProjet(subroute);
+        if (projet.typ_projet) this.selectedProjetType = projet.typ_projet;
+        
+        return projet;
+  }
 
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     // console.log('Initialisation du formulaire principal');
     let subroute: string = "";
     
+    // Récupérer les données d'un projet ou créer un nouveau projet
     if (this.projetLite?.uuid_proj) {
       try {
         // Simuler un délai artificiel
@@ -241,6 +248,34 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         this.cdr.detectChanges();
       }
     }
+
+    // Récuperer les listes de choix
+    const subrouteTypes = `sites/selectvalues=${'ope.typ_projets'}`;
+    this.formService.getSelectValues$(subrouteTypes).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix type de projets récupérées avec succès :');
+        
+        this.projectTypes = selectValues || [];
+        console.log("this.projectTypes : ");
+        console.log(this.projectTypes);
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+    const subrouteEnjeux = `sites/selectvalues=${'opegerer.typ_enjeux'}`;
+    this.formService.getSelectValues$(subrouteEnjeux).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix enjeux récupérées avec succès :');
+        
+        this.projectEnjeux = selectValues || [];
+        console.log("this.projectTypes : ");
+        console.log(this.projectEnjeux);
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
   }
 
   ngOnDestroy(): void {
@@ -249,6 +284,16 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       this.formStatusSubscription.unsubscribe();
     }
     console.log('Destruction du composant, on se désabonne.');
+  }
+
+  getLibelleForType(cd_type: string): string {
+    const projectType = this.projectTypes.find(type => type.cd_type === cd_type);
+    return projectType ? projectType.libelle : '';
+  }
+
+  getLibelleForEnjeux(cd_type: string): string {
+    const projectEnjeux = this.projectEnjeux.find(type => type.cd_type === cd_type);
+    return projectEnjeux ? projectEnjeux.libelle : '';
   }
 
   // onSelect(operation: Operation): void {
