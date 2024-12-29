@@ -152,6 +152,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       // console.log("data : ");
       // console.log(data);
 
+      console.log("this.projectTypes : ");
+      console.log(this.projectTypes);
+
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
       this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)').pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
