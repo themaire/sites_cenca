@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
 import { OperationLite, Operation } from './operations';
+import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
@@ -30,6 +31,7 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { MatInputModule } from '@angular/material/input'; 
+import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
@@ -84,6 +86,7 @@ export const MY_DATE_FORMATS = {
     MatDialogModule,
     MatDialogTitle,
     MatDialogContent,
+    MatSelectModule,
     MatIconModule,
     MatStepperModule,
     FormsModule,
@@ -119,6 +122,10 @@ export class OperationComponent implements OnInit, OnDestroy {
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
   operation!: Operation | void; // Pour les détails d'une opération
+
+  // Listes de choix du formulaire
+  intervTypes!: SelectValue[];
+  selectedIntervType: string = '';
 
   // Booleens d'états pour le mode d'affichage
   @Input() isEditOperation: boolean = false;
@@ -160,7 +167,20 @@ export class OperationComponent implements OnInit, OnDestroy {
     // S'abonner aux changements du statut du formulaire principal (projetForm)
     
     console.log("Le composant operation s'initialise..........");  
-        
+    
+    // Récuperer les listes de choix
+    const subrouteTypesInter = `sites/selectvalues=${'ope.typ_interventions'}`;
+    this.formService.getSelectValues$(subrouteTypesInter).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix récupérées avec succès :');
+        console.log(selectValues);
+        this.intervTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
     try {
       if (this.ref_uuid_proj !== undefined) {
         // Si on a bien une uuid de projet passé en paramètre pour recuperer les opérations lite

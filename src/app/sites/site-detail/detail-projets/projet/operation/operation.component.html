@@ -221,9 +221,14 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
         <ng-template matStepLabel>Step 6</ng-template>
         <div>
           <mat-form-field>
-            <mat-label>Typ Intervention</mat-label>
-            <input matInput formControlName="typ_intervention">
+            <mat-label>Type d'intervention</mat-label>
+            <mat-select [(ngModel)]="selectedIntervType" formControlName="typ_intervention">
+              @for (type of intervTypes; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
           </mat-form-field>
+
           <mat-form-field>
             <mat-label>Date Debut</mat-label>
             <input matInput formControlName="date_debut" type="date">

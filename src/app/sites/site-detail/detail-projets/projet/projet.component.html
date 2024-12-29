@@ -17,9 +17,10 @@
       <h2 *ngIf="isEditProjet && !newProjet">Modification d'un projet</h2>
       <h2 *ngIf="newProjet && isEditProjet">Création d'un projet</h2>
 
+      <!-- Réglage de l'animation du stepper -->
       <div class="example-input-wrapper">
-          <!-- <label for="duration">Animation duration:</label> -->
-          <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
+        <!-- <label for="duration">Animation duration:</label> -->
+        <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
       </div>
 
       <app-form-buttons
@@ -53,6 +54,11 @@
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Nom</mat-label>
                 <input matInput [value]="projetForm.get('nom')?.value || 'Non renseigné'" readonly>
+              </mat-form-field>
+
+              <mat-form-field class="custom-mat-form-field">
+                <mat-label>Année d'execution</mat-label>
+                <input matInput [value]="projetForm.get('annee')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
 
               <mat-form-field class="custom-mat-form-field">
@@ -120,7 +126,7 @@
                     <mat-label>Type de projet</mat-label>
                     <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
                       @for (type of projectTypes; track type) {
-                        <mat-option [value]="type.value">{{type.viewValue}}</mat-option>
+                        <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                       }
                     </mat-select>
                   </mat-form-field>
@@ -129,6 +135,10 @@
                   <mat-form-field>
                     <mat-label>Nom</mat-label>
                     <textarea matInput formControlName="nom"></textarea>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Année d'execution</mat-label>
+                    <textarea matInput formControlName="annee"></textarea>
                   </mat-form-field>
                   <mat-form-field>
                     <mat-label>Code</mat-label>
@@ -433,7 +443,7 @@
     <!-- Formulaire operation -->
     <ng-template #operation>
 
-      <!-- isEditFromOperation vien de app-operation et app-projet -->
+      <!-- isEditFromOperation vient de app-operation et app-projet -->
       <app-operation 
                     (isEditFromOperation)="handleEditOperationChange($event)"
                     (isAddFromOperation)="handleAddOperationChange($event)"
