@@ -42,7 +42,7 @@
 
         <!-- state="info" est l'icone a utiliser pour le step -->
         <mat-step state="info">
-          <ng-template matStepLabel>Description du projet</ng-template>
+          <ng-template matStepLabel>Description</ng-template>
           <!-- Affichage en mode consultation (editMode == false) -->
           <ng-container *ngIf="!isEditProjet">
             <div>
@@ -332,7 +332,7 @@
 
 
         <mat-step state="troubleshoot" *ngIf="newProjet === false">
-          <ng-template matStepLabel>Indicateurs projet</ng-template>
+          <ng-template matStepLabel>Indicateurs</ng-template>
           <div class="container-carte">
             Tableau des indicateurs projet
           </div>
@@ -376,6 +376,23 @@
 
 
 
+
+
+
+        <mat-step state="flag" *ngIf="projet && newProjet === false">
+          <ng-template matStepLabel>Objectifs</ng-template>
+
+          <!-- Si dans aucun mode d'edition ou d'ajout -->
+          <ng-container *ngIf="!isEditObjectif || !isAddObjectif; then objectif;">
+
+          </ng-container>
+
+          <div>
+            <button mat-button matStepperPrevious>Précédent</button>
+            <button mat-button matStepperNext>Suivant</button>
+          </div>
+
+        </mat-step>
 
 
 
@@ -444,6 +461,22 @@
         </ng-template>
 
       </mat-stepper>
+    </ng-template>
+
+    <!-- Formulaire objectif -->
+    <ng-template #objectif>
+
+      <!-- isEditFromObjectif vient de app-objectif et app-projet -->
+      <app-objectif 
+                    (isEditFromObjectif)="handleEditObjectifChange($event)"
+                    (isAddFromObjectif)="handleAddObjectifChange($event)"
+                    [isEditObjectif]="isEditObjectif"
+                    [isAddObjectif]="isAddObjectif"
+                    [projetEditMode]="isEditProjet"
+                    [ref_uuid_proj]="projet.uuid_proj"                                                                                                                                                      
+                    >
+      </app-objectif>
+
     </ng-template>
 
     <!-- Formulaire operation -->

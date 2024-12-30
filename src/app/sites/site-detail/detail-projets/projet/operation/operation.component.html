@@ -15,7 +15,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
   [isAddActive]="isAddOperation" 
   [isFormValid]="isFormValid" 
   (toggleAction)="toggleEditOperation($event)"
-  (makeOperationForm)="makeOperationForm($event)"
+  (makeOperationForm)="makeForm($event)"
   (onSubmit)="onSubmit($event)" 
 ></app-form-buttons>
 
@@ -62,7 +62,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           
           <mat-header-row *matHeaderRowDef="displayedColumnsOperations"></mat-header-row>
           <!-- Ouvrir la fenetre de dialogue d'une opération -->
-          <mat-row *matRowDef="let operation; columns: displayedColumnsOperations;" (click)="this.makeOperationForm({ operation })"></mat-row>
+          <mat-row *matRowDef="let operation; columns: displayedColumnsOperations;" (click)="this.makeForm({ operation })"></mat-row>
         </mat-table>
       </div>
     </ng-template>
@@ -222,17 +222,6 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       <form [formGroup]="form!">
         <ng-template matStepLabel>Step 6</ng-template>
         <div>
-<<<<<<< HEAD
-=======
-          <mat-form-field>
-            <mat-label>Type d'intervention</mat-label>
-            <mat-select [(ngModel)]="selectedIntervType" formControlName="typ_intervention">
-              @for (type of intervTypes; track type) {
-                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
->>>>>>> 7337568868062cde118c3387ff91e3a99a1d8860
 
           <mat-form-field>
             <mat-label>Date Debut</mat-label>

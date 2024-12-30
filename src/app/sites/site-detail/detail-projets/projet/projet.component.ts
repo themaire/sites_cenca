@@ -37,6 +37,7 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
+import { ObjectifComponent } from './objectif/objectif.component';
 import { OperationComponent } from './operation/operation.component';
 import { MapComponent } from '../../../../map/map.component';
 
@@ -94,8 +95,8 @@ export const MY_DATE_FORMATS = {
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTableModule,
-    AsyncPipe // Ajouté pour le spinner
-    ,
+    AsyncPipe, // Ajouté pour le spinner
+    ObjectifComponent,
     OperationComponent
 ],
   templateUrl: './projet.component.html',
@@ -114,8 +115,12 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   
   newProjet: boolean = false;
   isEditProjet: boolean = false;
+  //
   isEditOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
   isAddOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
+  //
+  isEditObjectif: boolean = false; // Si on doit cacher le stepper pour voir le composant objectif
+  isAddObjectif: boolean = false; // Si on doit cacher le stepper pour voir le composant objectif
   
   projetForm!: FormGroup;
   isFormValid: boolean = false;
@@ -162,7 +167,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       // console.log("this.projetLite dans le dialog :", this.projetLite);
     }
 
-  async fetchProjet(uuid_proj: String): Promise<Projet> {
+  async fetch(uuid_proj: String): Promise<Projet> {
+    // Récupérer les données d'un projet à partir de son UUID
     const subroute = `projets/uuid=${uuid_proj}/full`; // Full puisque UN SEUL projet
         console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
         const projet = await this.sitesService.getProjet(subroute);
@@ -173,23 +179,15 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
-    // console.log('Initialisation du formulaire principal');
-    let subroute: string = "";
     
     // Récupérer les données d'un projet ou créer un nouveau projet
     if (this.projetLite?.uuid_proj) {
+      // Quand un UUID est passé en paramètre
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
 
-          const projetObject = await this.fetchProjet(this.projetLite.uuid_proj);
-
-          // subroute = `projets/uuid=${this.projetLite.uuid_proj}/full`; // Full puisque UN SEUL projet
-          // console.log("Récupération des données du projet avec l'UUID du projet :" + this.projetLite.uuid_proj);
-          // const projetObject = await this.sitesService.getProjet(subroute);
-          
-          // console.log("-------------------- Données du Projet : ");
-          // console.log(projetObject);
+          const projetObject = await this.fetch(this.projetLite.uuid_proj);
 
           // Accéder données du projet
           if (projetObject.uuid_proj) {
@@ -220,6 +218,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         this.cdr.detectChanges();
       }
     } else {
+      // Projet neuf à créer
       console.log("Nous avons visiblement un projet neuf à créer. Pas de uuid_proj dans this.projetLite.");
       console.log(this.projetLite);
       try {
@@ -341,6 +340,16 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       bool = force;
     }
     this.cdr.detectChanges(); // Forcer la détection des changements
+  }
+
+  handleEditObjectifChange(isEdit: boolean): void {
+    // console.log('État de l\'édition reçu du composant enfant:', isEdit);
+    this.isEditOperation = isEdit;
+  }
+
+  handleAddObjectifChange(isAdd: boolean): void {
+    // console.log('État de l\'ajout reçu du composant enfant:', isAdd);
+    this.isAddOperation = isAdd;
   }
 
   handleEditOperationChange(isEdit: boolean): void {

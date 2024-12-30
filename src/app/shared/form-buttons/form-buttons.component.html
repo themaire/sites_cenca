@@ -7,7 +7,7 @@
 
     <!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d'édition -->
     <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive; else edit">
-        <b>Ajouter une opération ici :</b>
+        <b>Ajouter un nouvel element ici :</b>
         <ng-container *ngTemplateOutlet="add"></ng-container>
     </ng-container>
 </div>

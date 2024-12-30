@@ -5,8 +5,9 @@ import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
 import { Projet } from '../sites/site-detail/detail-projets/projets';
+import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
+import { Objectif } from '../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { SelectValue } from '../shared/interfaces/formValues';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -79,7 +80,7 @@ export class FormService {
     return invalidFields;
   }
   
-  // Créer un nouveau formulaire de projet avec des champs vides
+  // Créer un nouveau formulaire de projet
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
   newProjetForm(projet?: Projet, site?: String): FormGroup {
@@ -111,7 +112,27 @@ export class FormService {
       pro_webapp: [projet?.pro_webapp || true]
     });
   }
-  // Créer un nouveau formulaire d'opération avec des champs vides
+
+  // Créer un nouveau formulaire de projet
+  // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
+  newObjectifForm(objectif?: Objectif, projet?: String): FormGroup {
+    return this.fb.group({
+      uuid_objectif: [objectif?.uuid_objectif || uuidv4()],
+      typ_objectif: [objectif?.typ_objectif || '', Validators.required],
+      enjeux_eco: [objectif?.enjeux_eco || '', Validators.required],
+      nv_enjeux: [objectif?.nv_enjeux || '', Validators.required],
+      obj_ope: [objectif?.obj_ope || ''],
+      attentes: [objectif?.attentes || ''],
+      surf_totale: [objectif?.surf_totale || ''],
+      unite_gestion: [objectif?.unite_gestion || ''],
+      validite: [objectif?.validite || '', Validators.required],
+      projet: [projet || objectif?.projet],
+      surf_prevue: [objectif?.surf_prevue || null],
+    });
+  }
+
+  // Créer un nouveau formulaire d'opération
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     return this.fb.group({
