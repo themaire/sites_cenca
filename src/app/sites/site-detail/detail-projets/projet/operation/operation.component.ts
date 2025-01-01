@@ -44,6 +44,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MapComponent } from '../../../../../map/map.component';
 
 import { Subscription } from 'rxjs';
+import { MatButton } from '@angular/material/button';
 
 
 // Configuration des formats de date
@@ -83,6 +84,7 @@ export const MY_DATE_FORMATS = {
     MatSelectModule,
     MatIconModule,
     MatStepperModule,
+    MatButton,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -431,7 +433,7 @@ export class OperationComponent implements OnInit, OnDestroy {
               
               
               // Afficher le message dans le Snackbar
-              const message = "Opération enregistrée"; // Message par défaut
+              const message = "Opération bien enregistrée"; // Message par défaut
               
               this.snackBar.open(message, 'Fermer', {
                 duration: 3000,

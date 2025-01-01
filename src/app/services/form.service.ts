@@ -122,11 +122,11 @@ export class FormService {
       typ_objectif: [objectif?.typ_objectif || '', Validators.required],
       enjeux_eco: [objectif?.enjeux_eco || '', Validators.required],
       nv_enjeux: [objectif?.nv_enjeux || '', Validators.required],
-      obj_ope: [objectif?.obj_ope || ''],
+      obj_ope: [objectif?.obj_ope || '', Validators.required],
       attentes: [objectif?.attentes || ''],
       surf_totale: [objectif?.surf_totale || ''],
       unite_gestion: [objectif?.unite_gestion || ''],
-      validite: [objectif?.validite || '', Validators.required],
+      validite: [objectif?.validite || true, Validators.required],
       projet: [projet || objectif?.projet],
       surf_prevue: [objectif?.surf_prevue || null],
     });
@@ -137,7 +137,7 @@ export class FormService {
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     return this.fb.group({
 
-      uuid_ope: [operation?.uuid_ope || ''],
+      uuid_ope: [operation?.uuid_ope || uuidv4()],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
       code: [operation?.code || ''],
       titre: [operation?.titre || '', Validators.required],

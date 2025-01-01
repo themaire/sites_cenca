@@ -18,6 +18,7 @@ export class FormButtonsComponent {
   @Input() isFormValid!: boolean;
   @Input() isAddActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
   @Input() isEditActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
+  @Input() nbObjectifs?: number = -1  // Valeur par défaut pour voir si c'est vide
 
 
   @Output() makeObjectifForm = new EventEmitter<{ objectif?: Objectif; empty: boolean }>();

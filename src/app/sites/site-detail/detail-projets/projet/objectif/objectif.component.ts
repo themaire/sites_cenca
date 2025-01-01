@@ -79,10 +79,13 @@ export class ObjectifComponent {
   // Pour la liste des opérations : le tableau Material
   displayedColumns: string[] = ['typ_objectif', 'attentes', 'surf_totale', 'surf_prevue'];
   objectif!: Objectif | void; // Pour les détails d'un objectif
+  nbObjectifs: number = 0; // Pour le nombre d'objectifs
 
   // Listes de choix du formulaire
   NvEnjeux!: SelectValue[];
   selectedNvEnjeux: string = '';
+  typeObjectifOpe!: SelectValue[];
+  selectedtypeObjectifOpe: string = '';
   typeObjectif!: SelectValue[];
   selectedtypeObjectif: string = '';
 
@@ -135,8 +138,19 @@ export class ObjectifComponent {
         console.error('Erreur lors de la récupération de la liste de choix', error);
       }
     );
-    const subrouteActions = `sites/selectvalues=${'opegerer.typ_objectifs'}`;
-    this.formService.getSelectValues$(subrouteActions).subscribe(
+    const subrouteTypeOpe = `sites/selectvalues=${'opegerer.typ_objectifope'}`;
+    this.formService.getSelectValues$(subrouteTypeOpe).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix typ_objectifs récupérée avec succès :');
+        console.log(selectValues);
+        this.typeObjectifOpe = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+    const subrouteType = `sites/selectvalues=${'opegerer.typ_objectifs'}`;
+    this.formService.getSelectValues$(subrouteType).subscribe(
       (selectValues: SelectValue[] | undefined) => {
         console.log('Liste de choix typ_objectifs récupérée avec succès :');
         console.log(selectValues);
@@ -152,12 +166,12 @@ export class ObjectifComponent {
         // Si on a bien une uuid de projet passé en paramètre pour recuperer les opérations lite
         
         setTimeout(async () => {
-          // Accéder à la liste des opérations et remplir le tableau Material des operationLite
+          // Accéder à la liste des opérations et remplir le tableau Material des objectifs
           this.fetch();
         }, this.loadingDelay);// Fin du bloc timeout
         this.isLoading = false;  // Le chargement est terminé
       } else {
-        console.error('Le composant operation n\'a rien a faire au demarrage.');
+        console.error('Le composant objectif n\'a rien a faire au demarrage.');
       }
       
     } catch (error) {
@@ -185,7 +199,7 @@ export class ObjectifComponent {
   // }
   
   ngOnDestroy(): void {
-    console.log('Destruction du composant operation');
+    console.log('Destruction du composant objectif');
     this.unsubForm();
   }
 
@@ -215,11 +229,11 @@ export class ObjectifComponent {
   }
     
   toggleEditObjectif(mode: String): void {
-    console.log("----------!!!!!!!!!!!!--------toggleEditObjectif('" + mode +"') dans le composant operation");
+    console.log("----------!!!!!!!!!!!!--------toggleEditObjectif('" + mode +"') dans le composant objectif");
     if (mode === 'edit') {
       this.isEditObjectif = this.formService.simpleToggle(this.isEditObjectif); // Changer le mode du booleen
       this.formService.toggleFormState(this.form, this.isEditObjectif, this.initialFormValues); // Changer l'état du formulaire
-      this.isEditFromObjectif.emit(this.isEditObjectif); // Envoyer l'état de l'édition de l'operation au parent
+      this.isEditFromObjectif.emit(this.isEditObjectif); // Envoyer l'état de l'édition de l'objectif au parent
       
       console.log("isEditObjectif apres toggleEditObjectif('" + mode +"') :", this.isEditObjectif);
     } else if (mode === 'add') {
@@ -232,7 +246,7 @@ export class ObjectifComponent {
       this.isAddObjectif = this.formService.simpleToggle(this.isAddObjectif); // Changer le mode du booleen
       this.formService.toggleFormState(this.form, this.isAddObjectif, this.initialFormValues); // Changer l'état du formulaire
       
-      this.isAddFromObjectif.emit(this.isAddObjectif); // Envoyer l'état de l'édition de l'operation au parent
+      this.isAddFromObjectif.emit(this.isAddObjectif); // Envoyer l'état de l'édition de l'objectif au parent
       
       console.log("isAddObjectif apres toggleEditObjectif('" + mode +"') :", this.isAddObjectif);
       
@@ -240,8 +254,8 @@ export class ObjectifComponent {
       this.form = this.initialFormValues; // Réinitialiser le formulaire aux valeurs initiales
       this.isEditObjectif = false; // Sortir du mode édition
       this.isAddObjectif = false; // Sortir du mode ajout
-      this.isEditFromObjectif.emit(this.isEditObjectif); // Envoyer l'état de l'édition de l'operation au parent
-      this.isAddFromObjectif.emit(this.isAddObjectif); // Envoyer l'état de l'édition de l'operation au parent
+      this.isEditFromObjectif.emit(this.isEditObjectif); // Envoyer l'état de l'édition de l'objectif au parent
+      this.isAddFromObjectif.emit(this.isAddObjectif); // Envoyer l'état de l'édition de l'objectif au parent
       console.log("On vient de sortir du mode édition / ajout d'opération.");
     }
     this.cdr.detectChanges(); // Forcer la détection des changements
@@ -283,10 +297,11 @@ export class ObjectifComponent {
       // Si on a un uuid de d'objectif passé en paramètre pour recuperer une liste d'objectifs.
       console.log("----------!!!!!!!!!!!!--------fetch() dans le composant objectif");
       const uuid = this.ref_uuid_proj;
-      const subroute = `objectifs/uuid=${uuid}`;
+      const subroute = `objectifs/uuid=${uuid}/lite`;
       this.projetService.getObjectifs(subroute).then(
         (objectifs) => {
           this.objectifs = objectifs;
+          this.nbObjectifs = objectifs.length;
           if (Array.isArray(this.objectifs) && this.objectifs.length > 0) {
             this.dataSource = new MatTableDataSource(this.objectifs);
             this.cdr.detectChanges();
@@ -300,7 +315,7 @@ export class ObjectifComponent {
       );
     } else if (uuid_objectif !== undefined) {
       // Si on un uuid d'objectif passé en paramètre pour en avoir les détails complets
-      console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_objectif + ") dans le composant operation");
+      console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_objectif + ") dans le composant objectif");
       const subroute = `objectifs/uuid=${uuid_objectif}/full`;
       try {
         const objectif = await this.projetService.getObjectif(subroute);
@@ -320,7 +335,7 @@ export class ObjectifComponent {
     // 2. Créer un formulaire avec les données
 
     if (this.projetEditMode){
-      this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir une opérations", 'Fermer', { 
+      this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir un objectif", 'Fermer', { 
         duration: 3000,});
         return;
     } else {
@@ -333,7 +348,7 @@ export class ObjectifComponent {
     if (empty) {
       // Création d'un formulaire vide
       try {
-        this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
+        this.form = this.formService.newObjectifForm(undefined, this.ref_uuid_proj) as FormGroup;
         this.subscribeToForm() // S'abonner aux changements du formulaire créé juste avant
       } catch (error) {
         console.error('Erreur lors de la création du formulaire', error);
@@ -387,7 +402,7 @@ export class ObjectifComponent {
               
               
               // Afficher le message dans le Snackbar
-              const message = "Opération enregistrée"; // Message par défaut
+              const message = "Objectif bien enregistré"; // Message par défaut
               
               this.snackBar.open(message, 'Fermer', {
                 duration: 3000,
@@ -413,7 +428,7 @@ export class ObjectifComponent {
           console.log('Enregistrement de l\'opération en cours suite à demande de validation...');
           
           console.log('Formulaire juste avant le onUpdate :', this.form.value);
-          const updateObservable = this.formService.putBdd('update', 'operations', this.form, this.isEditObjectif, this.snackBar, this.form.value.uuid_ope, this.initialFormValues);
+          const updateObservable = this.formService.putBdd('update', 'objectifs', this.form, this.isEditObjectif, this.snackBar, this.form.value.uuid_objectif, this.initialFormValues);
           // S'abonner à l'observable. onUpdate 
 
           if (updateObservable) {

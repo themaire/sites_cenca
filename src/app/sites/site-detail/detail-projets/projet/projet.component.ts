@@ -111,7 +111,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   projetLite: ProjetLite;
   projet!: Projet;
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
-  loadingDelay: number = 300;
+  loadingDelay: number = 500;
   
   newProjet: boolean = false;
   isEditProjet: boolean = false;

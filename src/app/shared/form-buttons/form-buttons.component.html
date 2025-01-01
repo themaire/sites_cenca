@@ -3,21 +3,40 @@
     <i>isEditActive BOUTON : {{ isEditActive }}.</i><br/>
     <i>isAddActive BOUTON : {{ isAddActive }}.</i><br/>
     <i>icone : {{ icone }}.</i><br/>
-    <i>isFormValid FORMULAIRE : {{ isFormValid }}.</i><br/> -->
+    <i>isFormValid FORMULAIRE : {{ isFormValid }}.</i><br/>
+    nbObjectifs : {{ nbObjectifs }}<br/><br/> -->
 
     <!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d'édition -->
-    <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive; else edit">
+    <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive && nbObjectifs === 0">
         <b>Ajouter un nouvel element ici :</b>
-        <ng-container *ngTemplateOutlet="add"></ng-container>
+        <!-- <ng-container *ngTemplateOutlet="add"></ng-container> -->
+        <ng-container *ngIf="nbObjectifs === 0; then add"></ng-container>
     </ng-container>
+
+    <ng-container *ngIf="nbObjectifs === -1 || isEditActive || isAddActive">
+        <ng-container *ngTemplateOutlet="edit"></ng-container>
+    </ng-container>
+
+
 </div>
+
+<ng-template #add>
+    <button mat-icon-button
+        matTooltip="Ajouter"
+        class="btn-edition"
+        (click)="onToggleAction()">
+        <mat-icon>{{ icone }}</mat-icon>
+    </button>
+</ng-template>
+
+
 
 <ng-template #edit>
     <ng-content *ngIf="isEditActive || isAddActive; then editOn; else editOff"></ng-content>
 </ng-template>
 
 <ng-template #editOn>
-    <!-- Bouton sauvegarder -->
+    <!-- Bouton sauvegarder - Grisé ou non -->
     <ng-container *ngIf="isFormValid; then saveBtnEnabled; else saveBtnDisabled"></ng-container>
     
     <!-- Bouton annuler -->
@@ -32,12 +51,14 @@
 <!-- Bouton pour rentrer en mode add ou edit -->
 <ng-template #editOff>
     <button mat-icon-button
+        matTooltip="Annuler indesirable"
         [matTooltip]="tooltip"
         class="btn-edition"
         (click)="onToggleAction()">
         <mat-icon>{{ icone }}</mat-icon>
     </button>
 </ng-template>
+
 
 <ng-template #saveBtnEnabled>
     <button mat-icon-button
@@ -54,14 +75,5 @@
         class="btn-sauvegarde-disabled"
         disabled>
         <mat-icon>save</mat-icon>
-    </button>
-</ng-template>
-
-<ng-template #add>
-    <button mat-icon-button
-        matTooltip="Ajouter une opération"
-        class="btn-edition"
-        (click)="onToggleAction()">
-        <mat-icon>{{ icone }}</mat-icon>
     </button>
 </ng-template>

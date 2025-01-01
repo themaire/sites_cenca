@@ -4,8 +4,8 @@
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
 <!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
-Variable (operation) isEditObjectif: {{ isEditObjectif }}<br>
-Variable (operation) isAddObjectif: {{ isAddObjectif }}<br> -->
+Variable (objectif) isEditObjectif: {{ isEditObjectif }}<br>
+Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <app-form-buttons
@@ -14,9 +14,10 @@ Variable (operation) isAddObjectif: {{ isAddObjectif }}<br> -->
   [isEditActive]="isEditObjectif" 
   [isAddActive]="isAddObjectif" 
   [isFormValid]="isFormValid" 
+  [nbObjectifs]="nbObjectifs"
   (toggleAction)="toggleEditObjectif($event)"
   (makeObjectifForm)="makeForm($event)"
-  (onSubmit)="onSubmit($event)" 
+  (onSubmit)="onSubmit($event)"
 ></app-form-buttons>
 
 <!-- Permet d'appeller un template -->
@@ -29,11 +30,11 @@ Variable (operation) isAddObjectif: {{ isAddObjectif }}<br> -->
     <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->
 
     Tableau des objectif(s). Depuis le 01/01/2025 : un objectif par projet.
-    <ng-container *ngIf="objectifs !== undefined && objectifs.length > 0; then table else noObjectifs"></ng-container>
+    <ng-container *ngIf="objectifs !== undefined; then table else noObjectifs"></ng-container>
 
     <ng-template #table>
       <div>
-        Nb opérations : {{ objectifs.length }}<br>
+        Nb objectifs : {{ objectifs.length }}<br>
         <mat-table [dataSource]="dataSource" class="mat-elevation-z8" #matTable>
           <ng-container matColumnDef="typ_objectif">
             <mat-header-cell *matHeaderCellDef> Type d'objectif </mat-header-cell>
@@ -84,6 +85,7 @@ Variable (operation) isAddObjectif: {{ isAddObjectif }}<br> -->
             <mat-label>Ref UUID Objectif</mat-label>
             <input matInput formControlName="uuid_objectif" readonly>
           </mat-form-field>
+
           <mat-form-field>
             <mat-label>Type d'objectif</mat-label>
             <mat-select [(ngModel)]="selectedtypeObjectif" formControlName="typ_objectif">
@@ -92,10 +94,16 @@ Variable (operation) isAddObjectif: {{ isAddObjectif }}<br> -->
               }
             </mat-select>
           </mat-form-field>
+
           <mat-form-field>
-            <mat-label>Enjeux écologique</mat-label>
-            <input matInput formControlName="enjeux_eco">
+            <mat-label>Objectif opérationnel</mat-label>
+            <mat-select [(ngModel)]="selectedtypeObjectifOpe" formControlName="obj_ope">
+              @for (type of typeObjectifOpe; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
           </mat-form-field>
+          
           <mat-form-field>
             <mat-label>Niveau d'enjeux</mat-label>
             <mat-select [(ngModel)]="selectedNvEnjeux" formControlName="nv_enjeux">
@@ -105,26 +113,36 @@ Variable (operation) isAddObjectif: {{ isAddObjectif }}<br> -->
             </mat-select>
           </mat-form-field>
         </div>
+
         <div>
           <mat-form-field>
-            <mat-label>Objectif opérationnel</mat-label>
-            <input matInput formControlName="obj_ope">
+            <mat-label>Enjeux écologique</mat-label>
+            <input matInput formControlName="enjeux_eco">
           </mat-form-field>
+
           <mat-form-field>
             <mat-label>Surface totale</mat-label>
             <input matInput formControlName="surf_totale">
           </mat-form-field>
+
           <mat-form-field>
             <mat-label>Unité de gestion</mat-label>
             <input matInput formControlName="unite_gestion">
           </mat-form-field>
+
           <mat-form-field>
             <mat-label>Validité</mat-label>
             <input matInput formControlName="validite">
           </mat-form-field>
+
           <mat-form-field>
             <mat-label>Surface prévue</mat-label>
             <input matInput formControlName="surf_prevue">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Attentes</mat-label>
+            <input matInput formControlName="attentes">
           </mat-form-field>
         </div>
         
