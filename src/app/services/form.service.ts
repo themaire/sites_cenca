@@ -1,9 +1,15 @@
+import { environment } from '../../environments/environment';
+
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
 import { Projet } from '../sites/site-detail/detail-projets/projets';
+import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
+import { Objectif } from '../sites/site-detail/detail-projets/projet/objectif/objectifs';
+import { SelectValue } from '../shared/interfaces/formValues';
+
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -18,15 +24,32 @@ import { v4 as uuidv4 } from 'uuid';
   providedIn: 'root'
 })
 export class FormService {
-    private formValiditySubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private activeUrl: string = environment.apiUrl;
+  private formValiditySubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
+    private http: HttpClient,
     private sitesService: SitesService, 
     private projetService: ProjetService, 
     private fb: FormBuilder, 
     private snackBar: MatSnackBar,
   ) {}
+
+  // Récupérer les valeurs de la liste déroulante
+  getSelectValues$(subroute: string): Observable<SelectValue[] | undefined> {
+    const url = `${this.activeUrl}${subroute}`;
+    return this.http.get<SelectValue[]>(url).pipe(
+      tap(response => {
+        console.log('Valeurs de la liste déroulante récupérées avec succès:', response);
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la récupération des valeurs de la liste déroulante', error);
+        throw error;
+      })
+    );
+  }
   
+  // Fonction pour basculer entre deux états
   simpleToggle(bool: boolean): boolean {
     // Pour ajouter une opération dans le template
     bool = !bool;
@@ -57,8 +80,15 @@ export class FormService {
     }
     return invalidFields;
   }
+
+  public getLibelleFromCd(cd_type: string, list: SelectValue[]): string {
+    const libelle = list.find(type => type.cd_type === cd_type);
+    return libelle ? libelle.libelle : '';
+  }
   
-  // Créer un nouveau formulaire de projet avec des champs vides
+
+  // Créer un nouveau formulaire de projet
+
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
   newProjetForm(projet?: Projet, site?: String): FormGroup {
@@ -80,21 +110,38 @@ export class FormService {
       date_crea: [projet?.date_crea || null],
       pro_debut: [projet?.pro_debut || null],
       pro_fin: [projet?.pro_fin || ''],
-      pro_pression_ciblee: [projet?.pro_pression_ciblee || false],
-      pro_surf_totale: [projet?.pro_surf_totale || false],
-      pro_nv_enjeux: [projet?.pro_nv_enjeux || false],
-      pro_enjeux_eco: [projet?.pro_enjeux_eco || false],
-      pro_obj_ope: [projet?.pro_obj_ope || false],
+      pro_pression_ciblee: [projet?.pro_pression_ciblee || null],
       pro_results_attendus: [projet?.pro_results_attendus || null],
       pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
       pro_webapp: [projet?.pro_webapp || true]
     });
   }
-  // Créer un nouveau formulaire d'opération avec des champs vides
+
+  // Créer un nouveau formulaire de projet
+  // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
+  newObjectifForm(objectif?: Objectif, projet?: String): FormGroup {
+    return this.fb.group({
+      uuid_objectif: [objectif?.uuid_objectif || uuidv4()],
+      typ_objectif: [objectif?.typ_objectif || '', Validators.required],
+      enjeux_eco: [objectif?.enjeux_eco || '', Validators.required],
+      nv_enjeux: [objectif?.nv_enjeux || '', Validators.required],
+      obj_ope: [objectif?.obj_ope || '', Validators.required],
+      attentes: [objectif?.attentes || ''],
+      surf_totale: [objectif?.surf_totale || ''],
+      unite_gestion: [objectif?.unite_gestion || ''],
+      validite: [objectif?.validite || true, Validators.required],
+      projet: [projet || objectif?.projet],
+      surf_prevue: [objectif?.surf_prevue || null],
+    });
+  }
+
+  // Créer un nouveau formulaire d'opération
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     return this.fb.group({
-      uuid_ope: [operation?.uuid_ope || ''],
+
+      uuid_ope: [operation?.uuid_ope || uuidv4()],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
       code: [operation?.code || ''],
       titre: [operation?.titre || '', Validators.required],
@@ -102,6 +149,7 @@ export class FormService {
       rmq_pdg: [operation?.rmq_pdg || ''],
       description: [operation?.description || ''],
       interv_zh: [operation?.interv_zh || ''],
+
       surf: [operation?.surf || null],
       lin: [operation?.lin || null],
       app_fourr: [operation?.app_fourr || null],
@@ -112,14 +160,16 @@ export class FormService {
       charge_inst: [operation?.charge_inst || null],
       remarque: [operation?.remarque || ''],
       validite: [operation?.validite || false],
-      action: [operation?.action || '100'],
+      action: [operation?.action || '', Validators.required],
       objectif: [operation?.objectif || ''],
-      typ_intervention: [operation?.typ_intervention || 'BEN'],
+
+      typ_intervention: [operation?.typ_intervention || 'NR', Validators.required],
       date_debut: [operation?.date_debut || null],
       date_fin: [operation?.date_fin || null],
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null]
+
     });
   }
 
@@ -187,17 +237,14 @@ export class FormService {
     if (form.valid) {
       let value = {};
 
+      // Nettoyer les champs de date pour les projets 
       if (table === 'projets') {
-        // Champs à nettoyer
         const fieldsToClean = [
           'document',
           'pro_debut',
           'pro_fin',
           'pro_pression_ciblee',
-          'pro_typ_objectif',
-          'pro_obj_ope',
           'pro_results_attendus',
-          'pro_surf_totale'
         ];
 
         // Nettoyer les champs de date
@@ -205,14 +252,13 @@ export class FormService {
 
         console.log('Données du formulaire nettoyé :', value);
       } else {
-        console.log('------- DEBUG :');
-        console.log('Données du formulaire form.value :', form.value);
-
+        // Si ce n'est pas un projet
         value = form.value;
       }
 
       console.log('------- DEBUG :');
       console.log('Données du formulaire value tout court :', value);
+      console.log('mode actuel :' + mode + '. Table de travail :', table, '. uuid :', uuid);
 
       
       // Envoi des modifications au serveur

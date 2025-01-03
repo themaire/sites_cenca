@@ -1,0 +1,153 @@
+<!-- Il y a 2 MODES d'affichage de ce composant -->
+<!-- 1 On liste les opérations existantes - grace a l'appel au backend sur les operations lite -->
+<!-- 2 On ajoute ou edite une opération existante -->
+<!-- this.form est généré vide OU this.form est rempli l'opération -->
+
+<!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>
+Variable (objectif) isEditObjectif: {{ isEditObjectif }}<br>
+Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
+
+<!-- Utilisation du template buttons pour ajouter une opération -->
+<app-form-buttons
+  *ngIf="!projetEditMode"
+  icone="add" 
+  [isEditActive]="isEditObjectif" 
+  [isAddActive]="isAddObjectif" 
+  [isFormValid]="isFormValid" 
+  [nbObjectifs]="nbObjectifs"
+  (toggleAction)="toggleEditObjectif($event)"
+  (makeObjectifForm)="makeForm($event)"
+  (onSubmit)="onSubmit($event)"
+></app-form-buttons>
+
+<!-- Permet d'appeller un template -->
+<ng-container *ngIf="!isEditObjectif && !isAddObjectif; then listObjectifs; else addEditObjectif"></ng-container>
+
+<!-- MODE 1 -->
+<ng-template #listObjectifs> 
+
+  <div>
+    <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->
+
+    Tableau des objectif(s). Depuis le 01/01/2025 : <b>un objectif par projet</b>.
+    <ng-container *ngIf="objectifs !== undefined; then table else noObjectifs"></ng-container>
+
+    <ng-template #table>
+      <div>
+        Nb objectifs : {{ objectifs.length }}<br>
+        <mat-table [dataSource]="dataSource" class="mat-elevation-z8" #matTable>
+          <ng-container matColumnDef="typ_objectif">
+            <mat-header-cell *matHeaderCellDef> Type d'objectif </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ getLibelle(element.typ_objectif, typeObjectif) }} </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="attentes">
+            <mat-header-cell *matHeaderCellDef> Attentes </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.attentes }} </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="surf_totale">
+            <mat-header-cell *matHeaderCellDef> Surf. totale </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.surf_totale }} </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="surf_prevue">
+            <mat-header-cell *matHeaderCellDef> Surf. prévue </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.surf_prevue }} </mat-cell>
+          </ng-container>
+          
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <!-- Ouvrir la fenetre de dialogue d'une opération -->
+          <mat-row *matRowDef="let objectif; columns: displayedColumns;" (click)="this.makeForm({ objectif })"></mat-row>
+        </mat-table>
+      </div>
+    </ng-template>
+
+    <ng-template #noObjectifs>
+        Il n'y a pas encore d'objectifs sur ce site.
+    </ng-template>
+
+  </div>
+</ng-template>
+
+<!-- MODE 2 -->
+<ng-template #addEditObjectif>
+
+  <!-- (nom_dans_composant)='mathode à utiliser depuis le composant du bouton' -->
+
+  
+
+      
+      <form [formGroup]="form!">
+        
+        <div>
+          <!-- <mat-form-field>
+            <mat-label>Ref UUID Objectif</mat-label>
+            <input matInput formControlName="uuid_objectif" readonly>
+          </mat-form-field> -->
+
+          <mat-form-field>
+            <mat-label>Type d'objectif</mat-label>
+            <mat-select [(ngModel)]="selectedtypeObjectif" formControlName="typ_objectif">
+              @for (type of typeObjectif; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Objectif opérationnel</mat-label>
+            <mat-select [(ngModel)]="selectedtypeObjectifOpe" formControlName="obj_ope">
+              @for (type of typeObjectifOpe; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          
+          <mat-form-field>
+            <mat-label>Niveau d'enjeux</mat-label>
+            <mat-select [(ngModel)]="selectedNvEnjeux" formControlName="nv_enjeux">
+              @for (type of NvEnjeux; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <mat-label>Enjeux écologique</mat-label>
+            <input matInput formControlName="enjeux_eco">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Surface totale</mat-label>
+            <input matInput formControlName="surf_totale">
+          </mat-form-field>
+          
+                    <mat-form-field>
+                      <mat-label>Surface prévue</mat-label>
+                      <input matInput formControlName="surf_prevue">
+                    </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Unité de gestion</mat-label>
+            <input matInput formControlName="unite_gestion">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Validité</mat-label>
+            <input matInput formControlName="validite">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Attentes</mat-label>
+            <input matInput formControlName="attentes">
+          </mat-form-field>
+        </div>
+        
+        
+        
+      </form>
+
+</ng-template>

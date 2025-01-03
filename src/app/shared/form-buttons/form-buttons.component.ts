@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 
+import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { OperationLite } from '../../sites/site-detail/detail-projets/projet/operation/operations';
 
 @Component({
@@ -17,8 +18,10 @@ export class FormButtonsComponent {
   @Input() isFormValid!: boolean;
   @Input() isAddActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
   @Input() isEditActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
+  @Input() nbObjectifs?: number = -1  // Valeur par défaut pour voir si c'est vide
 
 
+  @Output() makeObjectifForm = new EventEmitter<{ objectif?: Objectif; empty: boolean }>();
   @Output() makeOperationForm = new EventEmitter<{ operation?: OperationLite; empty: boolean }>();
   @Output() toggleAction = new EventEmitter<String>(); // Est en fait onToggleEditMode() dans operation.component.ts
   @Output() onSubmit = new EventEmitter<String>();

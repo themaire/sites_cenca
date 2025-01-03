@@ -8,6 +8,7 @@ import { catchError } from 'rxjs/operators';  
 // prototypes utilisés dans la promise de la fonction
 import { Projet } from './projets';
 import { Operation, OperationLite } from './projet/operation/operations';
+import { Objectif } from './projet/objectif/objectifs';
 import { ApiResponse } from '../../../shared/interfaces/api';
 
 @Injectable({
@@ -55,4 +56,22 @@ export class ProjetService {
   //   const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`;
   //   return this.http.put<ApiResponse>(url, operation);
   // }
+
+  // Utilisé dans objectifs.component.ts
+  async getObjectif(subroute: string): Promise<Objectif> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
+  }
+
+  // Utilisé dans objectifs.component.ts
+  async getObjectifs(subroute: string): Promise<Objectif[]> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
+  }
+
+  // Utilisé dans objectifs.component.ts
+  insertObjectif(objectif: Operation): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=objectifs/insert`;
+    return this.http.put<ApiResponse>(url, objectif);
+  }
 }

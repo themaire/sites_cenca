@@ -15,7 +15,7 @@ import { DetailSite } from '../../site-detail';
 import { Commune } from './commune';
 import { SitesService } from '../../sites.service';
 import { FormService } from '../../../services/form.service';
-import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
+// import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-detail-infos',

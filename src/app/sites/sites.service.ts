@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 
-// prototypes utilisés dans la promise de la fonction
+// interfaces utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
 import { Commune } from './site-detail/detail-infos/commune';
 import { DocPlan } from './site-detail/detail-gestion/docplan';

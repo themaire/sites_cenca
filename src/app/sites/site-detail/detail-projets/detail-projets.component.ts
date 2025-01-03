@@ -60,6 +60,8 @@ export class DetailProjetsComponent {
       // ChatGPT 19/07/2024
       try {
         this.projetsLite = await this.research.getProjets(subroute);
+        console.log('Données de projetsLite :', this.projetsLite);
+        
         this.dataSource = new MatTableDataSource(this.projetsLite);
 
         // console.log('Données de this.Mfus après assignation :', this.actes);
