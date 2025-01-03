@@ -110,6 +110,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   projetLite: ProjetLite;
   projet!: Projet;
+  selectedProjetType: string = '';
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 500;
   
@@ -390,6 +391,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       }
     }else if (this.newProjet){
       console.log("Création d'un nouveau projet dans la BDD. this.newProjet = " + this.newProjet);
+
       const submitObservable = this.formService.putBdd('insert', 'projets', this.projetForm, this.isEditProjet, this.snackBar);
       
       // S'abonner à l'observable
