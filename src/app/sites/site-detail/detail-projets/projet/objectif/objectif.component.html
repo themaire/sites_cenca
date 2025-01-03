@@ -29,7 +29,7 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
   <div>
     <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->
 
-    Tableau des objectif(s). Depuis le 01/01/2025 : un objectif par projet.
+    Tableau des objectif(s). Depuis le 01/01/2025 : <b>un objectif par projet</b>.
     <ng-container *ngIf="objectifs !== undefined; then table else noObjectifs"></ng-container>
 
     <ng-template #table>
@@ -38,7 +38,7 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
         <mat-table [dataSource]="dataSource" class="mat-elevation-z8" #matTable>
           <ng-container matColumnDef="typ_objectif">
             <mat-header-cell *matHeaderCellDef> Type d'objectif </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.typ_objectif }} </mat-cell>
+            <mat-cell *matCellDef="let element"> {{ getLibelle(element.typ_objectif, typeObjectif) }} </mat-cell>
           </ng-container>
           
           <ng-container matColumnDef="attentes">
@@ -81,10 +81,10 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
       <form [formGroup]="form!">
         
         <div>
-          <mat-form-field>
+          <!-- <mat-form-field>
             <mat-label>Ref UUID Objectif</mat-label>
             <input matInput formControlName="uuid_objectif" readonly>
-          </mat-form-field>
+          </mat-form-field> -->
 
           <mat-form-field>
             <mat-label>Type d'objectif</mat-label>
@@ -124,6 +124,11 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
             <mat-label>Surface totale</mat-label>
             <input matInput formControlName="surf_totale">
           </mat-form-field>
+          
+                    <mat-form-field>
+                      <mat-label>Surface prévue</mat-label>
+                      <input matInput formControlName="surf_prevue">
+                    </mat-form-field>
 
           <mat-form-field>
             <mat-label>Unité de gestion</mat-label>
@@ -133,11 +138,6 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
           <mat-form-field>
             <mat-label>Validité</mat-label>
             <input matInput formControlName="validite">
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label>Surface prévue</mat-label>
-            <input matInput formControlName="surf_prevue">
           </mat-form-field>
 
           <mat-form-field>

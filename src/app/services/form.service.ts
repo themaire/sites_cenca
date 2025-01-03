@@ -79,6 +79,11 @@ export class FormService {
     }
     return invalidFields;
   }
+
+  public getLibelleFromCd(cd_type: string, list: SelectValue[]): string {
+    const libelle = list.find(type => type.cd_type === cd_type);
+    return libelle ? libelle.libelle : '';
+  }
   
   // Créer un nouveau formulaire de projet
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
@@ -102,11 +107,7 @@ export class FormService {
       date_crea: [projet?.date_crea || null],
       pro_debut: [projet?.pro_debut || null],
       pro_fin: [projet?.pro_fin || ''],
-      pro_pression_ciblee: [projet?.pro_pression_ciblee || false],
-      pro_surf_totale: [projet?.pro_surf_totale || false],
-      pro_nv_enjeux: [projet?.pro_nv_enjeux || false],
-      pro_enjeux_eco: [projet?.pro_enjeux_eco || false],
-      pro_obj_ope: [projet?.pro_obj_ope || false],
+      pro_pression_ciblee: [projet?.pro_pression_ciblee || null],
       pro_results_attendus: [projet?.pro_results_attendus || null],
       pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
       pro_webapp: [projet?.pro_webapp || true]
@@ -233,17 +234,14 @@ export class FormService {
     if (form.valid) {
       let value = {};
 
+      // Nettoyer les champs de date pour les projets 
       if (table === 'projets') {
-        // Champs à nettoyer
         const fieldsToClean = [
           'document',
           'pro_debut',
           'pro_fin',
           'pro_pression_ciblee',
-          'pro_typ_objectif',
-          'pro_obj_ope',
           'pro_results_attendus',
-          'pro_surf_totale'
         ];
 
         // Nettoyer les champs de date
@@ -251,14 +249,13 @@ export class FormService {
 
         console.log('Données du formulaire nettoyé :', value);
       } else {
-        console.log('------- DEBUG :');
-        console.log('Données du formulaire form.value :', form.value);
-
+        // Si ce n'est pas un projet
         value = form.value;
       }
 
       console.log('------- DEBUG :');
       console.log('Données du formulaire value tout court :', value);
+      console.log('mode actuel :' + mode + '. Table de travail :', table, '. uuid :', uuid);
 
       
       // Envoi des modifications au serveur

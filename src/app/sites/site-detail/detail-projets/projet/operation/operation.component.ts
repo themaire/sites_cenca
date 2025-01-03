@@ -376,6 +376,8 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Création d'un formulaire vide
       try {
         this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
+        this.selectedIntervType = '';
+        this.selectedActionType = '';
         this.subscribeToForm() // S'abonner aux changements du formulaire créé juste avant
       } catch (error) {
         console.error('Erreur lors de la création du formulaire', error);
@@ -391,7 +393,14 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log(operation);
       try {
         // Transformation d'une OperationLite en Operation
-        this.operation = await this.fetch(operation.uuid_ope) // Récupérer les détails de l'opération dans this.operation
+        await this.fetch(operation.uuid_ope).then((operation) => {
+          if (operation) {
+            this.operation = operation;
+            this.selectedIntervType = operation.typ_intervention || '';
+            this.selectedActionType = operation.action || '';
+          }
+        });
+
         console.log("this.operation après fetch(operation.uuid_ope) :");
         console.log(this.operation);
 
@@ -412,7 +421,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       } else {
         console.error('Paramètres operation et empty non definis.');
         return;
-      }
+    }
   }
   
   onSubmit(mode?: String): void {

@@ -1,3 +1,4 @@
+// Sont en fait des champs de la vue ope.synthesesites
 export interface ProjetLite {
     uuid_proj: string;
     responsable?: string;
@@ -51,10 +52,6 @@ export interface Projet {
     pro_webapp?: boolean
     pro_results_attendus?: number;
     pro_maitre_ouvrage?: number;
-    pro_surf_totale?: number;
-    pro_nv_enjeux?: string;
-    pro_enjeux_eco?: string;
-    pro_obj_ope?: string;
     ref_loc_id?: number;
     geom?: string;
 }

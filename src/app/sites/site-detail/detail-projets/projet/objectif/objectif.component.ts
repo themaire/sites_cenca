@@ -25,13 +25,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
-import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
-import 'moment/locale/fr';
 
-import { AsyncPipe } from '@angular/common';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { BreakpointObserver } from '@angular/cdk/layout';
+// import { AsyncPipe } from '@angular/common';
+// import { map } from 'rxjs/operators';
+// import { Observable } from 'rxjs';
+// import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { Subscription } from 'rxjs';
 
@@ -52,8 +50,8 @@ import { Subscription } from 'rxjs';
         MatNativeDateModule,
         MatProgressSpinnerModule,
         MatTableModule,
-        MatSlideToggleModule,
-        AsyncPipe  // Ajouté pour le spinner
+        MatSlideToggleModule
+        // ,AsyncPipe  // Ajouté pour le spinner
   ],
   templateUrl: './objectif.component.html',
   styleUrl: './objectif.component.scss'
@@ -203,6 +201,11 @@ export class ObjectifComponent {
     this.unsubForm();
   }
 
+  getLibelle(cd_type: string, list: SelectValue[]): string {
+    const libelle = this.formService.getLibelleFromCd(cd_type, list);
+    return libelle;
+  }
+
   // Désabonnement lors de la destruction du composant
   unsubForm(): void {
     if (this.formObjSubscription) {
@@ -349,6 +352,9 @@ export class ObjectifComponent {
       // Création d'un formulaire vide
       try {
         this.form = this.formService.newObjectifForm(undefined, this.ref_uuid_proj) as FormGroup;
+        this.selectedNvEnjeux = '';
+        this.selectedtypeObjectifOpe = '';
+        this.selectedtypeObjectif = '';
         this.subscribeToForm() // S'abonner aux changements du formulaire créé juste avant
       } catch (error) {
         console.error('Erreur lors de la création du formulaire', error);
@@ -367,6 +373,9 @@ export class ObjectifComponent {
         // Création du formulaire avec les données de l'opération
         if (this.objectif !== undefined) {
           this.form = this.formService.newObjectifForm(this.objectif); // Remplir this.form avec notre this.objectif
+          this.selectedtypeObjectif = this.objectif.typ_objectif || '';
+          this.selectedtypeObjectifOpe = this.objectif.obj_ope || '';
+          this.selectedNvEnjeux = this.objectif.nv_enjeux || '';
           this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
           this.initialFormValues = this.form.value; // Stocker les valeurs initiales du formulaire
         }

@@ -13,7 +13,6 @@ import { DetailGestionComponent } from '../../detail-gestion/detail-gestion.comp
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 
 import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -25,6 +24,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
@@ -41,7 +41,7 @@ import { ObjectifComponent } from './objectif/objectif.component';
 import { OperationComponent } from './operation/operation.component';
 import { MapComponent } from '../../../../map/map.component';
 
-import { Projection } from 'leaflet';
+// import { Projection } from 'leaflet';
 // NE PAS oublier de décommenter la
 import { Subscription } from 'rxjs';
 
@@ -80,6 +80,7 @@ export const MY_DATE_FORMATS = {
     DetailGestionComponent,
     CommonModule,
     MapComponent,
+    MatSlideToggleModule,
     MatDialogModule,
     MatDialogTitle,
     MatDialogContent,
@@ -94,13 +95,12 @@ export const MY_DATE_FORMATS = {
     MatNativeDateModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatTableModule,
     AsyncPipe, // Ajouté pour le spinner
     ObjectifComponent,
     OperationComponent
 ],
   templateUrl: './projet.component.html',
-  styleUrls: ['./projet.component.scss'], // Correct 'styleUrl' to 'styleUrls'
+  styleUrls: ['./projet.component.scss', '../../detail-infos/detail-infos.component.scss'], // Correct 'styleUrl' to 'styleUrls'
 })
 export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnInit to use the lifecycle method
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
@@ -130,8 +130,6 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   // Listes de choix du formulaire
   projectTypes!: SelectValue[];
   selectedProjetType: string = '';
-  projectEnjeux!: SelectValue[];
-  selectedEnjeuxType: string = '';
   
   // projectTypes: SelectValue[] = [
   //   {value: 'TRV', viewValue: 'Travaux'},
@@ -188,6 +186,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         setTimeout(async () => {
 
           const projetObject = await this.fetch(this.projetLite.uuid_proj);
+
+          // Initialiser les valeurs du formulaire principal
+          // this.selectedEnjeuxType = projetObject.pro_nv_enjeux || '';
+
 
           // Accéder données du projet
           if (projetObject.uuid_proj) {
@@ -265,19 +267,6 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         console.error('Erreur lors de la récupération de la liste de choix', error);
       }
     );
-    const subrouteEnjeux = `sites/selectvalues=${'opegerer.typ_enjeux'}`;
-    this.formService.getSelectValues$(subrouteEnjeux).subscribe(
-      (selectValues: SelectValue[] | undefined) => {
-        console.log('Liste de choix enjeux récupérées avec succès :');
-        
-        this.projectEnjeux = selectValues || [];
-        console.log("this.projectTypes : ");
-        console.log(this.projectEnjeux);
-      },
-      (error) => {
-        console.error('Erreur lors de la récupération de la liste de choix', error);
-      }
-    );
   }
 
   ngOnDestroy(): void {
@@ -288,15 +277,11 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     console.log('Destruction du composant, on se désabonne.');
   }
 
-  getLibelleForType(cd_type: string): string {
-    const projectType = this.projectTypes.find(type => type.cd_type === cd_type);
-    return projectType ? projectType.libelle : '';
+  getLibelle(cd_type: string, list: SelectValue[]): string {
+    const libelle = this.formService.getLibelleFromCd(cd_type, list);
+    return libelle;
   }
 
-  getLibelleForEnjeux(cd_type: string): string {
-    const projectEnjeux = this.projectEnjeux.find(type => type.cd_type === cd_type);
-    return projectEnjeux ? projectEnjeux.libelle : '';
-  }
 
   // onSelect(operation: Operation): void {
   //   // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
@@ -327,20 +312,20 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     this.cdr.detectChanges(); // Forcer la détection des changements
   }
 
-  toggleEdit(bool: boolean, force: boolean = false): void {
-    // Pour ajouter une opération dans le template
+  // toggleEdit(bool: boolean, force: boolean = false): void {
+  //   // Pour ajouter un projet dans le template
 
-    // Logique de basculement du booleen 
-    // Trop simple pour l'instant je garde au cas où
-    if (!force) { // Si on force pas le changement
-      // Inverser la valeur du booléen
-      bool = this.formService.simpleToggle(bool);
-    } else {
-      // Sinon, forcer le changement de la valeur du booléen
-      bool = force;
-    }
-    this.cdr.detectChanges(); // Forcer la détection des changements
-  }
+  //   // Logique de basculement du booleen 
+  //   // Trop simple pour l'instant je garde au cas où
+  //   if (!force) { // Si on force pas le changement
+  //     // Inverser la valeur du booléen
+  //     bool = this.formService.simpleToggle(bool);
+  //   } else {
+  //     // Sinon, forcer le changement de la valeur du booléen
+  //     bool = force;
+  //   }
+  //   this.cdr.detectChanges(); // Forcer la détection des changements
+  // }
 
   handleEditObjectifChange(isEdit: boolean): void {
     // console.log('État de l\'édition reçu du composant enfant:', isEdit);
@@ -380,8 +365,15 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // Mettre à jour le formulaire
 
     if(!this.newProjet){
-      // Si modification d'un projet existant
-      const submitObservable = this.formService.putBdd('update', 'projets', this.projetForm, this.isEditProjet, this.snackBar, this.projetLite.uuid_proj, this.initialFormValues);
+      console.log("Modification d'un projet existant. this.newProjet = " + this.newProjet);
+      
+      let uuid_proj: string = '';
+      if (this.projetLite.uuid_proj !== undefined) {
+        uuid_proj = this.projetLite.uuid_proj;
+      }else if (this.projetForm.get(uuid_proj) !== undefined) {
+        uuid_proj = this.projet.uuid_proj;
+      }
+      const submitObservable = this.formService.putBdd('update', 'projets', this.projetForm, this.isEditProjet, this.snackBar, uuid_proj, this.initialFormValues);
 
       // S'abonner à l'observable
       if (submitObservable) {
@@ -397,7 +389,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         );
       }
     }else if (this.newProjet){
-      // Si création d'un nouveau projet
+      console.log("Création d'un nouveau projet dans la BDD. this.newProjet = " + this.newProjet);
       const submitObservable = this.formService.putBdd('insert', 'projets', this.projetForm, this.isEditProjet, this.snackBar);
       
       // S'abonner à l'observable
