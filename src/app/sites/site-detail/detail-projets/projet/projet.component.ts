@@ -110,7 +110,6 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   projetLite: ProjetLite;
   projet!: Projet;
-  selectedProjetType: string = '';
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 500;
   
@@ -174,6 +173,14 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         if (projet.typ_projet) this.selectedProjetType = projet.typ_projet;
         
         return projet;
+  }
+
+  get step1Form(): FormGroup {
+  return this.projetForm.get('step1') as FormGroup;
+  }
+
+  get step2Form(): FormGroup {
+  return this.projetForm.get('step2') as FormGroup;
   }
 
   async ngOnInit() {
@@ -374,6 +381,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       }else if (this.projetForm.get(uuid_proj) !== undefined) {
         uuid_proj = this.projet.uuid_proj;
       }
+
       const submitObservable = this.formService.putBdd('update', 'projets', this.projetForm, this.isEditProjet, this.snackBar, uuid_proj, this.initialFormValues);
 
       // S'abonner à l'observable

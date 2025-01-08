@@ -95,25 +95,36 @@ export class FormService {
     return this.fb.group({
       uuid_proj: [projet?.uuid_proj || uuidv4()],
       site: [site || projet?.site],
-      code: [projet?.code || ''],
-      itin_tech: [projet?.itin_tech || ''],
-      validite: [projet?.validite || '', Validators.required],
+      
+      pro_webapp: [projet?.pro_webapp || true],
+      
+      // Peut etre pas nécessaire
       document: [projet?.document || ''],
-      programme: [projet?.programme || ''],
-      nom: [projet?.nom || ''],
-      perspectives: [projet?.perspectives || ''],
-      annee: [projet?.annee || null],
-      statut: [projet?.statut || null],
-      responsable: [projet?.responsable || null],
-      typ_projet: [projet?.typ_projet || null, Validators.required],
       createur: [projet?.createur || null],
-      date_crea: [projet?.date_crea || null],
-      pro_debut: [projet?.pro_debut || null],
-      pro_fin: [projet?.pro_fin || ''],
-      pro_pression_ciblee: [projet?.pro_pression_ciblee || null],
-      pro_results_attendus: [projet?.pro_results_attendus || null],
-      pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
-      pro_webapp: [projet?.pro_webapp || true]
+      
+      step1: this.fb.group({
+        typ_projet: [projet?.typ_projet || null, Validators.required],
+        statut: [projet?.statut || null],
+        validite: [projet?.validite || '', Validators.required],
+        
+        annee: [projet?.annee || null],
+        pro_debut: [projet?.pro_debut || null],
+        pro_fin: [projet?.pro_fin || ''],
+        date_crea: [projet?.date_crea || null],
+        
+        nom: [projet?.nom || ''],
+        code: [projet?.code || ''],
+        responsable: [projet?.responsable || null],
+        pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
+        perspectives: [projet?.perspectives || ''],
+
+        programme: [projet?.programme || ''],
+        itin_tech: [projet?.itin_tech || ''],
+      }),
+      step2: this.fb.group({
+        pro_pression_ciblee: [projet?.pro_pression_ciblee || null],
+        pro_results_attendus: [projet?.pro_results_attendus || null],
+      }),
     });
   }
 
@@ -169,33 +180,23 @@ export class FormService {
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null]
-
+      
     });
   }
-
+  
   getFormValidityObservable(): Observable<boolean> {
     return this.formValiditySubject.asObservable();
   }
-
+  
   setFormValidity(isValid: boolean): void {
     this.formValiditySubject.next(isValid);
   }
-
+  
   isFormChanged(form: FormGroup, initialFormValue: FormGroup): boolean {
     // Vérifie si le formulaire a été modifié
     return JSON.stringify(form.value) !== JSON.stringify(initialFormValue);
   }
-
-  cleanFormValues(formValue: any, fields: string[]): any {
-    const cleanedFormValue = { ...formValue };
-    fields.forEach(field => {
-      if (!cleanedFormValue[field]) {
-        cleanedFormValue[field] = null; // ou une valeur par défaut
-      }
-    });
-    return cleanedFormValue;
-  }
-
+  
   snackMessage(message: string, code: number, snackbar: MatSnackBar): void {
     // Afficher le message dans le Snackbar
     if (Number(code) === 0) {
@@ -209,6 +210,62 @@ export class FormService {
         panelClass: ['snackbar-error']
       });
     }
+  }
+  
+  cleanFormValues(formValue: any, fields: string[]): any {
+    // Sert a transformer les champs vides (undiefined) en null
+    const cleanedFormValue = { ...formValue };
+    fields.forEach(field => {
+      if (!cleanedFormValue[field]) {
+        cleanedFormValue[field] = null; // ou une valeur par défaut
+      }
+    });
+    return cleanedFormValue;
+  }
+  private prepareProjetDataForSubmission(form: FormGroup): Projet {
+    const fieldsToClean = [
+      'document',
+      'pro_debut',
+      'pro_fin',
+      'pro_pression_ciblee',
+      'pro_results_attendus',
+    ];
+    const formValue = this.cleanFormValues(form.value, fieldsToClean);
+    const dataToSubmit: Projet = {
+      uuid_proj: formValue.uuid_proj,
+      site: formValue.site,
+      pro_webapp: formValue.pro_webapp,
+      document: formValue.document,
+      createur: formValue.createur,
+
+      // Step 1
+      typ_projet: formValue.step1.typ_projet,
+      statut: formValue.step1.statut,
+      validite: formValue.step1.validite,
+
+      annee: formValue.step1.annee,
+      pro_debut: formValue.step1.pro_debut,
+      pro_fin: formValue.step1.pro_fin,
+      date_crea: formValue.step1.date_crea,
+
+      nom: formValue.step1.nom,
+      code: formValue.step1.code,
+      responsable: formValue.step1.responsable,
+      pro_maitre_ouvrage: formValue.step1.pro_maitre_ouvrage,
+      perspectives: formValue.step1.pro_pression_ciblee,
+
+      programme: formValue.step1.programme,
+      itin_tech: formValue.step1.itin_tech,
+
+      // Step 2
+      pro_pression_ciblee: formValue.step2.pro_pression_ciblee,
+      pro_results_attendus: formValue.step2.pro_results_attendus,
+    };
+
+    console.log("Données du formulaire PROJET nettoyé juste avant d'etre envoyé vers le backend pour INSERT /UPDATE :");
+    console.log(dataToSubmit);
+
+    return dataToSubmit;
   }
 
   putBdd(mode: String, table: String, form: FormGroup, isEditMode: boolean, snackbar: MatSnackBar, uuid?: String, initialFormValues?: any): Observable<{ isEditMode: boolean, formValue: any }> | undefined {
@@ -248,7 +305,8 @@ export class FormService {
         ];
 
         // Nettoyer les champs de date
-        value = this.cleanFormValues(form.value, fieldsToClean);
+        // value = this.cleanFormValues(form.value, fieldsToClean); // En test --- à supprimer
+        value = this.prepareProjetDataForSubmission(form);
 
         console.log('Données du formulaire nettoyé :', value);
       } else {
