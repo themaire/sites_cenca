@@ -74,4 +74,23 @@ export class ProjetService {
     const url = `${this.activeUrl}put/table=objectifs/insert`;
     return this.http.put<ApiResponse>(url, objectif);
   }
+
+  // Envoyer le fichier shapefile et le type de géométrie
+  // Utilisé dans objectifs.component.ts
+  uploadShapefile(formData: FormData): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/ope_shapefile`;
+
+    // Log du contenu du FormData avant envoi
+    console.log('Contenu du FormData avant envoi depuis projetSerice.uploadShapefile():');
+    for (let pair of (formData as any).entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    return this.http.post<ApiResponse>(url, formData).pipe(
+      catchError(error => {
+        console.error('Error uploading shapefile:', error);
+        return of({ success: false, message: 'Error uploading shapefile' } as ApiResponse);
+      })
+    );
+  }
 }

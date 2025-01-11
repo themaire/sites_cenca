@@ -183,6 +183,14 @@ export class FormService {
       
     });
   }
+
+  newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {
+    return this.fb.group({
+      uuid_ope: [uuid_ope || null, Validators.required],
+      type_geometry: [type_geometry || null, Validators.required],
+      shapefile: [null, Validators.required]
+    });
+  }
   
   getFormValidityObservable(): Observable<boolean> {
     return this.formValiditySubject.asObservable();
