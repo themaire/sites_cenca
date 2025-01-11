@@ -10,6 +10,7 @@ import { Projet } from './projets';
 import { Operation, OperationLite } from './projet/operation/operations';
 import { Objectif } from './projet/objectif/objectifs';
 import { ApiResponse } from '../../../shared/interfaces/api';
+import { Localisation } from '../../../shared/interfaces/localisation';
 
 @Injectable({
   providedIn: 'root'
@@ -45,22 +46,22 @@ export class ProjetService {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
-
+  
   // Utilisé dans operation.component.ts
   insertOperation(operation: Operation): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=operations/insert`;
     return this.http.put<ApiResponse>(url, operation);
   }
-
+  
   // updateOperation(operation: Operation): Observable<ApiResponse> {
-  //   const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`;
-  //   return this.http.put<ApiResponse>(url, operation);
-  // }
-
-  // Utilisé dans objectifs.component.ts
-  async getObjectif(subroute: string): Promise<Objectif> {
-    const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
+    //   const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`;
+    //   return this.http.put<ApiResponse>(url, operation);
+    // }
+    
+    // Utilisé dans objectifs.component.ts
+    async getObjectif(subroute: string): Promise<Objectif> {
+      const data = await fetch(this.activeUrl + subroute);
+      return await data.json() ?? [];
   }
 
   // Utilisé dans objectifs.component.ts
@@ -68,29 +69,35 @@ export class ProjetService {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
-
+  
   // Utilisé dans objectifs.component.ts
   insertObjectif(objectif: Operation): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=objectifs/insert`;
     return this.http.put<ApiResponse>(url, objectif);
   }
-
+  
   // Envoyer le fichier shapefile et le type de géométrie
   // Utilisé dans objectifs.component.ts
   uploadShapefile(formData: FormData): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/ope_shapefile`;
-
+    
     // Log du contenu du FormData avant envoi
     console.log('Contenu du FormData avant envoi depuis projetSerice.uploadShapefile():');
     for (let pair of (formData as any).entries()) {
       console.log(pair[0] + ': ' + pair[1]);
     }
-
+    
     return this.http.post<ApiResponse>(url, formData).pipe(
       catchError(error => {
         console.error('Error uploading shapefile:', error);
         return of({ success: false, message: 'Error uploading shapefile' } as ApiResponse);
       })
     );
+  }
+  
+  // Utilisé dans operation.component.ts
+  async getLocalisations(subroute: string): Promise<Localisation[]> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
   }
 }

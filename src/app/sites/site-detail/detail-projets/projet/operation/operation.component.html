@@ -269,6 +269,15 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br>
 
     <mat-step [stepControl]="form!">
       <ng-template matStepLabel>Step 7</ng-template>
+
+      <div *ngIf="localisations !== undefined">
+        <div>
+          <app-map [geojson]="localisations[0].geojson"></app-map>
+        </div>
+      </div>
+      <div *ngIf="localisations === undefined">
+        Il n'y a pas encore de localisation enregistré pour cette opération. 
+      </div>
       
       <div *ngIf="isAddOperation">
         Vous devez terminer cette saisir pour ajouter une emprise de travaux.

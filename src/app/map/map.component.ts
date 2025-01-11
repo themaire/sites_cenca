@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Input } from '@angular/core';
+import { Component, AfterViewInit, Input, ElementRef } from '@angular/core';
 import * as L from 'leaflet'; // Import de Leaflet
 import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de GeoJsonObject et Feature
 
@@ -12,14 +12,23 @@ import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de Geo
 export class MapComponent implements AfterViewInit {
   @Input() geojson?: string;
 
-  constructor() {}
+  constructor(private elementRef: ElementRef) {}
 
   // Méthode appelée après que le composant a été initialisé
   ngAfterViewInit(): void {
-    this.initMap();
+    setTimeout(() => {
+      this.initMap();
+    });
   }
 
   private initMap(): void {
+    // Récupération de l'élément HTML contenant la carte
+    const container = this.elementRef.nativeElement.querySelector('#map');
+    if (!container) {
+      console.error('Container #map not found');
+      return;
+    }
+
     // Initialisation de la carte
     const map = L.map('map');
 

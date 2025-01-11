@@ -15,6 +15,7 @@ import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
+import { Localisation } from '../../../../../shared/interfaces/localisation';
 
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
@@ -45,7 +46,6 @@ import { MapComponent } from '../../../../../map/map.component';
 
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
-
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -143,7 +143,8 @@ export class OperationComponent implements OnInit, OnDestroy {
   private formOpeSubscription: Subscription | null = null;
 
   stepperOrientation: Observable<StepperOrientation>;
-  shapefileId: any;
+  shapefileId: any; // Pour le formulaire de shapefile
+  localisations?: Localisation[]; // Pour le formulaire de shapefile
   
   constructor(
     private cdr: ChangeDetectorRef,
@@ -347,12 +348,18 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
+      const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
       try {
         const operation = await this.projetService.getOperation(subroute);
         console.log('Opération avant le return de fetch() :', operation);
 
         // Pré remplir le sous formulaire d'envoi du shapefile
         this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
+
+        this.localisations = await this.projetService.getLocalisations(subrouteLocalisation);
+        // Attention il s'agit d'une liste de localisations !
+        console.log('Localisation de l\'opération :');
+        console.log(this.localisations);
         
         return operation;
       } catch (error) {
