@@ -6,6 +6,7 @@
     -- Variable isAddOperation : {{ isAddOperation }}<br>
     -- Variable isEditProjet : {{ isEditProjet }}<br>
     -- Variable isEditProjet : {{ isEditProjet }}<br> -->
+
     -- Variable newProjet : {{ newProjet }}<br>
 
 
@@ -43,7 +44,9 @@
 
 
         <!-- state="info" est l'icone a utiliser pour le step -->
+
         <mat-step [stepControl]="step1Form">
+
           <ng-template matStepLabel>Description</ng-template>
           <!-- Affichage en mode consultation (editMode == false) -->
           <ng-container *ngIf="!isEditProjet">
@@ -62,7 +65,9 @@
                 class="toggle"
                 [checked]="projetForm.get('validite')?.value || false"
                 [disabled]="true">
+
                 Validité*
+
               </mat-slide-toggle>
             </div>
 
@@ -116,6 +121,7 @@
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Itinéraire technique</mat-label>
                 <input matInput [value]="projetForm.get('itin_tech')?.value || 'Non renseigné'" readonly>
+
               </mat-form-field>
             </div>
           </ng-container>
@@ -136,6 +142,7 @@
                   </mat-form-field>
                   <mat-slide-toggle formControlName="statut">Statut</mat-slide-toggle>
                   <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
+
                 </div>
                 
                 <div>
@@ -175,6 +182,7 @@
                     <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>
                   </mat-form-field>
                   <mat-form-field>
+
                     <mat-label>Perspectives</mat-label>
                     <textarea matInput formControlName="perspectives" ></textarea>
                   </mat-form-field>
@@ -184,6 +192,7 @@
           </ng-container>
           <button mat-button matStepperNext>SUIVANT</button>
         </mat-step>
+
 
         
         

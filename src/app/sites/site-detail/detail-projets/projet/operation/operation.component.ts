@@ -136,7 +136,9 @@ export class OperationComponent implements OnInit, OnDestroy {
   
   // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
   form: FormGroup;
+
   shapeForm?: FormGroup;
+
   @Input() ref_uuid_proj!: String; // ID du projet parent 
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   isFormValid: boolean = false;
@@ -360,7 +362,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Attention il s'agit d'une liste de localisations !
         console.log('Localisation de l\'opération :');
         console.log(this.localisations);
-        
+
         return operation;
       } catch (error) {
         console.error("Erreur lors de la récupération de l'opération : ", error);

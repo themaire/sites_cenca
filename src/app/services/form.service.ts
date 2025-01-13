@@ -101,7 +101,7 @@ export class FormService {
       // Peut etre pas nécessaire
       document: [projet?.document || ''],
       createur: [projet?.createur || null],
-      
+
       step1: this.fb.group({
         typ_projet: [projet?.typ_projet || null, Validators.required],
         statut: [projet?.statut || null],
@@ -147,6 +147,7 @@ export class FormService {
     });
   }
 
+
   // Créer un nouveau formulaire d'opération
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
@@ -180,7 +181,6 @@ export class FormService {
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null]
-      
     });
   }
 

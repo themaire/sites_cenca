@@ -183,6 +183,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   return this.projetForm.get('step2') as FormGroup;
   }
 
+
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     

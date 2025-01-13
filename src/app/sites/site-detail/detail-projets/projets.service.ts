@@ -69,7 +69,7 @@ export class ProjetService {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
-  
+
   // Utilisé dans objectifs.component.ts
   insertObjectif(objectif: Operation): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=objectifs/insert`;
