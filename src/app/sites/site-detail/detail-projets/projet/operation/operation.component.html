@@ -133,7 +133,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
         <div>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </form>
     </mat-step>
@@ -160,8 +160,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </form>
     </mat-step>
@@ -188,8 +188,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </form>
     </mat-step>
@@ -216,15 +216,15 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </form>
     </mat-step>
 
     <mat-step [stepControl]="form!">
       <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 6</ng-template>
+        <ng-template matStepLabel>Step 5</ng-template>
         <div>
 
           <mat-form-field>
@@ -241,15 +241,15 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </form>
     </mat-step>
 
     <mat-step [stepControl]="form!">
       <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 7</ng-template>
+        <ng-template matStepLabel>Step 6</ng-template>
         <div>
           <mat-form-field>
             <mat-label>Ben Participants</mat-label>
@@ -261,10 +261,50 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="onSubmit('edit')">Submit</button>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
         </div>
       </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form!">
+      <ng-template matStepLabel>Step 7</ng-template>
+
+      <div *ngIf="localisations !== undefined">
+        <div>
+          <app-map [geojson]="localisations[0].geojson"></app-map>
+        </div>
+      </div>
+      <div *ngIf="localisations === undefined">
+        Il n'y a pas encore de localisation enregistré pour cette opération. 
+      </div>
+      
+      <div *ngIf="isAddOperation">
+        Vous devez terminer cette saisir pour ajouter une emprise de travaux.
+      </div>
+      <div *ngIf="isEditOperation">
+        <button mat-button (click)="downloadShapefileExample()">Télécharger le modèle de fichier shapefile si necessaire</button>
+        <form [formGroup]="shapeForm!">
+          <div class="file-upload-container">
+            <label for="shapefile">Fichier Shapefile (ZIP)</label>
+            <input type="file" 
+                   id="shapefile"
+                   (change)="onFileSelected($event)" 
+                   accept=".zip"
+                   #fileInput>
+          </div>
+          <input type="hidden" formControlName="type_geometry">
+          <input type="hidden" formControlName="uuid_ope">
+          <button mat-button 
+                  (click)="handleShapefileSubmission()"
+                  [disabled]="!shapeForm?.get('shapefile')?.value">
+                  <!-- Désactivé si le champ shapefile du formulaire est vide -->
+            Envoyer l'emprise
+          </button>
+        </form>
+      </div>
+
+      <button mat-button matStepperPrevious>Retour</button>
     </mat-step>
   </mat-horizontal-stepper>
 </ng-template>

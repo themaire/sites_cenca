@@ -5,6 +5,8 @@
     <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
     -- Variable isAddOperation : {{ isAddOperation }}<br>
     -- Variable isEditProjet : {{ isEditProjet }}<br>
+    -- Variable isEditProjet : {{ isEditProjet }}<br> -->
+
     -- Variable newProjet : {{ newProjet }}<br>
 
 
@@ -34,7 +36,7 @@
       ></app-form-buttons>
 
       <mat-stepper labelPosition="bottom" 
-                    [linear]="false"  
+                    [linear]="newProjet"  
                     #stepper 
                     [animationDuration]="duration.value" 
                     class="margin-stepper"
@@ -42,7 +44,9 @@
 
 
         <!-- state="info" est l'icone a utiliser pour le step -->
-        <mat-step state="info">
+
+        <mat-step [stepControl]="step1Form">
+
           <ng-template matStepLabel>Description</ng-template>
           <!-- Affichage en mode consultation (editMode == false) -->
           <ng-container *ngIf="!isEditProjet">
@@ -61,7 +65,9 @@
                 class="toggle"
                 [checked]="projetForm.get('validite')?.value || false"
                 [disabled]="true">
-                Validité
+
+                Validité*
+
               </mat-slide-toggle>
             </div>
 
@@ -106,11 +112,23 @@
                 <input matInput [value]="projetForm.get('perspectives')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
             </div>
+
+            <div>
+              <mat-form-field class="custom-mat-form-field">
+                <mat-label>Programme</mat-label>
+                <input matInput [value]="projetForm.get('programme')?.value || 'Non renseignée'" readonly>
+              </mat-form-field>
+              <mat-form-field class="custom-mat-form-field">
+                <mat-label>Itinéraire technique</mat-label>
+                <input matInput [value]="projetForm.get('itin_tech')?.value || 'Non renseigné'" readonly>
+
+              </mat-form-field>
+            </div>
           </ng-container>
 
           <!-- Affichage en mode édition (editMode == true) -->
           <ng-container *ngIf="isEditProjet">
-            <form [formGroup]="projetForm">
+            <form [formGroup]="step1Form">
               <ng-container>
                 <div>
                   <mat-form-field>
@@ -123,7 +141,8 @@
 
                   </mat-form-field>
                   <mat-slide-toggle formControlName="statut">Statut</mat-slide-toggle>
-                  <mat-slide-toggle formControlName="validite">Validité</mat-slide-toggle>
+                  <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
+
                 </div>
                 
                 <div>
@@ -163,6 +182,7 @@
                     <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>
                   </mat-form-field>
                   <mat-form-field>
+
                     <mat-label>Perspectives</mat-label>
                     <textarea matInput formControlName="perspectives" ></textarea>
                   </mat-form-field>
@@ -174,16 +194,6 @@
         </mat-step>
 
 
-
-
-
-
-
-
-        
-        
-        
-        
         
         
         
@@ -225,7 +235,7 @@
 
           <!-- Affichage en mode édition (editMode == true) -->
           <ng-container *ngIf="isEditProjet">
-            <form [formGroup]="projetForm">
+            <form [formGroup]="step2Form">
               <ng-container>
                 <mat-form-field>
                   <mat-label>Pression ciblée</mat-label>

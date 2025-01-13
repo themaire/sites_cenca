@@ -4,7 +4,7 @@
 // Les données du formulaire sont passées en entrée via @Input pour modifier
 // Et Si on ne passe pas de données, on crée un nouveau formulaire vide 
 
-import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -15,6 +15,7 @@ import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
+import { Localisation } from '../../../../../shared/interfaces/localisation';
 
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
@@ -37,15 +38,14 @@ import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
 import { AsyncPipe } from '@angular/common';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { MapComponent } from '../../../../../map/map.component';
 
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
-
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -103,6 +103,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   // @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
   // @ViewChild('listOperations', { static: false }) listOperationsTemplate: any;
   @ViewChild('matTable') table!: MatTable<OperationLite>;
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
@@ -135,12 +136,17 @@ export class OperationComponent implements OnInit, OnDestroy {
   
   // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
   form: FormGroup;
+
+  shapeForm?: FormGroup;
+
   @Input() ref_uuid_proj!: String; // ID du projet parent 
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   isFormValid: boolean = false;
   private formOpeSubscription: Subscription | null = null;
 
   stepperOrientation: Observable<StepperOrientation>;
+  shapefileId: any; // Pour le formulaire de shapefile
+  localisations?: Localisation[]; // Pour le formulaire de shapefile
   
   constructor(
     private cdr: ChangeDetectorRef,
@@ -344,9 +350,19 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
+      const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
       try {
         const operation = await this.projetService.getOperation(subroute);
         console.log('Opération avant le return de fetch() :', operation);
+
+        // Pré remplir le sous formulaire d'envoi du shapefile
+        this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
+
+        this.localisations = await this.projetService.getLocalisations(subrouteLocalisation);
+        // Attention il s'agit d'une liste de localisations !
+        console.log('Localisation de l\'opération :');
+        console.log(this.localisations);
+
         return operation;
       } catch (error) {
         console.error("Erreur lors de la récupération de l'opération : ", error);
@@ -500,5 +516,128 @@ export class OperationComponent implements OnInit, OnDestroy {
     } else {
       console.error('Le formulaire est introuvable, veuillez le créer.');
     }
+  }
+
+  // Soumettre le shapefile au backend
+  submitShapefile(): Observable<ApiResponse> {
+    if (!this.shapeForm) {
+      console.error('Formulaire de shapefile introuvable.');
+      return of({ success: false, message: 'Formulaire de shapefile introuvable.' } as ApiResponse);
+    }
+  
+    const formData = new FormData();
+    const file: File = this.shapeForm.get('shapefile')?.value; // Changement de 'file' à 'shapefile'
+    const typeGeometry: string = this.shapeForm.get('type_geometry')?.value;
+    const uuid_ope: string = this.shapeForm.get('uuid_ope')?.value;
+  
+    // Debug logs
+    console.log('Fichier sélectionné:', file);
+    console.log('Type géométrie:', typeGeometry);
+  
+    // Vérification des données avant envoi
+    if (!file || !typeGeometry) {
+      return of({ 
+        success: false, 
+        message: 'Formulaire invalide. Fichier ou type de géométrie manquant.' 
+      } as ApiResponse);
+    }
+
+    // Construction du FormData
+    formData.append('file', file);
+    formData.append('type_geometry', typeGeometry);
+    formData.append('uuid_ope', uuid_ope);
+
+    // Log du FormData
+    formData.forEach((value, key) => {
+      console.log(key + ': ' + value);
+    });
+  
+    return this.projetService.uploadShapefile(formData).pipe(
+      catchError(error => {
+        console.error('Erreur lors de l\'envoi du shapefile:', error);
+        return of({ 
+          success: false, 
+          message: 'Erreur lors de l\'envoi du shapefile' 
+        } as ApiResponse);
+      })
+    );
+  }
+
+  // Méthode pour gérer la sélection d'un fichier shapefile
+  onFileSelected(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      this.shapeForm!.patchValue({
+        shapefile: file
+      });
+    }
+  }
+
+  // Méthode pour gérer la soumission du formulaire de shape
+  handleShapefileSubmission(): void {
+
+    if (!this.shapeForm?.get('type_geometry')?.value) {
+      this.snackBar.open('Type de géométrie manquant', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    if (!this.shapeForm?.get('uuid_ope')?.value) {
+      this.snackBar.open('uuid_ope manquant', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    if (!this.shapeForm?.get('shapefile')?.value) {
+      this.snackBar.open('Fichier shapefile manquant', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    this.submitShapefile().subscribe({
+      next: (response: ApiResponse) => {
+        if (response.success) {
+          // Réinitialiser uniquement le champ shapefile
+        this.shapeForm!.patchValue({
+          shapefile: null
+        });
+        
+        // Nettoyer l'input file
+        if (this.fileInput) {
+          this.fileInput.nativeElement.value = '';
+        }
+          // Message de succès
+          this.snackBar.open('Shapefile importé avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        } else {
+          this.snackBar.open(response.message || 'Erreur lors de l\'import', 'Fermer', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      },
+      error: (error) => {
+        this.snackBar.open('Erreur lors de l\'import du shapefile', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  // Méthode pour télécharger le fichier shapefile d'exemple
+  downloadShapefileExample(): void {
+    const link = document.createElement('a');
+    link.href = 'assets/shapefile_polygone_example.zip';
+    link.download = 'shapefile_polygone_example.zip';
+    link.click();
   }
 }

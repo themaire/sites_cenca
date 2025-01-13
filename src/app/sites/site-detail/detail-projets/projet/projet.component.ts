@@ -175,6 +175,15 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         return projet;
   }
 
+  get step1Form(): FormGroup {
+  return this.projetForm.get('step1') as FormGroup;
+  }
+
+  get step2Form(): FormGroup {
+  return this.projetForm.get('step2') as FormGroup;
+  }
+
+
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     
@@ -373,6 +382,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       }else if (this.projetForm.get(uuid_proj) !== undefined) {
         uuid_proj = this.projet.uuid_proj;
       }
+
       const submitObservable = this.formService.putBdd('update', 'projets', this.projetForm, this.isEditProjet, this.snackBar, uuid_proj, this.initialFormValues);
 
       // S'abonner à l'observable
