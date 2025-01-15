@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Input, ElementRef } from '@angular/core';
+import { Component, Input, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet'; // Import de Leaflet
 import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de GeoJsonObject et Feature
 
@@ -9,28 +9,33 @@ import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de Geo
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnDestroy {
   @Input() geojson?: string;
+  private map!: L.Map;
 
   constructor(private elementRef: ElementRef) {}
 
-  // Méthode appelée après que le composant a été initialisé
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     setTimeout(() => {
       this.initMap();
     });
   }
 
+  ngOnDestroy() {
+    // Nettoyage de la carte
+    if (this.map) {
+      this.map.remove();
+    }
+  }
+
   private initMap(): void {
-    // Récupération de l'élément HTML contenant la carte
-    const container = this.elementRef.nativeElement.querySelector('#map');
-    if (!container) {
-      console.error('Container #map not found');
-      return;
+    // S'assurer que la carte n'existe pas déjà
+    if (this.map) {
+      this.map.remove();
     }
 
     // Initialisation de la carte
-    const map = L.map('map');
+    this.map = L.map('map');
 
     // Personnalisation de l'icône de marqueur avec les chemins d'icônes personnalisés
     const customIconMarkers = L.icon({
@@ -62,7 +67,7 @@ export class MapComponent implements AfterViewInit {
     );
 
     // Ajoute OpenStreetMap par défaut
-    googleSatellite.addTo(map);
+    googleSatellite.addTo(this.map);
 
     // Sélecteur de couches avec différentes options de fonds de plan
     const baseMaps = {
@@ -71,7 +76,7 @@ export class MapComponent implements AfterViewInit {
     };
 
     // Ajout du sélecteur de couches sur la carte
-    L.control.layers(baseMaps).addTo(map);
+    L.control.layers(baseMaps).addTo(this.map);
 
     if (this.geojson !== undefined) {
       if (this.geojson !== null) {
@@ -79,38 +84,38 @@ export class MapComponent implements AfterViewInit {
         const trueGeoJson: GeoJsonObject = JSON.parse(this.geojson);
 
         // Ajout du GeoJSON et inversion des coordonnées si nécessaire
-        const geojsonLayer = L.geoJSON(trueGeoJson).addTo(map!);
+        const geojsonLayer = L.geoJSON(trueGeoJson).addTo(this.map);
 
         // Obtenir les limites et ajuster la vue
         const bounds = geojsonLayer.getBounds();
-        map.fitBounds(bounds);
+        this.map.fitBounds(bounds);
       } else {
         // Sinon on zoom sur la Champagne-Ardenne
-        map.setView([48.9681497, 4.4], 7);
+        this.map.setView([48.9681497, 4.4], 7);
       }
     } else {
       // Sinon on zoom aussi sur la Champagne-Ardenne
-      map.setView([48.9681497, 4.4], 7);
+      this.map.setView([48.9681497, 4.4], 7);
     }
 
     // Ajout d'un marqueur pour illustrer
     L.marker([48.9623054, 4.3562082], { icon: customIconMarkers })
-      .addTo(map)
+      .addTo(this.map)
       .bindPopup('Châlons-en-Champagne');
     L.marker([49.3978555, 4.7031902], { icon: customIconMarkers })
-      .addTo(map)
+      .addTo(this.map)
       .bindPopup('Vouziers');
     L.marker([47.786518, 5.0614215], { icon: customIconMarkers })
-      .addTo(map)
+      .addTo(this.map)
       .bindPopup('Auberive');
     L.marker([48.26754, 4.0759995], { icon: customIconMarkers })
-      .addTo(map)
+      .addTo(this.map)
       .bindPopup('Rosières-près-Troyes');
     L.marker([50.1368422, 4.8253037], { icon: customIconMarkers })
-      .addTo(map)
+      .addTo(this.map)
       .bindPopup('Givet');
     L.marker([48.1172003, 5.1431961], { icon: customIconMarkers })
-      .addTo(map)
+      .addTo(this.map)
       .bindPopup('Chaumont');
   }
 }

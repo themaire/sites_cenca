@@ -57,11 +57,20 @@ export class ProjetService {
     //   const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`;
     //   return this.http.put<ApiResponse>(url, operation);
     // }
+  
+  deleteOperation(uuid_ope: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}/opegerer.operations/${uuid_ope}`).pipe(
+      catchError(error => {
+        console.error("Erreur lors de la suppression de l'opération:", error);
+        return of({ success: false, message: "Erreur lors de la suppression de l'opération" } as ApiResponse);
+      })
+    );
+  }
     
-    // Utilisé dans objectifs.component.ts
-    async getObjectif(subroute: string): Promise<Objectif> {
-      const data = await fetch(this.activeUrl + subroute);
-      return await data.json() ?? [];
+  // Utilisé dans objectifs.component.ts
+  async getObjectif(subroute: string): Promise<Objectif> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
   }
 
   // Utilisé dans objectifs.component.ts
@@ -99,5 +108,14 @@ export class ProjetService {
   async getLocalisations(subroute: string): Promise<Localisation[]> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
+  }
+
+  deleteLocalisation(loc_id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.localisations/uuid=${loc_id}`).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression de la localisation:', error);
+        return of({ success: false, message: 'Erreur lors de la suppression de la localisation' } as ApiResponse);
+      })
+    );
   }
 }

@@ -270,35 +270,38 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     <mat-step [stepControl]="form!">
       <ng-template matStepLabel>Step 7</ng-template>
 
-      <div *ngIf="localisations !== undefined">
+      <div *ngIf="localisations !== undefined && localisations.length > 0">
+        <button mat-button (click)="deleteItem('localisation')">Supprimer la localisation</button>
         <div>
           <app-map [geojson]="localisations[0].geojson"></app-map>
         </div>
       </div>
-      <div *ngIf="localisations === undefined">
-        Il n'y a pas encore de localisation enregistré pour cette opération. 
+
+      <div *ngIf="localisations === undefined || localisations.length === 0">
+        Il n'y a pas encore de localisation enregistrée pour cette opération. 
       </div>
       
       <div *ngIf="isAddOperation">
         Vous devez terminer cette saisir pour ajouter une emprise de travaux.
       </div>
-      <div *ngIf="isEditOperation">
+
+      <div *ngIf="isEditOperation && localisations === undefined || localisations !== undefined && localisations.length === 0">
         <button mat-button (click)="downloadShapefileExample()">Télécharger le modèle de fichier shapefile si necessaire</button>
         <form [formGroup]="shapeForm!">
           <div class="file-upload-container">
-            <label for="shapefile">Fichier Shapefile (ZIP)</label>
-            <input type="file" 
-                   id="shapefile"
-                   (change)="onFileSelected($event)" 
-                   accept=".zip"
-                   #fileInput>
+          <label for="shapefile">Fichier Shapefile (ZIP)</label>
+          <input type="file" 
+              id="shapefile"
+              (change)="onFileSelected($event)" 
+              accept=".zip"
+              #fileInput>
           </div>
           <input type="hidden" formControlName="type_geometry">
           <input type="hidden" formControlName="uuid_ope">
           <button mat-button 
-                  (click)="handleShapefileSubmission()"
-                  [disabled]="!shapeForm?.get('shapefile')?.value">
-                  <!-- Désactivé si le champ shapefile du formulaire est vide -->
+            (click)="handleShapefileSubmission()"
+            [disabled]="!shapeForm?.get('shapefile')?.value">
+            <!-- Désactivé si le champ shapefile du formulaire est vide -->
             Envoyer l'emprise
           </button>
         </form>

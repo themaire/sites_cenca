@@ -368,7 +368,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         console.error("Erreur lors de la récupération de l'opération : ", error);
       }
     } else {
-      console.error('Aucun identifiant de projet ou d\'opération n\'a été trouvé.');
+      console.error("Aucun identifiant de projet ou d'opération n\'a été trouvé.");
     }
   }
   
@@ -636,8 +636,86 @@ export class OperationComponent implements OnInit, OnDestroy {
   // Méthode pour télécharger le fichier shapefile d'exemple
   downloadShapefileExample(): void {
     const link = document.createElement('a');
-    link.href = 'assets/shapefile_polygone_example.zip';
-    link.download = 'shapefile_polygone_example.zip';
+    link.href = 'assets/shapefile_polygone_modele.zip';
+    link.download = 'shapefile_polygone_modele.zip';
     link.click();
+  }
+
+  callbackDelete(mode: string, table: string, response?: ApiResponse, list?: any): void {
+    if(mode === 'normal' && response !== undefined) {
+      if (response.success) {
+        if (list) {
+          list = undefined; // Réinitialiser la liste après suppression
+        }
+        console.log(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`);
+        this.snackBar.open(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`, 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      } else {
+        console.error(`Erreur lors de la suppression. Type : ${table}`, response.message);
+        this.snackBar.open(response.message || `Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    } else if (mode === 'error') {
+      console.error(`Erreur lors de la suppression. Type : ${table}`);
+      this.snackBar.open(`Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+
+    }
+  }
+
+  deleteItem(type: 'localisation' | 'operation'): void {
+    if (type === 'localisation' && this.localisations && this.localisations.length > 0) {
+      const localisationId = this.localisations[0].loc_id;
+      this.projetService.deleteLocalisation(localisationId).subscribe(
+        (response: ApiResponse) => {
+          if (response.success) {
+            this.callbackDelete("normal", 'localisation', response, this.localisations);
+          }
+        },
+        (error) => {
+          this.callbackDelete('error', 'localisation');
+        }
+      );
+    } else if (type === 'operation' && this.operation) {
+      const operationId = this.operation.uuid_ope;
+      this.projetService.deleteOperation(operationId).subscribe(
+        (response: ApiResponse) => {
+          if (response.success) {
+            console.log('Opération supprimée avec succès');
+            this.operation = undefined; // Réinitialiser l'opération après suppression
+            this.snackBar.open('Opération supprimée avec succès', 'Fermer', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+            this.fetch(); // Rafraîchir la liste des opérations
+          } else {
+            console.error('Erreur lors de la suppression de l\'opération', response.message);
+            this.snackBar.open(response.message || 'Erreur lors de la suppression de l\'opération', 'Fermer', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        },
+        (error) => {
+          console.error('Erreur lors de la suppression de l\'opération', error);
+          this.snackBar.open('Erreur lors de la suppression de l\'opération', 'Fermer', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      );
+    } else {
+      console.error(`Aucun ${type} à supprimer`);
+      this.snackBar.open(`Aucun ${type} à supprimer`, 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
   }
 }
