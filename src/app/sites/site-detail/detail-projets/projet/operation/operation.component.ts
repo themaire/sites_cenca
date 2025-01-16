@@ -440,6 +440,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
   
+  // Méthode pour soumettre le formulaire
   onSubmit(mode?: String): void {
     // Logique de soumission du formulaire du projet
     if (this.form !== undefined) {
@@ -518,6 +519,16 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Méthode pour gérer le téléchargement du fichier shapefile modèle
+  onFileSelected(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      this.shapeForm!.patchValue({
+        shapefile: file
+      });
+    }
+  }
+
   // Soumettre le shapefile au backend
   submitShapefile(): Observable<ApiResponse> {
     if (!this.shapeForm) {
@@ -561,16 +572,6 @@ export class OperationComponent implements OnInit, OnDestroy {
         } as ApiResponse);
       })
     );
-  }
-
-  // Méthode pour gérer la sélection d'un fichier shapefile
-  onFileSelected(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      this.shapeForm!.patchValue({
-        shapefile: file
-      });
-    }
   }
 
   // Méthode pour gérer la soumission du formulaire de shape
@@ -641,34 +642,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     link.click();
   }
 
-  callbackDelete(mode: string, table: string, response?: ApiResponse, list?: any): void {
-    if(mode === 'normal' && response !== undefined) {
-      if (response.success) {
-        if (list) {
-          list = undefined; // Réinitialiser la liste après suppression
-        }
-        console.log(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`);
-        this.snackBar.open(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`, 'Fermer', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-      } else {
-        console.error(`Erreur lors de la suppression. Type : ${table}`, response.message);
-        this.snackBar.open(response.message || `Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    } else if (mode === 'error') {
-      console.error(`Erreur lors de la suppression. Type : ${table}`);
-      this.snackBar.open(`Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-
-    }
-  }
-
+  // Pour supprimer une localisation ou une opération
   deleteItem(type: 'localisation' | 'operation'): void {
     if (type === 'localisation' && this.localisations && this.localisations.length > 0) {
       const localisationId = this.localisations[0].loc_id;
@@ -716,6 +690,35 @@ export class OperationComponent implements OnInit, OnDestroy {
         duration: 3000,
         panelClass: ['error-snackbar']
       });
+    }
+  }
+  
+  // Utilisée à l'interieur de this.deleteItem()
+  callbackDelete(mode: string, table: string, response?: ApiResponse, list?: any): void {
+    if(mode === 'normal' && response !== undefined) {
+      if (response.success) {
+        if (list) {
+          list = undefined; // Réinitialiser la liste après suppression
+        }
+        console.log(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`);
+        this.snackBar.open(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`, 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      } else {
+        console.error(`Erreur lors de la suppression. Type : ${table}`, response.message);
+        this.snackBar.open(response.message || `Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    } else if (mode === 'error') {
+      console.error(`Erreur lors de la suppression. Type : ${table}`);
+      this.snackBar.open(`Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+
     }
   }
 }

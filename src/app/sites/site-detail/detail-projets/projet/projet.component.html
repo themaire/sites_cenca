@@ -53,17 +53,17 @@
             <div>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Type de projet</mat-label>
-                <input matInput [value]="this.getLibelle(projetForm.get('typ_projet')?.value, projectTypes) || 'Non renseigné'" readonly>
+                <input matInput [value]="this.getLibelle(step1Form.get('typ_projet')?.value, projectTypes) || 'Non renseigné'" readonly>
               </mat-form-field>
               <mat-slide-toggle
                 class="toggle"
-                [checked]="projetForm.get('statut')?.value || false"
+                [checked]="step1Form.get('statut')?.value || false"
                 [disabled]="true">
                 Statut
               </mat-slide-toggle>
               <mat-slide-toggle
                 class="toggle"
-                [checked]="projetForm.get('validite')?.value || false"
+                [checked]="step1Form.get('validite')?.value || false"
                 [disabled]="true">
 
                 Validité*
@@ -74,53 +74,53 @@
             <div>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Année d'execution</mat-label>
-                <input matInput [value]="projetForm.get('annee')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('annee')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
               <mat-form-field>
                 <mat-label>Période de travaux</mat-label>
                 <mat-date-range-input [rangePicker]="picker">
-                  <input matStartDate placeholder="Date début" [value]="projetForm.get('pro_debut')?.value" readonly>
-                  <input matEndDate placeholder="Date fin" [value]="projetForm.get('pro_fin')?.value" readonly>
+                  <input matStartDate placeholder="Date début" [value]="step1Form.get('pro_debut')?.value" readonly>
+                  <input matEndDate placeholder="Date fin" [value]="step1Form.get('pro_fin')?.value" readonly>
                 </mat-date-range-input>
                 <mat-date-range-picker #picker></mat-date-range-picker>
               </mat-form-field>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Date création projet</mat-label>
-                <input matInput [value]="projetForm.get('date_crea')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
               </div>
 
               <div>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Nom</mat-label>
-                <input matInput [value]="projetForm.get('nom')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Code</mat-label>
-                <input matInput [value]="projetForm.get('code')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('code')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Responsable</mat-label>
-                <input matInput [value]="projetForm.get('responsable')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('responsable')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Maitre d'ouvrage</mat-label>
-                <input matInput [value]="projetForm.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Perspectives</mat-label>
-                <input matInput [value]="projetForm.get('perspectives')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('perspectives')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
             </div>
 
             <div>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Programme</mat-label>
-                <input matInput [value]="projetForm.get('programme')?.value || 'Non renseignée'" readonly>
+                <input matInput [value]="step1Form.get('programme')?.value || 'Non renseignée'" readonly>
               </mat-form-field>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Itinéraire technique</mat-label>
-                <input matInput [value]="projetForm.get('itin_tech')?.value || 'Non renseigné'" readonly>
+                <input matInput [value]="step1Form.get('itin_tech')?.value || 'Non renseigné'" readonly>
 
               </mat-form-field>
             </div>
@@ -190,7 +190,10 @@
                 </ng-container>
             </form>
           </ng-container>
-          <button mat-button matStepperNext>SUIVANT</button>
+
+          <div>
+            <button mat-button matStepperNext>SUIVANT</button>
+          </div>
         </mat-step>
 
 
@@ -200,14 +203,8 @@
         
         <mat-step state="pin">
           <!-- <mat-step [stepControl]="UGFormGroup"> -->
-            <ng-template matStepLabel>Unités de gestion</ng-template>
-            
-            <div>
-              <button mat-button matStepperPrevious>Précédent</button>
-              <button mat-button matStepperNext>Suivant</button>
-
-          </div>
-
+          <ng-template matStepLabel>Unités de gestion</ng-template>
+          
           <!-- Affichage en mode consultation (editMode == false) -->
           <ng-container *ngIf="!isEditProjet">
             <div>
@@ -251,6 +248,12 @@
               <button *ngIf="!newProjet" mat-button matStepperNext>SUIVANT</button>
             </form>
           </ng-container>
+
+          <div>
+            <button mat-button matStepperPrevious>Précédent</button>
+            <button mat-button matStepperNext>Suivant</button>
+          </div>
+
         </mat-step>
 
 
@@ -258,24 +261,24 @@
 
 
         <!-- <mat-step [stepControl]="ENPFormGroup"> -->
-          <mat-step state="landscape">
-            <ng-template matStepLabel>ENP concerné</ng-template>
-  
-            <form *ngIf="isEditProjet == true">
-  
-              <!-- <mat-form-field>
-                <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
-              </mat-form-field> -->
-  
-            </form>
-  
-            <app-detail-gestion *ngIf="!newProjet" [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
-  
-            <div>
-              <button mat-button matStepperPrevious>Précédent</button>
-              <button mat-button matStepperNext>Suivant</button>
-            </div>
-          </mat-step>
+        <mat-step state="landscape">
+          <ng-template matStepLabel>ENP concerné</ng-template>
+
+          <form *ngIf="isEditProjet == true">
+
+            <!-- <mat-form-field>
+              <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
+            </mat-form-field> -->
+
+          </form>
+
+          <app-detail-gestion *ngIf="!newProjet" [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
+
+          <div>
+            <button mat-button matStepperPrevious>Précédent</button>
+            <button mat-button matStepperNext>Suivant</button>
+          </div>
+        </mat-step>
 
 
 
@@ -370,19 +373,21 @@
 
         <mat-step state="flag" *ngIf="projet && newProjet === false">
           <ng-template matStepLabel>Bilan d'execution</ng-template>
-          You are now done.
+          A definir ...
+
+          <ng-container *ngIf="isEditProjet"></ng-container>
+          <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
+            <ng-container>
+              <!-- Ajoutez d'autres champs si nécessaire -->
+            </ng-container>
+            <!-- <button mat-button type="submit">SOUMETTRE</button> -->
+          </form>
+          
           <div>
             <button mat-button matStepperPrevious>Précédent</button>
             <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button>
           </div>
 
-          <ng-container *ngIf="isEditProjet"></ng-container>
-            <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
-              <ng-container>
-                <!-- Ajoutez d'autres champs si nécessaire -->
-              </ng-container>
-              <!-- <button mat-button type="submit">SOUMETTRE</button> -->
-            </form>
         </mat-step>
 
         <!-- Icon overrides. -->
