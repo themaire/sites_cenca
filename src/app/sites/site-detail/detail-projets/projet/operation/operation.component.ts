@@ -100,6 +100,9 @@ export const MY_DATE_FORMATS = {
   styleUrls: ['./operation.component.scss']
 })
 export class OperationComponent implements OnInit, OnDestroy {
+  @Input() rattachementOperation?: string;
+  @Input() geojson_site?: string;
+
   // @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
   // @ViewChild('listOperations', { static: false }) listOperationsTemplate: any;
   @ViewChild('matTable') table!: MatTable<OperationLite>;
@@ -126,6 +129,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   selectedActionType: string = '';
 
   // Booleens d'états pour le mode d'affichage
+  @Input() typeParent?: string; // Pour savoir si le parent est un projet ou un objectif
   @Input() isEditOperation: boolean = false;
   @Input() isAddOperation:boolean = false;
   @Output() isEditFromOperation = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
@@ -140,6 +144,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   shapeForm?: FormGroup;
 
   @Input() ref_uuid_proj!: String; // ID du projet parent 
+  @Input() ref_uuid_objectif!: String; // ID de l'objectif parent 
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   isFormValid: boolean = false;
   private formOpeSubscription: Subscription | null = null;
@@ -196,8 +201,8 @@ export class OperationComponent implements OnInit, OnDestroy {
     );
 
     try {
-      if (this.ref_uuid_proj !== undefined) {
-        // Si on a bien une uuid de projet passé en paramètre pour recuperer les opérations lite
+      if (this.ref_uuid_proj !== undefined || this.ref_uuid_objectif !== undefined) {
+        // Si on a bien une uuid de projet ou d'objectif pour recuperer les opérations lite
         
         setTimeout(async () => {
           // Accéder à la liste des opérations et remplir le tableau Material des operationLite
@@ -245,7 +250,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
     
   }
-  
+
   subscribeToForm(): void {
     // Souscrire aux changements du statut du formulaire
     this.formOpeSubscription = this.form.statusChanges.subscribe(status => {
@@ -261,7 +266,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
     });
   }
-  
+
   toggleEditOperation(mode: String): void {
     console.log("----------!!!!!!!!!!!!--------toggleEditOperation('" + mode +"') dans le composant operation");
     if (mode === 'edit') {
@@ -295,7 +300,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges(); // Forcer la détection des changements
     
   }
-  
+
   getInvalidFields(): string[] {
     // Pour le stepper et le bouton MAJ
     if (this.form !== undefined) {
@@ -326,6 +331,16 @@ export class OperationComponent implements OnInit, OnDestroy {
   //   }
   // }
 
+  async getLocalisation(uuid_ope: String): Promise<Localisation[]> {
+    const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
+    try {
+      return await this.projetService.getLocalisations(subrouteLocalisation);
+    } catch (error) {
+      console.error("Erreur lors de la récupération de la localisation de l'opération : ", error);
+      return [];
+    }
+  }
+
   async fetch(uuid_ope?: String): Promise<Operation | void> {
     if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
       // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
@@ -350,7 +365,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
-      const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
+
       try {
         const operation = await this.projetService.getOperation(subroute);
         console.log('Opération avant le return de fetch() :', operation);
@@ -358,7 +373,9 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Pré remplir le sous formulaire d'envoi du shapefile
         this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
 
-        this.localisations = await this.projetService.getLocalisations(subrouteLocalisation);
+        // Récupérer les localisations de l'opération
+        this.localisations = await this.getLocalisation(uuid_ope);
+
         // Attention il s'agit d'une liste de localisations !
         console.log('Localisation de l\'opération :');
         console.log(this.localisations);
@@ -371,7 +388,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.error("Aucun identifiant de projet ou d'opération n\'a été trouvé.");
     }
   }
-  
+
   async makeForm({ operation, empty = false }: { operation?: OperationLite, empty?: boolean } = {}): Promise<void> {
     // Deux grands modes :
     // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
@@ -389,7 +406,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     this.unsubForm(); // Se désabonner des changements du formulaire
 
     if (empty) {
-      // Création d'un formulaire vide
+      // Création d'un formulaire vide - Si empty est vrai
       try {
         this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
         this.selectedIntervType = '';
@@ -439,7 +456,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         return;
     }
   }
-  
+
   // Méthode pour soumettre le formulaire
   onSubmit(mode?: String): void {
     // Logique de soumission du formulaire du projet
@@ -602,17 +619,21 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
 
     this.submitShapefile().subscribe({
-      next: (response: ApiResponse) => {
+      next: async (response: ApiResponse) => {
         if (response.success) {
           // Réinitialiser uniquement le champ shapefile
-        this.shapeForm!.patchValue({
-          shapefile: null
-        });
+          this.shapeForm!.patchValue({
+            shapefile: null
+          });
         
-        // Nettoyer l'input file
-        if (this.fileInput) {
-          this.fileInput.nativeElement.value = '';
-        }
+          // Nettoyer l'input file
+          if (this.fileInput) {
+            this.fileInput.nativeElement.value = '';
+          }
+
+          // Rafraîchir la liste des localisations
+          this.localisations = await this.getLocalisation(this.shapeForm?.get('uuid_ope')?.value);
+
           // Message de succès
           this.snackBar.open('Shapefile importé avec succès', 'Fermer', {
             duration: 3000,
@@ -649,11 +670,12 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.projetService.deleteLocalisation(localisationId).subscribe(
         (response: ApiResponse) => {
           if (response.success) {
-            this.callbackDelete("normal", 'localisation', response, this.localisations);
+            this.localisations = undefined; // Réinitialiser les localisations après suppression
+            this.callSnackDelete("normal", 'localisation', response);
           }
         },
         (error) => {
-          this.callbackDelete('error', 'localisation');
+          this.callSnackDelete('error', 'localisation');
         }
       );
     } else if (type === 'operation' && this.operation) {
@@ -692,15 +714,12 @@ export class OperationComponent implements OnInit, OnDestroy {
       });
     }
   }
-  
-  // Utilisée à l'interieur de this.deleteItem()
-  callbackDelete(mode: string, table: string, response?: ApiResponse, list?: any): void {
+
+  // Utilisée à l'interieur de this.deleteItem() pour afficher un message de suppression
+  callSnackDelete(mode: string, table: string, response?: ApiResponse): void {
     if(mode === 'normal' && response !== undefined) {
       if (response.success) {
-        if (list) {
-          list = undefined; // Réinitialiser la liste après suppression
-        }
-        console.log(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`);
+        console.log(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimée avec succès`);
         this.snackBar.open(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`, 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']

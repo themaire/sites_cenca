@@ -81,7 +81,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
   <mat-horizontal-stepper [linear]="linearMode" #stepper>
 
-      <mat-step [stepControl]="form!">
+    <mat-step [stepControl]="form!">
       <form [formGroup]="form!">
         <ng-template matStepLabel>Step 1</ng-template>
         <div>
@@ -273,7 +273,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       <div *ngIf="localisations !== undefined && localisations.length > 0">
         <button mat-button (click)="deleteItem('localisation')">Supprimer la localisation</button>
         <div>
-          <app-map [geojson]="localisations[0].geojson"></app-map>
+          <app-map mapName='Opération' [geojson_primary]="geojson_site" [geojson_secondary]="localisations[0].geojson"></app-map>
         </div>
       </div>
 
@@ -282,7 +282,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </div>
       
       <div *ngIf="isAddOperation">
-        Vous devez terminer cette saisir pour ajouter une emprise de travaux.
+        Merci de terminer cette saisie de nouvel objectif avant d'ajouter une emprise de travaux.
       </div>
 
       <div *ngIf="isEditOperation && localisations === undefined || localisations !== undefined && localisations.length === 0">

@@ -10,13 +10,16 @@ import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de Geo
   styleUrl: './map.component.scss',
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
-  @Input() geojson?: string;
+  @Input() mapName?: string;
+  @Input() geojson_primary?: string;
+  @Input() geojson_secondary?: string;
   private map!: L.Map;
 
   constructor(private elementRef: ElementRef) {}
 
   ngAfterViewInit() {
     setTimeout(() => {
+      console.log('Initialisation de la carte :', this.mapName);
       this.initMap();
     });
   }
@@ -78,19 +81,56 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // Ajout du sélecteur de couches sur la carte
     L.control.layers(baseMaps).addTo(this.map);
 
-    if (this.geojson !== undefined) {
-      if (this.geojson !== null) {
+    // GéoJSON principal (souvent le site)
+    if (this.geojson_primary !== undefined || this.geojson_secondary !== undefined) {
+      if (this.geojson_primary !== '') {
         // Transformation de la chaîne GeoJSON en VRAI DE VRAI objet GeoJSON
-        const trueGeoJson: GeoJsonObject = JSON.parse(this.geojson);
+        const trueGeoJson: GeoJsonObject = JSON.parse(this.geojson_primary!);
 
         // Ajout du GeoJSON et inversion des coordonnées si nécessaire
-        const geojsonLayer = L.geoJSON(trueGeoJson).addTo(this.map);
+        const geojsonLayer = L.geoJSON(trueGeoJson);
+        geojsonLayer.setStyle({
+          color: 'green',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.5,
+          fillColor: 'green',
+        }).addTo(this.map);
+
+        // Obtenir les limites et ajuster la vue
+        const bounds = geojsonLayer.getBounds();
+
+        // Si le GeoJSON secondaire est vide, on ajuste la vue sur le GeoJSON primaire
+        if (this.geojson_secondary == undefined) {
+          this.map.fitBounds(bounds);
+        }
+      } else {
+        // Sinon on zoom sur la Champagne-Ardenne
+        console.log('Aucun GeoJSON primaire trouvé');
+        this.map.setView([48.9681497, 4.4], 7);
+      }
+
+      // GeoJSON secondaire (souvent l'opération)
+      if (this.geojson_secondary !== '') {
+        // Transformation de la chaîne GeoJSON en VRAI DE VRAI objet GeoJSON
+        const trueGeoJson: GeoJsonObject = JSON.parse(this.geojson_secondary!);
+
+        // Ajout du GeoJSON et inversion des coordonnées si nécessaire
+        const geojsonLayer = L.geoJSON(trueGeoJson);
+        geojsonLayer.setStyle({
+          color: 'orange',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.5,
+          fillColor: 'orange',
+        }).addTo(this.map);
 
         // Obtenir les limites et ajuster la vue
         const bounds = geojsonLayer.getBounds();
         this.map.fitBounds(bounds);
       } else {
         // Sinon on zoom sur la Champagne-Ardenne
+        console.log('Aucun GeoJSON secondaire trouvé');
         this.map.setView([48.9681497, 4.4], 7);
       }
     } else {

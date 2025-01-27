@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
-import { ApiResponse } from '../../../../shared/interfaces/api';
+// import { ApiResponse } from '../../../../shared/interfaces/api';
 import { ProjetLite, Projet } from '../projets';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { ProjetService } from '../projets.service';
@@ -152,11 +152,6 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
       this.projetLite = data;
-      // console.log("data : ");
-      // console.log(data);
-
-      console.log("this.projectTypes : ");
-      console.log(this.projectTypes);
 
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
@@ -164,14 +159,28 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
       // console.log("this.projetLite dans le dialog :", this.projetLite);
     }
+  
+  getTypeInterv(generation: string): string {
+    // Renvoie le type d'intervention en fonction de son code : "gestion" ou "autre"
+    // @param : typ_interve : correspond au champ "generation" de la vue "ope.synthesesites"
+    let type = '';
+    if (generation === '1_TVX') {
+      type = 'gestion';
+    } else if (generation === '1_AUT') {
+      type = 'autre';
+    }
+    return type;
+  }
 
-  async fetch(uuid_proj: String): Promise<Projet> {
+  async fetch(uuid_proj: String, type: String): Promise<Projet> {
     // Récupérer les données d'un projet à partir de son UUID
-    const subroute = `projets/uuid=${uuid_proj}/full`; // Full puisque UN SEUL projet
+    // @param : gestion ou autre pour que le back sache quelle table interroger
+    // !! Le backend ne fera pas la meme requete SQL si on est en gestion ou autre
+    // Il s'agira de deux schémas different où les données sont stockées
+    const subroute = `projets/uuid=${uuid_proj}/full/${type}`; // Full puisque UN SEUL projet
         console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
         const projet = await this.sitesService.getProjet(subroute);
         if (projet.typ_projet) this.selectedProjetType = projet.typ_projet;
-        
         return projet;
   }
 
@@ -188,26 +197,23 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     
     // Récupérer les données d'un projet ou créer un nouveau projet
+    // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
     if (this.projetLite?.uuid_proj) {
       // Quand un UUID est passé en paramètre
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
-
-          const projetObject = await this.fetch(this.projetLite.uuid_proj);
-
-          // Initialiser les valeurs du formulaire principal
-          // this.selectedEnjeuxType = projetObject.pro_nv_enjeux || '';
-
+          // Accéder aux données du projet (va prendre dans le scheme opegerer ou opeautre)
+          const projetObject = await this.fetch(this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation));
 
           // Accéder données du projet
           if (projetObject.uuid_proj) {
             this.projet = projetObject; // Assigner l'objet projet directement
+
             console.log('Projet après extraction :', this.projet);
 
-            // Les form_groups correspondant aux steps
-            // Sert a defini les valeurs par defaut et si obligatoire
-            this.projetForm = this.formService.newProjetForm(this.projet);
+            // Défini un formulaire pour le projet
+            this.projetForm = this.formService.newProjetForm(this.projet, undefined, this.projet.pro_webapp);
 
             // Souscrire aux changements du statut du formulaire principal (projetForm)
             this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
@@ -240,7 +246,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         // Créer un formulaire vide
         if (this.projetLite.uuid_site) {
           // Le form_group correspondant aux projet neuf à créer
-          this.projetForm = this.formService.newProjetForm(undefined, this.projetLite.uuid_site);
+          this.projetForm = this.formService.newProjetForm(undefined, this.projetLite.uuid_site, true);
 
           // Souscrire aux changements du statut du formulaire principal (projetForm)
           this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {

@@ -90,13 +90,14 @@ export class FormService {
   // Créer un nouveau formulaire de projet
 
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
-  // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
-  newProjetForm(projet?: Projet, site?: String): FormGroup {
+  // !!! Attention, projet.uuid_proj est généré automatiquement si non indiqué !!!
+  newProjetForm(projet?: Projet, site?: String, isWebApp: boolean = true): FormGroup {
     return this.fb.group({
       uuid_proj: [projet?.uuid_proj || uuidv4()],
       site: [site || projet?.site],
       
-      pro_webapp: [projet?.pro_webapp || true],
+      pro_webapp: [projet?.pro_webapp !== undefined ? projet.pro_webapp : isWebApp],
+      pro_surf_totale: [projet?.pro_surf_totale || true],
       
       // Peut etre pas nécessaire
       document: [projet?.document || ''],

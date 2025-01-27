@@ -5,9 +5,9 @@
     <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
     -- Variable isAddOperation : {{ isAddOperation }}<br>
     -- Variable isEditProjet : {{ isEditProjet }}<br>
-    -- Variable isEditProjet : {{ isEditProjet }}<br> -->
-
-    -- Variable newProjet : {{ newProjet }}<br>
+    -- Variable isEditProjet : {{ isEditProjet }}<br>
+    -- Variable newProjet : {{ newProjet }}<br> -->
+    -- pro_webapp : {{ projet?.pro_webapp }}<br>
 
 
     <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
@@ -18,7 +18,7 @@
 
       <h2 *ngIf="!isEditProjet && !newProjet">Consultation d'un projet</h2>
       <h2 *ngIf="isEditProjet && !newProjet">Modification d'un projet</h2>
-      <h2 *ngIf="newProjet && isEditProjet">Création d'un projet</h2>
+      <h2 *ngIf="isEditProjet && newProjet">Création d'un projet</h2>
 
       <!-- Réglage de l'animation du stepper -->
       <div class="example-input-wrapper">
@@ -195,12 +195,7 @@
             <button mat-button matStepperNext>SUIVANT</button>
           </div>
         </mat-step>
-
-
-        
-        
-        
-        
+  
         <mat-step state="pin">
           <!-- <mat-step [stepControl]="UGFormGroup"> -->
           <ng-template matStepLabel>Unités de gestion</ng-template>
@@ -256,11 +251,6 @@
 
         </mat-step>
 
-
-
-
-
-        <!-- <mat-step [stepControl]="ENPFormGroup"> -->
         <mat-step state="landscape">
           <ng-template matStepLabel>ENP concerné</ng-template>
 
@@ -280,9 +270,6 @@
           </div>
         </mat-step>
 
-
-
-
         <mat-step state="troubleshoot" *ngIf="newProjet === false">
           <ng-template matStepLabel>Indicateurs</ng-template>
           <div class="container-carte">
@@ -299,15 +286,6 @@
           </div>
         </mat-step>
 
-
-
-
-
-
-
-
-
-
         <mat-step state="euro" *ngIf="projet && newProjet === false">
           <ng-template matStepLabel>Financements</ng-template>
           <div class="container-carte">
@@ -322,13 +300,6 @@
             <button mat-button matStepperNext>Suivant</button>
           </div>
         </mat-step>
-
-
-
-
-
-
-
 
         <mat-step state="flag" *ngIf="projet && newProjet === false">
           <ng-template matStepLabel>Objectifs</ng-template>
@@ -345,9 +316,8 @@
 
         </mat-step>
 
-
-
-        <mat-step state="construction" *ngIf="projet && newProjet === false">
+        <!-- Ce step s'affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai -->
+        <mat-step state="construction" *ngIf="projet && newProjet === false && projet.pro_webapp === true">
           <ng-template matStepLabel>Opérations</ng-template>
 
           <!-- Si dans aucun mode d'edition ou d'ajout -->
@@ -361,15 +331,6 @@
           </div>
 
         </mat-step>
-
-
-
-
-
-
-
-
-
 
         <mat-step state="flag" *ngIf="projet && newProjet === false">
           <ng-template matStepLabel>Bilan d'execution</ng-template>
@@ -416,33 +377,39 @@
       </mat-stepper>
     </ng-template>
 
-    <!-- Formulaire objectif -->
+    <!-- Composant objectif -->
     <ng-template #objectif>
 
       <!-- isEditFromObjectif vient de app-objectif et app-projet -->
+      <!-- geojson_site est donné que quand projet.pro_webapp est N'EST PAS VRAI -->
       <app-objectif 
+                    rattachementOperation="projet"
                     (isEditFromObjectif)="handleEditObjectifChange($event)"
                     (isAddFromObjectif)="handleAddObjectifChange($event)"
                     [isEditObjectif]="isEditObjectif"
                     [isAddObjectif]="isAddObjectif"
                     [projetEditMode]="isEditProjet"
-                    [ref_uuid_proj]="projet.uuid_proj"                                                                                                                                                      
+                    [ref_uuid_proj]="projet.uuid_proj"
+                    [isEditProjet]="isEditProjet"
+                    [geojson_site]="!projet.pro_webapp ? projetLite.geojson_site : undefined">
                     >
       </app-objectif>
 
     </ng-template>
 
-    <!-- Formulaire operation -->
+    <!-- Composant operation -->
     <ng-template #operation>
 
       <!-- isEditFromOperation vient de app-operation et app-projet -->
+      <!-- geojson_site est donné que quand projet.pro_webapp est VRAI -->
       <app-operation 
                     (isEditFromOperation)="handleEditOperationChange($event)"
                     (isAddFromOperation)="handleAddOperationChange($event)"
                     [isEditOperation]="isEditOperation"
                     [isAddOperation]="isAddOperation"
                     [projetEditMode]="isEditProjet"
-                    [ref_uuid_proj]="projet.uuid_proj"                                                                                                                                                      
+                    [ref_uuid_proj]="projet.uuid_proj"
+                    [geojson_site]="projet.pro_webapp ? projetLite.geojson_site : undefined">
                     >
       </app-operation>
 

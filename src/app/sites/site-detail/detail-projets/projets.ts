@@ -1,14 +1,16 @@
 // Sont en fait des champs de la vue ope.synthesesites
 export interface ProjetLite {
     uuid_proj: string;
-    responsable?: string;
-    annee?: string;
-    pro_debut?: string;
-    action?: string;
-    typ_interv?: string;
-    statut?: string;
-    webapp?: boolean;
-    uuid_site?: string;
+    responsable: string;
+    annee: string;
+    pro_debut: string;
+    action: string;
+    typ_interv: string;
+    generation: string;
+    statut: string;
+    webapp: boolean;
+    uuid_site: string;
+    geojson_site: string;
 }
 
 // A EFFACTER DES QUE POSSIBLE
@@ -52,6 +54,8 @@ export interface Projet {
     pro_webapp?: boolean
     pro_results_attendus?: number;
     pro_maitre_ouvrage?: number;
+    pro_surf_totale?: number;
     ref_loc_id?: number;
+    geojson_site?: string;
     geom?: string;
 }

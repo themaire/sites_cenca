@@ -3,7 +3,8 @@
 <div class="detail-projets">
   <ng-template #thenBlock>
     <div>
-      <h2>Nb opérations : {{ projetsLite.length }}</h2>
+      <h2 *ngIf="projetsLite.length == 1">{{ projetsLite.length }} projet.</h2>
+      <h2 *ngIf="projetsLite.length > 1">{{ projetsLite.length }} projets.</h2>
       
       <section class="edition">
         Ajouter un nouveau projet : <button mat-icon-button
@@ -15,11 +16,12 @@
       </section>
 
       <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
         <ng-container matColumnDef="responsable" class="responsable">
           <mat-header-cell *matHeaderCellDef class="responsable">
             Responsable
           </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="responsable">
+          <mat-cell *matCellDef="let element; let i = index" class="responsable" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
             {{ element.responsable }}
           </mat-cell>
         </ng-container>
@@ -28,7 +30,7 @@
           <mat-header-cell *matHeaderCellDef class="annee">
             Année
           </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="annee">
+          <mat-cell *matCellDef="let element; let i = index" class="annee" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
             {{ element.annee }}
           </mat-cell>
         </ng-container>
@@ -37,7 +39,7 @@
           <mat-header-cell *matHeaderCellDef class="date_deb">
             Date début
           </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="date_deb">
+          <mat-cell *matCellDef="let element; let i = index" class="date_deb" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
             {{ element.date_deb }}
           </mat-cell>
         </ng-container>
@@ -46,7 +48,7 @@
           <mat-header-cell *matHeaderCellDef class="projet">
             Nom (Projet)
           </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="projet">
+          <mat-cell *matCellDef="let element; let i = index" class="projet" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
             {{ element.projet }}
           </mat-cell>
         </ng-container>
@@ -55,7 +57,7 @@
           <mat-header-cell *matHeaderCellDef class="action">
             Type (Action)
           </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="action">
+          <mat-cell *matCellDef="let element; let i = index" class="action" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
             {{ element.action }}
           </mat-cell>
         </ng-container>
@@ -64,7 +66,7 @@
           <mat-header-cell *matHeaderCellDef class="typ_inter">
             Type d'intervention
           </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="typ_inter">
+          <mat-cell *matCellDef="let element; let i = index" class="typ_inter" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
             {{ element.typ_inter }}
           </mat-cell>
         </ng-container>
@@ -73,7 +75,7 @@
           <mat-header-cell *matHeaderCellDef class="statut">
             Statut
           </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="statut">
+          <mat-cell *matCellDef="let element; let i = index" class="statut" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
             {{ element.statut }}
           </mat-cell>
         </ng-container>
@@ -87,5 +89,5 @@
     </div>
   </ng-template>
 
-  <ng-template #elseBlock> Il n'y a pas d'opérations sur ce site. </ng-template>
+  <ng-template #elseBlock> Il n'y a pas de projets sur ce site. </ng-template>
 </div>
