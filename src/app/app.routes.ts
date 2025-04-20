@@ -4,6 +4,8 @@ import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
 
+import { DocumentationComponent } from './documentation.component';
+
 export const routes: Routes = [
   {
     path: '',
@@ -33,5 +35,10 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),
     canActivate: [isLoggedInGuard],
+  },
+
+  {
+    path: 'documentation',
+    component: DocumentationComponent,
   },
 ];

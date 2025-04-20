@@ -1,0 +1,1166 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>site-cenca documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">site-cenca documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  HeaderComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/header/header.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-header</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                            <code>RouterOutlet</code>
+                            <code>RouterModule</code>
+                            <code>MatButtonModule</code>
+                            <code>MatMenuModule</code>
+                            <code>CommonModule</code>
+                            <code>MatIconModule</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./header.component.html</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrl</td>
+                <td class="col-md-9"><code>./header.component.scss</code></td>
+            </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#initials" >initials</a>
+                            </li>
+                            <li>
+                                <a href="#isMobile" >isMobile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#loginService" >loginService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#logoutSubscription" >logoutSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#menuItems" >menuItems</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#initialsName" >initialsName</a>
+                            </li>
+                            <li>
+                                <a href="#logout" >logout</a>
+                            </li>
+                            <li>
+                                <a href="#navigateToHome" >navigateToHome</a>
+                            </li>
+                            <li>
+                                <a href="#navigateToLogin" >navigateToLogin</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(router: Router, menuService: <a href="../injectables/MenuService.html" target="_self">MenuService</a>, breakpointObserver: BreakpointObserver, loginService: <a href="../injectables/LoginService.html" target="_self">LoginService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/header/header.component.ts:41</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>menuService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MenuService.html" target="_self" >MenuService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>breakpointObserver</td>
+                                                  
+                                                        <td>
+                                                                    <code>BreakpointObserver</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>loginService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LoginService.html" target="_self" >LoginService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initialsName"></a>
+                    <span class="name">
+                        <span ><b>initialsName</b></span>
+                        <a href="#initialsName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>initialsName()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">src/app/header/header.component.ts:113</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logout"></a>
+                    <span class="name">
+                        <span ><b>logout</b></span>
+                        <a href="#logout"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>logout()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">src/app/header/header.component.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="navigateToHome"></a>
+                    <span class="name">
+                        <span ><b>navigateToHome</b></span>
+                        <a href="#navigateToHome"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>navigateToHome()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">src/app/header/header.component.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="navigateToLogin"></a>
+                    <span class="name">
+                        <span ><b>navigateToLogin</b></span>
+                        <a href="#navigateToLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>navigateToLogin()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">src/app/header/header.component.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">src/app/header/header.component.ts:109</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/app/header/header.component.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initials"></a>
+                    <span class="name">
+                        <span ><b>initials</b></span>
+                        <a href="#initials"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string | null</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/header/header.component.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isMobile"></a>
+                    <span class="name">
+                        <span ><b>isMobile</b></span>
+                        <a href="#isMobile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/app/header/header.component.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loginService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>loginService</b></span>
+                        <a href="#loginService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/LoginService.html" target="_self" >LoginService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/header/header.component.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logoutSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>logoutSubscription</b></span>
+                        <a href="#logoutSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription | null</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/header/header.component.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="menuItems"></a>
+                    <span class="name">
+                        <span ><b>menuItems</b></span>
+                        <a href="#menuItems"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/MenuItem.html" target="_self" >MenuItem[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    {
+      id: 0,
+      name: &#x27;Axes du CENCA&#x27;,
+      children: [], // A remplir par le service this.menuService
+    },
+    {
+      id: 1,
+      name: &#x27;Plus tard&#x27;,
+      children: [
+        {
+          id: 3,
+          name: &#x27;Vraiment plus tard&#x27;,
+          children: [],
+        },
+      ],
+    },
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/header/header.component.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  Component,
+  OnInit,
+  Input,
+  inject,
+  ViewChildren,
+  QueryList,
+  OnDestroy,
+} from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+import { RouterOutlet } from &#x27;@angular/router&#x27;;
+import { Router } from &#x27;@angular/router&#x27;;
+import { RouterModule } from &#x27;@angular/router&#x27;;
+import { BreakpointObserver, Breakpoints } from &#x27;@angular/cdk/layout&#x27;;
+
+import { MenuService } from &#x27;../menu.service&#x27;;
+import { MatMenu } from &#x27;@angular/material/menu&#x27;;
+import { MatIconModule } from &#x27;@angular/material/icon&#x27;;
+import { MatMenuModule } from &#x27;@angular/material/menu&#x27;;
+import { MatButtonModule } from &#x27;@angular/material/button&#x27;;
+import { MenuItem } from &#x27;../menuItem&#x27;;
+import { LoginService } from &#x27;../login/login.service&#x27;;
+import { Subscription } from &#x27;rxjs&#x27;;
+
+@Component({
+  selector: &#x27;app-header&#x27;,
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    RouterModule,
+    MatButtonModule,
+    MatMenuModule,
+    CommonModule,
+    MatIconModule,
+  ],
+  templateUrl: &#x27;./header.component.html&#x27;,
+  styleUrl: &#x27;./header.component.scss&#x27;,
+})
+export class HeaderComponent implements OnInit, OnDestroy {
+  public logoutSubscription: Subscription | null &#x3D; null;
+  initials: string | null &#x3D; null;
+
+  constructor(
+    private router: Router,
+    private menuService: MenuService,
+    private breakpointObserver: BreakpointObserver,
+    public loginService: LoginService
+  ) {}
+
+  isMobile: boolean &#x3D; false;
+  menuItems: MenuItem[] &#x3D; [
+    {
+      id: 0,
+      name: &#x27;Axes du CENCA&#x27;,
+      children: [], // A remplir par le service this.menuService
+    },
+    {
+      id: 1,
+      name: &#x27;Plus tard&#x27;,
+      children: [
+        {
+          id: 3,
+          name: &#x27;Vraiment plus tard&#x27;,
+          children: [],
+        },
+      ],
+    },
+  ];
+
+  ngOnInit() {
+    this.menuService.menuItems$.subscribe((items) &#x3D;&gt; {
+      this.menuItems[0].children &#x3D; items;
+    });
+
+    // Si ce n&#x27;est pas déjà fait, charger les données
+    this.menuService.loadMenuItems();
+
+    // console.log(&#x27;Menu Items at end of onInit() :&#x27;);
+    // console.log(this.menuItems);
+
+    // Détecter si c&#x27;est la version mobile
+    this.breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe((result) &#x3D;&gt; {
+        this.isMobile &#x3D; result.matches;
+      });
+  }
+
+  navigateToHome() {
+    this.router.navigate([&#x27;/&#x27;]);
+  }
+
+  // Bouton deconnexion
+  logout() {
+    this.logoutSubscription &#x3D; this.loginService.logout().subscribe({
+      next: (_) &#x3D;&gt; {
+        this.navigateToLogin();
+      },
+      error: (_) &#x3D;&gt; {
+        this.navigateToLogin();
+      },
+    });
+  }
+  // Bouton connexion
+  navigateToLogin() {
+    this.router.navigate([&#x27;login&#x27;]);
+  }
+
+  ngOnDestroy(): void {
+    this.logoutSubscription?.unsubscribe();
+  }
+
+  initialsName() {
+    if (this.loginService.user()) {
+      this.initials &#x3D;
+        this.loginService.user()!.nom[0] + this.loginService.user()!.prenom[0];
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;header&gt;
+  &lt;div *ngIf&#x3D;&quot;isMobile; then mobile; else desktop&quot;&gt;&lt;/div&gt;
+  &lt;!-- Desktop --&gt;
+  &lt;ng-template #desktop&gt;
+    &lt;div class&#x3D;&quot;conteneur&quot;&gt;
+      &lt;nav&gt;
+        &lt;div class&#x3D;&quot;logo-conteneur&quot;&gt;
+          &lt;img
+            class&#x3D;&quot;logoGrand&quot;
+            src&#x3D;&quot;../assets/images/logo/logo_couleur.jpg&quot;
+            alt&#x3D;&quot;logo du CENCA&quot;
+            (click)&#x3D;&quot;navigateToHome()&quot;
+          /&gt;
+        &lt;/div&gt;
+        &lt;div class&#x3D;&quot;menu-conteneur&quot; *ngIf&#x3D;&quot;loginService.user()&quot;&gt;
+          &lt;div class&#x3D;&quot;menu&quot;&gt;
+            &lt;ng-container *ngFor&#x3D;&quot;let item of menuItems[0].children&quot;&gt;
+              &lt;!-- Un bouton pour chaque axe du CENCA --&gt;
+              &lt;button
+                mat-button
+                [ngStyle]&#x3D;&quot;{
+                  &#x27;border-radius&#x27;: &#x27;20px&#x27;
+                }&quot;
+                [ngClass]&#x3D;&quot;item.class_color&quot;
+                [matMenuTriggerFor]&#x3D;&quot;menuButtons&quot;
+              &gt;
+                {{ item.name }}
+              &lt;/button&gt;
+              &lt;!-- Elements de l&#x27;axe en question --&gt;
+              &lt;mat-menu #menuButtons&#x3D;&quot;matMenu&quot;&gt;
+                &lt;ng-container *ngFor&#x3D;&quot;let child of item.children&quot;&gt;
+                  &lt;button
+                    mat-menu-item
+                    [ngClass]&#x3D;&quot;item.class_color&quot;
+                    *ngIf&#x3D;&quot;!child.children&quot;
+                    [routerLink]&#x3D;&quot;child.route&quot;
+                  &gt;
+                    &lt;span&gt;{{ child.name }}&lt;/span&gt;
+                  &lt;/button&gt;
+                &lt;/ng-container&gt;
+              &lt;/mat-menu&gt;
+            &lt;/ng-container&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class&#x3D;&quot;connexion&quot;&gt;
+          &lt;div class&#x3D;&quot;user&quot; *ngIf&#x3D;&quot;loginService.user()&quot;&gt;
+            &lt;button class&#x3D;&quot;btn-initiales&quot;&gt;
+              {{ loginService.user()?.initiales }}
+            &lt;/button&gt;
+            &lt;!--   &lt;img
+              src&#x3D;&quot;https://randomuser.me/api/portraits/med/women/56.jpg&quot;
+              alt&#x3D;&quot;Icône de connexion&quot;
+            /&gt;--&gt;
+            &lt;button mat-icon-button class&#x3D;&quot;btn-deconnexion&quot; (click)&#x3D;&quot;logout()&quot;&gt;
+              &lt;mat-icon&gt;logout&lt;/mat-icon&gt;
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/nav&gt;
+    &lt;/div&gt;
+  &lt;/ng-template&gt;
+
+  &lt;!-- Mobile --&gt;
+  &lt;ng-template #mobile&gt;
+    &lt;div class&#x3D;&quot;conteneur&quot;&gt;
+      &lt;nav&gt;
+        &lt;div class&#x3D;&quot;logo-conteneur&quot;&gt;
+          &lt;img
+            class&#x3D;&quot;logoPetit&quot;
+            src&#x3D;&quot;../../assets/images/logo/logocen-color-petit.png&quot;
+            alt&#x3D;&quot;logo du CENCA&quot;
+            (click)&#x3D;&quot;navigateToHome()&quot;
+          /&gt;
+        &lt;/div&gt;
+        &lt;div class&#x3D;&quot;connexion&quot; *ngIf&#x3D;&quot;loginService.user()&quot;&gt;
+          &lt;!--   &lt;img
+            src&#x3D;&quot;https://randomuser.me/api/portraits/med/women/56.jpg&quot;
+            alt&#x3D;&quot;Icône de connexion&quot;
+          /&gt;--&gt;
+          &lt;div class&#x3D;&quot;user&quot;&gt;
+            &lt;div class&#x3D;&quot;deconnexion&quot;&gt;
+              &lt;button
+                mat-button
+                class&#x3D;&quot;btn-initiales&quot;
+                [matMenuTriggerFor]&#x3D;&quot;login&quot;
+              &gt;
+                {{ loginService.user()?.initiales }}
+              &lt;/button&gt;
+              &lt;mat-menu #login&#x3D;&quot;matMenu&quot;&gt;
+                &lt;!-- Bouton deconnexion --&gt;
+                &lt;button
+                  mat-menu-item
+                  class&#x3D;&quot;btn-deconnexion&quot;
+                  (click)&#x3D;&quot;logout()&quot;
+                &gt;
+                  &lt;mat-icon&gt;logout&lt;/mat-icon&gt;
+                  Déconnexion
+                &lt;/button&gt;
+              &lt;/mat-menu&gt;
+            &lt;/div&gt;
+
+            &lt;!--   &lt;img
+                src&#x3D;&quot;https://randomuser.me/api/portraits/med/women/56.jpg&quot;
+              alt&#x3D;&quot;Icône de connexion&quot;
+            /&gt;--&gt;
+          &lt;/div&gt;
+
+          &lt;!--  Bouton du menu hamburger visible uniquement en version mobile 
+            Bouton du menu hamburger --&gt;
+          &lt;div class&#x3D;&quot;hamburger&quot; *ngIf&#x3D;&quot;isMobile&quot;&gt;
+            &lt;button
+              mat-icon-button
+              [matMenuTriggerFor]&#x3D;&quot;hamburgerMenu&quot;
+              class&#x3D;&quot;btn-hamburger&quot;
+            &gt;
+              &lt;mat-icon&gt;menu&lt;/mat-icon&gt;
+            &lt;/button&gt;
+
+            &lt;!-- Menu principal --&gt;
+            &lt;mat-menu #hamburgerMenu&#x3D;&quot;matMenu&quot;&gt;
+              &lt;ng-container *ngFor&#x3D;&quot;let item of menuItems[0].children&quot;&gt;
+                &lt;button
+                  mat-menu-item
+                  [ngClass]&#x3D;&quot;item.class_color&quot;
+                  [matMenuTriggerFor]&#x3D;&quot;item.children?.length ? subMenu : null&quot;
+                &gt;
+                  &lt;span&gt;{{ item.name }}&lt;/span&gt;
+                &lt;/button&gt;
+                &lt;mat-menu #subMenu&#x3D;&quot;matMenu&quot;&gt;
+                  &lt;ng-container *ngFor&#x3D;&quot;let child of item.children&quot;&gt;
+                    &lt;button
+                      mat-menu-item
+                      [ngClass]&#x3D;&quot;item.class_color&quot;
+                      [routerLink]&#x3D;&quot;child.route&quot;
+                      [matMenuTriggerFor]&#x3D;&quot;
+                        child.children?.length ? childSubMenu : null
+                      &quot;
+                    &gt;
+                      &lt;span&gt;{{ child.name }}&lt;/span&gt;
+                    &lt;/button&gt;
+                    &lt;mat-menu #childSubMenu&#x3D;&quot;matMenu&quot;&gt;
+                      &lt;!-- Appel récursif du template pour les sous-sous-menus --&gt;
+                      &lt;ng-container *ngFor&#x3D;&quot;let subChild of child.children&quot;&gt;
+                        &lt;button mat-menu-item [ngClass]&#x3D;&quot;item.class_color&quot;&gt;
+                          subchild {{ subChild.name }}
+                        &lt;/button&gt;
+                      &lt;/ng-container&gt;
+                    &lt;/mat-menu&gt;
+                  &lt;/ng-container&gt;
+                &lt;/mat-menu&gt;
+              &lt;/ng-container&gt;
+            &lt;/mat-menu&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/nav&gt;
+    &lt;/div&gt;
+  &lt;/ng-template&gt;
+&lt;/header&gt;
+</code></pre>
+    </div>
+
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><header>  <div *ngIf="isMobile; then mobile; else desktop"></div>  <!-- Desktop -->  <ng-template #desktop>    <div class="conteneur">      <nav>        <div class="logo-conteneur">          <img            class="logoGrand"            src="../assets/images/logo/logo_couleur.jpg"            alt="logo du CENCA"            (click)="navigateToHome()"          />        </div>        <div class="menu-conteneur" *ngIf="loginService.user()">          <div class="menu">            <ng-container *ngFor="let item of menuItems[0].children">              <!-- Un bouton pour chaque axe du CENCA -->              <button                mat-button                [ngStyle]="{                  \'border-radius\': \'20px\'                }"                [ngClass]="item.class_color"                [matMenuTriggerFor]="menuButtons"              >                {{ item.name }}              </button>              <!-- Elements de l\'axe en question -->              <mat-menu #menuButtons="matMenu">                <ng-container *ngFor="let child of item.children">                  <button                    mat-menu-item                    [ngClass]="item.class_color"                    *ngIf="!child.children"                    [routerLink]="child.route"                  >                    <span>{{ child.name }}</span>                  </button>                </ng-container>              </mat-menu>            </ng-container>          </div>        </div>        <div class="connexion">          <div class="user" *ngIf="loginService.user()">            <button class="btn-initiales">              {{ loginService.user()?.initiales }}            </button>            <!--   <img              src="https://randomuser.me/api/portraits/med/women/56.jpg"              alt="Icône de connexion"            />-->            <button mat-icon-button class="btn-deconnexion" (click)="logout()">              <mat-icon>logout</mat-icon>            </button>          </div>        </div>      </nav>    </div>  </ng-template>  <!-- Mobile -->  <ng-template #mobile>    <div class="conteneur">      <nav>        <div class="logo-conteneur">          <img            class="logoPetit"            src="../../assets/images/logo/logocen-color-petit.png"            alt="logo du CENCA"            (click)="navigateToHome()"          />        </div>        <div class="connexion" *ngIf="loginService.user()">          <!--   <img            src="https://randomuser.me/api/portraits/med/women/56.jpg"            alt="Icône de connexion"          />-->          <div class="user">            <div class="deconnexion">              <button                mat-button                class="btn-initiales"                [matMenuTriggerFor]="login"              >                {{ loginService.user()?.initiales }}              </button>              <mat-menu #login="matMenu">                <!-- Bouton deconnexion -->                <button                  mat-menu-item                  class="btn-deconnexion"                  (click)="logout()"                >                  <mat-icon>logout</mat-icon>                  Déconnexion                </button>              </mat-menu>            </div>            <!--   <img                src="https://randomuser.me/api/portraits/med/women/56.jpg"              alt="Icône de connexion"            />-->          </div>          <!--  Bouton du menu hamburger visible uniquement en version mobile             Bouton du menu hamburger -->          <div class="hamburger" *ngIf="isMobile">            <button              mat-icon-button              [matMenuTriggerFor]="hamburgerMenu"              class="btn-hamburger"            >              <mat-icon>menu</mat-icon>            </button>            <!-- Menu principal -->            <mat-menu #hamburgerMenu="matMenu">              <ng-container *ngFor="let item of menuItems[0].children">                <button                  mat-menu-item                  [ngClass]="item.class_color"                  [matMenuTriggerFor]="item.children?.length ? subMenu : null"                >                  <span>{{ item.name }}</span>                </button>                <mat-menu #subMenu="matMenu">                  <ng-container *ngFor="let child of item.children">                    <button                      mat-menu-item                      [ngClass]="item.class_color"                      [routerLink]="child.route"                      [matMenuTriggerFor]="                        child.children?.length ? childSubMenu : null                      "                    >                      <span>{{ child.name }}</span>                    </button>                    <mat-menu #childSubMenu="matMenu">                      <!-- Appel récursif du template pour les sous-sous-menus -->                      <ng-container *ngFor="let subChild of child.children">                        <button mat-menu-item [ngClass]="item.class_color">                          subchild {{ subChild.name }}                        </button>                      </ng-container>                    </mat-menu>                  </ng-container>                </mat-menu>              </ng-container>            </mat-menu>          </div>        </div>      </nav>    </div>  </ng-template></header></div>'
+    var COMPONENTS = [{'name': 'AdminComponent', 'selector': 'app-admin'},{'name': 'AdminUsersComponent', 'selector': 'app-admin-users'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BackToTopComponent', 'selector': 'app-back-to-top'},{'name': 'CardComponent', 'selector': 'app-card'},{'name': 'DetailDescriptionComponent', 'selector': 'app-detail-description'},{'name': 'DetailGestionComponent', 'selector': 'app-detail-gestion'},{'name': 'DetailHabitatsComponent', 'selector': 'app-detail-habitats'},{'name': 'DetailInfosComponent', 'selector': 'app-detail-infos'},{'name': 'DetailMfuComponent', 'selector': 'app-detail-mfu'},{'name': 'DetailProjetsComponent', 'selector': 'app-detail-projets'},{'name': 'DocumentationComponent', 'selector': 'app-documentation'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'FormButtonsComponent', 'selector': 'app-form-buttons'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoginComponent', 'selector': 'app-login'},{'name': 'MapComponent', 'selector': 'app-map'},{'name': 'ObjectifComponent', 'selector': 'app-objectif'},{'name': 'OperationComponent', 'selector': 'app-operation'},{'name': 'ProjetComponent', 'selector': 'app-dialog-operation'},{'name': 'ProjetVComponent', 'selector': 'app-dialog-operation'},{'name': 'SiteDetailComponent', 'selector': 'app-site-detail'},{'name': 'SitesComponent', 'selector': 'app-site'},{'name': 'SitesDisplayComponent', 'selector': 'app-sites-display'},{'name': 'SitesResearchComponent', 'selector': 'app-sites-research'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'HeaderComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'HeaderComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

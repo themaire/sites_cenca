@@ -1,0 +1,2148 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>site-cenca documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">site-cenca documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >FormService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/services/form.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#activeUrl" >activeUrl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#formValiditySubject" >formValiditySubject</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#cleanFormValues" >cleanFormValues</a>
+                            </li>
+                            <li>
+                                <a href="#getFormValidityObservable" >getFormValidityObservable</a>
+                            </li>
+                            <li>
+                                <a href="#getInvalidFields" >getInvalidFields</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getLibelleFromCd" >getLibelleFromCd</a>
+                            </li>
+                            <li>
+                                <a href="#getSelectValues$" >getSelectValues$</a>
+                            </li>
+                            <li>
+                                <a href="#isFormChanged" >isFormChanged</a>
+                            </li>
+                            <li>
+                                <a href="#newObjectifForm" >newObjectifForm</a>
+                            </li>
+                            <li>
+                                <a href="#newOperationForm" >newOperationForm</a>
+                            </li>
+                            <li>
+                                <a href="#newProjetForm" >newProjetForm</a>
+                            </li>
+                            <li>
+                                <a href="#newShapeForm" >newShapeForm</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#prepareProjetDataForSubmission" >prepareProjetDataForSubmission</a>
+                            </li>
+                            <li>
+                                <a href="#putBdd" >putBdd</a>
+                            </li>
+                            <li>
+                                <a href="#setFormValidity" >setFormValidity</a>
+                            </li>
+                            <li>
+                                <a href="#simpleToggle" >simpleToggle</a>
+                            </li>
+                            <li>
+                                <a href="#snackMessage" >snackMessage</a>
+                            </li>
+                            <li>
+                                <a href="#toggleFormState" >toggleFormState</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(http: HttpClient, sitesService: <a href="../injectables/SitesService.html" target="_self">SitesService</a>, projetService: <a href="../injectables/ProjetService.html" target="_self">ProjetService</a>, fb: FormBuilder, snackBar: MatSnackBar)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/services/form.service.ts:28</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>http</td>
+                                                  
+                                                        <td>
+                                                                    <code>HttpClient</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>sitesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SitesService.html" target="_self" >SitesService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>projetService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ProjetService.html" target="_self" >ProjetService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fb</td>
+                                                  
+                                                        <td>
+                                                                    <code>FormBuilder</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>snackBar</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatSnackBar</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cleanFormValues"></a>
+                    <span class="name">
+                        <span ><b>cleanFormValues</b></span>
+                        <a href="#cleanFormValues"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>cleanFormValues(formValue: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>, fields: string[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="224"
+                                    class="link-to-prism">src/app/services/form.service.ts:224</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>formValue</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>fields</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFormValidityObservable"></a>
+                    <span class="name">
+                        <span ><b>getFormValidityObservable</b></span>
+                        <a href="#getFormValidityObservable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getFormValidityObservable()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="196"
+                                    class="link-to-prism">src/app/services/form.service.ts:196</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getInvalidFields"></a>
+                    <span class="name">
+                        <span ><b>getInvalidFields</b></span>
+                        <a href="#getInvalidFields"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getInvalidFields(form: FormGroup)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">src/app/services/form.service.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>form</td>
+                                            <td>
+                                                        <code>FormGroup</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLibelleFromCd"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getLibelleFromCd</b></span>
+                        <a href="#getLibelleFromCd"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLibelleFromCd(cd_type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, list: <a href="../interfaces/SelectValue.html" target="_self">SelectValue[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">src/app/services/form.service.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>cd_type</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>list</td>
+                                            <td>
+                                                            <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSelectValues$"></a>
+                    <span class="name">
+                        <span ><b>getSelectValues$</b></span>
+                        <a href="#getSelectValues$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSelectValues$(subroute: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/app/services/form.service.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>subroute</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Observable&lt;[] | undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFormChanged"></a>
+                    <span class="name">
+                        <span ><b>isFormChanged</b></span>
+                        <a href="#isFormChanged"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isFormChanged(form: FormGroup, initialFormValue: FormGroup)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">src/app/services/form.service.ts:204</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>form</td>
+                                            <td>
+                                                        <code>FormGroup</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>initialFormValue</td>
+                                            <td>
+                                                        <code>FormGroup</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newObjectifForm"></a>
+                    <span class="name">
+                        <span ><b>newObjectifForm</b></span>
+                        <a href="#newObjectifForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>newObjectifForm(objectif?: <a href="../interfaces/Objectif.html" target="_self">Objectif</a>, projet?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">src/app/services/form.service.ts:135</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>objectif</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Objectif.html" target="_self" >Objectif</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>projet</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>FormGroup</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newOperationForm"></a>
+                    <span class="name">
+                        <span ><b>newOperationForm</b></span>
+                        <a href="#newOperationForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>newOperationForm(operation?: <a href="../interfaces/Operation.html" target="_self">Operation</a>, uuid_proj?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="154"
+                                    class="link-to-prism">src/app/services/form.service.ts:154</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>operation</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Operation.html" target="_self" >Operation</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>uuid_proj</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>FormGroup</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newProjetForm"></a>
+                    <span class="name">
+                        <span ><b>newProjetForm</b></span>
+                        <a href="#newProjetForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>newProjetForm(projet?: <a href="../interfaces/Projet.html" target="_self">Projet</a>, site?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>, isWebApp: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">src/app/services/form.service.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>projet</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Projet.html" target="_self" >Projet</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>site</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>isWebApp</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>true</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>FormGroup</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newShapeForm"></a>
+                    <span class="name">
+                        <span ><b>newShapeForm</b></span>
+                        <a href="#newShapeForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>newShapeForm(uuid_ope: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, type_geometry: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="188"
+                                    class="link-to-prism">src/app/services/form.service.ts:188</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>uuid_ope</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>type_geometry</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>FormGroup</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="prepareProjetDataForSubmission"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>prepareProjetDataForSubmission</b></span>
+                        <a href="#prepareProjetDataForSubmission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>prepareProjetDataForSubmission(form: FormGroup)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="234"
+                                    class="link-to-prism">src/app/services/form.service.ts:234</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>form</td>
+                                            <td>
+                                                        <code>FormGroup</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Projet.html" target="_self" >Projet</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="putBdd"></a>
+                    <span class="name">
+                        <span ><b>putBdd</b></span>
+                        <a href="#putBdd"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>putBdd(mode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>, table: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>, form: FormGroup, isEditMode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, snackbar: MatSnackBar, uuid?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>, initialFormValues?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="280"
+                                    class="link-to-prism">src/app/services/form.service.ts:280</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mode</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>table</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>form</td>
+                                            <td>
+                                                        <code>FormGroup</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>isEditMode</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>snackbar</td>
+                                            <td>
+                                                        <code>MatSnackBar</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>uuid</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>initialFormValues</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Observable | undefined</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setFormValidity"></a>
+                    <span class="name">
+                        <span ><b>setFormValidity</b></span>
+                        <a href="#setFormValidity"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setFormValidity(isValid: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="200"
+                                    class="link-to-prism">src/app/services/form.service.ts:200</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isValid</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="simpleToggle"></a>
+                    <span class="name">
+                        <span ><b>simpleToggle</b></span>
+                        <a href="#simpleToggle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>simpleToggle(bool: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/app/services/form.service.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>bool</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="snackMessage"></a>
+                    <span class="name">
+                        <span ><b>snackMessage</b></span>
+                        <a href="#snackMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>snackMessage(message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, code: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, snackbar: MatSnackBar)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="209"
+                                    class="link-to-prism">src/app/services/form.service.ts:209</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>message</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>code</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>snackbar</td>
+                                            <td>
+                                                        <code>MatSnackBar</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toggleFormState"></a>
+                    <span class="name">
+                        <span ><b>toggleFormState</b></span>
+                        <a href="#toggleFormState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>toggleFormState(form: FormGroup, isEditMode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, initialFormValues: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">src/app/services/form.service.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>form</td>
+                                            <td>
+                                                        <code>FormGroup</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>isEditMode</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>initialFormValues</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="activeUrl"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>activeUrl</b></span>
+                        <a href="#activeUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>environment.apiUrl</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/services/form.service.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="formValiditySubject"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>formValiditySubject</b></span>
+                        <a href="#formValiditySubject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>BehaviorSubject&lt;boolean&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new BehaviorSubject&lt;boolean&gt;(false)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/services/form.service.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { environment } from &#x27;../../environments/environment&#x27;;
+
+import { Injectable } from &#x27;@angular/core&#x27;;
+import { HttpClient } from &#x27;@angular/common/http&#x27;;
+import { FormBuilder, FormGroup, Validators, FormControl } from &#x27;@angular/forms&#x27;;
+import { BehaviorSubject, Observable, of } from &#x27;rxjs&#x27;;
+import { catchError, map, tap } from &#x27;rxjs/operators&#x27;;
+import { Projet } from &#x27;../sites/site-detail/detail-projets/projets&#x27;;
+import { Operation } from &#x27;../sites/site-detail/detail-projets/projet/operation/operations&#x27;;
+import { Objectif } from &#x27;../sites/site-detail/detail-projets/projet/objectif/objectifs&#x27;;
+import { SelectValue } from &#x27;../shared/interfaces/formValues&#x27;;
+
+
+import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;;
+
+import { SitesService } from &#x27;../sites/sites.service&#x27;;
+import { ProjetService } from &#x27;../sites/site-detail/detail-projets/projets.service&#x27;;
+
+import { v4 as uuidv4 } from &#x27;uuid&#x27;;
+
+// Des fonctions generalistes sont définies pour gérer les formulaires
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+export class FormService {
+  private activeUrl: string &#x3D; environment.apiUrl;
+  private formValiditySubject: BehaviorSubject&lt;boolean&gt; &#x3D; new BehaviorSubject&lt;boolean&gt;(false);
+
+  constructor(
+    private http: HttpClient,
+    private sitesService: SitesService, 
+    private projetService: ProjetService, 
+    private fb: FormBuilder, 
+    private snackBar: MatSnackBar,
+  ) {}
+
+  // Récupérer les valeurs de la liste déroulante
+  getSelectValues$(subroute: string): Observable&lt;SelectValue[] | undefined&gt; {
+    const url &#x3D; &#x60;${this.activeUrl}${subroute}&#x60;;
+    return this.http.get&lt;SelectValue[]&gt;(url).pipe(
+      tap(response &#x3D;&gt; {
+        console.log(&#x27;Valeurs de la liste déroulante récupérées avec succès:&#x27;, response);
+      }),
+      catchError(error &#x3D;&gt; {
+        console.error(&#x27;Erreur lors de la récupération des valeurs de la liste déroulante&#x27;, error);
+        throw error;
+      })
+    );
+  }
+  
+  // Fonction pour basculer entre deux états
+  simpleToggle(bool: boolean): boolean {
+    // Pour ajouter une opération dans le template
+    bool &#x3D; !bool;
+    return bool;
+  }
+  
+  // Changer l&#x27;état du formulaire
+  toggleFormState(form: FormGroup, isEditMode: boolean, initialFormValues: any): void {
+    if (!isEditMode) { // Si actuellement on est en mode edition
+      form.patchValue(initialFormValues); // Réinitialiser le formulaire aux valeurs initiales
+      form.disable();
+      console.log(&#x27;Formulaire plus en mode édition&#x27;);
+    } else {
+      form.enable();
+      console.log(&#x27;Formulaire passé en mode édition&#x27;);
+    }
+  }
+  
+  // Vérifier si le formulaire est valide
+  // Retourne un booléen
+  getInvalidFields(form: FormGroup): string[] {
+    const invalidFields: string[] &#x3D; [];
+    const controls &#x3D; form.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        invalidFields.push(name);
+      }
+    }
+    return invalidFields;
+  }
+
+  public getLibelleFromCd(cd_type: string, list: SelectValue[]): string {
+    const libelle &#x3D; list.find(type &#x3D;&gt; type.cd_type &#x3D;&#x3D;&#x3D; cd_type);
+    return libelle ? libelle.libelle : &#x27;&#x27;;
+  }
+  
+
+  // Créer un nouveau formulaire de projet
+
+  // Le parametre est optionnel tout comme les données indiquées à l&#x27;intérieur
+  // !!! Attention, projet.uuid_proj est généré automatiquement si non indiqué !!!
+  newProjetForm(projet?: Projet, site?: String, isWebApp: boolean &#x3D; true): FormGroup {
+    return this.fb.group({
+      uuid_proj: [projet?.uuid_proj || uuidv4()],
+      site: [site || projet?.site],
+      
+      pro_webapp: [projet?.pro_webapp !&#x3D;&#x3D; undefined ? projet.pro_webapp : isWebApp],
+      pro_surf_totale: [projet?.pro_surf_totale || true],
+      
+      // Peut etre pas nécessaire
+      document: [projet?.document || &#x27;&#x27;],
+      createur: [projet?.createur || null],
+
+      step1: this.fb.group({
+        typ_projet: [projet?.typ_projet || null, Validators.required],
+        statut: [projet?.statut || null],
+        validite: [projet?.validite || &#x27;&#x27;, Validators.required],
+        
+        annee: [projet?.annee || null],
+        pro_debut: [projet?.pro_debut || null],
+        pro_fin: [projet?.pro_fin || &#x27;&#x27;],
+        date_crea: [projet?.date_crea || null],
+        
+        nom: [projet?.nom || &#x27;&#x27;],
+        code: [projet?.code || &#x27;&#x27;],
+        responsable: [projet?.responsable || null],
+        pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
+        perspectives: [projet?.perspectives || &#x27;&#x27;],
+
+        programme: [projet?.programme || &#x27;&#x27;],
+        itin_tech: [projet?.itin_tech || &#x27;&#x27;],
+      }),
+      step2: this.fb.group({
+        pro_pression_ciblee: [projet?.pro_pression_ciblee || null],
+        pro_results_attendus: [projet?.pro_results_attendus || null],
+      }),
+    });
+  }
+
+  // Créer un nouveau formulaire de projet
+  // Le parametre est optionnel tout comme les données indiquées à l&#x27;intérieur
+  // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
+  newObjectifForm(objectif?: Objectif, projet?: String): FormGroup {
+    return this.fb.group({
+      uuid_objectif: [objectif?.uuid_objectif || uuidv4()],
+      typ_objectif: [objectif?.typ_objectif || &#x27;&#x27;, Validators.required],
+      enjeux_eco: [objectif?.enjeux_eco || &#x27;&#x27;, Validators.required],
+      nv_enjeux: [objectif?.nv_enjeux || &#x27;&#x27;, Validators.required],
+      obj_ope: [objectif?.obj_ope || &#x27;&#x27;, Validators.required],
+      attentes: [objectif?.attentes || &#x27;&#x27;],
+      surf_totale: [objectif?.surf_totale || &#x27;&#x27;],
+      unite_gestion: [objectif?.unite_gestion || &#x27;&#x27;],
+      validite: [objectif?.validite || true, Validators.required],
+      projet: [projet || objectif?.projet],
+      surf_prevue: [objectif?.surf_prevue || null],
+    });
+  }
+
+
+  // Créer un nouveau formulaire d&#x27;opération
+  // Le parametre est optionnel tout comme les données indiquées à l&#x27;intérieur
+  newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
+    return this.fb.group({
+
+      uuid_ope: [operation?.uuid_ope || uuidv4()],
+      ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
+      code: [operation?.code || &#x27;&#x27;],
+      titre: [operation?.titre || &#x27;&#x27;, Validators.required],
+      inscrit_pdg: [operation?.inscrit_pdg || &#x27;&#x27;],
+      rmq_pdg: [operation?.rmq_pdg || &#x27;&#x27;],
+      description: [operation?.description || &#x27;&#x27;],
+      interv_zh: [operation?.interv_zh || &#x27;&#x27;],
+
+      surf: [operation?.surf || null],
+      lin: [operation?.lin || null],
+      app_fourr: [operation?.app_fourr || null],
+      pression_moy: [operation?.pression_moy || null],
+      ugb_moy: [operation?.ugb_moy || null],
+      nbjours: [operation?.nbjours || null],
+      charge_moy: [operation?.charge_moy || null],
+      charge_inst: [operation?.charge_inst || null],
+      remarque: [operation?.remarque || &#x27;&#x27;],
+      validite: [operation?.validite || false],
+      action: [operation?.action || &#x27;&#x27;, Validators.required],
+      objectif: [operation?.objectif || &#x27;&#x27;],
+
+      typ_intervention: [operation?.typ_intervention || &#x27;NR&#x27;, Validators.required],
+      date_debut: [operation?.date_debut || null],
+      date_fin: [operation?.date_fin || null],
+      date_approx: [operation?.date_approx || &#x27;&#x27;],
+      ben_participants: [operation?.ben_participants || null],
+      ben_heures: [operation?.ben_heures || null]
+    });
+  }
+
+  newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {
+    return this.fb.group({
+      uuid_ope: [uuid_ope || null, Validators.required],
+      type_geometry: [type_geometry || null, Validators.required],
+      shapefile: [null, Validators.required]
+    });
+  }
+  
+  getFormValidityObservable(): Observable&lt;boolean&gt; {
+    return this.formValiditySubject.asObservable();
+  }
+  
+  setFormValidity(isValid: boolean): void {
+    this.formValiditySubject.next(isValid);
+  }
+  
+  isFormChanged(form: FormGroup, initialFormValue: FormGroup): boolean {
+    // Vérifie si le formulaire a été modifié
+    return JSON.stringify(form.value) !&#x3D;&#x3D; JSON.stringify(initialFormValue);
+  }
+  
+  snackMessage(message: string, code: number, snackbar: MatSnackBar): void {
+    // Afficher le message dans le Snackbar
+    if (Number(code) &#x3D;&#x3D;&#x3D; 0) {
+      this.snackBar.open(message, &#x27;Fermer&#x27;, {
+        duration: 3000,
+        panelClass: [&#x27;snackbar-success&#x27;]
+      });
+    } else {
+      this.snackBar.open(message, &#x27;Fermer&#x27;, {
+        duration: 3000,
+        panelClass: [&#x27;snackbar-error&#x27;]
+      });
+    }
+  }
+  
+  cleanFormValues(formValue: any, fields: string[]): any {
+    // Sert a transformer les champs vides (undiefined) en null
+    const cleanedFormValue &#x3D; { ...formValue };
+    fields.forEach(field &#x3D;&gt; {
+      if (!cleanedFormValue[field]) {
+        cleanedFormValue[field] &#x3D; null; // ou une valeur par défaut
+      }
+    });
+    return cleanedFormValue;
+  }
+  private prepareProjetDataForSubmission(form: FormGroup): Projet {
+    const fieldsToClean &#x3D; [
+      &#x27;document&#x27;,
+      &#x27;pro_debut&#x27;,
+      &#x27;pro_fin&#x27;,
+      &#x27;pro_pression_ciblee&#x27;,
+      &#x27;pro_results_attendus&#x27;,
+    ];
+    const formValue &#x3D; this.cleanFormValues(form.value, fieldsToClean);
+    const dataToSubmit: Projet &#x3D; {
+      uuid_proj: formValue.uuid_proj,
+      site: formValue.site,
+      pro_webapp: formValue.pro_webapp,
+      document: formValue.document,
+      createur: formValue.createur,
+
+      // Step 1
+      typ_projet: formValue.step1.typ_projet,
+      statut: formValue.step1.statut,
+      validite: formValue.step1.validite,
+
+      annee: formValue.step1.annee,
+      pro_debut: formValue.step1.pro_debut,
+      pro_fin: formValue.step1.pro_fin,
+      date_crea: formValue.step1.date_crea,
+
+      nom: formValue.step1.nom,
+      code: formValue.step1.code,
+      responsable: formValue.step1.responsable,
+      pro_maitre_ouvrage: formValue.step1.pro_maitre_ouvrage,
+      perspectives: formValue.step1.pro_pression_ciblee,
+
+      programme: formValue.step1.programme,
+      itin_tech: formValue.step1.itin_tech,
+
+      // Step 2
+      pro_pression_ciblee: formValue.step2.pro_pression_ciblee,
+      pro_results_attendus: formValue.step2.pro_results_attendus,
+    };
+
+    console.log(&quot;Données du formulaire PROJET nettoyé juste avant d&#x27;etre envoyé vers le backend pour INSERT /UPDATE :&quot;);
+    console.log(dataToSubmit);
+
+    return dataToSubmit;
+  }
+
+  putBdd(mode: String, table: String, form: FormGroup, isEditMode: boolean, snackbar: MatSnackBar, uuid?: String, initialFormValues?: any): Observable&lt;{ isEditMode: boolean, formValue: any }&gt; | undefined {
+    // Cette fonction permet de sauvegarder les modifications
+    // Vérifie si le formulaire est valide
+    // Envoie les modifications au serveur
+    // Affiche un message dans le Snackbar
+    // Sort du mode édition après la sauvegarde (passe this.isEditMode à false)à false en cas de succès)
+    
+    // Vérifier si le formulaire a été modifié
+    if(mode &#x3D;&#x3D;&#x3D; &#x27;update&#x27; &amp;&amp; initialFormValues !&#x3D; null) {
+      if (!this.isFormChanged(form, initialFormValues)) {
+        // Si pas changé
+        this.snackBar.open(&#x27;Aucune donnée modifiée&#x27;, &#x27;Fermer&#x27;, {
+          duration: 3000,
+          panelClass: [&#x27;snackbar-info&#x27;]
+        });
+        isEditMode &#x3D; false; // Sortir du mode édition tout simplement
+        return of({
+          isEditMode: false,
+          formValue: form.value
+        });
+      }
+    }
+  
+    if (form.valid) {
+      let value &#x3D; {};
+
+      // Nettoyer les champs de date pour les projets 
+      if (table &#x3D;&#x3D;&#x3D; &#x27;projets&#x27;) {
+        const fieldsToClean &#x3D; [
+          &#x27;document&#x27;,
+          &#x27;pro_debut&#x27;,
+          &#x27;pro_fin&#x27;,
+          &#x27;pro_pression_ciblee&#x27;,
+          &#x27;pro_results_attendus&#x27;,
+        ];
+
+        // Nettoyer les champs de date
+        // value &#x3D; this.cleanFormValues(form.value, fieldsToClean); // En test --- à supprimer
+        value &#x3D; this.prepareProjetDataForSubmission(form);
+
+        console.log(&#x27;Données du formulaire nettoyé :&#x27;, value);
+      } else {
+        // Si ce n&#x27;est pas un projet
+        value &#x3D; form.value;
+      }
+
+      console.log(&#x27;------- DEBUG :&#x27;);
+      console.log(&#x27;Données du formulaire value tout court :&#x27;, value);
+      console.log(&#x27;mode actuel :&#x27; + mode + &#x27;. Table de travail :&#x27;, table, &#x27;. uuid :&#x27;, uuid);
+
+      
+      // Envoi des modifications au serveur
+      if (mode &#x3D;&#x3D;&#x3D; &#x27;update&#x27; &amp;&amp; uuid !&#x3D; null) {
+        return this.sitesService.updateTable(table, uuid, value).pipe(
+          map(response &#x3D;&gt; {
+            console.log(table + &#x27; mis à jour avec succès:&#x27;, response);
+            isEditMode &#x3D; false; // Sortir du mode édition après la sauvegarde
+
+            // Afficher le message dans le Snackbar
+            const message &#x3D; String(response.message); // Conversion en string
+            this.snackMessage(message, response.code, snackbar);
+
+            form.disable(); // Désactiver le formulaire après la sauvegarde
+            // Retourner l&#x27;objet avec isEditMode et formValue
+            return {
+              isEditMode: false,
+              formValue: form.value
+            };
+          }),
+          tap(() &#x3D;&gt; {
+            console.log(&#x27;Mise à jour réussie&#x27;);
+          }),
+          catchError(error &#x3D;&gt; {
+            console.error(&#x27;Erreur lors de la mise à jour&#x27;, error);
+            throw error;
+          })
+        );
+      }else if (mode &#x3D; &#x27;insert&#x27;) {
+        return this.sitesService.insertTable(table, value).pipe(
+          map(response &#x3D;&gt; {
+            console.log(table + &#x27; insérés avec succès:&#x27;, response);
+            isEditMode &#x3D; false; // Sortir du mode édition après la sauvegarde
+
+            // Afficher le message dans le Snackbar
+            const message &#x3D; String(response.message); // Conversion en string
+            this.snackMessage(message, response.code, snackbar);
+
+            form.disable(); // Désactiver le formulaire après la sauvegarde
+            // Retourner l&#x27;objet avec isEditMode et formValue
+            return {
+              isEditMode: false,
+              formValue: form.value
+            };
+          }),
+          tap(() &#x3D;&gt; {
+            console.log(&#x27;Insertion réussie&#x27;);
+          }),
+          catchError(error &#x3D;&gt; {
+            console.error(&#x27;Erreur lors de l\&#x27;insertion&#x27;, error);
+            throw error;
+          })
+        );
+      }
+      return;
+    } else {
+      console.error(&#x27;Formulaire invalide&#x27;);
+      const invalidFields &#x3D; this.getInvalidFields(form);
+      const message &#x3D; &#x60;Formulaire invalide. Champs obligatoires manquants : ${invalidFields.join(&#x27;, &#x27;)}&#x60;;
+      this.snackBar.open(message, &#x27;Fermer&#x27;, {
+        duration: 3000,
+        panelClass: [&#x27;snackbar-error&#x27;]
+      });
+      return undefined;
+    }
+  }
+}</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'FormService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
