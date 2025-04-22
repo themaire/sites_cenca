@@ -110,6 +110,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   @ViewChild('matTable') table!: MatTable<OperationLite>;
   @ViewChild('fileInput') fileInput!: ElementRef;
 
+  private isComponentInitialized: boolean = false; // Pour savoir si le composant est initialisé
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
   private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
@@ -131,18 +132,32 @@ export class OperationComponent implements OnInit, OnDestroy {
   // Listes de choix des types d'opération
   operationTypesFamilles!: SelectValue[];
 
-  // Getter et setter
+  // Getter et setter pour selectedOperationFamille
   private _selectedOperationFamille: string = '';
   get selectedOperationFamille(): string {
     return this._selectedOperationFamille;
   }
   set selectedOperationFamille(value: string) {
+    // console.log('Setter appelé avec la valeur :', value);
+  
+    // Mettre à jour la valeur interne
     this._selectedOperationFamille = value;
-    this.selectedOperationType = ''; // Réinitialiser selectedOperationType
-
-    // Vérifier si this.form est une instance de FormGroup et si le champ action_2 existe avant de le réinitialiser
+  
+    // Ignorer la réinitialisation si le composant n'est pas encore complètement initialisé
+    if (!this.isComponentInitialized) {
+      console.log('Ignoré car le composant est en cours de chargement.');
+      return;
+    }
+  
+    // Réinitialiser selectedOperationType
+    this.selectedOperationType = '';
+  
+    // Réinitialiser le champ action_2 du formulaire si nécessaire
     if (this.form instanceof FormGroup && this.form.get('action_2')) {
-      this.form.get('action_2')!.reset('', { emitEvent: false }); // Réinitialiser sans émettre d'événement
+      this.form.get('action_2')!.reset('', { emitEvent: false });
+      console.log('Le champ du formulaire action_2 réinitialisé à vide');
+    } else {
+      console.warn('Le champ action_2 est introuvable ou le formulaire n\'est pas initialisé.');
     }
   }
   
@@ -159,6 +174,39 @@ export class OperationComponent implements OnInit, OnDestroy {
   
   programmeTypes!: SelectValue[];
   selectedProgrammeType: string = '';
+  
+  cadreInterventionTypes!: SelectValue[];
+  // selectedCadreInterventionType: string = '';
+  // Getter et setter pour selectedOperationFamille
+  private _selectedCadreInterventionType: number = 0;
+  get selectedCadreInterventionType(): number {
+    return this._selectedCadreInterventionType;
+  }
+  set selectedCadreInterventionType(value: number) {
+    console.log('Setter de selectedCadreInterventionType appelé avec la valeur :', value);
+  
+    // Mettre à jour la valeur interne
+    this._selectedCadreInterventionType = value;
+  
+    // Ignorer la réinitialisation si le composant n'est pas encore complètement initialisé
+    if (!this.isComponentInitialized) {
+      console.log('Ignoré car le composant est en cours de chargement.');
+      return;
+    }
+  
+    // Réinitialiser selectedOperationType
+    this.selectedCadreInterventionType = 0;
+  
+    // Réinitialiser le champ action_2 du formulaire si nécessaire
+    if (this.form instanceof FormGroup && this.form.get('cadre_intervention_detail')) {
+      this.form.get('cadre_intervention_detail')!.reset(null, { emitEvent: false });
+      console.log('Le champ du formulaire cadre_intervention_detail réinitialisé à vide');
+    } else {
+      console.warn('Le champ cadre_intervention_detail est introuvable ou le formulaire n\'est pas initialisé.');
+    }
+  }
+
+  chantierNatureTypes!: SelectValue[];
 
   onProgrammeChange(value: string): void {
     this.selectedProgrammeType = value;
@@ -284,12 +332,36 @@ export class OperationComponent implements OnInit, OnDestroy {
       }
     );
 
-    const subrouteInterventions = `sites/selectvalues=${'ope.typ_interventions'}`;
-    this.formService.getSelectValues$(subrouteInterventions).subscribe(
+    const subrouteMaitreOeuvre = `sites/selectvalues=${'ope.typ_interventions'}`;
+    this.formService.getSelectValues$(subrouteMaitreOeuvre).subscribe(
       (selectValues: SelectValue[] | undefined) => {
         console.log('Liste de choix actions récupérée avec succès :');
         console.log(selectValues);
         this.maitreOeuvreTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
+    const subrouteCadreInterventions = `sites/selectvalues=${'opegerer.libelles'}/cadre_intervention`;
+    this.formService.getSelectValues$(subrouteCadreInterventions).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log("Liste de choix des cadres d'intervention récupérée avec succès :");
+        console.log(selectValues);
+        this.cadreInterventionTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
+    const subrouteChantierNature = `sites/selectvalues=${'opegerer.libelles'}/chantier_nature`;
+    this.formService.getSelectValues$(subrouteChantierNature).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log("Liste de choix des chantiers nature récupérée avec succès :");
+        console.log(selectValues);
+        this.chantierNatureTypes = selectValues || [];
       },
       (error) => {
         console.error('Erreur lors de la récupération de la liste de choix', error);
@@ -303,6 +375,10 @@ export class OperationComponent implements OnInit, OnDestroy {
         setTimeout(async () => {
           // Accéder à la liste des opérations et remplir le tableau Material des operationLite
           this.fetch();
+          // Marquer le composant comme complètement initialisé
+          this.isComponentInitialized = true;
+          console.log('Le composant est maintenant complètement initialisé.');
+
         }, this.loadingDelay);// Fin du bloc timeout
         this.isLoading = false;  // Le chargement est terminé
       } else {

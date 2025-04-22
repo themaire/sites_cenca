@@ -298,9 +298,18 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     console.log('Destruction du composant, on se désabonne.');
   }
 
-  getLibelle(cd_type: string, list: SelectValue[]): string {
-    const libelle = this.formService.getLibelleFromCd(cd_type, list);
-    return libelle;
+  // getLibelle(cd_type: string, list: SelectValue[]): string {
+  //   const libelle = this.formService.getLibelleFromCd(cd_type, list);
+  //   return libelle;
+  // }
+
+  public getLibelle(cd_type: string, list: SelectValue[] | undefined): string {
+    if (!list) {
+      console.warn('La liste est undefined ou null dans getLibelleFromCd.');
+      return '';
+    }
+    const libelle = list.find(type => type.cd_type === cd_type);
+    return libelle ? libelle.libelle : '';
   }
 
 

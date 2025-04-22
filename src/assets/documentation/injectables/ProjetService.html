@@ -1179,7 +1179,7 @@ export class ProjetService {
     // }
   
   deleteOperation(uuid_ope: string): Observable&lt;ApiResponse&gt; {
-    return this.http.delete&lt;ApiResponse&gt;(&#x60;${this.activeUrl}/opegerer.operations/${uuid_ope}&#x60;).pipe(
+    return this.http.delete&lt;ApiResponse&gt;(&#x60;${this.activeUrl}delete/opegerer.operations/uuid&#x3D;${uuid_ope}&#x60;).pipe(
       catchError(error &#x3D;&gt; {
         console.error(&quot;Erreur lors de la suppression de l&#x27;opération:&quot;, error);
         return of({ success: false, message: &quot;Erreur lors de la suppression de l&#x27;opération&quot; } as ApiResponse);

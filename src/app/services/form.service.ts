@@ -162,8 +162,7 @@ export class FormService {
   // Créer un nouveau formulaire d'opération
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
-    return this.fb.group({
-
+    const form = this.fb.group({
       uuid_ope: [operation?.uuid_ope || uuidv4()],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
       obj_ope: [operation?.obj_ope || '', Validators.required],
@@ -173,7 +172,7 @@ export class FormService {
       rmq_pdg: [operation?.rmq_pdg || ''],
       description: [operation?.description || '', [this.minWordsValidator(2)]],
       interv_zh: [operation?.interv_zh || ''],
-
+  
       surf: [operation?.surf || null],
       lin: [operation?.lin || null],
       app_fourr: [operation?.app_fourr || null],
@@ -186,8 +185,10 @@ export class FormService {
       validite: [operation?.validite],
       action: [operation?.action || '', Validators.required],
       action_2: [operation?.action_2 || '', Validators.required],
+      cadre_intervention: [operation?.cadre_intervention || null, Validators.required],
+      cadre_intervention_detail: [operation?.cadre_intervention_detail || null], // Pas encore requis
       objectif: [operation?.objectif || ''],
-
+  
       typ_intervention: [operation?.typ_intervention || '', Validators.required],
       nom_mo: [operation?.nom_mo || '', Validators.required],
       date_debut: [operation?.date_debut || null],
@@ -195,9 +196,23 @@ export class FormService {
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null],
-
+  
       programme: [operation?.programme || '', Validators.required],
     });
+  
+    // Ajouter une validation conditionnelle pour cadre_intervention_detail
+    // Cela rechange le formulaire en fonction de la valeur de cadre_intervention
+    form.get('cadre_intervention')?.valueChanges.subscribe((value) => {
+      const cadreDetailControl = form.get('cadre_intervention_detail');
+      if (value === 12) {
+        cadreDetailControl?.setValidators(Validators.required); // Rendre requis
+      } else {
+        cadreDetailControl?.clearValidators(); // Supprimer les validateurs
+      }
+      cadreDetailControl?.updateValueAndValidity(); // Mettre à jour la validité
+    });
+  
+    return form;
   }
 
   newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {

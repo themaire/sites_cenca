@@ -117,11 +117,10 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
           <mat-form-field>
             <mat-label>Type d'opération 1</mat-label>
-            <mat-select formControlName="action">
-              @for (type of operationTypesFamilles; track type) {
-                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
-                <!-- <mat-option [value]="type.cd_type">{{type.libelle}} -- {{type.cd_type}}</mat-option> -->
-              }
+            <mat-select [(ngModel)]="selectedOperationFamille" formControlName="action">
+              <mat-option *ngFor="let type of operationTypesFamilles" [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
             </mat-select>
           </mat-form-field>
 
@@ -129,7 +128,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           <ng-container *ngIf="selectedOperationFamille != ''">
             <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '027_TRAV_MECA_V2'">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select formControlName="action_2">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesMeca; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
@@ -137,7 +136,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-form-field>
             <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '028_TRAV_PAT_V2'">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select formControlName="action_2">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesPat; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
@@ -145,7 +144,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-form-field>
             <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '008_TRAV_AMEN_V2'">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select formControlName="action_2">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesAme; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
@@ -153,7 +152,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-form-field>
             <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '005_TRAV_HYDRO_V2'">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select formControlName="action_2">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesHydro; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
@@ -161,7 +160,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-form-field>
             <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '200_TRAV_DECH_V2'">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select formControlName="action_2">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesDech; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
@@ -226,7 +225,22 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
         <div>
-          Cadre de l'intervention
+          <mat-form-field>
+            <mat-label>Cadre de l'intervention</mat-label>
+            <mat-select [(ngModel)]="selectedCadreInterventionType" formControlName="cadre_intervention">
+              <mat-option *ngFor="let type of cadreInterventionTypes" [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngIf ="selectedCadreInterventionType !== undefined && selectedCadreInterventionType == 12">
+            <mat-label>Détail du cadre</mat-label>
+            <mat-select formControlName="cadre_intervention_detail">
+              @for (type of chantierNatureTypes; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
         <div>
           <button mat-button matStepperPrevious>Retour</button>

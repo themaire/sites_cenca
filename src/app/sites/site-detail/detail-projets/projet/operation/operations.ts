@@ -42,5 +42,7 @@ export interface OperationLite {
     ref_loc_id?: Number;
     nom_mo?: string;
     programme?: string;
+    cadre_intervention?: number;
+    cadre_intervention_detail?: number;
   }
   

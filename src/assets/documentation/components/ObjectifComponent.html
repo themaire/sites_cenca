@@ -2352,7 +2352,7 @@ export class ObjectifComponent {
     const subrouteTypeOpe &#x3D; &#x60;sites/selectvalues&#x3D;${&#x27;opegerer.typ_objectifope&#x27;}&#x60;;
     this.formService.getSelectValues$(subrouteTypeOpe).subscribe(
       (selectValues: SelectValue[] | undefined) &#x3D;&gt; {
-        console.log(&#x27;Liste de choix typ_objectifs récupérée avec succès :&#x27;);
+        console.log(&#x27;Liste de choix typ_objectifope récupérée avec succès :&#x27;);
         console.log(selectValues);
         this.typeObjectifOpe &#x3D; selectValues || [];
       },
