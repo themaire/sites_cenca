@@ -139,6 +139,12 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   //   {value: 'SEN', viewValue: 'Sensibilisation et Communication'},
   // ];
 
+  statusTypes: SelectValue[] = [
+    {cd_type: 'En cours', libelle: 'En cours'},
+    {cd_type: 'Terminé', libelle: 'Terminé'},
+    {cd_type: 'Annulé', libelle: 'Annulé'},
+  ];
+
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
@@ -178,10 +184,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // !! Le backend ne fera pas la meme requete SQL si on est en gestion ou autre
     // Il s'agira de deux schémas different où les données sont stockées
     const subroute = `projets/uuid=${uuid_proj}/full/${type}`; // Full puisque UN SEUL projet
-        console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
-        const projet = await this.sitesService.getProjet(subroute);
-        if (projet.typ_projet) this.selectedProjetType = projet.typ_projet;
-        return projet;
+    console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
+    const projet = await this.sitesService.getProjet(subroute);
+    if (projet.typ_projet) this.selectedProjetType = projet.typ_projet; // Assigner le type de projet sélectionné à la variable
+    return projet;
   }
 
   get step1Form(): FormGroup {

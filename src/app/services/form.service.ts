@@ -2,14 +2,13 @@ import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Projet } from '../sites/site-detail/detail-projets/projets';
 import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
 import { Objectif } from '../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { SelectValue } from '../shared/interfaces/formValues';
-
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -34,6 +33,17 @@ export class FormService {
     private fb: FormBuilder, 
     private snackBar: MatSnackBar,
   ) {}
+
+  // Validation personnalisée pour vérifier qu'un champ contient au moins 2 mots si non vide
+  minWordsValidator(minWords: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.trim().length === 0) {
+        return null; // Pas d'erreur si le champ est vide
+      }
+      const wordCount = control.value.trim().split(/\s+/).length;
+      return wordCount >= minWords ? null : { minWords: true };
+    };
+  }
 
   // Récupérer les valeurs de la liste déroulante
   getSelectValues$(subroute: string): Observable<SelectValue[] | undefined> {
@@ -156,11 +166,12 @@ export class FormService {
 
       uuid_ope: [operation?.uuid_ope || uuidv4()],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
+      obj_ope: [operation?.obj_ope || '', Validators.required],
       code: [operation?.code || ''],
-      titre: [operation?.titre || '', Validators.required],
+      titre: [operation?.titre || ''],
       inscrit_pdg: [operation?.inscrit_pdg || ''],
       rmq_pdg: [operation?.rmq_pdg || ''],
-      description: [operation?.description || ''],
+      description: [operation?.description || '', [this.minWordsValidator(2)]],
       interv_zh: [operation?.interv_zh || ''],
 
       surf: [operation?.surf || null],
@@ -171,17 +182,21 @@ export class FormService {
       nbjours: [operation?.nbjours || null],
       charge_moy: [operation?.charge_moy || null],
       charge_inst: [operation?.charge_inst || null],
-      remarque: [operation?.remarque || ''],
-      validite: [operation?.validite || false],
+      remarque: [operation?.remarque || '', this.minWordsValidator(2)],
+      validite: [operation?.validite],
       action: [operation?.action || '', Validators.required],
+      action_2: [operation?.action_2 || '', Validators.required],
       objectif: [operation?.objectif || ''],
 
-      typ_intervention: [operation?.typ_intervention || 'NR', Validators.required],
+      typ_intervention: [operation?.typ_intervention || '', Validators.required],
+      nom_mo: [operation?.nom_mo || '', Validators.required],
       date_debut: [operation?.date_debut || null],
       date_fin: [operation?.date_fin || null],
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
-      ben_heures: [operation?.ben_heures || null]
+      ben_heures: [operation?.ben_heures || null],
+
+      programme: [operation?.programme || '', Validators.required],
     });
   }
 

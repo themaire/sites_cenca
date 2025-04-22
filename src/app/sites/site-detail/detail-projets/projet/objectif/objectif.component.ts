@@ -145,7 +145,7 @@ export class ObjectifComponent {
     const subrouteTypeOpe = `sites/selectvalues=${'opegerer.typ_objectifope'}`;
     this.formService.getSelectValues$(subrouteTypeOpe).subscribe(
       (selectValues: SelectValue[] | undefined) => {
-        console.log('Liste de choix typ_objectifs récupérée avec succès :');
+        console.log('Liste de choix typ_objectifope récupérée avec succès :');
         console.log(selectValues);
         this.typeObjectifOpe = selectValues || [];
       },
