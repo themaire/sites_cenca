@@ -1,0 +1,2995 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>site-cenca documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">site-cenca documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  ObjectifComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-objectif</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                            <code>CommonModule</code>
+                                <code><a href="../components/OperationComponent.html" target="_self" >OperationComponent</a></code>
+                                <code><a href="../components/FormButtonsComponent.html" target="_self" >FormButtonsComponent</a></code>
+                            <code>FormsModule</code>
+                            <code>ReactiveFormsModule</code>
+                            <code>MatTabsModule</code>
+                            <code>MatSnackBarModule</code>
+                            <code>MatSelectModule</code>
+                            <code>MatIconModule</code>
+                            <code>MatFormFieldModule</code>
+                            <code>MatInputModule</code>
+                            <code>MatDatepickerModule</code>
+                            <code>MatNativeDateModule</code>
+                            <code>MatProgressSpinnerModule</code>
+                            <code>MatTableModule</code>
+                            <code>MatSlideToggleModule</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./objectif.component.html</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrl</td>
+                <td class="col-md-9"><code>./objectif.component.scss</code></td>
+            </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_adapter" >_adapter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_intl" >_intl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_locale" >_locale</a>
+                            </li>
+                            <li>
+                                <a href="#dataSource" >dataSource</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#dateFormatString" >dateFormatString</a>
+                            </li>
+                            <li>
+                                <a href="#displayedColumns" >displayedColumns</a>
+                            </li>
+                            <li>
+                                <a href="#form" >form</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#formObjSubscription" >formObjSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#initialFormValues" >initialFormValues</a>
+                            </li>
+                            <li>
+                                <a href="#isAddOperation" >isAddOperation</a>
+                            </li>
+                            <li>
+                                <a href="#isEditOperation" >isEditOperation</a>
+                            </li>
+                            <li>
+                                <a href="#isFormValid" >isFormValid</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                <a href="#linearMode" >linearMode</a>
+                            </li>
+                            <li>
+                                <a href="#loadingDelay" >loadingDelay</a>
+                            </li>
+                            <li>
+                                <a href="#nbObjectifs" >nbObjectifs</a>
+                            </li>
+                            <li>
+                                <a href="#NvEnjeux" >NvEnjeux</a>
+                            </li>
+                            <li>
+                                <a href="#objectif" >objectif</a>
+                            </li>
+                            <li>
+                                <a href="#objectifs" >objectifs</a>
+                            </li>
+                            <li>
+                                <a href="#selectedNvEnjeux" >selectedNvEnjeux</a>
+                            </li>
+                            <li>
+                                <a href="#selectedOperation" >selectedOperation</a>
+                            </li>
+                            <li>
+                                <a href="#selectedtypeObjectif" >selectedtypeObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#selectedtypeObjectifOpe" >selectedtypeObjectifOpe</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#table" >table</a>
+                            </li>
+                            <li>
+                                <a href="#typeObjectif" >typeObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#typeObjectifOpe" >typeObjectifOpe</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetch" >fetch</a>
+                            </li>
+                            <li>
+                                <a href="#getInvalidFields" >getInvalidFields</a>
+                            </li>
+                            <li>
+                                <a href="#getLibelle" >getLibelle</a>
+                            </li>
+                            <li>
+                                <a href="#handleAddOperationChange" >handleAddOperationChange</a>
+                            </li>
+                            <li>
+                                <a href="#handleEditOperationChange" >handleEditOperationChange</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#makeForm" >makeForm</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onSubmit" >onSubmit</a>
+                            </li>
+                            <li>
+                                <a href="#subscribeToForm" >subscribeToForm</a>
+                            </li>
+                            <li>
+                                <a href="#toggleEditObjectif" >toggleEditObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#unsubForm" >unsubForm</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#geojson_site" >geojson_site</a>
+                            </li>
+                            <li>
+                                <a href="#isAddObjectif" >isAddObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#isEditObjectif" >isEditObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#isEditProjet" >isEditProjet</a>
+                            </li>
+                            <li>
+                                <a href="#new_projet" >new_projet</a>
+                            </li>
+                            <li>
+                                <a href="#projetEditMode" >projetEditMode</a>
+                            </li>
+                            <li>
+                                <a href="#rattachementOperation" >rattachementOperation</a>
+                            </li>
+                            <li>
+                                <a href="#ref_uuid_proj" >ref_uuid_proj</a>
+                            </li>
+                            <li>
+                                <a href="#uuid_projet" >uuid_projet</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#isAddFromObjectif" >isAddFromObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#isEditFromObjectif" >isEditFromObjectif</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(cdr: ChangeDetectorRef, formService: <a href="../injectables/FormService.html" target="_self">FormService</a>, fb: FormBuilder, projetService: <a href="../injectables/ProjetService.html" target="_self">ProjetService</a>, snackBar: MatSnackBar)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="110" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:110</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>cdr</td>
+                                                  
+                                                        <td>
+                                                                    <code>ChangeDetectorRef</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>formService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FormService.html" target="_self" >FormService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fb</td>
+                                                  
+                                                        <td>
+                                                                    <code>FormBuilder</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>projetService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ProjetService.html" target="_self" >ProjetService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>snackBar</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatSnackBar</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="geojson_site"></a>
+                        <b>geojson_site</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:60</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isAddObjectif"></a>
+                        <b>isAddObjectif</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:98</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isEditObjectif"></a>
+                        <b>isEditObjectif</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:97</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isEditProjet"></a>
+                        <b>isEditProjet</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:62</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="new_projet"></a>
+                        <b>new_projet</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:64</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="projetEditMode"></a>
+                        <b>projetEditMode</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="101" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:101</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="rattachementOperation"></a>
+                        <b>rattachementOperation</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:59</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ref_uuid_proj"></a>
+                        <b>ref_uuid_proj</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:107</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="uuid_projet"></a>
+                        <b>uuid_projet</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:63</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isAddFromObjectif"></a>
+                        <b>isAddFromObjectif</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:100</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isEditFromObjectif"></a>
+                        <b>isEditFromObjectif</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:99</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetch"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetch</b></span>
+                        <a href="#fetch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetch(uuid_objectif?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="304"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:304</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>uuid_objectif</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Objectif.html" target="_self" >Promise&lt;Objectif | void&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getInvalidFields"></a>
+                    <span class="name">
+                        <span ><b>getInvalidFields</b></span>
+                        <a href="#getInvalidFields"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getInvalidFields()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="274"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:274</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLibelle"></a>
+                    <span class="name">
+                        <span ><b>getLibelle</b></span>
+                        <a href="#getLibelle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getLibelle(cd_type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, list: <a href="../interfaces/SelectValue.html" target="_self">SelectValue[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:210</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>cd_type</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>list</td>
+                                            <td>
+                                                            <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleAddOperationChange"></a>
+                    <span class="name">
+                        <span ><b>handleAddOperationChange</b></span>
+                        <a href="#handleAddOperationChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleAddOperationChange(isAdd: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="485"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:485</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isAdd</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleEditOperationChange"></a>
+                    <span class="name">
+                        <span ><b>handleEditOperationChange</b></span>
+                        <a href="#handleEditOperationChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleEditOperationChange(isEdit: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="480"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:480</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isEdit</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="makeForm"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>makeForm</b></span>
+                        <a href="#makeForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>makeForm(undefined: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="341"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:341</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>{}</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:205</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="126"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSubmit"></a>
+                    <span class="name">
+                        <span ><b>onSubmit</b></span>
+                        <a href="#onSubmit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSubmit(mode?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="402"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:402</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mode</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscribeToForm"></a>
+                    <span class="name">
+                        <span ><b>subscribeToForm</b></span>
+                        <a href="#subscribeToForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>subscribeToForm()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="224"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:224</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toggleEditObjectif"></a>
+                    <span class="name">
+                        <span ><b>toggleEditObjectif</b></span>
+                        <a href="#toggleEditObjectif"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>toggleEditObjectif(mode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="240"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:240</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mode</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unsubForm"></a>
+                    <span class="name">
+                        <span ><b>unsubForm</b></span>
+                        <a href="#unsubForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>unsubForm()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="216"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:216</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_adapter"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_adapter</b></span>
+                        <a href="#_adapter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject&lt;DateAdapter&lt;unknown, unknown&gt;&gt;(DateAdapter)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_intl"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_intl</b></span>
+                        <a href="#_intl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(MatDatepickerIntl)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_locale"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_locale</b></span>
+                        <a href="#_locale"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>signal(inject&lt;unknown&gt;(MAT_DATE_LOCALE))</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataSource"></a>
+                    <span class="name">
+                        <span ><b>dataSource</b></span>
+                        <a href="#dataSource"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Objectif.html" target="_self" >MatTableDataSource&lt;Objectif&gt;</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:79</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dateFormatString"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>dateFormatString</b></span>
+                        <a href="#dateFormatString"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>this._locale() &#x3D;&#x3D;&#x3D; &#x27;fr&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayedColumns"></a>
+                    <span class="name">
+                        <span ><b>displayedColumns</b></span>
+                        <a href="#displayedColumns"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&#x27;typ_objectif&#x27;, &#x27;attentes&#x27;, &#x27;surf_totale&#x27;, &#x27;surf_prevue&#x27;]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="form"></a>
+                    <span class="name">
+                        <span ><b>form</b></span>
+                        <a href="#form"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>FormGroup</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="106" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:106</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="formObjSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>formObjSubscription</b></span>
+                        <a href="#formObjSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription | null</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="110" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:110</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initialFormValues"></a>
+                    <span class="name">
+                        <span ><b>initialFormValues</b></span>
+                        <a href="#initialFormValues"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>FormGroup</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isAddOperation"></a>
+                    <span class="name">
+                        <span ><b>isAddOperation</b></span>
+                        <a href="#isAddOperation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isEditOperation"></a>
+                    <span class="name">
+                        <span ><b>isEditOperation</b></span>
+                        <a href="#isEditOperation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="85" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFormValid"></a>
+                    <span class="name">
+                        <span ><b>isFormValid</b></span>
+                        <a href="#isFormValid"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="109" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:109</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="linearMode"></a>
+                    <span class="name">
+                        <span ><b>linearMode</b></span>
+                        <a href="#linearMode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadingDelay"></a>
+                    <span class="name">
+                        <span ><b>loadingDelay</b></span>
+                        <a href="#loadingDelay"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>50</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nbObjectifs"></a>
+                    <span class="name">
+                        <span ><b>nbObjectifs</b></span>
+                        <a href="#nbObjectifs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:83</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="NvEnjeux"></a>
+                    <span class="name">
+                        <span ><b>NvEnjeux</b></span>
+                        <a href="#NvEnjeux"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="89" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="objectif"></a>
+                    <span class="name">
+                        <span ><b>objectif</b></span>
+                        <a href="#objectif"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Objectif.html" target="_self" >Objectif</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="82" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="objectifs"></a>
+                    <span class="name">
+                        <span ><b>objectifs</b></span>
+                        <a href="#objectifs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Objectif.html" target="_self" >Objectif[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedNvEnjeux"></a>
+                    <span class="name">
+                        <span ><b>selectedNvEnjeux</b></span>
+                        <a href="#selectedNvEnjeux"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedOperation"></a>
+                    <span class="name">
+                        <span ><b>selectedOperation</b></span>
+                        <a href="#selectedOperation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>String | undefined</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:103</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedtypeObjectif"></a>
+                    <span class="name">
+                        <span ><b>selectedtypeObjectif</b></span>
+                        <a href="#selectedtypeObjectif"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedtypeObjectifOpe"></a>
+                    <span class="name">
+                        <span ><b>selectedtypeObjectifOpe</b></span>
+                        <a href="#selectedtypeObjectifOpe"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="92" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="table"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>table</b></span>
+                        <a href="#table"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Objectif.html" target="_self" >MatTable&lt;Objectif&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(&#x27;matTable&#x27;)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="typeObjectif"></a>
+                    <span class="name">
+                        <span ><b>typeObjectif</b></span>
+                        <a href="#typeObjectif"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="typeObjectifOpe"></a>
+                    <span class="name">
+                        <span ><b>typeObjectifOpe</b></span>
+                        <a href="#typeObjectifOpe"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/objectif/objectif.component.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild } from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from &#x27;@angular/forms&#x27;;
+
+import { OperationComponent } from &#x27;../operation/operation.component&#x27;;
+import { FormButtonsComponent } from &#x27;../../../../../shared/form-buttons/form-buttons.component&#x27;;
+
+import { Objectif } from &#x27;./objectifs&#x27;;
+import { SelectValue } from &#x27;../../../../../shared/interfaces/formValues&#x27;;
+import { ProjetService } from &#x27;../../projets.service&#x27;;
+import { FormService } from &#x27;../../../../../services/form.service&#x27;;
+import { ApiResponse } from &#x27;../../../../../shared/interfaces/api&#x27;;
+
+import { MatTabsModule } from &#x27;@angular/material/tabs&#x27;;
+import { MatTable, MatTableDataSource, MatTableModule } from &#x27;@angular/material/table&#x27;;
+import { MatSnackBar, MatSnackBarModule } from &#x27;@angular/material/snack-bar&#x27;; // Importer MatSnackBar
+import { MatFormFieldModule } from &#x27;@angular/material/form-field&#x27;;
+import { MatIconModule } from &#x27;@angular/material/icon&#x27;;
+import { MatSlideToggleModule } from &#x27;@angular/material/slide-toggle&#x27;;
+import { MatInputModule } from &#x27;@angular/material/input&#x27;; 
+import { MatSelectModule } from &#x27;@angular/material/select&#x27;;
+import { MatProgressSpinnerModule } from &#x27;@angular/material/progress-spinner&#x27;;
+import { MatDatepickerIntl, MatDatepickerModule} from &#x27;@angular/material/datepicker&#x27;;
+import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from &#x27;@angular/material/core&#x27;;
+
+// import { AsyncPipe } from &#x27;@angular/common&#x27;;
+// import { map } from &#x27;rxjs/operators&#x27;;
+// import { Observable } from &#x27;rxjs&#x27;;
+// import { BreakpointObserver } from &#x27;@angular/cdk/layout&#x27;;
+
+import { Subscription } from &#x27;rxjs&#x27;;
+
+@Component({
+  selector: &#x27;app-objectif&#x27;,
+  standalone: true,
+  imports: [
+        CommonModule,
+        OperationComponent,
+        FormButtonsComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatTabsModule,
+        MatSnackBarModule,
+        MatSelectModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatProgressSpinnerModule,
+        MatTableModule,
+        MatSlideToggleModule
+        // ,AsyncPipe  // Ajouté pour le spinner
+  ],
+  templateUrl: &#x27;./objectif.component.html&#x27;,
+  styleUrl: &#x27;./objectif.component.scss&#x27;
+})
+export class ObjectifComponent {
+  @Input() rattachementOperation!: string; // Pour savoir si on est dans un projet ou une opération
+  @Input() geojson_site?: string;
+
+  @Input() isEditProjet!: boolean;
+  @Input() uuid_projet?: string; // L&#x27;identifiant du projet selectionné pour voir son/ses objectif(s)
+  @Input() new_projet?: boolean; // Si projet nouvelle generation (avec webapp)
+  
+  // @ViewChild(&#x27;addEditOperation&#x27;, { static: false }) addEditOperationTemplate: any;
+  // @ViewChild(&#x27;listOperations&#x27;, { static: false }) listOperationsTemplate: any;
+  @ViewChild(&#x27;matTable&#x27;) table!: MatTable&lt;Objectif&gt;;
+
+  private readonly _adapter &#x3D; inject&lt;DateAdapter&lt;unknown, unknown&gt;&gt;(DateAdapter);
+  private readonly _intl &#x3D; inject(MatDatepickerIntl);
+  private readonly _locale &#x3D; signal(inject&lt;unknown&gt;(MAT_DATE_LOCALE));
+  readonly dateFormatString &#x3D; this._locale() &#x3D;&#x3D;&#x3D; &#x27;fr&#x27;;
+
+  isLoading: boolean &#x3D; false;
+  loadingDelay: number &#x3D; 50;
+
+  objectifs!: Objectif[]; // Pour la liste des objectifs : tableau material
+  dataSource!: MatTableDataSource&lt;Objectif&gt;;
+  // Pour la liste des opérations : le tableau Material
+  displayedColumns: string[] &#x3D; [&#x27;typ_objectif&#x27;, &#x27;attentes&#x27;, &#x27;surf_totale&#x27;, &#x27;surf_prevue&#x27;];
+  objectif!: Objectif; // Pour les détails d&#x27;un objectif
+  nbObjectifs: number &#x3D; 0; // Pour le nombre d&#x27;objectifs
+
+  isEditOperation: boolean &#x3D; false;
+  isAddOperation: boolean &#x3D; false;
+
+  // Listes de choix du formulaire
+  NvEnjeux!: SelectValue[];
+  selectedNvEnjeux: string &#x3D; &#x27;&#x27;;
+  typeObjectifOpe!: SelectValue[];
+  selectedtypeObjectifOpe: string &#x3D; &#x27;&#x27;;
+  typeObjectif!: SelectValue[];
+  selectedtypeObjectif: string &#x3D; &#x27;&#x27;;
+
+  // Booleens d&#x27;états pour le mode d&#x27;affichage
+  @Input() isEditObjectif: boolean &#x3D; false;
+  @Input() isAddObjectif:boolean &#x3D; false;
+  @Output() isEditFromObjectif &#x3D; new EventEmitter&lt;boolean&gt;(); // Pour envoyer l&#x27;état de l&#x27;édition au parent
+  @Output() isAddFromObjectif &#x3D; new EventEmitter&lt;boolean&gt;(); // Pour envoyer l&#x27;état de l&#x27;édition au parent
+  @Input() projetEditMode: boolean &#x3D; false; // Savoir si le projet est en edition pour masquer les boutons  
+  linearMode: boolean &#x3D; true;
+  selectedOperation: String | undefined;
+  
+  // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
+  form: FormGroup;
+  @Input() ref_uuid_proj!: String; // liste d&#x27;opératons venant du parent (boite de dialogue projet) 
+  initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
+  isFormValid: boolean &#x3D; false;
+  private formObjSubscription: Subscription | null &#x3D; null;
+
+  
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private formService: FormService,
+    private fb: FormBuilder,
+    private projetService: ProjetService,
+    private snackBar: MatSnackBar, // Injecter MatSnackBar
+    ) {
+      
+      // console.log(&quot;this.ref_uuid_proj venant du input :&quot;, this.ref_uuid_proj);
+      this.form &#x3D; fb.group({});
+
+    }
+
+  async ngOnInit() {
+    // Remplir this.form soit vide soit avec les données passées en entrée
+    // Attendre un certain temps avant de continuer
+    // S&#x27;abonner aux changements du statut du formulaire principal (projetForm)
+    
+    console.log(&quot;Le composant objectif s&#x27;initialise..........&quot;);  
+    
+    // Récuperer les listes de choix
+    const subrouteTypesInter &#x3D; &#x60;sites/selectvalues&#x3D;${&#x27;opegerer.typ_enjeux&#x27;}&#x60;;
+    this.formService.getSelectValues$(subrouteTypesInter).subscribe(
+      (selectValues: SelectValue[] | undefined) &#x3D;&gt; {
+        console.log(&#x27;Liste de choix typ_enjeux récupérée avec succès :&#x27;);
+        console.log(selectValues);
+        this.NvEnjeux &#x3D; selectValues || [];
+      },
+      (error) &#x3D;&gt; {
+        console.error(&#x27;Erreur lors de la récupération de la liste de choix&#x27;, error);
+      }
+    );
+    const subrouteTypeOpe &#x3D; &#x60;sites/selectvalues&#x3D;${&#x27;opegerer.typ_objectifope&#x27;}&#x60;;
+    this.formService.getSelectValues$(subrouteTypeOpe).subscribe(
+      (selectValues: SelectValue[] | undefined) &#x3D;&gt; {
+        console.log(&#x27;Liste de choix typ_objectifs récupérée avec succès :&#x27;);
+        console.log(selectValues);
+        this.typeObjectifOpe &#x3D; selectValues || [];
+      },
+      (error) &#x3D;&gt; {
+        console.error(&#x27;Erreur lors de la récupération de la liste de choix&#x27;, error);
+      }
+    );
+    const subrouteType &#x3D; &#x60;sites/selectvalues&#x3D;${&#x27;opegerer.typ_objectifs&#x27;}&#x60;;
+    this.formService.getSelectValues$(subrouteType).subscribe(
+      (selectValues: SelectValue[] | undefined) &#x3D;&gt; {
+        console.log(&#x27;Liste de choix typ_objectifs récupérée avec succès :&#x27;);
+        console.log(selectValues);
+        this.typeObjectif &#x3D; selectValues || [];
+      },
+      (error) &#x3D;&gt; {
+        console.error(&#x27;Erreur lors de la récupération de la liste de choix&#x27;, error);
+      }
+    );
+
+    try {
+      if (this.ref_uuid_proj !&#x3D;&#x3D; undefined) {
+        // Si on a bien une uuid de projet passé en paramètre pour recuperer les opérations lite
+        
+        setTimeout(async () &#x3D;&gt; {
+          // Accéder à la liste des opérations et remplir le tableau Material des objectifs
+          this.fetch();
+        }, this.loadingDelay);// Fin du bloc timeout
+        this.isLoading &#x3D; false;  // Le chargement est terminé
+      } else {
+        console.error(&#x27;Le composant objectif n\&#x27;a rien a faire au demarrage.&#x27;);
+      }
+      
+    } catch (error) {
+      console.error(&#x27;Erreur lors de la récupération des données du projet&#x27;, error);
+      this.isLoading &#x3D; false;  // Même en cas d&#x27;erreur, arrêter le spinner
+      this.cdr.detectChanges();
+    }
+  }
+  
+  // ngAfterViewInit() {
+  //   // Forcer la détection des changements après l&#x27;initialisation de la vue
+  //   this.cdr.detectChanges();
+    
+  //   console.log(&#x27;ngAfterViewInit: table &#x3D;&#x27;, this.table);
+  // }
+
+  // ngAfterViewChecked() {
+  //   // Fait déclencher cet evenement a chaque fois qu&#x27;il y a un changement dans la vue
+  //   // Vérifier l&#x27;initialisation de la table après chaque changement de vue
+  //   if (this.table) {
+  //     console.log(&#x27;ngAfterViewChecked: table &#x3D;&#x27;, this.table);
+  //   } else {
+  //     console.error(&#x27;La table n\&#x27;a pas été trouvée.&#x27;);
+  //   }
+  // }
+  
+  ngOnDestroy(): void {
+    console.log(&#x27;Destruction du composant objectif&#x27;);
+    this.unsubForm();
+  }
+
+  getLibelle(cd_type: string, list: SelectValue[]): string {
+    const libelle &#x3D; this.formService.getLibelleFromCd(cd_type, list);
+    return libelle;
+  }
+
+  // Désabonnement lors de la destruction du composant
+  unsubForm(): void {
+    if (this.formObjSubscription) {
+      this.formObjSubscription.unsubscribe();
+      console.log(&#x27;On se désabonne.&#x27;);
+    }
+    
+  }
+  
+  subscribeToForm(): void {
+    // Souscrire aux changements du statut du formulaire
+    this.formObjSubscription &#x3D; this.form.statusChanges.subscribe(status &#x3D;&gt; {
+      this.isFormValid &#x3D; this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
+      console.log(&#x27;Statut du formulaire principal :&#x27;, status);
+      console.log(&quot;this.isFormValid &#x3D; this.projetForm.valid :&quot;);
+      console.log(this.isFormValid + &quot; &#x3D; &quot; + this.form.valid);
+      console.log(&quot;Etat de isFormValid passé à l&#x27;enfant:&quot;, this.isFormValid);
+      
+      // Afficher la liste des champs invalides
+      console.log(&#x27;Champs invalides :&#x27;, this.getInvalidFields());
+
+      this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+    });
+  }
+    
+  toggleEditObjectif(mode: String): void {
+    console.log(&quot;----------!!!!!!!!!!!!--------toggleEditObjectif(&#x27;&quot; + mode +&quot;&#x27;) dans le composant objectif&quot;);
+    if (mode &#x3D;&#x3D;&#x3D; &#x27;edit&#x27;) {
+      this.isEditObjectif &#x3D; this.formService.simpleToggle(this.isEditObjectif); // Changer le mode du booleen
+      this.formService.toggleFormState(this.form, this.isEditObjectif, this.initialFormValues); // Changer l&#x27;état du formulaire
+      this.isEditFromObjectif.emit(this.isEditObjectif); // Envoyer l&#x27;état de l&#x27;édition de l&#x27;objectif au parent
+      
+      console.log(&quot;isEditObjectif apres toggleEditObjectif(&#x27;&quot; + mode +&quot;&#x27;) :&quot;, this.isEditObjectif);
+    } else if (mode &#x3D;&#x3D;&#x3D; &#x27;add&#x27;) {
+      console.log(&#x27;Appel de makeOperationForm() pour créer un nouveau formulaire vide&#x27;);
+      
+      if (!this.isAddObjectif) { // Création du formulaire on est pas en mode ajout
+        this.makeForm({ empty: true });
+      }
+
+      this.isAddObjectif &#x3D; this.formService.simpleToggle(this.isAddObjectif); // Changer le mode du booleen
+      this.formService.toggleFormState(this.form, this.isAddObjectif, this.initialFormValues); // Changer l&#x27;état du formulaire
+      
+      this.isAddFromObjectif.emit(this.isAddObjectif); // Envoyer l&#x27;état de l&#x27;édition de l&#x27;objectif au parent
+      
+      console.log(&quot;isAddObjectif apres toggleEditObjectif(&#x27;&quot; + mode +&quot;&#x27;) :&quot;, this.isAddObjectif);
+      
+    } else {
+      this.form &#x3D; this.initialFormValues; // Réinitialiser le formulaire aux valeurs initiales
+      this.isEditObjectif &#x3D; false; // Sortir du mode édition
+      this.isAddObjectif &#x3D; false; // Sortir du mode ajout
+      this.isEditFromObjectif.emit(this.isEditObjectif); // Envoyer l&#x27;état de l&#x27;édition de l&#x27;objectif au parent
+      this.isAddFromObjectif.emit(this.isAddObjectif); // Envoyer l&#x27;état de l&#x27;édition de l&#x27;objectif au parent
+      console.log(&quot;On vient de sortir du mode édition / ajout d&#x27;opération.&quot;);
+    }
+    this.cdr.detectChanges(); // Forcer la détection des changements
+    
+  }
+    
+  getInvalidFields(): string[] {
+    // Pour le stepper et le bouton MAJ
+    if (this.form !&#x3D;&#x3D; undefined) {
+      return this.formService.getInvalidFields(this.form);
+    } else {
+      return [];
+    }
+  }
+
+  // isStepCompleted(stepIndex: number): boolean {
+  //   // Pour utiliser cette méthode dans le stepper
+  //   // il faut que le stepper soit en mode linear
+  //   // Fonctionn comme ceci dans le html :
+  //   // &lt;mat-step [stepControl]&#x3D;&quot;form&quot; [completed]&#x3D;&quot;isStepCompleted(2)&quot;&gt;
+  //   switch (stepIndex) {
+  //     case 1:
+  //       return this.form.get(&#x27;titre&#x27;)?.valid || false;
+  //     case 2:
+  //       // return true || false;
+  //       return true;
+  //     case 3:
+  //       return true;
+  //     case 4:
+  //       return this.form.get(&#x27;typ_intervention&#x27;)?.valid || false;
+
+  //     default:
+  //       return false;
+  //   }
+  // }
+
+  async fetch(uuid_objectif?: String): Promise&lt;Objectif | void&gt; {
+    if (this.ref_uuid_proj !&#x3D;&#x3D; undefined &amp;&amp; uuid_objectif &#x3D;&#x3D; undefined) {
+      // Si on a un uuid de d&#x27;objectif passé en paramètre pour recuperer une liste d&#x27;objectifs.
+      console.log(&quot;----------!!!!!!!!!!!!--------fetch() dans le composant objectif&quot;);
+      const uuid &#x3D; this.ref_uuid_proj;
+      const subroute &#x3D; &#x60;objectifs/uuid&#x3D;${uuid}/lite&#x60;;
+      this.projetService.getObjectifs(subroute).then(
+        (objectifs) &#x3D;&gt; {
+          this.objectifs &#x3D; objectifs;
+          this.nbObjectifs &#x3D; objectifs.length;
+          if (Array.isArray(this.objectifs) &amp;&amp; this.objectifs.length &gt; 0) {
+            this.dataSource &#x3D; new MatTableDataSource(this.objectifs);
+            this.cdr.detectChanges();
+            console.log(&#x27;Liste des objectifs bien mises à jour.&#x27;);
+          }
+        }
+      ).catch(
+        (error) &#x3D;&gt; {
+          console.error(&#x27;Erreur lors de la récupération des opérations&#x27;, error);
+        }
+      );
+    } else if (uuid_objectif !&#x3D;&#x3D; undefined) {
+      // Si on un uuid d&#x27;objectif passé en paramètre pour en avoir les détails complets
+      console.log(&quot;----------!!!!!!!!!!!!--------fetch(&quot; + uuid_objectif + &quot;) dans le composant objectif&quot;);
+      const subroute &#x3D; &#x60;objectifs/uuid&#x3D;${uuid_objectif}/full&#x60;;
+      try {
+        const objectif &#x3D; await this.projetService.getObjectif(subroute);
+        console.log(&#x27;Opération avant le return de fetch() :&#x27;, objectif);
+        return objectif;
+      } catch (error) {
+        console.error(&quot;Erreur lors de la récupération de l&#x27;objectif : &quot;, error);
+      }
+    } else {
+      console.error(&#x27;Aucun identifiant de projet ou d\&#x27;opération n\&#x27;a été trouvé.&#x27;);
+    }
+  }
+    
+  async makeForm({ objectif, empty &#x3D; false }: { objectif?: Objectif, empty?: boolean } &#x3D; {}): Promise&lt;void&gt; {
+    // Deux grands modes pour un objectif :
+    // 1. Créer un nouveau formulaire vide si ne donne pas le parametre objectif
+    // 2. Créer un formulaire avec les données
+
+    if (this.projetEditMode){
+      this.snackBar.open(&quot;Veuillez terminer l&#x27;édition du projet avant d&#x27;&#x27;ouvrir un objectif&quot;, &#x27;Fermer&#x27;, { 
+        duration: 3000,});
+        return;
+    } else {
+      this.snackBar.open(&quot;Nous rentrons dans la methode makeOperationForm().&quot;, &#x27;Fermer&#x27;, { 
+      duration: 3000,});
+    }
+
+    this.unsubForm(); // Se désabonner des changements du formulaire
+
+    if (empty) {
+      // Création d&#x27;un formulaire vide
+      try {
+        this.form &#x3D; this.formService.newObjectifForm(undefined, this.ref_uuid_proj) as FormGroup;
+        this.selectedNvEnjeux &#x3D; &#x27;&#x27;;
+        this.selectedtypeObjectifOpe &#x3D; &#x27;&#x27;;
+        this.selectedtypeObjectif &#x3D; &#x27;&#x27;;
+        this.subscribeToForm() // S&#x27;abonner aux changements du formulaire créé juste avant
+      } catch (error) {
+        console.error(&#x27;Erreur lors de la création du formulaire&#x27;, error);
+        return;
+      }
+    
+    } else if ( objectif !&#x3D;&#x3D; undefined ) {
+      // On ouvre un objectif existante
+      // Chargement d&#x27;un formulaire avec un objectif
+      this.linearMode &#x3D; false; // Passer en mode non linéaire du stepper
+      
+      console.log(&quot;Paramètre objectif passée en paramètre dans makeOperationForm :&quot;);
+      console.log(objectif);
+      this.objectif &#x3D; objectif; // Stocker l&#x27;objectif
+      try {
+        // Création du formulaire avec les données de l&#x27;opération
+        if (this.objectif !&#x3D;&#x3D; undefined) {
+          this.form &#x3D; this.formService.newObjectifForm(this.objectif); // Remplir this.form avec notre this.objectif
+          this.selectedtypeObjectif &#x3D; this.objectif.typ_objectif || &#x27;&#x27;;
+          this.selectedtypeObjectifOpe &#x3D; this.objectif.obj_ope || &#x27;&#x27;;
+          this.selectedNvEnjeux &#x3D; this.objectif.nv_enjeux || &#x27;&#x27;;
+          this.subscribeToForm(); // S&#x27;abonner aux changements du formulaire créé juste avant
+          this.initialFormValues &#x3D; this.form.value; // Stocker les valeurs initiales du formulaire
+        }
+
+        this.toggleEditObjectif(&quot;edit&quot;)
+        
+        console.log(&quot;this.form après la création du formulaire :&quot;);
+        console.log(this.form);
+      } catch (error) {
+      console.error(&#x27;Erreur lors de la création du formulaire&#x27;, error);
+      }
+      } else {
+        console.error(&#x27;Paramètres objectif et empty non definis.&#x27;);
+        return;
+      }
+  }
+    
+  onSubmit(mode?: String): void {
+    // Logique de soumission du formulaire du projet
+    if (this.form !&#x3D;&#x3D; undefined) {
+
+      // Déja, si le formulaire est valide
+      if (this.form.valid) {
+        console.log(&quot;----------!!!!!!!!!!!!--------onSubmit(&#x27;&quot; + mode + &quot;&#x27;) dans le composant objectif&quot;);
+        console.log(this.form.value);
+
+        // Nouvelle opération
+        if (this.isAddObjectif &#x3D;&#x3D;&#x3D; true){
+          this.projetService.insertObjectif(this.form.value).subscribe(
+            (response: ApiResponse) &#x3D;&gt; {
+              console.log(&quot;Enregistrement de l&#x27;opération avec succès :&quot;, response);
+              this.unsubForm(); // Se désabonner des changements du formulaire
+              
+              
+              // Afficher le message dans le Snackbar
+              const message &#x3D; &quot;Objectif bien enregistré&quot;; // Message par défaut
+              
+              this.snackBar.open(message, &#x27;Fermer&#x27;, {
+                duration: 3000,
+                panelClass: [&#x27;snackbar-success&#x27;]
+              });
+              this.fetch();
+            },
+            (error) &#x3D;&gt; {
+              console.error(&#x27;Erreur lors de l\&#x27;enregistrement de l\&#x27;opération&#x27;, error);
+              this.snackBar.open(&#x27;Erreur lors de l\&#x27;enregistrement de l\&#x27;opération&#x27;, &#x27;Fermer&#x27;, {
+                duration: 3000,
+                panelClass: [&#x27;snackbar-error&#x27;]
+              });
+            }
+          );
+
+          // Changer l&#x27;état dans ce composant et celui du parent
+          this.isAddObjectif &#x3D; false; // Changer le mode du booleen
+          this.isAddFromObjectif.emit(this.isAddObjectif);
+
+        // Modification d&#x27;un objectif
+        } else if (this.isEditObjectif &#x3D;&#x3D;&#x3D; true) {
+          console.log(&#x27;Enregistrement de l\&#x27;opération en cours suite à demande de validation...&#x27;);
+          
+          console.log(&#x27;Formulaire juste avant le onUpdate :&#x27;, this.form.value);
+          const updateObservable &#x3D; this.formService.putBdd(&#x27;update&#x27;, &#x27;objectifs&#x27;, this.form, this.isEditObjectif, this.snackBar, this.form.value.uuid_objectif, this.initialFormValues);
+          // S&#x27;abonner à l&#x27;observable. onUpdate 
+
+          if (updateObservable) {
+            updateObservable.subscribe(
+              (result) &#x3D;&gt; {
+                this.isEditObjectif &#x3D; result.isEditMode;
+                this.isEditFromObjectif.emit(this.isEditObjectif);
+                
+                console.log(&#x27;Formulaire mis à jour avec succès:&#x27;, result.formValue);
+                
+                // Accéder à la liste des opérations et remplir le tableau Material des objectifs
+                this.objectif &#x3D; {}; // Réinitialiser l&#x27;objectif
+                this.fetch();
+              },
+              (error) &#x3D;&gt; {
+                console.error(&#x27;Erreur lors de la mise à jour du formulaire&#x27;, error);
+              }
+            );
+          }
+
+        } else if (mode &#x3D;&#x3D;&#x3D; &#x27;delete&#x27;) {
+          console.log(this.form.value);
+        }
+        
+        
+      } else {
+        console.error(&#x27;Le formulaire est invalide, veuillez le corriger.&#x27;);
+      }
+    } else {
+      console.error(&#x27;Le formulaire est introuvable, veuillez le créer.&#x27;);
+    }
+  }
+
+  handleEditOperationChange(isEdit: boolean): void {
+    // console.log(&#x27;État de l\&#x27;édition reçu du composant enfant:&#x27;, isEdit);
+    this.isEditOperation &#x3D; isEdit;
+  }
+
+  handleAddOperationChange(isAdd: boolean): void {
+    // console.log(&#x27;État de l\&#x27;ajout reçu du composant enfant:&#x27;, isAdd);
+    this.isAddOperation &#x3D; isAdd;
+  }
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;!-- Il y a 2 MODES d&#x27;affichage de ce composant --&gt;
+&lt;!-- 1 On liste les opérations existantes - grace a l&#x27;appel au backend sur les operations lite --&gt;
+&lt;!-- 2 On ajoute ou edite une opération existante --&gt;
+&lt;!-- this.form est généré vide OU this.form est rempli l&#x27;opération --&gt;
+
+&lt;!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}&lt;br&gt;
+Variable (objectif) isEditObjectif: {{ isEditObjectif }}&lt;br&gt;
+Variable (objectif) isAddObjectif: {{ isAddObjectif }}&lt;br&gt; --&gt;
+
+&lt;!-- Utilisation du template buttons pour ajouter une opération --&gt;
+&lt;app-form-buttons
+  *ngIf&#x3D;&quot;!projetEditMode&quot;
+  icone&#x3D;&quot;add&quot; 
+  [isEditActive]&#x3D;&quot;isEditObjectif&quot; 
+  [isAddActive]&#x3D;&quot;isAddObjectif&quot; 
+  [isFormValid]&#x3D;&quot;isFormValid&quot; 
+  [nbObjectifs]&#x3D;&quot;nbObjectifs&quot;
+  (toggleAction)&#x3D;&quot;toggleEditObjectif($event)&quot;
+  (makeObjectifForm)&#x3D;&quot;makeForm($event)&quot;
+  (onSubmit)&#x3D;&quot;onSubmit($event)&quot;
+&gt;&lt;/app-form-buttons&gt;
+
+&lt;!-- Permet d&#x27;appeller un template --&gt;
+&lt;ng-container *ngIf&#x3D;&quot;!isEditObjectif &amp;&amp; !isAddObjectif; then listObjectifs; else addEditObjectif&quot;&gt;&lt;/ng-container&gt;
+
+&lt;!-- MODE 1 --&gt;
+&lt;ng-template #listObjectifs&gt; 
+
+  &lt;div&gt;
+    &lt;!-- Si le booleen !isEditObjectif &amp;&amp; !isAddObjectif sont false, on montre la liste des opérations  --&gt;
+
+    Tableau des objectif(s). Depuis le 01/01/2025 : &lt;b&gt;un objectif par projet&lt;/b&gt;.
+    &lt;ng-container *ngIf&#x3D;&quot;objectifs !&#x3D;&#x3D; undefined; then table else noObjectifs&quot;&gt;&lt;/ng-container&gt;
+
+    &lt;ng-template #table&gt;
+      &lt;div&gt;
+        Nb objectifs : {{ objectifs.length }}&lt;br&gt;
+        &lt;mat-table [dataSource]&#x3D;&quot;dataSource&quot; class&#x3D;&quot;mat-elevation-z8&quot; #matTable&gt;
+          &lt;ng-container matColumnDef&#x3D;&quot;typ_objectif&quot;&gt;
+            &lt;mat-header-cell *matHeaderCellDef&gt; Type d&#x27;objectif &lt;/mat-header-cell&gt;
+            &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot;&gt; {{ getLibelle(element.typ_objectif, typeObjectif) }} &lt;/mat-cell&gt;
+          &lt;/ng-container&gt;
+          
+          &lt;ng-container matColumnDef&#x3D;&quot;attentes&quot;&gt;
+            &lt;mat-header-cell *matHeaderCellDef&gt; Attentes &lt;/mat-header-cell&gt;
+            &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot;&gt; {{ element.attentes }} &lt;/mat-cell&gt;
+          &lt;/ng-container&gt;
+          
+          &lt;ng-container matColumnDef&#x3D;&quot;surf_totale&quot;&gt;
+            &lt;mat-header-cell *matHeaderCellDef&gt; Surf. totale &lt;/mat-header-cell&gt;
+            &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot;&gt; {{ element.surf_totale }} &lt;/mat-cell&gt;
+          &lt;/ng-container&gt;
+          
+          &lt;ng-container matColumnDef&#x3D;&quot;surf_prevue&quot;&gt;
+            &lt;mat-header-cell *matHeaderCellDef&gt; Surf. prévue &lt;/mat-header-cell&gt;
+            &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot;&gt; {{ element.surf_prevue }} &lt;/mat-cell&gt;
+          &lt;/ng-container&gt;
+          
+          &lt;mat-header-row *matHeaderRowDef&#x3D;&quot;displayedColumns&quot;&gt;&lt;/mat-header-row&gt;
+          &lt;!-- Ouvrir la fenetre de dialogue d&#x27;une opération --&gt;
+          &lt;mat-row *matRowDef&#x3D;&quot;let objectif; columns: displayedColumns;&quot; (click)&#x3D;&quot;this.makeForm({ objectif })&quot;&gt;&lt;/mat-row&gt;
+        &lt;/mat-table&gt;
+      &lt;/div&gt;
+    &lt;/ng-template&gt;
+
+    &lt;ng-template #noObjectifs&gt;
+        Il n&#x27;y a pas encore d&#x27;objectifs sur ce site.
+    &lt;/ng-template&gt;
+
+  &lt;/div&gt;
+&lt;/ng-template&gt;
+
+&lt;!-- MODE 2 --&gt;
+&lt;ng-template #addEditObjectif&gt;
+
+  &lt;!-- (nom_dans_composant)&#x3D;&#x27;mathode à utiliser depuis le composant du bouton&#x27; --&gt;
+
+  &lt;!-- Si le projet vient d&#x27;un projet webapp, on affiche pas les deux onglets --&gt;
+  &lt;!-- Sinon, on affiche deux onglets : infos de l&#x27;objectif et operations de l&#x27;objectif --&gt;
+
+    &lt;mat-tab-group class&#x3D;&quot;top-tabs&quot;&gt;
+
+      &lt;mat-tab label&#x3D;&quot;Infos de l&#x27;objectif&quot;&gt;
+        &lt;form [formGroup]&#x3D;&quot;form!&quot;&gt;
+          &lt;div&gt;
+            &lt;!-- &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Ref UUID Objectif&lt;/mat-label&gt;
+              &lt;input matInput formControlName&#x3D;&quot;uuid_objectif&quot; readonly&gt;
+            &lt;/mat-form-field&gt; --&gt;
+
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Type d&#x27;objectif&lt;/mat-label&gt;
+              &lt;mat-select [(ngModel)]&#x3D;&quot;selectedtypeObjectif&quot; formControlName&#x3D;&quot;typ_objectif&quot;&gt;
+                @for (type of typeObjectif; track type) {
+                  &lt;mat-option [value]&#x3D;&quot;type.cd_type&quot;&gt;{{type.libelle}}&lt;/mat-option&gt;
+                }
+              &lt;/mat-select&gt;
+            &lt;/mat-form-field&gt;
+
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Objectif opérationnel&lt;/mat-label&gt;
+              &lt;mat-select [(ngModel)]&#x3D;&quot;selectedtypeObjectifOpe&quot; formControlName&#x3D;&quot;obj_ope&quot;&gt;
+                @for (type of typeObjectifOpe; track type) {
+                  &lt;mat-option [value]&#x3D;&quot;type.cd_type&quot;&gt;{{type.libelle}}&lt;/mat-option&gt;
+                }
+              &lt;/mat-select&gt;
+            &lt;/mat-form-field&gt;
+            
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Niveau d&#x27;enjeux&lt;/mat-label&gt;
+              &lt;mat-select [(ngModel)]&#x3D;&quot;selectedNvEnjeux&quot; formControlName&#x3D;&quot;nv_enjeux&quot;&gt;
+                @for (type of NvEnjeux; track type) {
+                  &lt;mat-option [value]&#x3D;&quot;type.cd_type&quot;&gt;{{type.libelle}}&lt;/mat-option&gt;
+                }
+              &lt;/mat-select&gt;
+            &lt;/mat-form-field&gt;
+          &lt;/div&gt;
+
+          &lt;div&gt;
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Enjeux écologique&lt;/mat-label&gt;
+              &lt;input matInput formControlName&#x3D;&quot;enjeux_eco&quot;&gt;
+            &lt;/mat-form-field&gt;
+
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Surface totale&lt;/mat-label&gt;
+              &lt;input matInput formControlName&#x3D;&quot;surf_totale&quot;&gt;
+            &lt;/mat-form-field&gt;
+            
+                      &lt;mat-form-field&gt;
+                        &lt;mat-label&gt;Surface prévue&lt;/mat-label&gt;
+                        &lt;input matInput formControlName&#x3D;&quot;surf_prevue&quot;&gt;
+                      &lt;/mat-form-field&gt;
+
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Unité de gestion&lt;/mat-label&gt;
+              &lt;input matInput formControlName&#x3D;&quot;unite_gestion&quot;&gt;
+            &lt;/mat-form-field&gt;
+
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Validité&lt;/mat-label&gt;
+              &lt;input matInput formControlName&#x3D;&quot;validite&quot;&gt;
+            &lt;/mat-form-field&gt;
+
+            &lt;mat-form-field&gt;
+              &lt;mat-label&gt;Attentes&lt;/mat-label&gt;
+              &lt;input matInput formControlName&#x3D;&quot;attentes&quot;&gt;
+            &lt;/mat-form-field&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/mat-tab&gt;
+      
+      &lt;mat-tab label&#x3D;&quot;Opérations associées&quot;&gt;
+    &lt;!-- Composant operation --&gt;
+
+      &lt;!-- isEditFromOperation vient de app-operation et app-projet --&gt;
+      &lt;app-operation 
+                    rattachementOperation&#x3D;&quot;objectif&quot;
+                    (isEditFromOperation)&#x3D;&quot;handleEditOperationChange($event)&quot;
+                    (isAddFromOperation)&#x3D;&quot;handleAddOperationChange($event)&quot;
+                    [isEditOperation]&#x3D;&quot;isEditOperation&quot;
+                    [isAddOperation]&#x3D;&quot;isAddOperation&quot;
+                    [projetEditMode]&#x3D;&quot;isEditProjet&quot;
+                    [ref_uuid_objectif]&#x3D;&quot;objectif.uuid_objectif || &#x27;&#x27;&quot;
+                    [geojson_site]&#x3D;&quot;geojson_site&quot;
+                    &gt;
+      &lt;/app-operation&gt;
+
+      &lt;/mat-tab&gt;
+
+    &lt;/mat-tab-group&gt;
+
+&lt;/ng-template&gt;
+</code></pre>
+    </div>
+
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><!-- Il y a 2 MODES d\'affichage de ce composant --><!-- 1 On liste les opérations existantes - grace a l\'appel au backend sur les operations lite --><!-- 2 On ajoute ou edite une opération existante --><!-- this.form est généré vide OU this.form est rempli l\'opération --><!-- Variable (Input de projet) projetEditMode: {{ projetEditMode }}<br>Variable (objectif) isEditObjectif: {{ isEditObjectif }}<br>Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> --><!-- Utilisation du template buttons pour ajouter une opération --><app-form-buttons  *ngIf="!projetEditMode"  icone="add"   [isEditActive]="isEditObjectif"   [isAddActive]="isAddObjectif"   [isFormValid]="isFormValid"   [nbObjectifs]="nbObjectifs"  (toggleAction)="toggleEditObjectif($event)"  (makeObjectifForm)="makeForm($event)"  (onSubmit)="onSubmit($event)"></app-form-buttons><!-- Permet d\'appeller un template --><ng-container *ngIf="!isEditObjectif && !isAddObjectif; then listObjectifs; else addEditObjectif"></ng-container><!-- MODE 1 --><ng-template #listObjectifs>   <div>    <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->    Tableau des objectif(s). Depuis le 01/01/2025 : <b>un objectif par projet</b>.    <ng-container *ngIf="objectifs !== undefined; then table else noObjectifs"></ng-container>    <ng-template #table>      <div>        Nb objectifs : {{ objectifs.length }}<br>        <mat-table [dataSource]="dataSource" class="mat-elevation-z8" #matTable>          <ng-container matColumnDef="typ_objectif">            <mat-header-cell *matHeaderCellDef> Type d\'objectif </mat-header-cell>            <mat-cell *matCellDef="let element"> {{ getLibelle(element.typ_objectif, typeObjectif) }} </mat-cell>          </ng-container>                    <ng-container matColumnDef="attentes">            <mat-header-cell *matHeaderCellDef> Attentes </mat-header-cell>            <mat-cell *matCellDef="let element"> {{ element.attentes }} </mat-cell>          </ng-container>                    <ng-container matColumnDef="surf_totale">            <mat-header-cell *matHeaderCellDef> Surf. totale </mat-header-cell>            <mat-cell *matCellDef="let element"> {{ element.surf_totale }} </mat-cell>          </ng-container>                    <ng-container matColumnDef="surf_prevue">            <mat-header-cell *matHeaderCellDef> Surf. prévue </mat-header-cell>            <mat-cell *matCellDef="let element"> {{ element.surf_prevue }} </mat-cell>          </ng-container>                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>          <!-- Ouvrir la fenetre de dialogue d\'une opération -->          <mat-row *matRowDef="let objectif; columns: displayedColumns;" (click)="this.makeForm({ objectif })"></mat-row>        </mat-table>      </div>    </ng-template>    <ng-template #noObjectifs>        Il n\'y a pas encore d\'objectifs sur ce site.    </ng-template>  </div></ng-template><!-- MODE 2 --><ng-template #addEditObjectif>  <!-- (nom_dans_composant)=\'mathode à utiliser depuis le composant du bouton\' -->  <!-- Si le projet vient d\'un projet webapp, on affiche pas les deux onglets -->  <!-- Sinon, on affiche deux onglets : infos de l\'objectif et operations de l\'objectif -->    <mat-tab-group class="top-tabs">      <mat-tab label="Infos de l\'objectif">        <form [formGroup]="form!">          <div>            <!-- <mat-form-field>              <mat-label>Ref UUID Objectif</mat-label>              <input matInput formControlName="uuid_objectif" readonly>            </mat-form-field> -->            <mat-form-field>              <mat-label>Type d\'objectif</mat-label>              <mat-select [(ngModel)]="selectedtypeObjectif" formControlName="typ_objectif">                @for (type of typeObjectif; track type) {                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>                }              </mat-select>            </mat-form-field>            <mat-form-field>              <mat-label>Objectif opérationnel</mat-label>              <mat-select [(ngModel)]="selectedtypeObjectifOpe" formControlName="obj_ope">                @for (type of typeObjectifOpe; track type) {                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>                }              </mat-select>            </mat-form-field>                        <mat-form-field>              <mat-label>Niveau d\'enjeux</mat-label>              <mat-select [(ngModel)]="selectedNvEnjeux" formControlName="nv_enjeux">                @for (type of NvEnjeux; track type) {                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>                }              </mat-select>            </mat-form-field>          </div>          <div>            <mat-form-field>              <mat-label>Enjeux écologique</mat-label>              <input matInput formControlName="enjeux_eco">            </mat-form-field>            <mat-form-field>              <mat-label>Surface totale</mat-label>              <input matInput formControlName="surf_totale">            </mat-form-field>                                  <mat-form-field>                        <mat-label>Surface prévue</mat-label>                        <input matInput formControlName="surf_prevue">                      </mat-form-field>            <mat-form-field>              <mat-label>Unité de gestion</mat-label>              <input matInput formControlName="unite_gestion">            </mat-form-field>            <mat-form-field>              <mat-label>Validité</mat-label>              <input matInput formControlName="validite">            </mat-form-field>            <mat-form-field>              <mat-label>Attentes</mat-label>              <input matInput formControlName="attentes">            </mat-form-field>          </div>        </form>      </mat-tab>            <mat-tab label="Opérations associées">    <!-- Composant operation -->      <!-- isEditFromOperation vient de app-operation et app-projet -->      <app-operation                     rattachementOperation="objectif"                    (isEditFromOperation)="handleEditOperationChange($event)"                    (isAddFromOperation)="handleAddOperationChange($event)"                    [isEditOperation]="isEditOperation"                    [isAddOperation]="isAddOperation"                    [projetEditMode]="isEditProjet"                    [ref_uuid_objectif]="objectif.uuid_objectif || \'\'"                    [geojson_site]="geojson_site"                    >      </app-operation>      </mat-tab>    </mat-tab-group></ng-template></div>'
+    var COMPONENTS = [{'name': 'AdminComponent', 'selector': 'app-admin'},{'name': 'AdminUsersComponent', 'selector': 'app-admin-users'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BackToTopComponent', 'selector': 'app-back-to-top'},{'name': 'CardComponent', 'selector': 'app-card'},{'name': 'DetailDescriptionComponent', 'selector': 'app-detail-description'},{'name': 'DetailGestionComponent', 'selector': 'app-detail-gestion'},{'name': 'DetailHabitatsComponent', 'selector': 'app-detail-habitats'},{'name': 'DetailInfosComponent', 'selector': 'app-detail-infos'},{'name': 'DetailMfuComponent', 'selector': 'app-detail-mfu'},{'name': 'DetailProjetsComponent', 'selector': 'app-detail-projets'},{'name': 'DocumentationComponent', 'selector': 'app-documentation'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'FormButtonsComponent', 'selector': 'app-form-buttons'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoginComponent', 'selector': 'app-login'},{'name': 'MapComponent', 'selector': 'app-map'},{'name': 'ObjectifComponent', 'selector': 'app-objectif'},{'name': 'OperationComponent', 'selector': 'app-operation'},{'name': 'ProjetComponent', 'selector': 'app-dialog-operation'},{'name': 'ProjetVComponent', 'selector': 'app-dialog-operation'},{'name': 'SiteDetailComponent', 'selector': 'app-site-detail'},{'name': 'SitesComponent', 'selector': 'app-site'},{'name': 'SitesDisplayComponent', 'selector': 'app-sites-display'},{'name': 'SitesResearchComponent', 'selector': 'app-sites-research'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'ObjectifComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ObjectifComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

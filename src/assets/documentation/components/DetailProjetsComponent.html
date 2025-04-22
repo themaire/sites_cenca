@@ -1,0 +1,1151 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>site-cenca documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">site-cenca documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  DetailProjetsComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/sites/site-detail/detail-projets/detail-projets.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-detail-projets</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                            <code>CommonModule</code>
+                            <code>MatTableModule</code>
+                            <code>MatTooltipModule</code>
+                            <code>MatIcon</code>
+                            <code>MatFormFieldModule</code>
+                            <code>MatInputModule</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./detail-projets.component.scss,<br>../../../shared/form-buttons/form-buttons.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./detail-projets.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#cdr" >cdr</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#dataSource" >dataSource</a>
+                            </li>
+                            <li>
+                                <a href="#dialog" >dialog</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#displayedColumns" >displayedColumns</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#projetsLite" >projetsLite</a>
+                            </li>
+                            <li>
+                                <a href="#research" >research</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnChanges" >ngOnChanges</a>
+                            </li>
+                            <li>
+                                <a href="#onSelect" >onSelect</a>
+                            </li>
+                            <li>
+                                <a href="#openDialog" >openDialog</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#inputDetail" >inputDetail</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="inputDetail"></a>
+                        <b>inputDetail</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/DetailSite.html" target="_self" >DetailSite</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:39</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnChanges"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>ngOnChanges</b></span>
+                        <a href="#ngOnChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnChanges(changes: SimpleChanges)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>changes</td>
+                                            <td>
+                                                        <code>SimpleChanges</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSelect"></a>
+                    <span class="name">
+                        <span ><b>onSelect</b></span>
+                        <a href="#onSelect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSelect(projetlite?: <a href="../interfaces/ProjetLite.html" target="_self">ProjetLite</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>projetlite</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ProjetLite.html" target="_self" >ProjetLite</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openDialog"></a>
+                    <span class="name">
+                        <span ><b>openDialog</b></span>
+                        <a href="#openDialog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>openDialog(projetlite?: <a href="../interfaces/ProjetLite.html" target="_self">ProjetLite</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>projetlite</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ProjetLite.html" target="_self" >ProjetLite</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cdr"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>cdr</b></span>
+                        <a href="#cdr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ChangeDetectorRef</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(ChangeDetectorRef)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataSource"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>dataSource</b></span>
+                        <a href="#dataSource"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MatTableDataSource&lt;ProjetLite&gt;</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dialog"></a>
+                    <span class="name">
+                        <span ><b>dialog</b></span>
+                        <a href="#dialog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(MatDialog)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:103</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayedColumns"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>displayedColumns</b></span>
+                        <a href="#displayedColumns"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&#x27;responsable&#x27;, &#x27;annee&#x27;, &#x27;date_deb&#x27;, &#x27;projet&#x27;, &#x27;action&#x27;, &#x27;typ_interv&#x27;, &#x27;statut&#x27;,]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="projetsLite"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>projetsLite</b></span>
+                        <a href="#projetsLite"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ProjetLite[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="research"></a>
+                    <span class="name">
+                        <span ><b>research</b></span>
+                        <a href="#research"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/SitesService.html" target="_self" >SitesService</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(SitesService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/sites/site-detail/detail-projets/detail-projets.component.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Input, inject, SimpleChanges, ChangeDetectorRef } from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+
+// import { ProjetVComponent } from &#x27;./projetV/projetV.component&#x27;;
+import { ProjetComponent } from &#x27;./projet/projet.component&#x27;;
+
+import { DetailSite } from &#x27;../../site-detail&#x27;;
+import { ProjetLite } from &#x27;./projets&#x27;;
+import { SitesService } from &#x27;../../sites.service&#x27;; // service de données
+
+import { MatTableDataSource, MatTableModule } from &#x27;@angular/material/table&#x27;;
+import { MatInputModule } from &#x27;@angular/material/input&#x27;;
+import { MatFormFieldModule } from &#x27;@angular/material/form-field&#x27;;
+
+import { MatTooltipModule } from &#x27;@angular/material/tooltip&#x27;;
+import { MatIcon } from &#x27;@angular/material/icon&#x27;;
+
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogTitle,
+  MatDialogContent,
+} from &#x27;@angular/material/dialog&#x27;;
+
+@Component({
+  selector: &#x27;app-detail-projets&#x27;,
+  standalone: true,
+  imports: [CommonModule,
+            MatTableModule, 
+            MatTooltipModule, 
+            MatIcon,
+
+            MatFormFieldModule, MatInputModule, 
+  ],
+  templateUrl: &#x27;./detail-projets.component.html&#x27;,
+  styleUrls: [&#x27;./detail-projets.component.scss&#x27;, &#x27;../../../shared/form-buttons/form-buttons.component.scss&#x27;]
+})
+export class DetailProjetsComponent {
+  @Input() inputDetail?: DetailSite; // Le site selectionné pour voir son détail
+  public projetsLite: ProjetLite[] &#x3D; [];
+  public dataSource!: MatTableDataSource&lt;ProjetLite&gt;;
+
+  // Pour la liste des opérations : le tableau Material
+  public displayedColumns: string[] &#x3D; [&#x27;responsable&#x27;, &#x27;annee&#x27;, &#x27;date_deb&#x27;, &#x27;projet&#x27;, &#x27;action&#x27;, &#x27;typ_interv&#x27;, &#x27;statut&#x27;,];
+
+  research: SitesService &#x3D; inject(SitesService);
+  private cdr: ChangeDetectorRef &#x3D; inject(ChangeDetectorRef);
+
+  async ngOnChanges(changes: SimpleChanges){
+    // Recuperer les opérations du site selectionné dans un tableau mat-table
+    // Ce component est chargé en meme temps que sitesDetail.
+    let subroute: string &#x3D; &quot;&quot;;
+    
+    if (this.inputDetail !&#x3D;&#x3D; undefined) {  // Si le site selectionné n&#x27;est pas vide
+      // Cas d&#x27;une recherche sur critères
+      console.log(this.inputDetail);
+      subroute &#x3D; &#x60;projets/uuid&#x3D;${this.inputDetail.uuid_espace}/lite&#x60;;
+      console.log(&quot;Ouais on est dans le OnChanges &#x27;onglet PROJETS&#x27; . UUID:&quot; + this.inputDetail[&quot;uuid_espace&quot;]);
+      
+      // ChatGPT 19/07/2024
+      try {
+        // On récupère la liste des projets du site
+        this.projetsLite &#x3D; await this.research.getProjets(subroute);
+
+        // On ajoute le geojson du site à chaque projet
+        // Car l&#x27;étape précedente ne replit pas cette information
+        this.projetsLite.forEach(projet &#x3D;&gt; {
+          if (this.inputDetail !&#x3D;&#x3D; undefined) {
+            projet.geojson_site &#x3D; this.inputDetail.geojson;
+          }
+        });
+
+        console.log(&#x27;Données de projetsLite :&#x27;, this.projetsLite);
+        
+        this.dataSource &#x3D; new MatTableDataSource(this.projetsLite);
+
+        // console.log(&#x27;Données de this.Mfus après assignation :&#x27;, this.actes);
+        // this.cdr.detectChanges(); // Forcer la détection des changements
+      } catch (error) {
+        console.error(&#x27;Error fetching documents&#x27;, error);
+      }
+    }
+  }
+
+  onSelect(projetlite?: ProjetLite): void {
+    // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d&#x27;un projet.
+    // L&#x27;OPERATION SELECTIONNE PAR L&#x27;UTILISATEUR dans la variable ope
+
+    if(projetlite !&#x3D;&#x3D; undefined){
+      // Ca se passe dans la vue du component dialog-operation
+      if(projetlite.uuid_proj !&#x3D;&#x3D; undefined &amp;&amp; projetlite.generation &#x3D;&#x3D; &quot;1_TVX&quot;){
+        // OUVRIR LA FENETRE DE DIALOGUE
+        this.openDialog(projetlite);
+      }else{
+        console.log(&quot;Pas un projet TRAVAUX ( &quot; + projetlite.generation + &quot; ) ou pas un vrai projet passé en parametre. uuid_proj : &quot; + projetlite.uuid_proj);
+      }
+    }else{
+      this.openDialog();
+    }
+  }
+
+  // Pour l&#x27;affichage de la fenetre de dialogue
+  dialog &#x3D; inject(MatDialog);
+
+  openDialog(projetlite?: ProjetLite): void {
+    // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
+
+    // Le but est de donner un projetLite à la fenetre de dialogue
+    // Si le projetLite est vide alors on ouvre une fenetre de dialogue vide
+    // Ce qui veut dire que l&#x27;on doit créé un projetLite vide mais qui
+    // contient l&#x27;uuid du site selectionné
+
+    let dialogComponent: any;
+    
+    // Si on fournit un projetLite en paramètre
+    if(projetlite !&#x3D;&#x3D; undefined){
+      if(projetlite.webapp &#x3D;&#x3D;&#x3D; true){
+        console.log(&quot;--------------ProjetLite : &quot;, projetlite);
+        // Si c&#x27;est un projet webapp c&#x27;est a dire un projet 
+        // nouvelle genetation
+      }
+    }else{
+      // Sinon on charge un projet vide
+      console.log(&quot;Charge un projet vide&quot;);
+      projetlite &#x3D; {
+        uuid_site: this.inputDetail?.uuid_site
+      } as ProjetLite;
+      
+      console.log(&quot;--------------ProjetLite : &quot;);
+      console.log(projetlite);
+    }
+    
+    dialogComponent &#x3D; ProjetComponent;
+
+    // Ouverture de la fenetre de dialogue
+    // tout en créant la constante dialogRef
+    const dialogRef &#x3D; this.dialog.open(dialogComponent, {
+      data : projetlite
+    });
+
+    // Préparer à l&#x27;avance quand la fenetre de dialogue se ferme
+    dialogRef.afterClosed().subscribe(result &#x3D;&gt; {
+      console.log(&#x27;La fenetre de dialogue vient de se fermer&#x27;);
+      this.ngOnChanges({}); // Mettre à jour la liste des projets (mat-table)
+    });
+
+  }
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div *ngIf&#x3D;&quot;projetsLite.length &gt; 0; then thenBlock; else elseBlock&quot;&gt;&lt;/div&gt;
+
+&lt;div class&#x3D;&quot;detail-projets&quot;&gt;
+  &lt;ng-template #thenBlock&gt;
+    &lt;div&gt;
+      &lt;h2 *ngIf&#x3D;&quot;projetsLite.length &#x3D;&#x3D; 1&quot;&gt;{{ projetsLite.length }} projet.&lt;/h2&gt;
+      &lt;h2 *ngIf&#x3D;&quot;projetsLite.length &gt; 1&quot;&gt;{{ projetsLite.length }} projets.&lt;/h2&gt;
+      
+      &lt;section class&#x3D;&quot;edition&quot;&gt;
+        Ajouter un nouveau projet : &lt;button mat-icon-button
+            matTooltip&#x3D;&quot;Ajouter un projet&quot;
+            class&#x3D;&quot;btn-edition&quot;
+            (click)&#x3D;&quot;onSelect()&quot;&gt;
+            &lt;mat-icon&gt;add&lt;/mat-icon&gt;
+        &lt;/button&gt;
+      &lt;/section&gt;
+
+      &lt;mat-table [dataSource]&#x3D;&quot;dataSource&quot; class&#x3D;&quot;mat-elevation-z8&quot;&gt;
+
+        &lt;ng-container matColumnDef&#x3D;&quot;responsable&quot; class&#x3D;&quot;responsable&quot;&gt;
+          &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;responsable&quot;&gt;
+            Responsable
+          &lt;/mat-header-cell&gt;
+          &lt;mat-cell *matCellDef&#x3D;&quot;let element; let i &#x3D; index&quot; class&#x3D;&quot;responsable&quot; [ngClass]&#x3D;&quot;{&#x27;even-row&#x27;: i % 2 &#x3D;&#x3D;&#x3D; 0, &#x27;odd-row&#x27;: i % 2 !&#x3D;&#x3D; 0}&quot;&gt;
+            {{ element.responsable }}
+          &lt;/mat-cell&gt;
+        &lt;/ng-container&gt;
+
+        &lt;ng-container matColumnDef&#x3D;&quot;annee&quot; class&#x3D;&quot;annee&quot;&gt;
+          &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;annee&quot;&gt;
+            Année
+          &lt;/mat-header-cell&gt;
+          &lt;mat-cell *matCellDef&#x3D;&quot;let element; let i &#x3D; index&quot; class&#x3D;&quot;annee&quot; [ngClass]&#x3D;&quot;{&#x27;even-row&#x27;: i % 2 &#x3D;&#x3D;&#x3D; 0, &#x27;odd-row&#x27;: i % 2 !&#x3D;&#x3D; 0}&quot;&gt;
+            {{ element.annee }}
+          &lt;/mat-cell&gt;
+        &lt;/ng-container&gt;
+
+        &lt;ng-container matColumnDef&#x3D;&quot;date_deb&quot; class&#x3D;&quot;date_deb&quot;&gt;
+          &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;date_deb&quot;&gt;
+            Date début
+          &lt;/mat-header-cell&gt;
+          &lt;mat-cell *matCellDef&#x3D;&quot;let element; let i &#x3D; index&quot; class&#x3D;&quot;date_deb&quot; [ngClass]&#x3D;&quot;{&#x27;even-row&#x27;: i % 2 &#x3D;&#x3D;&#x3D; 0, &#x27;odd-row&#x27;: i % 2 !&#x3D;&#x3D; 0}&quot;&gt;
+            {{ element.date_deb }}
+          &lt;/mat-cell&gt;
+        &lt;/ng-container&gt;
+
+        &lt;ng-container matColumnDef&#x3D;&quot;projet&quot; class&#x3D;&quot;projet&quot;&gt;
+          &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;projet&quot;&gt;
+            Nom (Projet)
+          &lt;/mat-header-cell&gt;
+          &lt;mat-cell *matCellDef&#x3D;&quot;let element; let i &#x3D; index&quot; class&#x3D;&quot;projet&quot; [ngClass]&#x3D;&quot;{&#x27;even-row&#x27;: i % 2 &#x3D;&#x3D;&#x3D; 0, &#x27;odd-row&#x27;: i % 2 !&#x3D;&#x3D; 0}&quot;&gt;
+            {{ element.projet }}
+          &lt;/mat-cell&gt;
+        &lt;/ng-container&gt;
+
+        &lt;ng-container matColumnDef&#x3D;&quot;action&quot; class&#x3D;&quot;action&quot;&gt;
+          &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;action&quot;&gt;
+            Type (Action)
+          &lt;/mat-header-cell&gt;
+          &lt;mat-cell *matCellDef&#x3D;&quot;let element; let i &#x3D; index&quot; class&#x3D;&quot;action&quot; [ngClass]&#x3D;&quot;{&#x27;even-row&#x27;: i % 2 &#x3D;&#x3D;&#x3D; 0, &#x27;odd-row&#x27;: i % 2 !&#x3D;&#x3D; 0}&quot;&gt;
+            {{ element.action }}
+          &lt;/mat-cell&gt;
+        &lt;/ng-container&gt;
+
+        &lt;ng-container matColumnDef&#x3D;&quot;typ_interv&quot; class&#x3D;&quot;typ_inter&quot;&gt;
+          &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;typ_inter&quot;&gt;
+            Type d&#x27;intervention
+          &lt;/mat-header-cell&gt;
+          &lt;mat-cell *matCellDef&#x3D;&quot;let element; let i &#x3D; index&quot; class&#x3D;&quot;typ_inter&quot; [ngClass]&#x3D;&quot;{&#x27;even-row&#x27;: i % 2 &#x3D;&#x3D;&#x3D; 0, &#x27;odd-row&#x27;: i % 2 !&#x3D;&#x3D; 0}&quot;&gt;
+            {{ element.typ_inter }}
+          &lt;/mat-cell&gt;
+        &lt;/ng-container&gt;
+
+        &lt;ng-container matColumnDef&#x3D;&quot;statut&quot; class&#x3D;&quot;statut&quot;&gt;
+          &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;statut&quot;&gt;
+            Statut
+          &lt;/mat-header-cell&gt;
+          &lt;mat-cell *matCellDef&#x3D;&quot;let element; let i &#x3D; index&quot; class&#x3D;&quot;statut&quot; [ngClass]&#x3D;&quot;{&#x27;even-row&#x27;: i % 2 &#x3D;&#x3D;&#x3D; 0, &#x27;odd-row&#x27;: i % 2 !&#x3D;&#x3D; 0}&quot;&gt;
+            {{ element.statut }}
+          &lt;/mat-cell&gt;
+        &lt;/ng-container&gt;
+
+        &lt;mat-header-row *matHeaderRowDef&#x3D;&quot;displayedColumns&quot;&gt;&lt;/mat-header-row&gt;
+        &lt;mat-row
+          *matRowDef&#x3D;&quot;let row; columns: displayedColumns&quot;
+          (click)&#x3D;&quot;onSelect(row)&quot;
+        &gt;&lt;/mat-row&gt;
+      &lt;/mat-table&gt;
+    &lt;/div&gt;
+  &lt;/ng-template&gt;
+
+  &lt;ng-template #elseBlock&gt; Il n&#x27;y a pas de projets sur ce site. &lt;/ng-template&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./detail-projets.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;../../../styles/mixins.scss&quot;;
+@import &quot;../../../styles/variables.scss&quot;;
+
+.detail-projets {
+  display: flex;
+}
+
+h2 {
+  padding-top: 10px;
+}
+
+// Taille des colonnes
+.mat-mdc-cell,
+.mat-mdc-table .mat-mdc-header-cell {
+  @include dim(100%, 100%);
+  border: none;
+}
+
+// Ligne de titre
+.mat-mdc-table mat-header-row.mat-mdc-header-row {
+  border-bottom: 2px solid $couleur-faune;
+}
+
+// Responsive
+@media screen and (max-width: $mobile) {
+  .annee,
+  .date_deb,
+  .action,
+  .typ_inter {
+    display: none;
+  }
+}
+
+// Lignes de fond mat-table
+.even-row {
+  background-color: white;
+}
+
+.odd-row {
+  background-color: #f2f2f2; /* Gris très clair */
+}
+
+// Hauteur fixe pour chaque ligne
+.mat-mdc-cell, .mat-mdc-header-cell {
+  height: 110px; // Définissez la hauteur souhaitée ici
+}</code></pre>
+                <p class="comment">
+                    <code>../../../shared/form-buttons/form-buttons.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;../../styles/mixins&quot;;
+@import &quot;../../styles/variables.scss&quot;;
+
+.edition {
+    display: flex;
+    @include align(center, start);
+    margin-bottom: 20px;
+    gap: 15px;
+    .btn-edition {
+      @include btn-icon($couleur-faune, $orangeC);
+      @include icon(white, black);
+    }
+    .btn-sauvegarde {
+      @include btn-icon(white, $couleur-territoire);
+      @include icon($couleur-flore, white);
+    }
+    .btn-sauvegarde-disabled {
+      // Couleur fond :  normal / hover
+      @include btn-icon(grey, rgb(87, 87, 87));
+
+      // Couleur icone :  normal / hover
+      @include icon(rgb(223, 223, 223), rgb(194, 194, 194));
+      
+    }
+    .btn-annulation {
+      @include btn-icon(white, red);
+      @include icon(red, white);
+    }
+  }
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div *ngIf="projetsLite.length > 0; then thenBlock; else elseBlock"></div><div class="detail-projets">  <ng-template #thenBlock>    <div>      <h2 *ngIf="projetsLite.length == 1">{{ projetsLite.length }} projet.</h2>      <h2 *ngIf="projetsLite.length > 1">{{ projetsLite.length }} projets.</h2>            <section class="edition">        Ajouter un nouveau projet : <button mat-icon-button            matTooltip="Ajouter un projet"            class="btn-edition"            (click)="onSelect()">            <mat-icon>add</mat-icon>        </button>      </section>      <mat-table [dataSource]="dataSource" class="mat-elevation-z8">        <ng-container matColumnDef="responsable" class="responsable">          <mat-header-cell *matHeaderCellDef class="responsable">            Responsable          </mat-header-cell>          <mat-cell *matCellDef="let element; let i = index" class="responsable" [ngClass]="{\'even-row\': i % 2 === 0, \'odd-row\': i % 2 !== 0}">            {{ element.responsable }}          </mat-cell>        </ng-container>        <ng-container matColumnDef="annee" class="annee">          <mat-header-cell *matHeaderCellDef class="annee">            Année          </mat-header-cell>          <mat-cell *matCellDef="let element; let i = index" class="annee" [ngClass]="{\'even-row\': i % 2 === 0, \'odd-row\': i % 2 !== 0}">            {{ element.annee }}          </mat-cell>        </ng-container>        <ng-container matColumnDef="date_deb" class="date_deb">          <mat-header-cell *matHeaderCellDef class="date_deb">            Date début          </mat-header-cell>          <mat-cell *matCellDef="let element; let i = index" class="date_deb" [ngClass]="{\'even-row\': i % 2 === 0, \'odd-row\': i % 2 !== 0}">            {{ element.date_deb }}          </mat-cell>        </ng-container>        <ng-container matColumnDef="projet" class="projet">          <mat-header-cell *matHeaderCellDef class="projet">            Nom (Projet)          </mat-header-cell>          <mat-cell *matCellDef="let element; let i = index" class="projet" [ngClass]="{\'even-row\': i % 2 === 0, \'odd-row\': i % 2 !== 0}">            {{ element.projet }}          </mat-cell>        </ng-container>        <ng-container matColumnDef="action" class="action">          <mat-header-cell *matHeaderCellDef class="action">            Type (Action)          </mat-header-cell>          <mat-cell *matCellDef="let element; let i = index" class="action" [ngClass]="{\'even-row\': i % 2 === 0, \'odd-row\': i % 2 !== 0}">            {{ element.action }}          </mat-cell>        </ng-container>        <ng-container matColumnDef="typ_interv" class="typ_inter">          <mat-header-cell *matHeaderCellDef class="typ_inter">            Type d\'intervention          </mat-header-cell>          <mat-cell *matCellDef="let element; let i = index" class="typ_inter" [ngClass]="{\'even-row\': i % 2 === 0, \'odd-row\': i % 2 !== 0}">            {{ element.typ_inter }}          </mat-cell>        </ng-container>        <ng-container matColumnDef="statut" class="statut">          <mat-header-cell *matHeaderCellDef class="statut">            Statut          </mat-header-cell>          <mat-cell *matCellDef="let element; let i = index" class="statut" [ngClass]="{\'even-row\': i % 2 === 0, \'odd-row\': i % 2 !== 0}">            {{ element.statut }}          </mat-cell>        </ng-container>        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>        <mat-row          *matRowDef="let row; columns: displayedColumns"          (click)="onSelect(row)"        ></mat-row>      </mat-table>    </div>  </ng-template>  <ng-template #elseBlock> Il n\'y a pas de projets sur ce site. </ng-template></div></div>'
+    var COMPONENTS = [{'name': 'AdminComponent', 'selector': 'app-admin'},{'name': 'AdminUsersComponent', 'selector': 'app-admin-users'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BackToTopComponent', 'selector': 'app-back-to-top'},{'name': 'CardComponent', 'selector': 'app-card'},{'name': 'DetailDescriptionComponent', 'selector': 'app-detail-description'},{'name': 'DetailGestionComponent', 'selector': 'app-detail-gestion'},{'name': 'DetailHabitatsComponent', 'selector': 'app-detail-habitats'},{'name': 'DetailInfosComponent', 'selector': 'app-detail-infos'},{'name': 'DetailMfuComponent', 'selector': 'app-detail-mfu'},{'name': 'DetailProjetsComponent', 'selector': 'app-detail-projets'},{'name': 'DocumentationComponent', 'selector': 'app-documentation'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'FormButtonsComponent', 'selector': 'app-form-buttons'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoginComponent', 'selector': 'app-login'},{'name': 'MapComponent', 'selector': 'app-map'},{'name': 'ObjectifComponent', 'selector': 'app-objectif'},{'name': 'OperationComponent', 'selector': 'app-operation'},{'name': 'ProjetComponent', 'selector': 'app-dialog-operation'},{'name': 'ProjetVComponent', 'selector': 'app-dialog-operation'},{'name': 'SiteDetailComponent', 'selector': 'app-site-detail'},{'name': 'SitesComponent', 'selector': 'app-site'},{'name': 'SitesDisplayComponent', 'selector': 'app-sites-display'},{'name': 'SitesResearchComponent', 'selector': 'app-sites-research'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'DetailProjetsComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'DetailProjetsComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -7,6 +7,10 @@ import { HeaderComponent } from './header/header.component';
 import { LoginService } from './login/login.service';
 import { User } from './login/user.model';
 
+/**
+ * AppComponent est le composant racine de l'application Angular.
+ * Il initialise l'application et gère l'authentification de l'utilisateur.
+ */
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -30,23 +34,28 @@ export class AppComponent implements OnInit {
 
   checkToken() {
     if (this.token) {
-      // Action à effectuer si le token existe
       console.log('Token exists:', this.token);
 
       this.loginService.getUsers().subscribe({
         next: (result: User | undefined | null) => {
           console.log('User:', result);
-          this.navigate(); // Rediriger vers la page d'accueil
+          // Ne redirige que si l'utilisateur est sur la page de login ou d'accueil
+          if (this.router.url === '/' || this.router.url === '/login') {
+            this.navigate(); // Redirige vers la page d'accueil
+          }
         },
         error: (error: Error) => {
           console.log('Error:', error);
-          this.navigate('login'); // Rediriger vers la page de connexion
+          if (this.router.url !== '/login') {
+            this.navigate('login'); // Redirige vers la page de connexion
+          }
         },
       });
     } else {
-      // Action à effectuer si le token n'existe pas
       console.log('No token found');
-      this.navigate('login'); // Rediriger vers la page de connexion
+      if (this.router.url !== '/login') {
+        this.navigate('login'); // Redirige vers la page de connexion
+      }
     }
   }
 
