@@ -83,8 +83,20 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
     <mat-step [stepControl]="form!">
       <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 1</ng-template>
+        <ng-template matStepLabel>Type de l'opération</ng-template>
         <div>
+          <mat-slide-toggle
+                formControlName="validite"
+                class="toggle"
+                [checked]="form.get('validite')?.value || false"
+                [disabled]="false">
+
+                Validité de l'opération
+
+          </mat-slide-toggle>
+        </div>
+        <div>
+
           <!-- <mat-form-field>
             <mat-label>Ref UUID Operation</mat-label>
             <input matInput formControlName="uuid_ope" readonly>
@@ -93,182 +105,160 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             <mat-label>Ref UUID Project</mat-label>
             <input matInput formControlName="ref_uuid_proj" readonly>
           </mat-form-field> -->
+
           <mat-form-field>
-            <mat-label>Code</mat-label>
-            <input matInput formControlName="code">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Titre</mat-label>
-            <input matInput formControlName="titre">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Type d'intervention</mat-label>
-            <mat-select [(ngModel)]="selectedIntervType" formControlName="typ_intervention">
-              @for (type of intervTypes; track type) {
+            <mat-label>Objectif opérationnel</mat-label>
+            <mat-select formControlName="obj_ope">
+              @for (type of typeObjectifOpe; track type) {
                 <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
               }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Type d'opération 1</mat-label>
+            <mat-select formControlName="action">
+              @for (type of operationTypesFamilles; track type) {
+                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                <!-- <mat-option [value]="type.cd_type">{{type.libelle}} -- {{type.cd_type}}</mat-option> -->
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Differents types d'opérations selon la famille sélectionnée -->
+          <ng-container *ngIf="selectedOperationFamille != ''">
+            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '027_TRAV_MECA_V2'">
+              <mat-label>Type d'opération 2</mat-label>
+              <mat-select formControlName="action_2">
+                @for (type of operationTypesMeca; track type) {
+                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '028_TRAV_PAT_V2'">
+              <mat-label>Type d'opération 2</mat-label>
+              <mat-select formControlName="action_2">
+                @for (type of operationTypesPat; track type) {
+                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '008_TRAV_AMEN_V2'">
+              <mat-label>Type d'opération 2</mat-label>
+              <mat-select formControlName="action_2">
+                @for (type of operationTypesAme; track type) {
+                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '005_TRAV_HYDRO_V2'">
+              <mat-label>Type d'opération 2</mat-label>
+              <mat-select formControlName="action_2">
+                @for (type of operationTypesHydro; track type) {
+                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '200_TRAV_DECH_V2'">
+              <mat-label>Type d'opération 2</mat-label>
+              <mat-select formControlName="action_2">
+                @for (type of operationTypesDech; track type) {
+                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <button mat-icon-button matTooltip="Décrire/Détailler l'opération en deux ou trois phrases." class="info-button">
+            <mat-icon>info</mat-icon>
+          </button>
+          <mat-form-field>
+            <mat-label>Description (détails)</mat-label>
+            <input matInput formControlName="description" placeholder="Exemple :● Fauche avec exportation des rémanents et mise en ballot
+            ● Débroussaillage de la végétation ligneuse avec mise en tas des rémanents en lisière.">
+            <mat-icon matSuffix (click)="form.get('description')?.setValue('')">clear</mat-icon>
+            <mat-error *ngIf="form.get('description')?.hasError('required')">
+              Ce champ est obligatoire.
+            </mat-error>
+            <mat-error *ngIf="form.get('description')?.hasError('minWords')">
+              La description doit contenir au moins 2 mots.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Remarques particulières</mat-label>
+            <input matInput formControlName="remarque" placeholder="Exemple :● En raison des conditions hydriques exceptionnelles de cette année, la fauche a eu lieu tardivement en saison
+● Dégradation du site par des engins sylvicoles.">
+            <mat-icon matSuffix (click)="form.get('remarque')?.setValue('')">clear</mat-icon>
+            <mat-error *ngIf="form.get('remarque')?.hasError('required')">
+              Ce champ est obligatoire.
+            </mat-error>
+            <mat-error *ngIf="form.get('remarque')?.hasError('minWords')">
+              Vos remarques doivent contenir au moins 2 mots.
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form!">
+      <form [formGroup]="form!">
+        <ng-template matStepLabel>Type de l'intervention</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>Maitre d'oeuvre</mat-label>
+            <!-- <mat-label>Type d'intervention</mat-label> -->
+            <mat-select formControlName="typ_intervention">
+              <mat-option *ngFor="let type of maitreOeuvreTypes" [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
             </mat-select>
           </mat-form-field>
         </div>
         <div>
           <mat-form-field>
-            <mat-label>Remarque</mat-label>
-            <input matInput formControlName="remarque">
+            <mat-label>Nom du maitre d'oeuvre</mat-label>
+            <input matInput formControlName="nom_mo">
           </mat-form-field>
+        </div>
+        <div>
+          Cadre de l'intervention
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step state="euro">
+      <form [formGroup]="form!">
+        <ng-template matStepLabel>Financement</ng-template>
+        <div>
           <mat-form-field>
-            <mat-label>Validite</mat-label>
-            <input matInput formControlName="validite">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Type d'action</mat-label>
-            <mat-select [(ngModel)]="selectedActionType" formControlName="action">
-              @for (type of actionTypes; track type) {
-                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
-              }
+            <mat-label>Financement</mat-label>
+            <mat-select formControlName="programme"
+                        (selectionChange)="onProgrammeChange($event.value)">
+              <mat-option *ngFor="let type of programmeTypes" [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field>
-            <mat-label>Objectif</mat-label>
-            <input matInput formControlName="objectif">
-          </mat-form-field>
         </div>
+
         <div>
+          <button mat-button matStepperPrevious>Précédent</button>
           <button mat-button matStepperNext>Suivant</button>
         </div>
       </form>
     </mat-step>
 
     <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 2</ng-template>
-        <div>
-          <mat-form-field>
-            <mat-label>Inscrit PDG</mat-label>
-            <input matInput formControlName="inscrit_pdg">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Rmq PDG</mat-label>
-            <input matInput formControlName="rmq_pdg">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Description</mat-label>
-            <input matInput formControlName="description">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Interv ZH</mat-label>
-            <input matInput formControlName="interv_zh">
-          </mat-form-field>
-        </div>
-        <div>
-          <button mat-button matStepperPrevious>Retour</button>
-          <button mat-button matStepperNext>Suivant</button>
-        </div>
-      </form>
-    </mat-step>
-
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 3</ng-template>
-        <div>
-          <mat-form-field>
-            <mat-label>Surface (ha)</mat-label>
-            <input matInput formControlName="surf">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Linéaire</mat-label>
-            <input matInput formControlName="lin">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Apport de fourrage</mat-label>
-            <input matInput formControlName="app_fourr">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Pression Moyenne</mat-label>
-            <input matInput formControlName="pression_moy">
-          </mat-form-field>
-        </div>
-        <div>
-          <button mat-button matStepperPrevious>Retour</button>
-          <button mat-button matStepperNext>Suivant</button>
-        </div>
-      </form>
-    </mat-step>
-
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 4</ng-template>
-        <div>
-          <mat-form-field>
-            <mat-label>UGB Moy</mat-label>
-            <input matInput formControlName="ugb_moy">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Nbjours</mat-label>
-            <input matInput formControlName="nbjours">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Charge Moy</mat-label>
-            <input matInput formControlName="charge_moy">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Charge Inst</mat-label>
-            <input matInput formControlName="charge_inst">
-          </mat-form-field>
-        </div>
-        <div>
-          <button mat-button matStepperPrevious>Retour</button>
-          <button mat-button matStepperNext>Suivant</button>
-        </div>
-      </form>
-    </mat-step>
-
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 5</ng-template>
-        <div>
-
-          <mat-form-field>
-            <mat-label>Date Debut</mat-label>
-            <input matInput formControlName="date_debut" type="date">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Date Fin</mat-label>
-            <input matInput formControlName="date_fin" type="date">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Date Approx</mat-label>
-            <input matInput formControlName="date_approx">
-          </mat-form-field>
-        </div>
-        <div>
-          <button mat-button matStepperPrevious>Retour</button>
-          <button mat-button matStepperNext>Suivant</button>
-        </div>
-      </form>
-    </mat-step>
-
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
-        <ng-template matStepLabel>Step 6</ng-template>
-        <div>
-          <mat-form-field>
-            <mat-label>Ben Participants</mat-label>
-            <input matInput formControlName="ben_participants">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Ben Heures</mat-label>
-            <input matInput formControlName="ben_heures">
-          </mat-form-field>
-        </div>
-        <div>
-          <button mat-button matStepperPrevious>Retour</button>
-          <button mat-button matStepperNext>Suivant</button>
-        </div>
-      </form>
-    </mat-step>
-
-    <mat-step [stepControl]="form!">
-      <ng-template matStepLabel>Step 7</ng-template>
+      <ng-template matStepLabel>Données spatiales</ng-template>
 
       <div *ngIf="localisations !== undefined && localisations.length > 0">
         <button mat-button (click)="deleteItem('localisation')">Supprimer la localisation</button>
@@ -308,6 +298,113 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </div>
 
       <button mat-button matStepperPrevious>Retour</button>
+      <button mat-button matStepperNext>Suivant</button>
     </mat-step>
+
+    <mat-step [stepControl]="form!">
+      <form [formGroup]="form!">
+        <ng-template matStepLabel>Champs non utilisés</ng-template>
+        <div>
+
+          <mat-form-field>
+            <mat-label>Inscrit PDG</mat-label>
+            <input matInput formControlName="inscrit_pdg">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Rmq PDG</mat-label>
+            <input matInput formControlName="rmq_pdg">
+          </mat-form-field>
+          
+          <mat-form-field>
+            <mat-label>Interv ZH</mat-label>
+            <input matInput formControlName="interv_zh">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Titre</mat-label>
+            <input matInput formControlName="titre">
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <mat-label>Surface (ha)</mat-label>
+            <input matInput formControlName="surf">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Linéaire</mat-label>
+            <input matInput formControlName="lin">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Apport de fourrage</mat-label>
+            <input matInput formControlName="app_fourr">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Pression Moyenne</mat-label>
+            <input matInput formControlName="pression_moy">
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <mat-label>UGB Moy</mat-label>
+            <input matInput formControlName="ugb_moy">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Nbjours</mat-label>
+            <input matInput formControlName="nbjours">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Charge Moy</mat-label>
+            <input matInput formControlName="charge_moy">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Charge Inst</mat-label>
+            <input matInput formControlName="charge_inst">
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <mat-label>Date Debut</mat-label>
+            <input matInput formControlName="date_debut" type="date">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Date Fin</mat-label>
+            <input matInput formControlName="date_fin" type="date">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Date Approx</mat-label>
+            <input matInput formControlName="date_approx">
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <mat-label>Ben Participants</mat-label>
+            <input matInput formControlName="ben_participants">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Ben Heures</mat-label>
+            <input matInput formControlName="ben_heures">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Retour</button>
+        </div>
+      </form>
+    </mat-step>
+
+    
+
+    
   </mat-horizontal-stepper>
+  
+  <div>
+    <button mat-button (click)="deleteItem('operation')">Supprimer l'opération</button>
+  </div>
 </ng-template>

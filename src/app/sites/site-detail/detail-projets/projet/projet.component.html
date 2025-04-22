@@ -51,16 +51,22 @@
           <!-- Affichage en mode consultation (editMode == false) -->
           <ng-container *ngIf="!isEditProjet">
             <div>
+
+              <mat-form-field class="custom-mat-form-field">
+                <mat-label>Nom</mat-label>
+                <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
+              </mat-form-field>
+
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Type de projet</mat-label>
                 <input matInput [value]="this.getLibelle(step1Form.get('typ_projet')?.value, projectTypes) || 'Non renseigné'" readonly>
               </mat-form-field>
-              <mat-slide-toggle
-                class="toggle"
-                [checked]="step1Form.get('statut')?.value || false"
-                [disabled]="true">
-                Statut
-              </mat-slide-toggle>
+
+              <mat-form-field class="custom-mat-form-field">
+                <mat-label>Statut</mat-label>
+                <input matInput [value]="this.getLibelle(step1Form.get('statut')?.value, statusTypes) || 'Non renseigné'" readonly>
+              </mat-form-field>
+
               <mat-slide-toggle
                 class="toggle"
                 [checked]="step1Form.get('validite')?.value || false"
@@ -88,13 +94,9 @@
                 <mat-label>Date création projet</mat-label>
                 <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
               </mat-form-field>
-              </div>
+            </div>
 
-              <div>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Nom</mat-label>
-                <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
+            <div>
               <mat-form-field class="custom-mat-form-field">
                 <mat-label>Code</mat-label>
                 <input matInput [value]="step1Form.get('code')?.value || 'Non renseigné'" readonly>
@@ -132,6 +134,10 @@
               <ng-container>
                 <div>
                   <mat-form-field>
+                    <mat-label>Nom</mat-label>
+                    <textarea matInput formControlName="nom"></textarea>
+                  </mat-form-field>
+                  <mat-form-field>
                     <mat-label>Type de projet</mat-label>
                     <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
                       @for (type of projectTypes; track type) {
@@ -140,7 +146,16 @@
                     </mat-select>
 
                   </mat-form-field>
-                  <mat-slide-toggle formControlName="statut">Statut</mat-slide-toggle>
+
+                  <mat-form-field>
+                    <mat-label>Statut</mat-label>
+                    <mat-select formControlName="statut">
+                      <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">
+                        {{status.libelle}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
                   <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
 
                 </div>
@@ -165,10 +180,6 @@
                 </div>
 
                 <div>
-                  <mat-form-field>
-                    <mat-label>Nom</mat-label>
-                    <textarea matInput formControlName="nom"></textarea>
-                  </mat-form-field>
                   <mat-form-field>
                     <mat-label>Code</mat-label>
                     <textarea matInput formControlName="code"></textarea>
@@ -195,7 +206,21 @@
             <button mat-button matStepperNext>SUIVANT</button>
           </div>
         </mat-step>
-  
+
+        <mat-step state="flag" *ngIf="projet && newProjet === false">
+          <ng-template matStepLabel>Objectifs</ng-template>
+
+          <!-- Si dans aucun mode d'edition ou d'ajout -->
+          <ng-container *ngIf="!isEditObjectif || !isAddObjectif; then objectif;">
+
+          </ng-container>
+
+          <div>
+            <button mat-button matStepperPrevious>Précédent</button>
+            <button mat-button matStepperNext>Suivant</button>
+          </div>
+        </mat-step>
+
         <mat-step state="pin">
           <!-- <mat-step [stepControl]="UGFormGroup"> -->
           <ng-template matStepLabel>Unités de gestion</ng-template>
@@ -284,36 +309,6 @@
             <button mat-button matStepperPrevious>Précédent</button>
             <button mat-button matStepperNext>Suivant</button>
           </div>
-        </mat-step>
-
-        <mat-step state="euro" *ngIf="projet && newProjet === false">
-          <ng-template matStepLabel>Financements</ng-template>
-          <div class="container-carte">
-            Tableau des financements
-          </div>
-
-          <form *ngIf="isEditProjet == true">
-            Ajouter un financement dans le tableau
-          </form>
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button matStepperNext>Suivant</button>
-          </div>
-        </mat-step>
-
-        <mat-step state="flag" *ngIf="projet && newProjet === false">
-          <ng-template matStepLabel>Objectifs</ng-template>
-
-          <!-- Si dans aucun mode d'edition ou d'ajout -->
-          <ng-container *ngIf="!isEditObjectif || !isAddObjectif; then objectif;">
-
-          </ng-container>
-
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button matStepperNext>Suivant</button>
-          </div>
-
         </mat-step>
 
         <!-- Ce step s'affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai -->

@@ -59,7 +59,7 @@ export class ProjetService {
     // }
   
   deleteOperation(uuid_ope: string): Observable<ApiResponse> {
-    return this.http.delete<ApiResponse>(`${this.activeUrl}/opegerer.operations/${uuid_ope}`).pipe(
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.operations/uuid=${uuid_ope}`).pipe(
       catchError(error => {
         console.error("Erreur lors de la suppression de l'opération:", error);
         return of({ success: false, message: "Erreur lors de la suppression de l'opération" } as ApiResponse);
