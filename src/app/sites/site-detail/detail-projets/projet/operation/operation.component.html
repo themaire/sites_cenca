@@ -227,20 +227,20 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
         <div>
           <mat-form-field>
             <mat-label>Cadre de l'intervention</mat-label>
-            <mat-select [(ngModel)]="selectedCadreInterventionType" formControlName="cadre_intervention">
+            <mat-select formControlName="cadre_intervention" (selectionChange)="onCadreInterventionChange($event.value)">
               <mat-option *ngFor="let type of cadreInterventionTypes" [value]="type.cd_type">
                 {{ type.libelle }}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field *ngIf ="selectedCadreInterventionType !== undefined && selectedCadreInterventionType == 12">
+            <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || form.get('cadre_intervention')?.value === 12">
             <mat-label>Détail du cadre</mat-label>
             <mat-select formControlName="cadre_intervention_detail">
               @for (type of chantierNatureTypes; track type) {
-                <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+              <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
               }
             </mat-select>
-          </mat-form-field>
+            </mat-form-field>
         </div>
         <div>
           <button mat-button matStepperPrevious>Retour</button>
