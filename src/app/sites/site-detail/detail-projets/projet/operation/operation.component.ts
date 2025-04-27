@@ -110,7 +110,6 @@ export class OperationComponent implements OnInit, OnDestroy {
   @ViewChild('matTable') table!: MatTable<OperationLite>;
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  private isComponentInitialized: boolean = false; // Pour savoir si le composant est initialisé
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
   private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
@@ -138,24 +137,21 @@ export class OperationComponent implements OnInit, OnDestroy {
     return this._selectedOperationFamille;
   }
   set selectedOperationFamille(value: string) {
-    // console.log('Setter appelé avec la valeur :', value);
-  
-    // Mettre à jour la valeur interne
-    this._selectedOperationFamille = value;
-  
-    // Ignorer la réinitialisation si le composant n'est pas encore complètement initialisé
-    if (!this.isComponentInitialized) {
-      console.log('Ignoré car le composant est en cours de chargement.');
+    // Ne rien faire si la valeur n'a pas changé
+    if (this._selectedOperationFamille === value || this.isLoading) {
       return;
     }
-  
+
+    // Mettre à jour la valeur interne
+    this._selectedOperationFamille = value;
+
     // Réinitialiser selectedOperationType
     this.selectedOperationType = '';
-  
+
     // Réinitialiser le champ action_2 du formulaire si nécessaire
-    if (this.form instanceof FormGroup && this.form.get('action_2')) {
+    if (this.form?.get('action_2')) {
       this.form.get('action_2')!.reset('', { emitEvent: false });
-      console.log('Le champ du formulaire action_2 réinitialisé à vide');
+      console.log('Le champ action_2 du formulaire a été réinitialisé.');
     } else {
       console.warn('Le champ action_2 est introuvable ou le formulaire n\'est pas initialisé.');
     }
@@ -178,33 +174,8 @@ export class OperationComponent implements OnInit, OnDestroy {
   cadreInterventionTypes!: SelectValue[];
   // selectedCadreInterventionType: string = '';
   // Getter et setter pour selectedOperationFamille
-  private _selectedCadreInterventionType: number = 0;
-  get selectedCadreInterventionType(): number {
-    return this._selectedCadreInterventionType;
-  }
-  set selectedCadreInterventionType(value: number) {
-    console.log('Setter de selectedCadreInterventionType appelé avec la valeur :', value);
+  selectedCadreInterventionType!: number;
   
-    // Mettre à jour la valeur interne
-    this._selectedCadreInterventionType = value;
-  
-    // Ignorer la réinitialisation si le composant n'est pas encore complètement initialisé
-    if (!this.isComponentInitialized) {
-      console.log('Ignoré car le composant est en cours de chargement.');
-      return;
-    }
-  
-    // Réinitialiser selectedOperationType
-    this.selectedCadreInterventionType = 0;
-  
-    // Réinitialiser le champ action_2 du formulaire si nécessaire
-    if (this.form instanceof FormGroup && this.form.get('cadre_intervention_detail')) {
-      this.form.get('cadre_intervention_detail')!.reset(null, { emitEvent: false });
-      console.log('Le champ du formulaire cadre_intervention_detail réinitialisé à vide');
-    } else {
-      console.warn('Le champ cadre_intervention_detail est introuvable ou le formulaire n\'est pas initialisé.');
-    }
-  }
 
   chantierNatureTypes!: SelectValue[];
 
@@ -237,6 +208,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   stepperOrientation: Observable<StepperOrientation>;
   shapefileId: any; // Pour le formulaire de shapefile
   localisations?: Localisation[]; // Pour le formulaire de shapefile
+  isComponentInitialized: boolean = false; // Indicateur pour savoir si le composant est complètement initialisé
   
   constructor(
     private cdr: ChangeDetectorRef,
@@ -375,8 +347,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         setTimeout(async () => {
           // Accéder à la liste des opérations et remplir le tableau Material des operationLite
           this.fetch();
-          // Marquer le composant comme complètement initialisé
-          this.isComponentInitialized = true;
+          
           console.log('Le composant est maintenant complètement initialisé.');
 
         }, this.loadingDelay);// Fin du bloc timeout
@@ -390,6 +361,8 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.isLoading = false;  // Même en cas d'erreur, arrêter le spinner
       this.cdr.detectChanges();
     }
+
+    
   }
 
   // ngAfterViewInit() {
@@ -930,6 +903,16 @@ export class OperationComponent implements OnInit, OnDestroy {
         panelClass: ['error-snackbar']
       });
 
+    }
+  }
+
+  onCadreInterventionChange(newValue: number): void {
+    console.log('Changement de cadre_intervention détecté, nouvelle valeur :', newValue);
+
+    // Mettre à null la valeur de cadre_intervention_detail
+    if (this.form?.get('cadre_intervention_detail')) {
+      this.form.get('cadre_intervention_detail')!.setValue(null, { emitEvent: false });
+      console.log('Le champ cadre_intervention_detail a été réinitialisé à null.');
     }
   }
 }

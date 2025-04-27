@@ -185,8 +185,8 @@ export class FormService {
       validite: [operation?.validite],
       action: [operation?.action || '', Validators.required],
       action_2: [operation?.action_2 || '', Validators.required],
-      cadre_intervention: [operation?.cadre_intervention || null, Validators.required],
-      cadre_intervention_detail: [operation?.cadre_intervention_detail || null], // Pas encore requis
+      cadre_intervention: [operation?.cadre_intervention ?? null, Validators.required], // Utiliser null explicitement
+      cadre_intervention_detail: [operation?.cadre_intervention_detail ?? null], // Pas encore requis
       objectif: [operation?.objectif || ''],
   
       typ_intervention: [operation?.typ_intervention || '', Validators.required],
