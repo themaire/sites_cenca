@@ -46,3 +46,7 @@ export interface OperationLite {
     cadre_intervention_detail?: number;
   }
   
+    export interface OperationProgramme {
+    uuid_ope: string; // Identifiant unique de l'opération
+    programme_ids: number[]; // Tableau contenant les IDs des programmes associés
+  }

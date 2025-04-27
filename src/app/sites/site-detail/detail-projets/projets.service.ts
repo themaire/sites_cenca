@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';  
 
 // prototypes utilisés dans la promise de la fonction
 import { Projet } from './projets';
-import { Operation, OperationLite } from './projet/operation/operations';
+import { Operation, OperationLite, OperationProgramme } from './projet/operation/operations';
 import { Objectif } from './projet/objectif/objectifs';
 import { ApiResponse } from '../../../shared/interfaces/api';
 import { Localisation } from '../../../shared/interfaces/localisation';
@@ -47,7 +47,13 @@ export class ProjetService {
     return await data.json() ?? [];
   }
   
-  // Utilisé dans operation.component.ts
+  // Utilisé aussi dans operation.component.ts
+  async getOperationProgrammes(subroute: string): Promise<OperationProgramme[]> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
+  }
+  
+  // Utilisé aussi dans operation.component.ts
   insertOperation(operation: Operation): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=operations/insert`;
     return this.http.put<ApiResponse>(url, operation);

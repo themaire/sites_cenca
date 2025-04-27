@@ -537,10 +537,15 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
+      const subrouteOperationProgramme = `operations/uuid=${uuid_ope}/programmes`;
 
       try {
         const operation = await this.projetService.getOperation(subroute);
         console.log('Opération avant le return de fetch() :', operation);
+
+        // On récupère les eventuels programmes associés à l'opération
+        const ope_programmes = this.projetService.getOperationProgrammes(subrouteOperationProgramme);
+        console.log('Programmes associés à l\'opération :', ope_programmes);
 
         // Pré remplir le sous formulaire d'envoi du shapefile
         this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
