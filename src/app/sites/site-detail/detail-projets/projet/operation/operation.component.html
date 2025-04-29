@@ -252,17 +252,22 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     <mat-step state="euro">
       <form [formGroup]="form!">
         <ng-template matStepLabel>Financement</ng-template>
-        <div>
-          <mat-form-field>
-            <mat-label>Financement</mat-label>
-            <mat-select formControlName="programme"
-                        (selectionChange)="onProgrammeChange($event.value)">
-              <mat-option *ngFor="let type of programmeTypes" [value]="type.cd_type">
-                {{ type.libelle }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+
+        <mat-error *ngIf="!listeOpeProgrammes.valid">
+          Vous ne pouvez pas sélectionner plus de 3 programmes.
+        </mat-error>
+        
+        <div formArrayName="liste_ope_programmes">
+          <div *ngFor="let programme of listeOpeProgrammes.controls; let i = index" [formGroupName]="i">
+            <mat-checkbox formControlName="checked">
+              {{ programme.get('lib_libelle')?.value }}
+            </mat-checkbox>
+          </div>
         </div>
+
+        <mat-error *ngIf="!listeOpeProgrammes.valid">
+          Vous ne pouvez pas sélectionner plus de 3 programmes.
+        </mat-error>
 
         <div>
           <button mat-button matStepperPrevious>Précédent</button>

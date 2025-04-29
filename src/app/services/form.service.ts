@@ -2,7 +2,7 @@ import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Projet } from '../sites/site-detail/detail-projets/projets';
@@ -94,6 +94,36 @@ export class FormService {
   public getLibelleFromCd(cd_type: string, list: SelectValue[]): string {
     const libelle = list.find(type => type.cd_type === cd_type);
     return libelle ? libelle.libelle : '';
+  }
+
+  /**
+   * Valide qu'un nombre maximum de cases à cocher sélectionnées n'est pas dépassé.
+   * 
+   * @param max - Le nombre maximum de cases à cocher autorisées.
+   * @returns Une fonction de validation qui prend un contrôle `AbstractControl` 
+   *          et retourne une erreur de validation si le nombre de cases cochées 
+   *          dépasse la limite spécifiée, ou `null` si la validation est réussie.
+   * 
+   * @example
+   * ```typescript
+   * const formArray = new FormArray([
+   *   new FormGroup({ checked: new FormControl(true) }),
+   *   new FormGroup({ checked: new FormControl(false) }),
+   *   new FormGroup({ checked: new FormControl(true) }),
+   * ]);
+   * 
+   * const validator = maxSelectedCheckboxes(2);
+   * const result = validator(formArray); // null (validation réussie)
+   * 
+   * formArray.at(2).get('checked')?.setValue(true);
+   * const result2 = validator(formArray); // { maxSelected: true } (validation échouée)
+   * ```
+   */
+  maxSelectedCheckboxes(max: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const selectedCount = (control as FormArray).controls.filter(c => c.get('checked')?.value).length;
+      return selectedCount > max ? { maxSelected: true } : null;
+    };
   }
   
 
@@ -197,11 +227,22 @@ export class FormService {
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null],
   
-      programme: [operation?.programme || '', Validators.required],
+      // Ajouter un FormArray pour gérer les programmes
+      liste_ope_programmes: this.fb.array(
+        operation?.liste_ope_programmes?.map(programme =>
+          this.fb.group({
+            lib_id: [programme.lib_id],
+            lib_libelle: [programme.lib_libelle],
+            checked: [programme.checked || false], // Initialise avec la valeur actuelle
+          })
+        ) || [],
+        [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
+      ),
     });
   
     // Ajouter une validation conditionnelle pour cadre_intervention_detail
     // Cela rechange le formulaire en fonction de la valeur de cadre_intervention
+    // La valeur 12 est utilisée pour les chantiers nature.
     form.get('cadre_intervention')?.valueChanges.subscribe((value) => {
       const cadreDetailControl = form.get('cadre_intervention_detail');
       if (value === 12) {

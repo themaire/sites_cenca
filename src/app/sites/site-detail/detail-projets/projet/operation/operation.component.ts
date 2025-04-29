@@ -6,7 +6,7 @@
 
 import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, FormArray } from '@angular/forms';
 
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
@@ -23,6 +23,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; //
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TooltipPosition, MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
@@ -84,6 +85,7 @@ export const MY_DATE_FORMATS = {
     MatSnackBarModule,
     MatSelectModule,
     MatIconModule,
+    MatCheckboxModule,
     MatStepperModule,
     MatButton,
     MatTooltipModule,
@@ -398,6 +400,8 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   subscribeToForm(): void {
     // Souscrire aux changements du statut du formulaire
+    // C'est a dire que l'on va surveiller les changements du formulaire
+    // A chaque fois qu'il y a un changement, ces lignes de code seront exécutées
     this.formOpeSubscription = this.form.statusChanges.subscribe(status => {
       this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
       console.log('Statut du formulaire principal :', status);
@@ -408,8 +412,19 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Afficher la liste des champs invalides
       console.log('Champs invalides :', this.getInvalidFields());
 
+      
+
       this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
     });
+  }
+
+  getInvalidFields(): string[] {
+    // Pour le stepper et le bouton MAJ
+    if (this.form !== undefined) {
+      return this.formService.getInvalidFields(this.form);
+    } else {
+      return [];
+    }
   }
 
   toggleEditOperation(mode: String): void {
@@ -446,15 +461,6 @@ export class OperationComponent implements OnInit, OnDestroy {
     
   }
 
-  getInvalidFields(): string[] {
-    // Pour le stepper et le bouton MAJ
-    if (this.form !== undefined) {
-      return this.formService.getInvalidFields(this.form);
-    } else {
-      return [];
-    }
-  }
-
   // isStepCompleted(stepIndex: number): boolean {
   //   // Pour utiliser cette méthode dans le stepper
   //   // il faut que le stepper soit en mode linear
@@ -486,6 +492,24 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Méthode pour récupérer les opérations
+   * Utilisée dans la méthode fetch() au moment de récupérer l'operation entière
+   * Transforme une liste de programmes en un tableau d'objets contenant uniquement
+   * les propriétés `lib_id` et `lib_libelle`.
+   *
+   * @param programmes - Un tableau d'objets représentant les programmes à transformer.
+   * Chaque objet doit contenir au moins les propriétés `lib_id` et `lib_libelle`.
+   * @returns Un tableau d'objets simplifiés, chacun contenant les propriétés `lib_id` et `lib_libelle`.
+   */
+  private transformProgrammes(programmes: any[]): { lib_id: number; lib_libelle: string, checked : boolean }[] {
+    return programmes.map(programme => ({
+      lib_id: programme.lib_id,
+      lib_libelle: programme.lib_libelle,
+      checked : false // Ajout d'une propriété checked initialisée à false
+    }));
+  }
+
   async fetch(uuid_ope?: String): Promise<Operation | void> {
     if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
       // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
@@ -510,15 +534,38 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
-      const subrouteOperationProgramme = `operations/uuid=${uuid_ope}/programmes`;
+      const subrouteOperationProgramme = `ope-programmes/uuid=${uuid_ope}`;
+      const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
 
       try {
-        const operation = await this.projetService.getOperation(subroute);
-        console.log('Opération avant le return de fetch() :', operation);
+        let operation = await this.projetService.getOperation(subroute);
+        // console.log('Opération avant le return de fetch() :', operation);
 
         // On récupère les eventuels programmes associés à l'opération
-        const ope_programmes = this.projetService.getOperationProgrammes(subrouteOperationProgramme);
-        console.log('Programmes associés à l\'opération :', ope_programmes);
+        const ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgramme);
+        // console.log('Programmes associés à l\'opération :', ope_programmes);
+
+        // On récupère la liste des programmes possibles
+        const liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
+        // console.log('Liste des programmes possibles :', liste_ope_programmes);
+
+        // Ajouter les programmes à l'objet operation
+        operation = {
+          ...operation,
+          ope_programmes: this.transformProgrammes(ope_programmes),
+          liste_ope_programmes: this.transformProgrammes(liste_ope_programmes),
+        };
+
+        if (operation.liste_ope_programmes && operation.ope_programmes) {
+          // console.log('Avant mise à jour des cases :', operation.liste_ope_programmes);
+        
+          operation.liste_ope_programmes = operation.liste_ope_programmes.map(programme => ({
+            ...programme,
+            checked: operation.ope_programmes?.some(ope => ope.lib_id === programme.lib_id) || false,
+          }));
+        
+          // console.log('Après mise à jour des cases :', operation.liste_ope_programmes);
+        }
 
         // Pré remplir le sous formulaire d'envoi du shapefile
         this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
@@ -539,6 +586,13 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Est appelée pour créer un formulaire d'opération
+   * C'est a dire dans la methode toggleEditOperation()
+   * @param operation - L'opération à ouvrir (si elle existe) (optionnel)
+   * @param empty - Si true, crée un formulaire vide (optionnel)
+   * @returns Un formulaire d'opération
+   */
   async makeForm({ operation, empty = false }: { operation?: OperationLite, empty?: boolean } = {}): Promise<void> {
     // Deux grands modes :
     // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
@@ -820,6 +874,18 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   // Méthode pour télécharger le fichier shapefile d'exemple
+  /**
+   * Lance le téléchargement d'un exemple de fichier shapefile en créant un élément
+   * d'ancrage temporaire, en définissant son `href` sur le chemin du shapefile,
+   * et en déclenchant un événement de clic.
+   * Le fichier téléchargé sera nommé `shapefile_polygone_modele.zip`.
+   *
+   * @remarks
+   * Cette méthode utilise l'API `document.createElement` pour créer dynamiquement
+   * un élément d'ancrage et déclencher un téléchargement programmatique. Assurez-vous
+   * que le chemin du fichier `'assets/shapefile_polygone_modele.zip'` est correct
+   * et accessible dans votre projet.
+   */
   downloadShapefileExample(): void {
     const link = document.createElement('a');
     link.href = 'assets/shapefile_polygone_modele.zip';
@@ -915,4 +981,26 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log('Le champ cadre_intervention_detail a été réinitialisé à null.');
     }
   }
+
+  /**
+   * Getter pour accéder à la liste des programmes d'opération
+   * @returns {FormArray} La liste des programmes d'opération
+   */
+  get listeOpeProgrammes(): FormArray {
+    return this.form.get('liste_ope_programmes') as FormArray;
+  }
+
+  /**
+  * Méthode pour mettre à jour this.operation en fonction programmes sélectionnés par l'utilisateur
+  */
+  getSelectedProgrammes(): { lib_id: number; lib_libelle: string }[] {
+    return this.listeOpeProgrammes.controls
+      .filter(control => control.get('checked')?.value)
+      .map(control => ({
+        lib_id: control.get('lib_id')?.value,
+        lib_libelle: control.get('lib_libelle')?.value,
+      }));
+  }
+
+  
 }
