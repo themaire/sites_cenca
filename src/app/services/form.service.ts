@@ -226,7 +226,8 @@ export class FormService {
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null],
-  
+      description_programme: [operation?.description_programme || null],
+      
       // Ajouter un FormArray pour gérer les programmes
       liste_ope_programmes: this.fb.array(
         operation?.liste_ope_programmes?.map(programme =>
@@ -238,6 +239,7 @@ export class FormService {
         ) || [],
         [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
       ),
+      
     });
   
     // Ajouter une validation conditionnelle pour cadre_intervention_detail
@@ -302,6 +304,19 @@ export class FormService {
     });
     return cleanedFormValue;
   }
+
+  /**
+   * Prépare les données d'un projet pour soumission en nettoyant les valeurs du formulaire
+   * et en structurant les données dans un objet conforme au type `Projet`.
+   *
+   * @param form - Le formulaire Angular (`FormGroup`) contenant les données du projet.
+   * @returns Un objet `Projet` contenant les données nettoyées et structurées prêtes à être envoyées au backend.
+   *
+   * @remarks
+   * - Les champs spécifiés dans `fieldsToClean` sont nettoyés avant la soumission.
+   * - Les données sont organisées en fonction des étapes du formulaire (Step 1 et Step 2).
+   * - Un log des données nettoyées est affiché dans la console avant la soumission.
+   */
   private prepareProjetDataForSubmission(form: FormGroup): Projet {
     const fieldsToClean = [
       'document',
@@ -372,26 +387,56 @@ export class FormService {
     }
   
     if (form.valid) {
+      // Dupliquer le FormGroup en un nouvel objet nommé workingForm
+      const workingForm = this.fb.group({});
+
+      // Copier les contrôles et leurs valeurs dans workingForm
+      Object.keys(form.controls).forEach(key => {
+        const control = form.get(key);
+        if (control instanceof FormGroup) {
+          workingForm.addControl(key, this.fb.group(control.controls));
+        } else if (control instanceof FormArray) {
+          workingForm.addControl(key, this.fb.array(control.controls));
+        } else {
+          workingForm.addControl(key, this.fb.control(control?.value, control?.validator, control?.asyncValidator));
+        }
+      });
+
+      console.log('Formulaire original :', form.value);
+      
+
+      // Supprimer le contrôle 'liste_ope_programmes' du workingForm s'il existe
+      if (workingForm.contains('liste_ope_programmes')) {
+        workingForm.removeControl('liste_ope_programmes');
+        console.log('Contrôle liste_ope_programmes supprimé du workingForm');
+      }
+      
+      console.log('Formulaire dupliqué (workingForm) :', workingForm.value);
+      
       let value = {};
 
       // Nettoyer les champs de date pour les projets 
       if (table === 'projets') {
-        const fieldsToClean = [
-          'document',
-          'pro_debut',
-          'pro_fin',
-          'pro_pression_ciblee',
-          'pro_results_attendus',
-        ];
+        // Commenté depuis l'utilisation de la fonction prepareProjetDataForSubmission()
+        // const fieldsToClean = [
+        //   'document',
+        //   'pro_debut',
+        //   'pro_fin',
+        //   'pro_pression_ciblee',
+        //   'pro_results_attendus',
+        // ];
 
         // Nettoyer les champs de date
-        // value = this.cleanFormValues(form.value, fieldsToClean); // En test --- à supprimer
-        value = this.prepareProjetDataForSubmission(form);
+        value = this.prepareProjetDataForSubmission(workingForm);
 
-        console.log('Données du formulaire nettoyé :', value);
-      } else {
+        console.log('Données du formulaire nettoyé :', workingForm);
+      } else if (table === 'objectifs') {
+        
+
+      }
+       else {
         // Si ce n'est pas un projet
-        value = form.value;
+        value = workingForm.value;
       }
 
       console.log('------- DEBUG :');
@@ -414,7 +459,7 @@ export class FormService {
             // Retourner l'objet avec isEditMode et formValue
             return {
               isEditMode: false,
-              formValue: form.value
+              formValue: value
             };
           }),
           tap(() => {
@@ -439,7 +484,7 @@ export class FormService {
             // Retourner l'objet avec isEditMode et formValue
             return {
               isEditMode: false,
-              formValue: form.value
+              formValue: value
             };
           }),
           tap(() => {

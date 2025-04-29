@@ -265,9 +265,17 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </div>
         </div>
 
+        
         <mat-error *ngIf="!listeOpeProgrammes.valid">
           Vous ne pouvez pas sélectionner plus de 3 programmes.
         </mat-error>
+
+        <div>
+          <mat-form-field>
+            <mat-label>Description si autre</mat-label>
+            <input matInput formControlName="description_programme">
+          </mat-form-field>
+        </div>
 
         <div>
           <button mat-button matStepperPrevious>Précédent</button>

@@ -41,7 +41,7 @@ export interface OperationLite {
   date_ajout?: Date;
   ref_loc_id?: Number;
   nom_mo?: string;
-  programme?: string;
+  description_programme?: string;
   cadre_intervention?: number;
   cadre_intervention_detail?: number;
 
@@ -51,8 +51,9 @@ export interface OperationLite {
 }
   
   export interface OperationProgramme {
-    lib_libelle: any;
-    lib_id: any;
+    lib_libelle?: any;
+    lib_id?: any;
     uuid_ope: string; // Identifiant unique de l'opération
-    programme_ids: number[]; // Tableau contenant les IDs des programmes associés
+    programme_id?: number; // Identifiant du programme associé
+    programme_ids?: number[]; // Tableau contenant les IDs des programmes associés
   }

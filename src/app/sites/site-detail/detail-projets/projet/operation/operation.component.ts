@@ -10,7 +10,7 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, F
 
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
-import { OperationLite, Operation } from './operations';
+import { OperationLite, Operation, OperationProgramme } from './operations';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
@@ -686,6 +686,8 @@ export class OperationComponent implements OnInit, OnDestroy {
               console.log("Enregistrement de l'opération avec succès :", response);
               this.unsubForm(); // Se désabonner des changements du formulaire
               
+              // Synchroniser les programmes après la mise à jour
+              this.syncOperationProgrammes();
               
               // Afficher le message dans le Snackbar
               const message = "Opération bien enregistrée"; // Message par défaut
@@ -727,11 +729,14 @@ export class OperationComponent implements OnInit, OnDestroy {
                 this.isEditFromOperation.emit(this.isEditOperation);
                 
                 console.log('Formulaire mis à jour avec succès:', result.formValue);
+
+                // Synchroniser les programmes après la mise à jour
+                this.syncOperationProgrammes();
                 
                 // Accéder à la liste des opérations et remplir le tableau Material des operationLite
                 this.operation = undefined; // Réinitialiser l'opération
 
-                // Mise a jout de la liste des opérations
+                // Mise a jout de la liste des opérations (liste liste - tableau "material table")
                 // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
                 this.fetch();
               },
@@ -1002,5 +1007,65 @@ export class OperationComponent implements OnInit, OnDestroy {
       }));
   }
 
+  /**
+   * Synchronise les programmes sélectionnés avec la base de données.
+   * Ajoute ou supprime les programmes en fonction des changements effectués par l'utilisateur.
+   */
+  private syncOperationProgrammes(): void {
+    if (!this.operation || !this.operation.liste_ope_programmes) {
+      console.error('Impossible de synchroniser les programmes : données manquantes.');
+      return;
+    }
+  
+    // Programmes sélectionnés par l'utilisateur
+    const selectedProgrammes = this.getSelectedProgrammes();
+  
+    // Programmes déjà enregistrés en base
+    const existingProgrammes = this.operation.ope_programmes || [];
+  
+    // Identifier les programmes à ajouter
+    const programmesToAdd = selectedProgrammes.filter(
+      selected => !existingProgrammes.some(existing => existing.lib_id === selected.lib_id)
+    );
+    console.log('Programmes à ajouter :', programmesToAdd);
+  
+    // Identifier les programmes à supprimer
+    const programmesToRemove = existingProgrammes.filter(
+      existing => !selectedProgrammes.some(selected => selected.lib_id === existing.lib_id)
+    );
+    console.log('Programmes à supprimer :', programmesToRemove);
+  
+    // Ajouter les nouveaux programmes
+  
+    programmesToAdd.forEach(programme => {
+
+      // Créer un objet OperationProgramme à partir du programme sélectionné
+      const operationProgramme: OperationProgramme = {
+        uuid_ope: this.operation!.uuid_ope,
+        programme_id: programme.lib_id, // Remplir l'identifiant du programme
+      };
+
+      this.projetService.insertOperationProgramme(operationProgramme).subscribe({
+        next: () => {
+          console.log(`Programme ajouté : ${programme.lib_libelle}`);
+        },
+        error: (error) => {
+          console.error(`Erreur lors de l'ajout du programme : ${programme.lib_libelle}`, error);
+        }
+      });
+    });
+  
+    // Supprimer les programmes non sélectionnés
+    programmesToRemove.forEach(programme => {
+      this.projetService.deleteOperationProgramme(this.operation!.uuid_ope, programme.lib_id).subscribe({
+        next: () => {
+          console.log(`Programme supprimé : ${programme.lib_libelle}`);
+        },
+        error: (error) => {
+          console.error(`Erreur lors de la suppression du programme : ${programme.lib_libelle}`, error);
+        }
+      });
+    });
+  }
   
 }

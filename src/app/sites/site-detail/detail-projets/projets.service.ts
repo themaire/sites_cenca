@@ -72,6 +72,30 @@ export class ProjetService {
       })
     );
   }
+
+  /** Ajouter un programme d'une opération - Gestion des cases à cocher dans le formulaire d'édition d'une opération
+  *   Utilisé dans operation.component.ts - Ajouter un élément revient à cocher une case dans le formulaire
+  *   @param operationProgramme : l'objet contenant les informations du programme d'une opération
+  */
+  insertOperationProgramme(operationProgramme: OperationProgramme): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=operation_programmes/insert`;
+    return this.http.put<ApiResponse>(url, operationProgramme);
+  }
+
+  /** Supprimer un programme d'une opération - Gestion des cases à cocher dans le formulaire d'édition d'une opération
+  *   Utilisé dans operation.component.ts - Supprimer un élément revient à faire décocher une case dans le formulaire
+  *   @param uuid_ope : l'uuid de l'opération
+  *   @param programme_id : l'id du programme
+  */
+  deleteOperationProgramme(uuid_ope: string, programme_id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.operation_programmes/uuid=${uuid_ope}/programme_id/${programme_id}`).pipe(
+      catchError(error => {
+        const messageTxt = `Erreur lors de la suppression de l'opération-programme (uuid: ${uuid_ope}, programme_id: ${programme_id})`;
+        console.error(messageTxt, error);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
     
   // Utilisé dans objectifs.component.ts
   async getObjectif(subroute: string): Promise<Objectif> {
