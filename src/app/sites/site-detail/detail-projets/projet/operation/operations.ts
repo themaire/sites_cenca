@@ -44,6 +44,8 @@ export interface OperationLite {
   description_programme?: string;
   cadre_intervention?: number;
   cadre_intervention_detail?: number;
+  quantite?: number;
+  unite?: number;
 
   // Nouvelles propriétés
   ope_programmes?: { lib_id: number; lib_libelle: string }[]; // Liste des programmes associés

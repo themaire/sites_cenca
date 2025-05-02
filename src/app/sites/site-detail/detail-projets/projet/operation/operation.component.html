@@ -285,6 +285,47 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     </mat-step>
 
     <mat-step [stepControl]="form!">
+      <form [formGroup]="form!">
+        <ng-template matStepLabel>Informations sur l'opération</ng-template>
+        <div>
+          <mat-form-field>
+            <mat-label>Date de début</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="date_debut">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+          
+          <mat-form-field>
+            <mat-label>Date de fin</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="date_fin">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <mat-label>Quantité</mat-label>
+            <input matInput formControlName="quantite">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Unités</mat-label>
+            <mat-select formControlName="unite">
+              <mat-option *ngFor="let type of unitesTypes" [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div> 
+
+        <div>
+          <button mat-button matStepperPrevious>Retour</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="form!">
       <ng-template matStepLabel>Données spatiales</ng-template>
 
       <div *ngIf="localisations !== undefined && localisations.length > 0">
@@ -328,7 +369,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       <button mat-button matStepperNext>Suivant</button>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
+    <!-- <mat-step [stepControl]="form!">
       <form [formGroup]="form!">
         <ng-template matStepLabel>Champs non utilisés</ng-template>
         <div>
@@ -397,14 +438,6 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
         <div>
           <mat-form-field>
-            <mat-label>Date Debut</mat-label>
-            <input matInput formControlName="date_debut" type="date">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Date Fin</mat-label>
-            <input matInput formControlName="date_fin" type="date">
-          </mat-form-field>
-          <mat-form-field>
             <mat-label>Date Approx</mat-label>
             <input matInput formControlName="date_approx">
           </mat-form-field>
@@ -424,7 +457,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           <button mat-button matStepperPrevious>Retour</button>
         </div>
       </form>
-    </mat-step>
+    </mat-step> -->
 
     
 

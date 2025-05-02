@@ -221,12 +221,15 @@ export class FormService {
   
       typ_intervention: [operation?.typ_intervention || '', Validators.required],
       nom_mo: [operation?.nom_mo || '', Validators.required],
-      date_debut: [operation?.date_debut || null],
-      date_fin: [operation?.date_fin || null],
+      date_debut: [operation?.date_debut ? new Date(operation.date_debut) : null],
+      date_fin: [operation?.date_fin ? new Date(operation.date_fin) : null],
+      date_ajout: [operation?.date_ajout ? new Date(operation.date_ajout) : null],
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null],
       description_programme: [operation?.description_programme || null],
+      unite: [operation?.unite || null],
+      quantite: [operation?.quantite || null],
       
       // Ajouter un FormArray pour gérer les programmes
       liste_ope_programmes: this.fb.array(
@@ -508,4 +511,51 @@ export class FormService {
       return undefined;
     }
   }
+  /**
+   * Convertir les dates javascript en format PostgreSQL (YYYY-MM-DD)
+   * Ne prend pas en compte les heures, minutes et secondes donc le fuseau horaire n'est pas pris en compte
+   * @param date 
+   * @returns annee-mois-jour
+   */
+  formatDateToPostgres(date: any): string {
+    if (date?._isAMomentObject) {
+      // Si c'est un objet Moment.js, utilisez ses méthodes pour extraire les informations
+      // console.log('La date est un objet Moment.js');
+      date = date.format('YYYY-MM-DD'); // Utilisez Moment.js pour formater la date
+    }
+  
+    if (!(date instanceof Date)) {
+      // Si la date est une chaîne ou un autre type, essayez de la convertir en objet Date
+      // console.log('Conversion de la chaîne en objet Date');
+      // console.log('Valeur de date :', date);
+      date = new Date(date);
+    } else {
+      console.log('Date déjà un objet Date');
+      console.log('Valeur de date :', date);
+    }
+  
+    // Vérifiez à nouveau si c'est une date valide
+    if (isNaN(date.getTime())) {
+      console.error('La date fournie est invalide :', date);
+      return ''; // Retournez une chaîne vide ou gérez l'erreur selon vos besoins
+    }
+  
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Les mois commencent à 0
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Vérifie si une date a été modifiée dans un formulaire.
+   *
+   * @param fieldName - Le nom du champ dans le formulaire à vérifier.
+   * @param operationDate - La date de l'opération à comparer (peut être null).
+   * @param form - Le groupe de formulaire Angular contenant le champ.
+   * @returns `true` si la valeur du champ est différente de la date de l'opération, sinon `false`.
+   */
+  isDateModified(fieldName: string, operationDate: Date | undefined, form: FormGroup): boolean {
+          return (form.get(fieldName)?.value ?? null) != (operationDate ?? null);
+  }
+
 }

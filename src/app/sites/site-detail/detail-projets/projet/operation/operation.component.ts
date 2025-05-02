@@ -28,6 +28,7 @@ import { TooltipPosition, MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
+
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { MatInputModule } from '@angular/material/input'; 
@@ -36,6 +37,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
@@ -67,6 +70,8 @@ export const MY_DATE_FORMATS = {
   standalone: true,
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
 
     // Moment can be provided globally to your app by adding `provideMomentDateAdapter`
     // to your app config. We provide it at the component level here, due to limitations
@@ -76,6 +81,7 @@ export const MY_DATE_FORMATS = {
     {
       provide: STEPPER_GLOBAL_OPTIONS,
       useValue: {displayDefaultIndicatorType: false},
+      
     },
   ],
   imports: [
@@ -178,8 +184,8 @@ export class OperationComponent implements OnInit, OnDestroy {
   // Getter et setter pour selectedOperationFamille
   selectedCadreInterventionType!: number;
   
-
   chantierNatureTypes!: SelectValue[];
+  unitesTypes!: SelectValue[];
 
   onProgrammeChange(value: string): void {
     this.selectedProgrammeType = value;
@@ -342,6 +348,18 @@ export class OperationComponent implements OnInit, OnDestroy {
       }
     );
 
+    const subrouteUnites = `sites/selectvalues=${'opegerer.libelles'}/unites`;
+    this.formService.getSelectValues$(subrouteUnites).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log("Liste de choix des unités récupérée avec succès :");
+        console.log(selectValues);
+        this.unitesTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
     try {
       if (this.ref_uuid_proj !== undefined || this.ref_uuid_objectif !== undefined) {
         // Si on a bien une uuid de projet ou d'objectif pour recuperer les opérations lite
@@ -408,6 +426,8 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("this.isFormValid = this.projetForm.valid :");
       console.log(this.isFormValid + " = " + this.form.valid);
       console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
+
+ 
       
       // Afficher la liste des champs invalides
       console.log('Champs invalides :', this.getInvalidFields());
@@ -670,6 +690,26 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   // Méthode pour soumettre le formulaire
+  /**
+   * Gère la soumission du formulaire pour une opération.
+   *
+   * @param mode - (Optionnel) Mode de soumission, peut être utilisé pour spécifier une action particulière comme 'delete'.
+   *
+   * Logique :
+   * - Vérifie si le formulaire existe et est valide.
+   * - Si le formulaire est valide :
+   *   - Formate les dates avant l'envoi au backend si elles ont été modifiées.
+   *   - Si une nouvelle opération est ajoutée :
+   *     - Enregistre l'opération via le service `projetService`.
+   *     - Affiche un message de succès ou d'erreur dans un Snackbar.
+   *     - Met à jour la liste des opérations.
+   *   - Si une opération existante est modifiée :
+   *     - Met à jour l'opération via le service `formService`.
+   *     - Synchronise les programmes associés.
+   *     - Met à jour la liste des opérations.
+   *   - Si le mode est 'delete', affiche les valeurs du formulaire dans la console.
+   * - Si le formulaire est invalide ou introuvable, affiche un message d'erreur dans la console.
+   */
   onSubmit(mode?: String): void {
     // Logique de soumission du formulaire du projet
     if (this.form !== undefined) {
@@ -678,6 +718,20 @@ export class OperationComponent implements OnInit, OnDestroy {
       if (this.form.valid) {
         console.log("----------!!!!!!!!!!!!--------onSubmit('" + mode + "') dans le composant operation");
         console.log(this.form.value);
+
+        // Formater les dates avant l'envoi au backend        
+        if (
+          this.formService.isDateModified('date_debut', this.operation?.date_debut, this.form) ||
+          this.formService.isDateModified('date_fin', this.operation?.date_fin, this.form)
+        ) {
+          console.log("Une des 3 dates à été modifiée par l'utilisateur.");
+          this.form.patchValue({
+            date_debut: this.formService.formatDateToPostgres(this.form.get('date_debut')?.value),
+            date_fin: this.formService.formatDateToPostgres(this.form.get('date_fin')?.value),
+          });
+          console.log("Formulaire patché avec les bonnes dates: ", this.form.value);
+        }
+        
 
         // Nouvelle opération
         if (this.isAddOperation === true){

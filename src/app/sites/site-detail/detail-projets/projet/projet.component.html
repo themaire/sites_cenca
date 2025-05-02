@@ -1,417 +1,418 @@
-<mat-dialog-content *ngIf="!isLoading; else loading">
+<mat-dialog-content class="dialogue" *ngIf="!isLoading; else loading">
   <div class="conteneur-projet">
     <div class="gerer">Gérer</div>
+    <div class="projet">
 
-    <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
-    -- Variable isAddOperation : {{ isAddOperation }}<br>
-    -- Variable isEditProjet : {{ isEditProjet }}<br>
-    -- Variable isEditProjet : {{ isEditProjet }}<br>
-    -- Variable newProjet : {{ newProjet }}<br> -->
-    -- pro_webapp : {{ projet?.pro_webapp }}<br>
-
-
-    <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
-    <ng-container *ngTemplateOutlet="stepper"></ng-container>
-
-    <!-- FORMULAIRE STEPPER (NORMAL) -->
-    <ng-template #stepper>
-
-      <h2 *ngIf="!isEditProjet && !newProjet">Consultation d'un projet</h2>
-      <h2 *ngIf="isEditProjet && !newProjet">Modification d'un projet</h2>
-      <h2 *ngIf="isEditProjet && newProjet">Création d'un projet</h2>
-
-      <!-- Réglage de l'animation du stepper -->
-      <div class="example-input-wrapper">
-        <!-- <label for="duration">Animation duration:</label> -->
-        <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
-      </div>
-
-      <app-form-buttons
-        *ngIf="!isEditOperation && !isAddOperation" 
-        [isEditActive]="isEditProjet" 
-        icone="edit" 
-        [isFormValid]="isFormValid" 
-        (toggleAction)="toggleEditProjet()" 
-        (onSubmit)="onSubmit()" 
-      ></app-form-buttons>
-
-      <mat-stepper labelPosition="bottom" 
-                    [linear]="newProjet"  
-                    #stepper 
-                    [animationDuration]="duration.value" 
-                    class="margin-stepper"
-                    [orientation]="(stepperOrientation | async)!">
+      <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
+      -- Variable isAddOperation : {{ isAddOperation }}<br>
+      -- Variable isEditProjet : {{ isEditProjet }}<br>
+      -- Variable isEditProjet : {{ isEditProjet }}<br>
+      -- Variable newProjet : {{ newProjet }}<br>
+      -- pro_webapp : {{ projet?.pro_webapp }}<br> -->
 
 
-        <!-- state="info" est l'icone a utiliser pour le step -->
+      <!-- isEditOperation est une donnée qui remonte de l'enfant operation, veut dire que -->
+      <ng-container *ngTemplateOutlet="stepper"></ng-container>
 
-        <mat-step [stepControl]="step1Form">
+      <!-- FORMULAIRE STEPPER (NORMAL) -->
+      <ng-template #stepper>
 
-          <ng-template matStepLabel>Description</ng-template>
-          <!-- Affichage en mode consultation (editMode == false) -->
-          <ng-container *ngIf="!isEditProjet">
-            <div>
+        <h2 *ngIf="!isEditProjet && !newProjet">Consultation d'un projet</h2>
+        <h2 *ngIf="isEditProjet && !newProjet">Modification d'un projet</h2>
+        <h2 *ngIf="isEditProjet && newProjet">Création d'un projet</h2>
 
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Nom</mat-label>
-                <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
+        <!-- Réglage de l'animation du stepper -->
+        <div class="example-input-wrapper">
+          <!-- <label for="duration">Animation duration:</label> -->
+          <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
+        </div>
 
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Type de projet</mat-label>
-                <input matInput [value]="this.getLibelle(step1Form.get('typ_projet')?.value, projectTypes) || 'Non renseigné'" readonly>
-              </mat-form-field>
+        <app-form-buttons
+          *ngIf="!isEditOperation && !isAddOperation" 
+          [isEditActive]="isEditProjet" 
+          icone="edit" 
+          [isFormValid]="isFormValid" 
+          (toggleAction)="toggleEditProjet()" 
+          (onSubmit)="onSubmit()" 
+        ></app-form-buttons>
 
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Statut</mat-label>
-                <input matInput [value]="this.getLibelle(step1Form.get('statut')?.value, statusTypes) || 'Non renseigné'" readonly>
-              </mat-form-field>
+        <mat-stepper labelPosition="bottom" 
+                      [linear]="newProjet"  
+                      #stepper 
+                      [animationDuration]="duration.value" 
+                      class="margin-stepper"
+                      [orientation]="(stepperOrientation | async)!">
 
-              <mat-slide-toggle
-                class="toggle"
-                [checked]="step1Form.get('validite')?.value || false"
-                [disabled]="true">
 
-                Validité*
+          <!-- state="info" est l'icone a utiliser pour le step -->
 
-              </mat-slide-toggle>
-            </div>
+          <mat-step [stepControl]="step1Form">
 
-            <div>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Année d'execution</mat-label>
-                <input matInput [value]="step1Form.get('annee')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Période de travaux</mat-label>
-                <mat-date-range-input [rangePicker]="picker">
-                  <input matStartDate placeholder="Date début" [value]="step1Form.get('pro_debut')?.value" readonly>
-                  <input matEndDate placeholder="Date fin" [value]="step1Form.get('pro_fin')?.value" readonly>
-                </mat-date-range-input>
-                <mat-date-range-picker #picker></mat-date-range-picker>
-              </mat-form-field>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Date création projet</mat-label>
-                <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
-            </div>
+            <ng-template matStepLabel>Description</ng-template>
+            <!-- Affichage en mode consultation (editMode == false) -->
+            <ng-container *ngIf="!isEditProjet">
+              <div>
 
-            <div>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Code</mat-label>
-                <input matInput [value]="step1Form.get('code')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Responsable</mat-label>
-                <input matInput [value]="step1Form.get('responsable')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Maitre d'ouvrage</mat-label>
-                <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Perspectives</mat-label>
-                <input matInput [value]="step1Form.get('perspectives')?.value || 'Non renseigné'" readonly>
-              </mat-form-field>
-            </div>
-
-            <div>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Programme</mat-label>
-                <input matInput [value]="step1Form.get('programme')?.value || 'Non renseignée'" readonly>
-              </mat-form-field>
-              <mat-form-field class="custom-mat-form-field">
-                <mat-label>Itinéraire technique</mat-label>
-                <input matInput [value]="step1Form.get('itin_tech')?.value || 'Non renseigné'" readonly>
-
-              </mat-form-field>
-            </div>
-          </ng-container>
-
-          <!-- Affichage en mode édition (editMode == true) -->
-          <ng-container *ngIf="isEditProjet">
-            <form [formGroup]="step1Form">
-              <ng-container>
-                <div>
-                  <mat-form-field>
-                    <mat-label>Nom</mat-label>
-                    <textarea matInput formControlName="nom"></textarea>
-                  </mat-form-field>
-                  <mat-form-field>
-                    <mat-label>Type de projet</mat-label>
-                    <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
-                      @for (type of projectTypes; track type) {
-                        <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
-                      }
-                    </mat-select>
-
-                  </mat-form-field>
-
-                  <mat-form-field>
-                    <mat-label>Statut</mat-label>
-                    <mat-select formControlName="statut">
-                      <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">
-                        {{status.libelle}}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-
-                  <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
-
-                </div>
-                
-                <div>
-                  <mat-form-field>
-                    <mat-label>Année d'execution</mat-label>
-                    <textarea matInput formControlName="annee"></textarea>
-                  </mat-form-field>
-                  <mat-form-field>
-                    <mat-label>Date de début</mat-label>
-                    <input matInput [matDatepicker]="startDatePicker" formControlName="pro_debut" >
-                    <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-                    <mat-datepicker #startDatePicker></mat-datepicker>
-                  </mat-form-field>
-                  <mat-form-field>
-                    <mat-label>Date de fin</mat-label>
-                    <input matInput [matDatepicker]="endDatePicker" formControlName="pro_fin" required>
-                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                    <mat-datepicker #endDatePicker></mat-datepicker>
-                  </mat-form-field>
-                </div>
-
-                <div>
-                  <mat-form-field>
-                    <mat-label>Code</mat-label>
-                    <textarea matInput formControlName="code"></textarea>
-                  </mat-form-field>
-                  <mat-form-field>
-                    <mat-label>Résponsable</mat-label>
-                    <textarea matInput formControlName="responsable"></textarea>
-                  </mat-form-field>
-                  <mat-form-field>
-                    <mat-label>Maitre d'ouvrage</mat-label>
-                    <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>
-                  </mat-form-field>
-                  <mat-form-field>
-
-                    <mat-label>Perspectives</mat-label>
-                    <textarea matInput formControlName="perspectives" ></textarea>
-                  </mat-form-field>
-                </div>
-                </ng-container>
-            </form>
-          </ng-container>
-
-          <div>
-            <button mat-button matStepperNext>SUIVANT</button>
-          </div>
-        </mat-step>
-
-        <mat-step state="flag" *ngIf="projet && newProjet === false">
-          <ng-template matStepLabel>Objectifs</ng-template>
-
-          <!-- Si dans aucun mode d'edition ou d'ajout -->
-          <ng-container *ngIf="!isEditObjectif || !isAddObjectif; then objectif;">
-
-          </ng-container>
-
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button matStepperNext>Suivant</button>
-          </div>
-        </mat-step>
-
-        <mat-step state="pin">
-          <!-- <mat-step [stepControl]="UGFormGroup"> -->
-          <ng-template matStepLabel>Unités de gestion</ng-template>
-          
-          <!-- Affichage en mode consultation (editMode == false) -->
-          <ng-container *ngIf="!isEditProjet">
-            <div>
-              
-                <mat-form-field >
-                  <mat-label>Pression ciblée</mat-label>
-                  <input matInput [value]="projetForm.get('pro_pression_ciblee')?.value || 'Non renseignée'" readonly>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Nom</mat-label>
+                  <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
                 </mat-form-field>
 
-                <mat-form-field >
-                  <mat-label>Résultats attendus</mat-label>
-                  <input matInput [value]="projetForm.get('pro_results_attendus')?.value || 'Non renseigné'" readonly>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Type de projet</mat-label>
+                  <input matInput [value]="this.getLibelle(step1Form.get('typ_projet')?.value, projectTypes) || 'Non renseigné'" readonly>
+                </mat-form-field>
+
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Statut</mat-label>
+                  <input matInput [value]="this.getLibelle(step1Form.get('statut')?.value, statusTypes) || 'Non renseigné'" readonly>
+                </mat-form-field>
+
+                <mat-slide-toggle
+                  class="toggle"
+                  [checked]="step1Form.get('validite')?.value || false"
+                  [disabled]="true">
+
+                  Validité*
+
+                </mat-slide-toggle>
+              </div>
+
+              <div>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Année d'execution</mat-label>
+                  <input matInput [value]="step1Form.get('annee')?.value || 'Non renseigné'" readonly>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Période de travaux</mat-label>
+                  <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate placeholder="Date début" [value]="step1Form.get('pro_debut')?.value" readonly>
+                    <input matEndDate placeholder="Date fin" [value]="step1Form.get('pro_fin')?.value" readonly>
+                  </mat-date-range-input>
+                  <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Date création projet</mat-label>
+                  <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
                 </mat-form-field>
               </div>
+
               <div>
-                <div class="container-carte">
-                  <!-- <div class="map">---------------------------------------------------------------------------------------------------
-                    <h2>Carte provisoire :</h2>
-                    <app-map></app-map>
-                  </div> -->
-                </div>
-
-            </div>
-          </ng-container>
-
-          <!-- Affichage en mode édition (editMode == true) -->
-          <ng-container *ngIf="isEditProjet">
-            <form [formGroup]="step2Form">
-              <ng-container>
-                <mat-form-field>
-                  <mat-label>Pression ciblée</mat-label>
-                  <textarea matInput formControlName="pro_pression_ciblee" ></textarea>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Code</mat-label>
+                  <input matInput [value]="step1Form.get('code')?.value || 'Non renseigné'" readonly>
                 </mat-form-field>
-                <mat-form-field>
-                  <mat-label>Résultats attendus</mat-label>
-                  <textarea matInput formControlName="pro_results_attendus" ></textarea>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Responsable</mat-label>
+                  <input matInput [value]="step1Form.get('responsable')?.value || 'Non renseigné'" readonly>
                 </mat-form-field>
-              </ng-container>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Maitre d'ouvrage</mat-label>
+                  <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
+                </mat-form-field>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Perspectives</mat-label>
+                  <input matInput [value]="step1Form.get('perspectives')?.value || 'Non renseigné'" readonly>
+                </mat-form-field>
+              </div>
 
-              <!-- Bouton visible uniquement avec un projet existant -->
-              <button *ngIf="!newProjet" mat-button matStepperNext>SUIVANT</button>
-            </form>
-          </ng-container>
+              <div>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Programme</mat-label>
+                  <input matInput [value]="step1Form.get('programme')?.value || 'Non renseignée'" readonly>
+                </mat-form-field>
+                <mat-form-field class="custom-mat-form-field">
+                  <mat-label>Itinéraire technique</mat-label>
+                  <input matInput [value]="step1Form.get('itin_tech')?.value || 'Non renseigné'" readonly>
 
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button matStepperNext>Suivant</button>
-          </div>
-
-        </mat-step>
-
-        <mat-step state="landscape">
-          <ng-template matStepLabel>ENP concerné</ng-template>
-
-          <form *ngIf="isEditProjet == true">
-
-            <!-- <mat-form-field>
-              <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
-            </mat-form-field> -->
-
-          </form>
-
-          <app-detail-gestion *ngIf="!newProjet" [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
-
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button matStepperNext>Suivant</button>
-          </div>
-        </mat-step>
-
-        <mat-step state="troubleshoot" *ngIf="newProjet === false">
-          <ng-template matStepLabel>Indicateurs</ng-template>
-          <div class="container-carte">
-            Tableau des indicateurs projet
-          </div>
-
-          <form *ngIf="isEditProjet == true">
-            Ajouter un indicateur dans le tableau
-          </form>
-
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button matStepperNext>Suivant</button>
-          </div>
-        </mat-step>
-
-        <!-- Ce step s'affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai -->
-        <mat-step state="construction" *ngIf="projet && newProjet === false && projet.pro_webapp === true">
-          <ng-template matStepLabel>Opérations</ng-template>
-
-          <!-- Si dans aucun mode d'edition ou d'ajout -->
-          <ng-container *ngIf="!isEditOperation || !isAddOperation; then operation;">
-
-          </ng-container>
-
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button matStepperNext>Suivant</button>
-          </div>
-
-        </mat-step>
-
-        <mat-step state="flag" *ngIf="projet && newProjet === false">
-          <ng-template matStepLabel>Bilan d'execution</ng-template>
-          A definir ...
-
-          <ng-container *ngIf="isEditProjet"></ng-container>
-          <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
-            <ng-container>
-              <!-- Ajoutez d'autres champs si nécessaire -->
+                </mat-form-field>
+              </div>
             </ng-container>
-            <!-- <button mat-button type="submit">SOUMETTRE</button> -->
-          </form>
-          
-          <div>
-            <button mat-button matStepperPrevious>Précédent</button>
-            <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button>
-          </div>
 
-        </mat-step>
+            <!-- Affichage en mode édition (editMode == true) -->
+            <ng-container *ngIf="isEditProjet">
+              <form [formGroup]="step1Form">
+                <ng-container>
+                  <div>
+                    <mat-form-field>
+                      <mat-label>Nom</mat-label>
+                      <textarea matInput formControlName="nom"></textarea>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>Type de projet</mat-label>
+                      <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
+                        @for (type of projectTypes; track type) {
+                          <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                        }
+                      </mat-select>
 
-        <!-- Icon overrides. -->
-        <ng-template matStepperIcon="info">
-          <mat-icon>info</mat-icon>
-        </ng-template>
-        <ng-template matStepperIcon="landscape">
-          <mat-icon>landscape</mat-icon>
-        </ng-template>
-        <ng-template matStepperIcon="pin">
-          <mat-icon>pin_drop</mat-icon>
-        </ng-template>
-        <ng-template matStepperIcon="troubleshoot">
-          <mat-icon>troubleshoot</mat-icon>
-        </ng-template>
-        <ng-template matStepperIcon="euro">
-          <mat-icon>euro</mat-icon>
-        </ng-template>
-        <ng-template matStepperIcon="construction">
-          <mat-icon>construction</mat-icon>
-        </ng-template>
-        <ng-template matStepperIcon="flag">
-          <mat-icon>flag</mat-icon>
-        </ng-template>
+                    </mat-form-field>
 
-      </mat-stepper>
-    </ng-template>
+                    <mat-form-field>
+                      <mat-label>Statut</mat-label>
+                      <mat-select formControlName="statut">
+                        <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">
+                          {{status.libelle}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
 
-    <!-- Composant objectif -->
-    <ng-template #objectif>
+                    <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
 
-      <!-- isEditFromObjectif vient de app-objectif et app-projet -->
-      <!-- geojson_site est donné que quand projet.pro_webapp est N'EST PAS VRAI -->
-      <app-objectif 
-                    rattachementOperation="projet"
-                    (isEditFromObjectif)="handleEditObjectifChange($event)"
-                    (isAddFromObjectif)="handleAddObjectifChange($event)"
-                    [isEditObjectif]="isEditObjectif"
-                    [isAddObjectif]="isAddObjectif"
-                    [projetEditMode]="isEditProjet"
-                    [ref_uuid_proj]="projet.uuid_proj"
-                    [isEditProjet]="isEditProjet"
-                    [geojson_site]="!projet.pro_webapp ? projetLite.geojson_site : undefined">
-                    >
-      </app-objectif>
+                  </div>
+                  
+                  <div>
+                    <mat-form-field>
+                      <mat-label>Année d'execution</mat-label>
+                      <textarea matInput formControlName="annee"></textarea>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>Date de début</mat-label>
+                      <input matInput [matDatepicker]="startDatePicker" formControlName="pro_debut" >
+                      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                      <mat-datepicker #startDatePicker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>Date de fin</mat-label>
+                      <input matInput [matDatepicker]="endDatePicker" formControlName="pro_fin" required>
+                      <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                      <mat-datepicker #endDatePicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
 
-    </ng-template>
+                  <div>
+                    <mat-form-field>
+                      <mat-label>Code</mat-label>
+                      <textarea matInput formControlName="code"></textarea>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>Résponsable</mat-label>
+                      <textarea matInput formControlName="responsable"></textarea>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>Maitre d'ouvrage</mat-label>
+                      <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>
+                    </mat-form-field>
+                    <mat-form-field>
 
-    <!-- Composant operation -->
-    <ng-template #operation>
+                      <mat-label>Perspectives</mat-label>
+                      <textarea matInput formControlName="perspectives" ></textarea>
+                    </mat-form-field>
+                  </div>
+                  </ng-container>
+              </form>
+            </ng-container>
 
-      <!-- isEditFromOperation vient de app-operation et app-projet -->
-      <!-- geojson_site est donné que quand projet.pro_webapp est VRAI -->
-      <app-operation 
-                    (isEditFromOperation)="handleEditOperationChange($event)"
-                    (isAddFromOperation)="handleAddOperationChange($event)"
-                    [isEditOperation]="isEditOperation"
-                    [isAddOperation]="isAddOperation"
-                    [projetEditMode]="isEditProjet"
-                    [ref_uuid_proj]="projet.uuid_proj"
-                    [geojson_site]="projet.pro_webapp ? projetLite.geojson_site : undefined">
-                    >
-      </app-operation>
+            <div>
+              <button mat-button matStepperNext>SUIVANT</button>
+            </div>
+          </mat-step>
 
-    </ng-template>
+          <mat-step state="flag" *ngIf="projet && newProjet === false">
+            <ng-template matStepLabel>Objectifs</ng-template>
+
+            <!-- Si dans aucun mode d'edition ou d'ajout -->
+            <ng-container *ngIf="!isEditObjectif || !isAddObjectif; then objectif;">
+
+            </ng-container>
+
+            <div>
+              <button mat-button matStepperPrevious>Précédent</button>
+              <button mat-button matStepperNext>Suivant</button>
+            </div>
+          </mat-step>
+
+          <mat-step state="pin">
+            <!-- <mat-step [stepControl]="UGFormGroup"> -->
+            <ng-template matStepLabel>Unités de gestion</ng-template>
+            
+            <!-- Affichage en mode consultation (editMode == false) -->
+            <ng-container *ngIf="!isEditProjet">
+              <div>
+                
+                  <mat-form-field >
+                    <mat-label>Pression ciblée</mat-label>
+                    <input matInput [value]="projetForm.get('pro_pression_ciblee')?.value || 'Non renseignée'" readonly>
+                  </mat-form-field>
+
+                  <mat-form-field >
+                    <mat-label>Résultats attendus</mat-label>
+                    <input matInput [value]="projetForm.get('pro_results_attendus')?.value || 'Non renseigné'" readonly>
+                  </mat-form-field>
+                </div>
+                <div>
+                  <div class="container-carte">
+                    <!-- <div class="map">---------------------------------------------------------------------------------------------------
+                      <h2>Carte provisoire :</h2>
+                      <app-map></app-map>
+                    </div> -->
+                  </div>
+
+              </div>
+            </ng-container>
+
+            <!-- Affichage en mode édition (editMode == true) -->
+            <ng-container *ngIf="isEditProjet">
+              <form [formGroup]="step2Form">
+                <ng-container>
+                  <mat-form-field>
+                    <mat-label>Pression ciblée</mat-label>
+                    <textarea matInput formControlName="pro_pression_ciblee" ></textarea>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Résultats attendus</mat-label>
+                    <textarea matInput formControlName="pro_results_attendus" ></textarea>
+                  </mat-form-field>
+                </ng-container>
+
+                <!-- Bouton visible uniquement avec un projet existant -->
+                <button *ngIf="!newProjet" mat-button matStepperNext>SUIVANT</button>
+              </form>
+            </ng-container>
+
+            <div>
+              <button mat-button matStepperPrevious>Précédent</button>
+              <button mat-button matStepperNext>Suivant</button>
+            </div>
+
+          </mat-step>
+
+          <mat-step state="landscape">
+            <ng-template matStepLabel>ENP concerné</ng-template>
+
+            <form *ngIf="isEditProjet == true">
+
+              <!-- <mat-form-field>
+                <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
+              </mat-form-field> -->
+
+            </form>
+
+            <app-detail-gestion *ngIf="!newProjet" [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
+
+            <div>
+              <button mat-button matStepperPrevious>Précédent</button>
+              <button mat-button matStepperNext>Suivant</button>
+            </div>
+          </mat-step>
+
+          <mat-step state="troubleshoot" *ngIf="newProjet === false">
+            <ng-template matStepLabel>Indicateurs</ng-template>
+            <div class="container-carte">
+              Tableau des indicateurs projet
+            </div>
+
+            <form *ngIf="isEditProjet == true">
+              Ajouter un indicateur dans le tableau
+            </form>
+
+            <div>
+              <button mat-button matStepperPrevious>Précédent</button>
+              <button mat-button matStepperNext>Suivant</button>
+            </div>
+          </mat-step>
+
+          <!-- Ce step s'affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai -->
+          <mat-step state="construction" *ngIf="projet && newProjet === false && projet.pro_webapp === true">
+            <ng-template matStepLabel>Opérations</ng-template>
+
+            <!-- Si dans aucun mode d'edition ou d'ajout -->
+            <ng-container *ngIf="!isEditOperation || !isAddOperation; then operation;">
+
+            </ng-container>
+
+            <div>
+              <button mat-button matStepperPrevious>Précédent</button>
+              <button mat-button matStepperNext>Suivant</button>
+            </div>
+
+          </mat-step>
+
+          <mat-step state="flag" *ngIf="projet && newProjet === false">
+            <ng-template matStepLabel>Bilan d'execution</ng-template>
+            A definir ...
+
+            <ng-container *ngIf="isEditProjet"></ng-container>
+            <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
+              <ng-container>
+                <!-- Ajoutez d'autres champs si nécessaire -->
+              </ng-container>
+              <!-- <button mat-button type="submit">SOUMETTRE</button> -->
+            </form>
+            
+            <div>
+              <button mat-button matStepperPrevious>Précédent</button>
+              <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button>
+            </div>
+
+          </mat-step>
+
+          <!-- Icon overrides. -->
+          <ng-template matStepperIcon="info">
+            <mat-icon>info</mat-icon>
+          </ng-template>
+          <ng-template matStepperIcon="landscape">
+            <mat-icon>landscape</mat-icon>
+          </ng-template>
+          <ng-template matStepperIcon="pin">
+            <mat-icon>pin_drop</mat-icon>
+          </ng-template>
+          <ng-template matStepperIcon="troubleshoot">
+            <mat-icon>troubleshoot</mat-icon>
+          </ng-template>
+          <ng-template matStepperIcon="euro">
+            <mat-icon>euro</mat-icon>
+          </ng-template>
+          <ng-template matStepperIcon="construction">
+            <mat-icon>construction</mat-icon>
+          </ng-template>
+          <ng-template matStepperIcon="flag">
+            <mat-icon>flag</mat-icon>
+          </ng-template>
+
+        </mat-stepper>
+      </ng-template>
+
+      <!-- Composant objectif -->
+      <ng-template #objectif>
+
+        <!-- isEditFromObjectif vient de app-objectif et app-projet -->
+        <!-- geojson_site est donné que quand projet.pro_webapp est N'EST PAS VRAI -->
+        <app-objectif 
+                      rattachementOperation="projet"
+                      (isEditFromObjectif)="handleEditObjectifChange($event)"
+                      (isAddFromObjectif)="handleAddObjectifChange($event)"
+                      [isEditObjectif]="isEditObjectif"
+                      [isAddObjectif]="isAddObjectif"
+                      [projetEditMode]="isEditProjet"
+                      [ref_uuid_proj]="projet.uuid_proj"
+                      [isEditProjet]="isEditProjet"
+                      [geojson_site]="!projet.pro_webapp ? projetLite.geojson_site : undefined">
+                      >
+        </app-objectif>
+
+      </ng-template>
+
+      <!-- Composant operation -->
+      <ng-template #operation>
+
+        <!-- isEditFromOperation vient de app-operation et app-projet -->
+        <!-- geojson_site est donné que quand projet.pro_webapp est VRAI -->
+        <app-operation 
+                      (isEditFromOperation)="handleEditOperationChange($event)"
+                      (isAddFromOperation)="handleAddOperationChange($event)"
+                      [isEditOperation]="isEditOperation"
+                      [isAddOperation]="isAddOperation"
+                      [projetEditMode]="isEditProjet"
+                      [ref_uuid_proj]="projet.uuid_proj"
+                      [geojson_site]="projet.pro_webapp ? projetLite.geojson_site : undefined">
+                      >
+        </app-operation>
+
+      </ng-template>
+    </div>
   </div>
 </mat-dialog-content>
-
 
 <!-- Template de chargement -->
 <ng-template #loading>

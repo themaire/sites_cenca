@@ -135,7 +135,8 @@ export class DetailProjetsComponent {
     // Ouverture de la fenetre de dialogue
     // tout en créant la constante dialogRef
     const dialogRef = this.dialog.open(dialogComponent, {
-      data : projetlite
+      data: projetlite,
+      // panelClass: 'custom-dialog-container' // Classe personnalisée si l'encapsulation des styles css de material est désactivée dans le composant projet.
     });
 
     // Préparer à l'avance quand la fenetre de dialogue se ferme
