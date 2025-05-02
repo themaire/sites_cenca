@@ -25,8 +25,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
@@ -63,18 +66,20 @@ export const MY_DATE_FORMATS = {
   selector: 'app-dialog-operation',
   standalone: true,
   providers: [
-    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
-
-    // Moment can be provided globally to your app by adding `provideMomentDateAdapter`
-    // to your app config. We provide it at the component level here, due to limitations
-    // of our example generation script.
-    provideMomentDateAdapter(),
-
-    {
-      provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: {displayDefaultIndicatorType: false},
-    },
-  ],
+      {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+      { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+      { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+  
+      // Moment can be provided globally to your app by adding `provideMomentDateAdapter`
+      // to your app config. We provide it at the component level here, due to limitations
+      // of our example generation script.
+      provideMomentDateAdapter(),
+  
+      {
+        provide: STEPPER_GLOBAL_OPTIONS,
+        useValue: {displayDefaultIndicatorType: false},
+      },
+    ],
   imports: [
     FormButtonsComponent,
     DetailGestionComponent,
@@ -393,6 +398,22 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   onSubmit(): void {
     // Mettre à jour le formulaire
+    console.log("Je me concentre sur ", this.projetForm.get('step1.pro_fin')?.value);
+
+    // Formater les dates avant l'envoi au backend        
+    if (
+      this.formService.isDateModified(this.projetForm, 'step1.pro_debut', this.projet?.pro_debut) ||
+      this.formService.isDateModified(this.projetForm, 'step1.pro_fin', this.projet?.pro_fin)
+    ) {
+      console.log("Une des 3 dates à été modifiée par l'utilisateur.");
+      this.projetForm.patchValue({
+        step1: {
+          pro_debut: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_debut')?.value),
+          pro_fin: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_fin')?.value),
+        }
+      });
+      console.log("Formulaire patché avec les bonnes dates: ", this.projetForm.value);
+    }
 
     if(!this.newProjet){
       console.log("Modification d'un projet existant. this.newProjet = " + this.newProjet);

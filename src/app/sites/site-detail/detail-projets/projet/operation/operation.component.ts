@@ -81,7 +81,6 @@ export const MY_DATE_FORMATS = {
     {
       provide: STEPPER_GLOBAL_OPTIONS,
       useValue: {displayDefaultIndicatorType: false},
-      
     },
   ],
   imports: [
@@ -721,8 +720,8 @@ export class OperationComponent implements OnInit, OnDestroy {
 
         // Formater les dates avant l'envoi au backend        
         if (
-          this.formService.isDateModified('date_debut', this.operation?.date_debut, this.form) ||
-          this.formService.isDateModified('date_fin', this.operation?.date_fin, this.form)
+          this.formService.isDateModified(this.form, 'date_debut', this.operation?.date_debut) ||
+          this.formService.isDateModified(this.form, 'date_fin', this.operation?.date_fin)
         ) {
           console.log("Une des 3 dates à été modifiée par l'utilisateur.");
           this.form.patchValue({

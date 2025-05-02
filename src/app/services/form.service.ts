@@ -518,6 +518,8 @@ export class FormService {
    * @returns annee-mois-jour
    */
   formatDateToPostgres(date: any): string {
+    console.log('Valeur de date avant conversion :', date);
+
     if (date?._isAMomentObject) {
       // Si c'est un objet Moment.js, utilisez ses méthodes pour extraire les informations
       // console.log('La date est un objet Moment.js');
@@ -554,7 +556,7 @@ export class FormService {
    * @param form - Le groupe de formulaire Angular contenant le champ.
    * @returns `true` si la valeur du champ est différente de la date de l'opération, sinon `false`.
    */
-  isDateModified(fieldName: string, operationDate: Date | undefined, form: FormGroup): boolean {
+  isDateModified(form: FormGroup, fieldName: string, operationDate: Date | undefined): boolean {
           return (form.get(fieldName)?.value ?? null) != (operationDate ?? null);
   }
 
