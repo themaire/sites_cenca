@@ -48,6 +48,7 @@ import { MapComponent } from '../../../../map/map.component';
 // NE PAS oublier de décommenter la
 import { Subscription } from 'rxjs';
 
+import { LoginService } from '../../../../login/login.service';
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -155,10 +156,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   constructor(
     private sitesService: ProjetService,
     private formService: FormService,
-    // private projetService: ProjetService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private loginService: LoginService, // Inject LoginService
     @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
@@ -207,6 +208,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     
+    const cd_salarie = this.loginService.user()?.cd_salarie || null;
+
     // Récupérer les données d'un projet ou créer un nouveau projet
     // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
     if (this.projetLite?.uuid_proj) {
@@ -258,6 +261,16 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         if (this.projetLite.uuid_site) {
           // Le form_group correspondant aux projet neuf à créer
           this.projetForm = this.formService.newProjetForm(undefined, this.projetLite.uuid_site, true);
+
+          // Définir les valeurs par défaut pour créateur et responsable
+          this.projetForm.patchValue({
+            createur: cd_salarie,
+            step1: {
+              responsable: cd_salarie,
+            }
+          });
+
+          console.log('Formulaire de projet créé avec succès :', this.projetForm.value);
 
           // Souscrire aux changements du statut du formulaire principal (projetForm)
           this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {

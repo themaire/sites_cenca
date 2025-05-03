@@ -141,7 +141,7 @@ export class FormService {
       
       // Peut etre pas nécessaire
       document: [projet?.document || ''],
-      createur: [projet?.createur || null],
+      createur: [projet?.createur || null], // Valeur par défaut définie dans le composant
 
       step1: this.fb.group({
         typ_projet: [projet?.typ_projet || null, Validators.required],
