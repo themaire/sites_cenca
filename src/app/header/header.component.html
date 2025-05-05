@@ -45,7 +45,7 @@
         <div class="connexion">
           <div class="user" *ngIf="loginService.user()">
             <button class="btn-initiales">
-              {{ loginService.user()?.initiales }}
+              {{ loginService.user()?.cd_salarie }}
             </button>
             <!--   <img
               src="https://randomuser.me/api/portraits/med/women/56.jpg"
@@ -84,7 +84,7 @@
                 class="btn-initiales"
                 [matMenuTriggerFor]="login"
               >
-                {{ loginService.user()?.initiales }}
+                {{ loginService.user()?.cd_salarie }}
               </button>
               <mat-menu #login="matMenu">
                 <!-- Bouton deconnexion -->

@@ -85,7 +85,7 @@ export class SitesDisplayComponent {
           '/' +
           params['milieux_naturels'] +
           '/' +
-          params['responsable'];
+          params['responsable'];  
 
         this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
           this.sites = sitesGuetted;
@@ -94,6 +94,8 @@ export class SitesDisplayComponent {
           // console.log(sitesGuetted);
 
           this.dataSource = new MatTableDataSource(this.sites);
+          const fakeEvent = { target: { value: '@' } } as unknown as Event;
+          this.applyFilter(fakeEvent);
           this.dataSource.paginator = this.paginator;
         });
 

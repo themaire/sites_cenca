@@ -6,11 +6,11 @@
 
 import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, FormArray } from '@angular/forms';
 
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
-import { OperationLite, Operation } from './operations';
+import { OperationLite, Operation, OperationProgramme } from './operations';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
@@ -23,8 +23,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; //
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TooltipPosition, MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
@@ -34,6 +37,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
@@ -65,6 +70,8 @@ export const MY_DATE_FORMATS = {
   standalone: true,
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
 
     // Moment can be provided globally to your app by adding `provideMomentDateAdapter`
     // to your app config. We provide it at the component level here, due to limitations
@@ -83,8 +90,10 @@ export const MY_DATE_FORMATS = {
     MatSnackBarModule,
     MatSelectModule,
     MatIconModule,
+    MatCheckboxModule,
     MatStepperModule,
     MatButton,
+    MatTooltipModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -100,6 +109,9 @@ export const MY_DATE_FORMATS = {
   styleUrls: ['./operation.component.scss']
 })
 export class OperationComponent implements OnInit, OnDestroy {
+  @Input() rattachementOperation?: string;
+  @Input() geojson_site?: string;
+
   // @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
   // @ViewChild('listOperations', { static: false }) listOperationsTemplate: any;
   @ViewChild('matTable') table!: MatTable<OperationLite>;
@@ -120,12 +132,67 @@ export class OperationComponent implements OnInit, OnDestroy {
   operation!: Operation | void; // Pour les détails d'une opération
 
   // Listes de choix du formulaire
-  intervTypes!: SelectValue[];
-  selectedIntervType: string = '';
-  actionTypes!: SelectValue[];
-  selectedActionType: string = '';
+  typeObjectifOpe!: SelectValue[];
+  selectedtypeObjectifOpe: string = '';
+  
+  // Listes de choix des types d'opération
+  operationTypesFamilles!: SelectValue[];
 
+  // Getter et setter pour selectedOperationFamille
+  private _selectedOperationFamille: string = '';
+  get selectedOperationFamille(): string {
+    return this._selectedOperationFamille;
+  }
+  set selectedOperationFamille(value: string) {
+    // Ne rien faire si la valeur n'a pas changé
+    if (this._selectedOperationFamille === value || this.isLoading) {
+      return;
+    }
+
+    // Mettre à jour la valeur interne
+    this._selectedOperationFamille = value;
+
+    // Réinitialiser selectedOperationType
+    this.selectedOperationType = '';
+
+    // Réinitialiser le champ action_2 du formulaire si nécessaire
+    if (this.form?.get('action_2')) {
+      this.form.get('action_2')!.reset('', { emitEvent: false });
+      console.log('Le champ action_2 du formulaire a été réinitialisé.');
+    } else {
+      console.warn('Le champ action_2 est introuvable ou le formulaire n\'est pas initialisé.');
+    }
+  }
+  
+  operationTypesMeca!: SelectValue[];
+  operationTypesPat!: SelectValue[];
+  operationTypesAme!: SelectValue[];
+  operationTypesHydro!: SelectValue[];
+  operationTypesDech!: SelectValue[];
+  operationTypesSol!: SelectValue[];
+  selectedOperationType: string = '';
+  
+  maitreOeuvreTypes!: SelectValue[];
+  selectedMaitreOeuvreType: string = '';
+  
+  programmeTypes!: SelectValue[];
+  selectedProgrammeType: string = '';
+  
+  cadreInterventionTypes!: SelectValue[];
+  // selectedCadreInterventionType: string = '';
+  // Getter et setter pour selectedOperationFamille
+  selectedCadreInterventionType!: number;
+  
+  chantierNatureTypes!: SelectValue[];
+  unitesTypes!: SelectValue[];
+
+  onProgrammeChange(value: string): void {
+    this.selectedProgrammeType = value;
+    // console.log('Programme sélectionné :', this.selectedProgrammeType);
+  }
+  
   // Booleens d'états pour le mode d'affichage
+  @Input() typeParent?: string; // Pour savoir si le parent est un projet ou un objectif
   @Input() isEditOperation: boolean = false;
   @Input() isAddOperation:boolean = false;
   @Output() isEditFromOperation = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
@@ -140,6 +207,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   shapeForm?: FormGroup;
 
   @Input() ref_uuid_proj!: String; // ID du projet parent 
+  @Input() ref_uuid_objectif!: String; // ID de l'objectif parent 
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   isFormValid: boolean = false;
   private formOpeSubscription: Subscription | null = null;
@@ -147,6 +215,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   stepperOrientation: Observable<StepperOrientation>;
   shapefileId: any; // Pour le formulaire de shapefile
   localisations?: Localisation[]; // Pour le formulaire de shapefile
+  isComponentInitialized: boolean = false; // Indicateur pour savoir si le composant est complètement initialisé
   
   constructor(
     private cdr: ChangeDetectorRef,
@@ -172,23 +241,118 @@ export class OperationComponent implements OnInit, OnDestroy {
     console.log("Le composant operation s'initialise..........");  
     
     // Récuperer les listes de choix
-    const subrouteTypesInter = `sites/selectvalues=${'ope.typ_interventions'}`;
-    this.formService.getSelectValues$(subrouteTypesInter).subscribe(
+    const subrouteTypeOpe = `sites/selectvalues=${'opegerer.typ_objectifope'}`;
+    this.formService.getSelectValues$(subrouteTypeOpe).subscribe(
       (selectValues: SelectValue[] | undefined) => {
-        console.log('Liste de choix typ_interventions récupérée avec succès :');
+        console.log('Liste de choix typ_objectifope récupérée avec succès :');
         console.log(selectValues);
-        this.intervTypes = selectValues || [];
+        this.typeObjectifOpe = selectValues || [];
       },
       (error) => {
         console.error('Erreur lors de la récupération de la liste de choix', error);
       }
     );
-    const subrouteActions = `sites/selectvalues=${'ope.actions'}`;
-    this.formService.getSelectValues$(subrouteActions).subscribe(
+    const subrouteTypesOperationsFamilles = `sites/selectvalues=${'ope.actions'}/1`; // Appellé dans l'interface type d'opération mais puise dans la table 'ope.actions'
+    this.formService.getSelectValues$(subrouteTypesOperationsFamilles).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix types d\'opération 1 (ope.action) récupérée avec succès :');
+        console.log(selectValues);
+        this.operationTypesFamilles = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
+    const operationTypesMap: Record<string, keyof OperationComponent> = {
+      meca: 'operationTypesMeca',
+      pat: 'operationTypesPat',
+      ame: 'operationTypesAme',
+      hydro: 'operationTypesHydro',
+      dech: 'operationTypesDech',
+      //sol: 'operationTypesSol'
+    };
+
+    for (const [key, value] of Object.entries(operationTypesMap)) {
+      const subrouteTypesOperations = `sites/selectvalues=${'ope.actions'}/${key}`;
+      this.formService.getSelectValues$(subrouteTypesOperations).subscribe(
+        (selectValues: SelectValue[] | undefined) => {
+          console.log(`Liste de choix types d'opération (${key} dans la variable this.${value}) récupérée avec succès :`);
+          console.log(selectValues);
+          if (key == 'meca') {
+          this.operationTypesMeca = selectValues || [];
+          } else if (key == 'pat') {
+          this.operationTypesPat = selectValues || [];
+          } else if (key == 'ame') {
+          this.operationTypesAme = selectValues || [];
+          } else if (key == 'hydro') {
+          this.operationTypesHydro = selectValues || [];
+          } else if (key == 'dech') {
+          this.operationTypesDech = selectValues || [];
+          } else if (key == 'sol') {
+          this.operationTypesSol = selectValues || [];
+          }
+        },
+        (error) => {
+          console.error(`Erreur lors de la récupération de la liste de choix (${key})`, error);
+        }
+      );
+    }
+
+    const subrouteProgramme = `sites/selectvalues=${'ope.listprogrammes'}`;
+    this.formService.getSelectValues$(subrouteProgramme).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix des codes programme récupérée avec succès :');
+        console.log(selectValues);
+        this.programmeTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
+    const subrouteMaitreOeuvre = `sites/selectvalues=${'ope.typ_interventions'}`;
+    this.formService.getSelectValues$(subrouteMaitreOeuvre).subscribe(
       (selectValues: SelectValue[] | undefined) => {
         console.log('Liste de choix actions récupérée avec succès :');
         console.log(selectValues);
-        this.actionTypes = selectValues || [];
+        this.maitreOeuvreTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
+    const subrouteCadreInterventions = `sites/selectvalues=${'opegerer.libelles'}/cadre_intervention`;
+    this.formService.getSelectValues$(subrouteCadreInterventions).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log("Liste de choix des cadres d'intervention récupérée avec succès :");
+        console.log(selectValues);
+        this.cadreInterventionTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
+    const subrouteChantierNature = `sites/selectvalues=${'opegerer.libelles'}/chantier_nature`;
+    this.formService.getSelectValues$(subrouteChantierNature).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log("Liste de choix des chantiers nature récupérée avec succès :");
+        console.log(selectValues);
+        this.chantierNatureTypes = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+
+    const subrouteUnites = `sites/selectvalues=${'opegerer.libelles'}/unites`;
+    this.formService.getSelectValues$(subrouteUnites).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log("Liste de choix des unités récupérée avec succès :");
+        console.log(selectValues);
+        this.unitesTypes = selectValues || [];
       },
       (error) => {
         console.error('Erreur lors de la récupération de la liste de choix', error);
@@ -196,12 +360,15 @@ export class OperationComponent implements OnInit, OnDestroy {
     );
 
     try {
-      if (this.ref_uuid_proj !== undefined) {
-        // Si on a bien une uuid de projet passé en paramètre pour recuperer les opérations lite
+      if (this.ref_uuid_proj !== undefined || this.ref_uuid_objectif !== undefined) {
+        // Si on a bien une uuid de projet ou d'objectif pour recuperer les opérations lite
         
         setTimeout(async () => {
           // Accéder à la liste des opérations et remplir le tableau Material des operationLite
           this.fetch();
+          
+          console.log('Le composant est maintenant complètement initialisé.');
+
         }, this.loadingDelay);// Fin du bloc timeout
         this.isLoading = false;  // Le chargement est terminé
       } else {
@@ -213,6 +380,8 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.isLoading = false;  // Même en cas d'erreur, arrêter le spinner
       this.cdr.detectChanges();
     }
+
+    
   }
 
   // ngAfterViewInit() {
@@ -245,23 +414,38 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
     
   }
-  
+
   subscribeToForm(): void {
     // Souscrire aux changements du statut du formulaire
+    // C'est a dire que l'on va surveiller les changements du formulaire
+    // A chaque fois qu'il y a un changement, ces lignes de code seront exécutées
     this.formOpeSubscription = this.form.statusChanges.subscribe(status => {
       this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
       console.log('Statut du formulaire principal :', status);
       console.log("this.isFormValid = this.projetForm.valid :");
       console.log(this.isFormValid + " = " + this.form.valid);
       console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
+
+ 
       
       // Afficher la liste des champs invalides
       console.log('Champs invalides :', this.getInvalidFields());
 
+      
+
       this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
     });
   }
-  
+
+  getInvalidFields(): string[] {
+    // Pour le stepper et le bouton MAJ
+    if (this.form !== undefined) {
+      return this.formService.getInvalidFields(this.form);
+    } else {
+      return [];
+    }
+  }
+
   toggleEditOperation(mode: String): void {
     console.log("----------!!!!!!!!!!!!--------toggleEditOperation('" + mode +"') dans le composant operation");
     if (mode === 'edit') {
@@ -295,15 +479,6 @@ export class OperationComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges(); // Forcer la détection des changements
     
   }
-  
-  getInvalidFields(): string[] {
-    // Pour le stepper et le bouton MAJ
-    if (this.form !== undefined) {
-      return this.formService.getInvalidFields(this.form);
-    } else {
-      return [];
-    }
-  }
 
   // isStepCompleted(stepIndex: number): boolean {
   //   // Pour utiliser cette méthode dans le stepper
@@ -325,6 +500,34 @@ export class OperationComponent implements OnInit, OnDestroy {
   //       return false;
   //   }
   // }
+
+  async getLocalisation(uuid_ope: String): Promise<Localisation[]> {
+    const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
+    try {
+      return await this.projetService.getLocalisations(subrouteLocalisation);
+    } catch (error) {
+      console.error("Erreur lors de la récupération de la localisation de l'opération : ", error);
+      return [];
+    }
+  }
+
+  /**
+   * Méthode pour récupérer les opérations
+   * Utilisée dans la méthode fetch() au moment de récupérer l'operation entière
+   * Transforme une liste de programmes en un tableau d'objets contenant uniquement
+   * les propriétés `lib_id` et `lib_libelle`.
+   *
+   * @param programmes - Un tableau d'objets représentant les programmes à transformer.
+   * Chaque objet doit contenir au moins les propriétés `lib_id` et `lib_libelle`.
+   * @returns Un tableau d'objets simplifiés, chacun contenant les propriétés `lib_id` et `lib_libelle`.
+   */
+  private transformProgrammes(programmes: any[]): { lib_id: number; lib_libelle: string, checked : boolean }[] {
+    return programmes.map(programme => ({
+      lib_id: programme.lib_id,
+      lib_libelle: programme.lib_libelle,
+      checked : false // Ajout d'une propriété checked initialisée à false
+    }));
+  }
 
   async fetch(uuid_ope?: String): Promise<Operation | void> {
     if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
@@ -350,15 +553,45 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
-      const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
+      const subrouteOperationProgramme = `ope-programmes/uuid=${uuid_ope}`;
+      const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
+
       try {
-        const operation = await this.projetService.getOperation(subroute);
-        console.log('Opération avant le return de fetch() :', operation);
+        let operation = await this.projetService.getOperation(subroute);
+        // console.log('Opération avant le return de fetch() :', operation);
+
+        // On récupère les eventuels programmes associés à l'opération
+        const ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgramme);
+        // console.log('Programmes associés à l\'opération :', ope_programmes);
+
+        // On récupère la liste des programmes possibles
+        const liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
+        // console.log('Liste des programmes possibles :', liste_ope_programmes);
+
+        // Ajouter les programmes à l'objet operation
+        operation = {
+          ...operation,
+          ope_programmes: this.transformProgrammes(ope_programmes),
+          liste_ope_programmes: this.transformProgrammes(liste_ope_programmes),
+        };
+
+        if (operation.liste_ope_programmes && operation.ope_programmes) {
+          // console.log('Avant mise à jour des cases :', operation.liste_ope_programmes);
+        
+          operation.liste_ope_programmes = operation.liste_ope_programmes.map(programme => ({
+            ...programme,
+            checked: operation.ope_programmes?.some(ope => ope.lib_id === programme.lib_id) || false,
+          }));
+        
+          // console.log('Après mise à jour des cases :', operation.liste_ope_programmes);
+        }
 
         // Pré remplir le sous formulaire d'envoi du shapefile
         this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
 
-        this.localisations = await this.projetService.getLocalisations(subrouteLocalisation);
+        // Récupérer les localisations de l'opération
+        this.localisations = await this.getLocalisation(uuid_ope);
+
         // Attention il s'agit d'une liste de localisations !
         console.log('Localisation de l\'opération :');
         console.log(this.localisations);
@@ -368,10 +601,17 @@ export class OperationComponent implements OnInit, OnDestroy {
         console.error("Erreur lors de la récupération de l'opération : ", error);
       }
     } else {
-      console.error('Aucun identifiant de projet ou d\'opération n\'a été trouvé.');
+      console.error("Aucun identifiant de projet ou d'opération n\'a été trouvé.");
     }
   }
-  
+
+  /**
+   * Est appelée pour créer un formulaire d'opération
+   * C'est a dire dans la methode toggleEditOperation()
+   * @param operation - L'opération à ouvrir (si elle existe) (optionnel)
+   * @param empty - Si true, crée un formulaire vide (optionnel)
+   * @returns Un formulaire d'opération
+   */
   async makeForm({ operation, empty = false }: { operation?: OperationLite, empty?: boolean } = {}): Promise<void> {
     // Deux grands modes :
     // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
@@ -382,18 +622,21 @@ export class OperationComponent implements OnInit, OnDestroy {
         duration: 3000,});
         return;
     } else {
-      this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
+      this.snackBar.open("Nous rentrons dans la methode makeForm().", 'Fermer', { 
       duration: 3000,});
     }
 
     this.unsubForm(); // Se désabonner des changements du formulaire
 
     if (empty) {
-      // Création d'un formulaire vide
+      // Création d'un formulaire vide - Si empty est vrai
       try {
         this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
-        this.selectedIntervType = '';
-        this.selectedActionType = '';
+        this.selectedtypeObjectifOpe = '';
+        this.selectedOperationFamille = '';
+        this.selectedOperationType = '';
+        this.selectedOperation = '';
+        this.selectedMaitreOeuvreType = '';
         this.subscribeToForm() // S'abonner aux changements du formulaire créé juste avant
       } catch (error) {
         console.error('Erreur lors de la création du formulaire', error);
@@ -405,15 +648,18 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Chargement d'un formulaire avec une opération
       this.linearMode = false; // Passer en mode non linéaire du stepper
       
-      console.log("OperationLite passée en paramètre dans makeOperationForm :");
+      console.log("OperationLite passée en paramètre dans makeForm :");
       console.log(operation);
       try {
         // Transformation d'une OperationLite en Operation
         await this.fetch(operation.uuid_ope).then((operation) => {
           if (operation) {
             this.operation = operation;
-            this.selectedIntervType = operation.typ_intervention || '';
-            this.selectedActionType = operation.action || '';
+            this.selectedtypeObjectifOpe = operation.obj_ope || '';
+            this.selectedOperationFamille = operation.action || '';
+            this.selectedOperationType = operation.action_2 || '';
+            this.selectedOperation = operation.action_2 || '';
+            this.selectedMaitreOeuvreType = operation.typ_intervention || '';
           }
         });
 
@@ -423,6 +669,8 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Création du formulaire avec les données de l'opération
         if (this.operation !== undefined) {
           this.form = this.formService.newOperationForm(this.operation); // Remplir this.form avec notre this.operation
+          console.log("Formulaire d'une operation existante initialisé :", this.form.value);
+
           this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
           this.initialFormValues = this.form.value; // Stocker les valeurs initiales du formulaire
         }
@@ -439,7 +687,28 @@ export class OperationComponent implements OnInit, OnDestroy {
         return;
     }
   }
-  
+
+  // Méthode pour soumettre le formulaire
+  /**
+   * Gère la soumission du formulaire pour une opération.
+   *
+   * @param mode - (Optionnel) Mode de soumission, peut être utilisé pour spécifier une action particulière comme 'delete'.
+   *
+   * Logique :
+   * - Vérifie si le formulaire existe et est valide.
+   * - Si le formulaire est valide :
+   *   - Formate les dates avant l'envoi au backend si elles ont été modifiées.
+   *   - Si une nouvelle opération est ajoutée :
+   *     - Enregistre l'opération via le service `projetService`.
+   *     - Affiche un message de succès ou d'erreur dans un Snackbar.
+   *     - Met à jour la liste des opérations.
+   *   - Si une opération existante est modifiée :
+   *     - Met à jour l'opération via le service `formService`.
+   *     - Synchronise les programmes associés.
+   *     - Met à jour la liste des opérations.
+   *   - Si le mode est 'delete', affiche les valeurs du formulaire dans la console.
+   * - Si le formulaire est invalide ou introuvable, affiche un message d'erreur dans la console.
+   */
   onSubmit(mode?: String): void {
     // Logique de soumission du formulaire du projet
     if (this.form !== undefined) {
@@ -449,6 +718,20 @@ export class OperationComponent implements OnInit, OnDestroy {
         console.log("----------!!!!!!!!!!!!--------onSubmit('" + mode + "') dans le composant operation");
         console.log(this.form.value);
 
+        // Formater les dates avant l'envoi au backend        
+        if (
+          this.formService.isDateModified(this.form, 'date_debut', this.operation?.date_debut) ||
+          this.formService.isDateModified(this.form, 'date_fin', this.operation?.date_fin)
+        ) {
+          console.log("Une des 3 dates à été modifiée par l'utilisateur.");
+          this.form.patchValue({
+            date_debut: this.formService.formatDateToPostgres(this.form.get('date_debut')?.value),
+            date_fin: this.formService.formatDateToPostgres(this.form.get('date_fin')?.value),
+          });
+          console.log("Formulaire patché avec les bonnes dates: ", this.form.value);
+        }
+        
+
         // Nouvelle opération
         if (this.isAddOperation === true){
           this.projetService.insertOperation(this.form.value).subscribe(
@@ -456,6 +739,8 @@ export class OperationComponent implements OnInit, OnDestroy {
               console.log("Enregistrement de l'opération avec succès :", response);
               this.unsubForm(); // Se désabonner des changements du formulaire
               
+              // Synchroniser les programmes après la mise à jour
+              this.syncOperationProgrammes();
               
               // Afficher le message dans le Snackbar
               const message = "Opération bien enregistrée"; // Message par défaut
@@ -464,6 +749,9 @@ export class OperationComponent implements OnInit, OnDestroy {
                 duration: 3000,
                 panelClass: ['snackbar-success']
               });
+
+              // Mise a jout de la liste des opérations
+              // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
               this.fetch();
             },
             (error) => {
@@ -494,9 +782,15 @@ export class OperationComponent implements OnInit, OnDestroy {
                 this.isEditFromOperation.emit(this.isEditOperation);
                 
                 console.log('Formulaire mis à jour avec succès:', result.formValue);
+
+                // Synchroniser les programmes après la mise à jour
+                this.syncOperationProgrammes();
                 
                 // Accéder à la liste des opérations et remplir le tableau Material des operationLite
                 this.operation = undefined; // Réinitialiser l'opération
+
+                // Mise a jout de la liste des opérations (liste liste - tableau "material table")
+                // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
                 this.fetch();
               },
               (error) => {
@@ -515,6 +809,16 @@ export class OperationComponent implements OnInit, OnDestroy {
       }
     } else {
       console.error('Le formulaire est introuvable, veuillez le créer.');
+    }
+  }
+
+  // Méthode pour gérer le téléchargement du fichier shapefile modèle
+  onFileSelected(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      this.shapeForm!.patchValue({
+        shapefile: file
+      });
     }
   }
 
@@ -563,16 +867,6 @@ export class OperationComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Méthode pour gérer la sélection d'un fichier shapefile
-  onFileSelected(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      this.shapeForm!.patchValue({
-        shapefile: file
-      });
-    }
-  }
-
   // Méthode pour gérer la soumission du formulaire de shape
   handleShapefileSubmission(): void {
 
@@ -601,17 +895,21 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
 
     this.submitShapefile().subscribe({
-      next: (response: ApiResponse) => {
+      next: async (response: ApiResponse) => {
         if (response.success) {
           // Réinitialiser uniquement le champ shapefile
-        this.shapeForm!.patchValue({
-          shapefile: null
-        });
+          this.shapeForm!.patchValue({
+            shapefile: null
+          });
         
-        // Nettoyer l'input file
-        if (this.fileInput) {
-          this.fileInput.nativeElement.value = '';
-        }
+          // Nettoyer l'input file
+          if (this.fileInput) {
+            this.fileInput.nativeElement.value = '';
+          }
+
+          // Rafraîchir la liste des localisations
+          this.localisations = await this.getLocalisation(this.shapeForm?.get('uuid_ope')?.value);
+
           // Message de succès
           this.snackBar.open('Shapefile importé avec succès', 'Fermer', {
             duration: 3000,
@@ -634,10 +932,192 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   // Méthode pour télécharger le fichier shapefile d'exemple
+  /**
+   * Lance le téléchargement d'un exemple de fichier shapefile en créant un élément
+   * d'ancrage temporaire, en définissant son `href` sur le chemin du shapefile,
+   * et en déclenchant un événement de clic.
+   * Le fichier téléchargé sera nommé `shapefile_polygone_modele.zip`.
+   *
+   * @remarks
+   * Cette méthode utilise l'API `document.createElement` pour créer dynamiquement
+   * un élément d'ancrage et déclencher un téléchargement programmatique. Assurez-vous
+   * que le chemin du fichier `'assets/shapefile_polygone_modele.zip'` est correct
+   * et accessible dans votre projet.
+   */
   downloadShapefileExample(): void {
     const link = document.createElement('a');
-    link.href = 'assets/shapefile_polygone_example.zip';
-    link.download = 'shapefile_polygone_example.zip';
+    link.href = 'assets/shapefile_polygone_modele.zip';
+    link.download = 'shapefile_polygone_modele.zip';
     link.click();
+  }
+
+  // Pour supprimer une localisation ou une opération
+  deleteItem(type: 'localisation' | 'operation'): void {
+    if (type === 'localisation' && this.localisations && this.localisations.length > 0) {
+      const localisationId = this.localisations[0].loc_id;
+      this.projetService.deleteLocalisation(localisationId).subscribe(
+        (response: ApiResponse) => {
+          if (response.success) {
+            this.localisations = undefined; // Réinitialiser les localisations après suppression
+            this.callSnackDelete("normal", 'localisation', response);
+          }
+        },
+        (error) => {
+          this.callSnackDelete('error', 'localisation');
+        }
+      );
+    } else if (type === 'operation' && this.operation) {
+      const operationId = this.operation.uuid_ope;
+      this.projetService.deleteOperation(operationId).subscribe(
+        (response: ApiResponse) => {
+          if (response.success) {
+            console.log('Opération supprimée avec succès');
+            this.operation = undefined; // Réinitialiser l'opération après suppression
+            this.isEditOperation = false; // Sortir du mode édition
+            this.snackBar.open('Opération supprimée avec succès', 'Fermer', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+            this.fetch(); // Rafraîchir la liste des opérations
+          } else {
+            console.error('Erreur lors de la suppression de l\'opération', response.message);
+            this.snackBar.open(response.message || 'Erreur lors de la suppression de l\'opération', 'Fermer', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        },
+        (error) => {
+          console.error('Erreur lors de la suppression de l\'opération', error);
+          this.snackBar.open('Erreur lors de la suppression de l\'opération', 'Fermer', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      );
+    } else {
+      console.error(`Aucun ${type} à supprimer`);
+      this.snackBar.open(`Aucun ${type} à supprimer`, 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  }
+
+  // Utilisée à l'interieur de this.deleteItem() pour afficher un message de suppression
+  callSnackDelete(mode: string, table: string, response?: ApiResponse): void {
+    if(mode === 'normal' && response !== undefined) {
+      if (response.success) {
+        console.log(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimée avec succès`);
+        this.snackBar.open(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`, 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      } else {
+        console.error(`Erreur lors de la suppression. Type : ${table}`, response.message);
+        this.snackBar.open(response.message || `Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    } else if (mode === 'error') {
+      console.error(`Erreur lors de la suppression. Type : ${table}`);
+      this.snackBar.open(`Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+
+    }
+  }
+
+  onCadreInterventionChange(newValue: number): void {
+    console.log('Changement de cadre_intervention détecté, nouvelle valeur :', newValue);
+
+    // Mettre à null la valeur de cadre_intervention_detail
+    if (this.form?.get('cadre_intervention_detail')) {
+      this.form.get('cadre_intervention_detail')!.setValue(null, { emitEvent: false });
+      console.log('Le champ cadre_intervention_detail a été réinitialisé à null.');
+    }
+  }
+
+  /**
+   * Getter pour accéder à la liste des programmes d'opération
+   * @returns {FormArray} La liste des programmes d'opération
+   */
+  get listeOpeProgrammes(): FormArray {
+    return this.form.get('liste_ope_programmes') as FormArray;
+  }
+
+  /**
+  * Méthode pour mettre à jour this.operation en fonction programmes sélectionnés par l'utilisateur
+  */
+  getSelectedProgrammes(): { lib_id: number; lib_libelle: string }[] {
+    return this.listeOpeProgrammes.controls
+      .filter(control => control.get('checked')?.value)
+      .map(control => ({
+        lib_id: control.get('lib_id')?.value,
+        lib_libelle: control.get('lib_libelle')?.value,
+      }));
+  }
+
+  /**
+   * Synchronise les programmes sélectionnés avec la base de données.
+   * Ajoute ou supprime les programmes en fonction des changements effectués par l'utilisateur.
+   */
+  private syncOperationProgrammes(): void {
+    if (!this.operation || !this.operation.liste_ope_programmes) {
+      console.error('Impossible de synchroniser les programmes : données manquantes.');
+      return;
+    }
+  
+    // Programmes sélectionnés par l'utilisateur
+    const selectedProgrammes = this.getSelectedProgrammes();
+  
+    // Programmes déjà enregistrés en base
+    const existingProgrammes = this.operation.ope_programmes || [];
+  
+    // Identifier les programmes à ajouter
+    const programmesToAdd = selectedProgrammes.filter(
+      selected => !existingProgrammes.some(existing => existing.lib_id === selected.lib_id)
+    );
+    console.log('Programmes à ajouter :', programmesToAdd);
+  
+    // Identifier les programmes à supprimer
+    const programmesToRemove = existingProgrammes.filter(
+      existing => !selectedProgrammes.some(selected => selected.lib_id === existing.lib_id)
+    );
+    console.log('Programmes à supprimer :', programmesToRemove);
+  
+    // Ajouter les nouveaux programmes
+  
+    programmesToAdd.forEach(programme => {
+
+      // Créer un objet OperationProgramme à partir du programme sélectionné
+      const operationProgramme: OperationProgramme = {
+        uuid_ope: this.operation!.uuid_ope,
+        programme_id: programme.lib_id, // Remplir l'identifiant du programme
+      };
+
+      this.projetService.insertOperationProgramme(operationProgramme).subscribe({
+        next: () => {
+          console.log(`Programme ajouté : ${programme.lib_libelle}`);
+        },
+        error: (error) => {
+          console.error(`Erreur lors de l'ajout du programme : ${programme.lib_libelle}`, error);
+        }
+      });
+    });
+  
+    // Supprimer les programmes non sélectionnés
+    programmesToRemove.forEach(programme => {
+      this.projetService.deleteOperationProgramme(this.operation!.uuid_ope, programme.lib_id).subscribe({
+        next: () => {
+          console.log(`Programme supprimé : ${programme.lib_libelle}`);
+        },
+        error: (error) => {
+          console.error(`Erreur lors de la suppression du programme : ${programme.lib_libelle}`, error);
+        }
+      });
+    });
   }
 }

@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
-import { ApiResponse } from '../../../../shared/interfaces/api';
+// import { ApiResponse } from '../../../../shared/interfaces/api';
 import { ProjetLite, Projet } from '../projets';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { ProjetService } from '../projets.service';
@@ -25,8 +25,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
@@ -45,6 +48,7 @@ import { MapComponent } from '../../../../map/map.component';
 // NE PAS oublier de décommenter la
 import { Subscription } from 'rxjs';
 
+import { LoginService } from '../../../../login/login.service';
 
 // Configuration des formats de date
 export const MY_DATE_FORMATS = {
@@ -63,18 +67,20 @@ export const MY_DATE_FORMATS = {
   selector: 'app-dialog-operation',
   standalone: true,
   providers: [
-    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
-
-    // Moment can be provided globally to your app by adding `provideMomentDateAdapter`
-    // to your app config. We provide it at the component level here, due to limitations
-    // of our example generation script.
-    provideMomentDateAdapter(),
-
-    {
-      provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: {displayDefaultIndicatorType: false},
-    },
-  ],
+      {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+      { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+      { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+  
+      // Moment can be provided globally to your app by adding `provideMomentDateAdapter`
+      // to your app config. We provide it at the component level here, due to limitations
+      // of our example generation script.
+      provideMomentDateAdapter(),
+  
+      {
+        provide: STEPPER_GLOBAL_OPTIONS,
+        useValue: {displayDefaultIndicatorType: false},
+      },
+    ],
   imports: [
     FormButtonsComponent,
     DetailGestionComponent,
@@ -139,24 +145,25 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   //   {value: 'SEN', viewValue: 'Sensibilisation et Communication'},
   // ];
 
+  statusTypes: SelectValue[] = [
+    {cd_type: 'En cours', libelle: 'En cours'},
+    {cd_type: 'Terminé', libelle: 'Terminé'},
+    {cd_type: 'Annulé', libelle: 'Annulé'},
+  ];
+
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
     private sitesService: ProjetService,
     private formService: FormService,
-    // private projetService: ProjetService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private loginService: LoginService, // Inject LoginService
     @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
       this.projetLite = data;
-      // console.log("data : ");
-      // console.log(data);
-
-      console.log("this.projectTypes : ");
-      console.log(this.projectTypes);
 
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
@@ -164,15 +171,29 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
       // console.log("this.projetLite dans le dialog :", this.projetLite);
     }
+  
+  getTypeInterv(generation: string): string {
+    // Renvoie le type d'intervention en fonction de son code : "gestion" ou "autre"
+    // @param : typ_interve : correspond au champ "generation" de la vue "ope.synthesesites"
+    let type = '';
+    if (generation === '1_TVX') {
+      type = 'gestion';
+    } else if (generation === '1_AUT') {
+      type = 'autre';
+    }
+    return type;
+  }
 
-  async fetch(uuid_proj: String): Promise<Projet> {
+  async fetch(uuid_proj: String, type: String): Promise<Projet> {
     // Récupérer les données d'un projet à partir de son UUID
-    const subroute = `projets/uuid=${uuid_proj}/full`; // Full puisque UN SEUL projet
-        console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
-        const projet = await this.sitesService.getProjet(subroute);
-        if (projet.typ_projet) this.selectedProjetType = projet.typ_projet;
-        
-        return projet;
+    // @param : gestion ou autre pour que le back sache quelle table interroger
+    // !! Le backend ne fera pas la meme requete SQL si on est en gestion ou autre
+    // Il s'agira de deux schémas different où les données sont stockées
+    const subroute = `projets/uuid=${uuid_proj}/full/${type}`; // Full puisque UN SEUL projet
+    console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
+    const projet = await this.sitesService.getProjet(subroute);
+    if (projet.typ_projet) this.selectedProjetType = projet.typ_projet; // Assigner le type de projet sélectionné à la variable
+    return projet;
   }
 
   get step1Form(): FormGroup {
@@ -183,31 +204,29 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   return this.projetForm.get('step2') as FormGroup;
   }
 
-
   async ngOnInit() {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     
+    const cd_salarie = this.loginService.user()?.cd_salarie || null;
+
     // Récupérer les données d'un projet ou créer un nouveau projet
+    // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
     if (this.projetLite?.uuid_proj) {
       // Quand un UUID est passé en paramètre
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
-
-          const projetObject = await this.fetch(this.projetLite.uuid_proj);
-
-          // Initialiser les valeurs du formulaire principal
-          // this.selectedEnjeuxType = projetObject.pro_nv_enjeux || '';
-
+          // Accéder aux données du projet (va prendre dans le scheme opegerer ou opeautre)
+          const projetObject = await this.fetch(this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation));
 
           // Accéder données du projet
           if (projetObject.uuid_proj) {
             this.projet = projetObject; // Assigner l'objet projet directement
+
             console.log('Projet après extraction :', this.projet);
 
-            // Les form_groups correspondant aux steps
-            // Sert a defini les valeurs par defaut et si obligatoire
-            this.projetForm = this.formService.newProjetForm(this.projet);
+            // Défini un formulaire pour le projet
+            this.projetForm = this.formService.newProjetForm(this.projet, undefined, this.projet.pro_webapp);
 
             // Souscrire aux changements du statut du formulaire principal (projetForm)
             this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
@@ -240,7 +259,17 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         // Créer un formulaire vide
         if (this.projetLite.uuid_site) {
           // Le form_group correspondant aux projet neuf à créer
-          this.projetForm = this.formService.newProjetForm(undefined, this.projetLite.uuid_site);
+          this.projetForm = this.formService.newProjetForm(undefined, this.projetLite.uuid_site, true);
+
+          // Définir les valeurs par défaut pour créateur et responsable
+          this.projetForm.patchValue({
+            createur: cd_salarie,
+            step1: {
+              responsable: cd_salarie,
+            }
+          });
+
+          console.log('Formulaire de projet créé avec succès :', this.projetForm.value);
 
           // Souscrire aux changements du statut du formulaire principal (projetForm)
           this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
@@ -286,9 +315,18 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     console.log('Destruction du composant, on se désabonne.');
   }
 
-  getLibelle(cd_type: string, list: SelectValue[]): string {
-    const libelle = this.formService.getLibelleFromCd(cd_type, list);
-    return libelle;
+  // getLibelle(cd_type: string, list: SelectValue[]): string {
+  //   const libelle = this.formService.getLibelleFromCd(cd_type, list);
+  //   return libelle;
+  // }
+
+  public getLibelle(cd_type: string, list: SelectValue[] | undefined): string {
+    if (!list) {
+      console.warn('La liste est undefined ou null dans getLibelleFromCd.');
+      return '';
+    }
+    const libelle = list.find(type => type.cd_type === cd_type);
+    return libelle ? libelle.libelle : '';
   }
 
 
@@ -372,6 +410,22 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   onSubmit(): void {
     // Mettre à jour le formulaire
+    console.log("Je me concentre sur ", this.projetForm.get('step1.pro_fin')?.value);
+
+    // Formater les dates avant l'envoi au backend        
+    if (
+      this.formService.isDateModified(this.projetForm, 'step1.pro_debut', this.projet?.pro_debut) ||
+      this.formService.isDateModified(this.projetForm, 'step1.pro_fin', this.projet?.pro_fin)
+    ) {
+      console.log("Une des 3 dates à été modifiée par l'utilisateur.");
+      this.projetForm.patchValue({
+        step1: {
+          pro_debut: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_debut')?.value),
+          pro_fin: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_fin')?.value),
+        }
+      });
+      console.log("Formulaire patché avec les bonnes dates: ", this.projetForm.value);
+    }
 
     if(!this.newProjet){
       console.log("Modification d'un projet existant. this.newProjet = " + this.newProjet);

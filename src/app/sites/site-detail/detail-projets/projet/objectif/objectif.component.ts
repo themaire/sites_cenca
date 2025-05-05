@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, Ev
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { OperationComponent } from '../operation/operation.component';
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
 import { Objectif } from './objectifs';
@@ -10,19 +11,15 @@ import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
 
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
-
 import { MatFormFieldModule } from '@angular/material/form-field';
-
 import { MatIconModule } from '@angular/material/icon';
-
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
 import { MatInputModule } from '@angular/material/input'; 
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 
@@ -38,9 +35,11 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [
         CommonModule,
+        OperationComponent,
         FormButtonsComponent,
         FormsModule,
         ReactiveFormsModule,
+        MatTabsModule,
         MatSnackBarModule,
         MatSelectModule,
         MatIconModule,
@@ -57,6 +56,10 @@ import { Subscription } from 'rxjs';
   styleUrl: './objectif.component.scss'
 })
 export class ObjectifComponent {
+  @Input() rattachementOperation!: string; // Pour savoir si on est dans un projet ou une opération
+  @Input() geojson_site?: string;
+
+  @Input() isEditProjet!: boolean;
   @Input() uuid_projet?: string; // L'identifiant du projet selectionné pour voir son/ses objectif(s)
   @Input() new_projet?: boolean; // Si projet nouvelle generation (avec webapp)
   
@@ -76,8 +79,11 @@ export class ObjectifComponent {
   dataSource!: MatTableDataSource<Objectif>;
   // Pour la liste des opérations : le tableau Material
   displayedColumns: string[] = ['typ_objectif', 'attentes', 'surf_totale', 'surf_prevue'];
-  objectif!: Objectif | void; // Pour les détails d'un objectif
+  objectif!: Objectif; // Pour les détails d'un objectif
   nbObjectifs: number = 0; // Pour le nombre d'objectifs
+
+  isEditOperation: boolean = false;
+  isAddOperation: boolean = false;
 
   // Listes de choix du formulaire
   NvEnjeux!: SelectValue[];
@@ -139,7 +145,7 @@ export class ObjectifComponent {
     const subrouteTypeOpe = `sites/selectvalues=${'opegerer.typ_objectifope'}`;
     this.formService.getSelectValues$(subrouteTypeOpe).subscribe(
       (selectValues: SelectValue[] | undefined) => {
-        console.log('Liste de choix typ_objectifs récupérée avec succès :');
+        console.log('Liste de choix typ_objectifope récupérée avec succès :');
         console.log(selectValues);
         this.typeObjectifOpe = selectValues || [];
       },
@@ -449,7 +455,7 @@ export class ObjectifComponent {
                 console.log('Formulaire mis à jour avec succès:', result.formValue);
                 
                 // Accéder à la liste des opérations et remplir le tableau Material des objectifs
-                this.objectif = undefined; // Réinitialiser l'objectif
+                this.objectif = {}; // Réinitialiser l'objectif
                 this.fetch();
               },
               (error) => {
@@ -469,5 +475,15 @@ export class ObjectifComponent {
     } else {
       console.error('Le formulaire est introuvable, veuillez le créer.');
     }
+  }
+
+  handleEditOperationChange(isEdit: boolean): void {
+    // console.log('État de l\'édition reçu du composant enfant:', isEdit);
+    this.isEditOperation = isEdit;
+  }
+
+  handleAddOperationChange(isAdd: boolean): void {
+    // console.log('État de l\'ajout reçu du composant enfant:', isAdd);
+    this.isAddOperation = isAdd;
   }
 }

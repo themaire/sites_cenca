@@ -59,7 +59,17 @@ export class DetailProjetsComponent {
       
       // ChatGPT 19/07/2024
       try {
+        // On récupère la liste des projets du site
         this.projetsLite = await this.research.getProjets(subroute);
+
+        // On ajoute le geojson du site à chaque projet
+        // Car l'étape précedente ne replit pas cette information
+        this.projetsLite.forEach(projet => {
+          if (this.inputDetail !== undefined) {
+            projet.geojson_site = this.inputDetail.geojson;
+          }
+        });
+
         console.log('Données de projetsLite :', this.projetsLite);
         
         this.dataSource = new MatTableDataSource(this.projetsLite);
@@ -78,11 +88,11 @@ export class DetailProjetsComponent {
 
     if(projetlite !== undefined){
       // Ca se passe dans la vue du component dialog-operation
-      if(projetlite.uuid_proj !== undefined){
+      if(projetlite.uuid_proj !== undefined && projetlite.generation == "1_TVX"){
         // OUVRIR LA FENETRE DE DIALOGUE
         this.openDialog(projetlite);
       }else{
-        console.log("Pas un vrai projet passé en parametre. uuid_proj : " + projetlite.uuid_proj);
+        console.log("Pas un projet TRAVAUX ( " + projetlite.generation + " ) ou pas un vrai projet passé en parametre. uuid_proj : " + projetlite.uuid_proj);
       }
     }else{
       this.openDialog();
@@ -125,7 +135,8 @@ export class DetailProjetsComponent {
     // Ouverture de la fenetre de dialogue
     // tout en créant la constante dialogRef
     const dialogRef = this.dialog.open(dialogComponent, {
-      data : projetlite
+      data: projetlite,
+      // panelClass: 'custom-dialog-container' // Classe personnalisée si l'encapsulation des styles css de material est désactivée dans le composant projet.
     });
 
     // Préparer à l'avance quand la fenetre de dialogue se ferme

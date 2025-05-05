@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';  
 
 // prototypes utilisés dans la promise de la fonction
 import { Projet } from './projets';
-import { Operation, OperationLite } from './projet/operation/operations';
+import { Operation, OperationLite, OperationProgramme } from './projet/operation/operations';
 import { Objectif } from './projet/objectif/objectifs';
 import { ApiResponse } from '../../../shared/interfaces/api';
 import { Localisation } from '../../../shared/interfaces/localisation';
@@ -47,7 +47,12 @@ export class ProjetService {
     return await data.json() ?? [];
   }
   
-  // Utilisé dans operation.component.ts
+  // Utilisé aussi dans operation.component.ts
+  async getOperationProgrammes(subroute: string): Promise<OperationProgramme[]> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
+  }
+
   insertOperation(operation: Operation): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=operations/insert`;
     return this.http.put<ApiResponse>(url, operation);
@@ -57,11 +62,44 @@ export class ProjetService {
     //   const url = `${this.activeUrl}put/table=operations/uuid=${operation.uuid_ope}`;
     //   return this.http.put<ApiResponse>(url, operation);
     // }
+  
+  deleteOperation(uuid_ope: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.operations/uuid=${uuid_ope}`).pipe(
+      catchError(error => {
+        console.error("Erreur lors de la suppression de l'opération:", error);
+        return of({ success: false, message: "Erreur lors de la suppression de l'opération" } as ApiResponse);
+      })
+    );
+  }
+
+  /** Ajouter un programme d'une opération - Gestion des cases à cocher dans le formulaire d'édition d'une opération
+  *   Utilisé dans operation.component.ts - Ajouter un élément revient à cocher une case dans le formulaire
+  *   @param operationProgramme : l'objet contenant les informations du programme d'une opération
+  */
+  insertOperationProgramme(operationProgramme: OperationProgramme): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=operation_programmes/insert`;
+    return this.http.put<ApiResponse>(url, operationProgramme);
+  }
+
+  /** Supprimer un programme d'une opération - Gestion des cases à cocher dans le formulaire d'édition d'une opération
+  *   Utilisé dans operation.component.ts - Supprimer un élément revient à faire décocher une case dans le formulaire
+  *   @param uuid_ope : l'uuid de l'opération
+  *   @param programme_id : l'id du programme
+  */
+  deleteOperationProgramme(uuid_ope: string, programme_id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.operation_programmes/uuid=${uuid_ope}/programme_id/${programme_id}`).pipe(
+      catchError(error => {
+        const messageTxt = `Erreur lors de la suppression de l'opération-programme (uuid: ${uuid_ope}, programme_id: ${programme_id})`;
+        console.error(messageTxt, error);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
     
-    // Utilisé dans objectifs.component.ts
-    async getObjectif(subroute: string): Promise<Objectif> {
-      const data = await fetch(this.activeUrl + subroute);
-      return await data.json() ?? [];
+  // Utilisé dans objectifs.component.ts
+  async getObjectif(subroute: string): Promise<Objectif> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
   }
 
   // Utilisé dans objectifs.component.ts
@@ -99,5 +137,14 @@ export class ProjetService {
   async getLocalisations(subroute: string): Promise<Localisation[]> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
+  }
+
+  deleteLocalisation(loc_id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.localisations/uuid=${loc_id}`).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression de la localisation:', error);
+        return of({ success: false, message: 'Erreur lors de la suppression de la localisation' } as ApiResponse);
+      })
+    );
   }
 }

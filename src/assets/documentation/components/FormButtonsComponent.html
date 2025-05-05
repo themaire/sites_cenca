@@ -1,0 +1,1047 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>site-cenca documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">site-cenca documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  FormButtonsComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/shared/form-buttons/form-buttons.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-form-buttons</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                            <code>CommonModule</code>
+                            <code>MatTooltipModule</code>
+                            <code>MatIcon</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./form-buttons.component.html</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrl</td>
+                <td class="col-md-9"><code>./form-buttons.component.scss</code></td>
+            </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#tooltip" >tooltip</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#ngOnChanges" >ngOnChanges</a>
+                            </li>
+                            <li>
+                                <a href="#onCancelAction" >onCancelAction</a>
+                            </li>
+                            <li>
+                                <a href="#onSave" >onSave</a>
+                            </li>
+                            <li>
+                                <a href="#onToggleAction" >onToggleAction</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#icone" >icone</a>
+                            </li>
+                            <li>
+                                <a href="#isAddActive" >isAddActive</a>
+                            </li>
+                            <li>
+                                <a href="#isEditActive" >isEditActive</a>
+                            </li>
+                            <li>
+                                <a href="#isFormValid" >isFormValid</a>
+                            </li>
+                            <li>
+                                <a href="#nbObjectifs" >nbObjectifs</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#makeObjectifForm" >makeObjectifForm</a>
+                            </li>
+                            <li>
+                                <a href="#makeOperationForm" >makeOperationForm</a>
+                            </li>
+                            <li>
+                                <a href="#onSubmit" >onSubmit</a>
+                            </li>
+                            <li>
+                                <a href="#toggleAction" >toggleAction</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(cdr: ChangeDetectorRef)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:27</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>cdr</td>
+                                                  
+                                                        <td>
+                                                                    <code>ChangeDetectorRef</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="icone"></a>
+                        <b>icone</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:17</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isAddActive"></a>
+                        <b>isAddActive</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:19</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isEditActive"></a>
+                        <b>isEditActive</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:20</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isFormValid"></a>
+                        <b>isFormValid</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:18</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="nbObjectifs"></a>
+                        <b>nbObjectifs</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>-1</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:21</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="makeObjectifForm"></a>
+                        <b>makeObjectifForm</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:24</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="makeOperationForm"></a>
+                        <b>makeOperationForm</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:25</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="onSubmit"></a>
+                        <b>onSubmit</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:27</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="toggleAction"></a>
+                        <b>toggleAction</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:26</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnChanges"></a>
+                    <span class="name">
+                        <span ><b>ngOnChanges</b></span>
+                        <a href="#ngOnChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnChanges(changes: SimpleChanges)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>changes</td>
+                                            <td>
+                                                        <code>SimpleChanges</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onCancelAction"></a>
+                    <span class="name">
+                        <span ><b>onCancelAction</b></span>
+                        <a href="#onCancelAction"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onCancelAction()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSave"></a>
+                    <span class="name">
+                        <span ><b>onSave</b></span>
+                        <a href="#onSave"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSave()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onToggleAction"></a>
+                    <span class="name">
+                        <span ><b>onToggleAction</b></span>
+                        <a href="#onToggleAction"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onToggleAction()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tooltip"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>tooltip</b></span>
+                        <a href="#tooltip"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&quot;&quot;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/shared/form-buttons/form-buttons.component.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ChangeDetectorRef, EventEmitter, Output, Component, Input, OnChanges, SimpleChanges } from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+import { MatTooltipModule } from &#x27;@angular/material/tooltip&#x27;;
+import { MatIcon } from &#x27;@angular/material/icon&#x27;;
+
+import { Objectif } from &#x27;../../sites/site-detail/detail-projets/projet/objectif/objectifs&#x27;;
+import { OperationLite } from &#x27;../../sites/site-detail/detail-projets/projet/operation/operations&#x27;;
+
+@Component({
+  selector: &#x27;app-form-buttons&#x27;,
+  standalone: true,
+  imports: [CommonModule, MatTooltipModule, MatIcon],
+  templateUrl: &#x27;./form-buttons.component.html&#x27;,
+  styleUrl: &#x27;./form-buttons.component.scss&#x27;
+})
+export class FormButtonsComponent {
+  @Input() icone!: string;  // Valeur par défaut pour voir si c&#x27;est vide
+  @Input() isFormValid!: boolean;
+  @Input() isAddActive: boolean &#x3D; false;  // Valeur par défaut pour voir si c&#x27;est vide
+  @Input() isEditActive: boolean &#x3D; false;  // Valeur par défaut pour voir si c&#x27;est vide
+  @Input() nbObjectifs?: number &#x3D; -1  // Valeur par défaut pour voir si c&#x27;est vide
+
+
+  @Output() makeObjectifForm &#x3D; new EventEmitter&lt;{ objectif?: Objectif; empty: boolean }&gt;();
+  @Output() makeOperationForm &#x3D; new EventEmitter&lt;{ operation?: OperationLite; empty: boolean }&gt;();
+  @Output() toggleAction &#x3D; new EventEmitter&lt;String&gt;(); // Est en fait onToggleEditMode() dans operation.component.ts
+  @Output() onSubmit &#x3D; new EventEmitter&lt;String&gt;();
+
+  constructor(private cdr: ChangeDetectorRef) {}
+  
+  public tooltip: string &#x3D; &quot;&quot;;
+
+  // Ces methodes sont appelées au travers des boutons du HTML
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes[&#x27;isFormValid&#x27;]) {
+      console.log(&#x27;isFormValid has changed:&#x27;, changes[&#x27;isFormValid&#x27;].currentValue);  // Vérifie la réception de isFormValid
+      this.cdr.detectChanges();  // Forcer la détection des changements
+    }
+
+    if (changes[&#x27;isAddActive&#x27;]) {
+      console.log(&#x27;isAddActive du BOUTON has changed:&#x27;, changes[&#x27;isAddActive&#x27;].currentValue);
+      this.cdr.detectChanges();  // Forcer la détection des changements immédiatement
+    }
+
+    if (changes[&#x27;isEditActive&#x27;]) {
+    console.log(&#x27;isEditActive du BOUTON has changed:&#x27;, changes[&#x27;isEditActive&#x27;].currentValue);
+      this.cdr.detectChanges();  // Forcer la détection des changements immédiatement
+    }
+  }
+
+  // Attention ici this.icone determine le comportement des methodes appelées !!!
+
+  onToggleAction(): void {
+    console.log(&#x27;-----------------------!!!!!!!!!!!!--------onToggleAction dans le composant bouton&#x27;);
+    this.toggleAction.emit(this.icone); // Le nom de l&#x27;icon determine quel booléen est modifié
+  }
+
+  onCancelAction(): void {
+    console.log(&#x27;-----------------------!!!!!!!!!!!!--------onCancelAction dans le composant bouton&#x27;);
+    this.toggleAction.emit(); // Le nom de l&#x27;icon determine quel booléen est modifié
+  }
+
+  onSave(): void {
+    console.log(&quot;Va utiliser this.onSubmit.emit(&#x27;&quot; + this.icone + &quot;&#x27;); depuis le bouton sauvegarder&quot;);
+    this.onSubmit.emit(this.icone);
+  }
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;edition&quot;&gt;
+    &lt;!-- &lt;b&gt;BOUTON&lt;/b&gt;&lt;br/&gt;
+    &lt;i&gt;isEditActive BOUTON : {{ isEditActive }}.&lt;/i&gt;&lt;br/&gt;
+    &lt;i&gt;isAddActive BOUTON : {{ isAddActive }}.&lt;/i&gt;&lt;br/&gt;
+    &lt;i&gt;icone : {{ icone }}.&lt;/i&gt;&lt;br/&gt;
+    &lt;i&gt;isFormValid FORMULAIRE : {{ isFormValid }}.&lt;/i&gt;&lt;br/&gt;
+    nbObjectifs : {{ nbObjectifs }}&lt;br/&gt;&lt;br/&gt; --&gt;
+
+    &lt;!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d&#x27;édition --&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;icone &#x3D;&#x3D;&#x3D; &#x27;add&#x27; &amp;&amp; !isEditActive &amp;&amp; !isAddActive &amp;&amp; nbObjectifs &#x3D;&#x3D;&#x3D; 0&quot;&gt;
+        &lt;b&gt;
+            Nouvel element :
+            &lt;!-- &lt;ng-container *ngTemplateOutlet&#x3D;&quot;add&quot;&gt;&lt;/ng-container&gt; --&gt;
+            &lt;ng-container *ngIf&#x3D;&quot;nbObjectifs &#x3D;&#x3D;&#x3D; 0; then add&quot;&gt;&lt;/ng-container&gt;
+        &lt;/b&gt;
+    &lt;/ng-container&gt;
+
+    &lt;ng-container *ngIf&#x3D;&quot;nbObjectifs &#x3D;&#x3D;&#x3D; -1 || isEditActive || isAddActive&quot;&gt;
+        &lt;ng-container *ngTemplateOutlet&#x3D;&quot;edit&quot;&gt;&lt;/ng-container&gt;
+    &lt;/ng-container&gt;
+
+
+&lt;/div&gt;
+
+&lt;ng-template #add&gt;
+    &lt;button mat-icon-button
+        matTooltip&#x3D;&quot;Ajouter&quot;
+        class&#x3D;&quot;btn-edition&quot;
+        (click)&#x3D;&quot;onToggleAction()&quot;&gt;
+        &lt;mat-icon&gt;{{ icone }}&lt;/mat-icon&gt;
+    &lt;/button&gt;
+&lt;/ng-template&gt;
+
+
+
+&lt;ng-template #edit&gt;
+    &lt;ng-content *ngIf&#x3D;&quot;isEditActive || isAddActive; then editOn; else editOff&quot;&gt;&lt;/ng-content&gt;
+&lt;/ng-template&gt;
+
+&lt;ng-template #editOn&gt;
+    &lt;!-- Bouton sauvegarder - Grisé ou non --&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;isFormValid; then saveBtnEnabled; else saveBtnDisabled&quot;&gt;&lt;/ng-container&gt;
+    
+    &lt;!-- Bouton annuler --&gt;
+    &lt;button mat-icon-button
+        matTooltip&#x3D;&quot;Annuler&quot;
+        class&#x3D;&quot;btn-annulation&quot;
+        (click)&#x3D;&quot;onCancelAction()&quot;&gt;
+        &lt;mat-icon&gt;close&lt;/mat-icon&gt;
+    &lt;/button&gt;
+&lt;/ng-template&gt;
+
+&lt;!-- Bouton pour rentrer en mode add ou edit --&gt;
+&lt;ng-template #editOff&gt;
+    &lt;button mat-icon-button
+        matTooltip&#x3D;&quot;Annuler indesirable&quot;
+        [matTooltip]&#x3D;&quot;tooltip&quot;
+        class&#x3D;&quot;btn-edition&quot;
+        (click)&#x3D;&quot;onToggleAction()&quot;&gt;
+        &lt;mat-icon&gt;{{ icone }}&lt;/mat-icon&gt;
+    &lt;/button&gt;
+&lt;/ng-template&gt;
+
+
+&lt;ng-template #saveBtnEnabled&gt;
+    &lt;button mat-icon-button
+        matTooltip&#x3D;&quot;Sauvegarder&quot;
+        class&#x3D;&quot;btn-sauvegarde&quot;
+        (click)&#x3D;&quot;onSave()&quot;&gt;
+        &lt;mat-icon&gt;save&lt;/mat-icon&gt;
+    &lt;/button&gt;
+&lt;/ng-template&gt;
+
+&lt;ng-template #saveBtnDisabled&gt;
+    &lt;button mat-icon-button
+        matTooltip&#x3D;&quot;Sauvegarde impossible, vérifiez les champs obligatoires&quot;
+        class&#x3D;&quot;btn-sauvegarde-disabled&quot;
+        disabled&gt;
+        &lt;mat-icon&gt;save&lt;/mat-icon&gt;
+    &lt;/button&gt;
+&lt;/ng-template&gt;
+</code></pre>
+    </div>
+
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="edition">    <!-- <b>BOUTON</b><br/>    <i>isEditActive BOUTON : {{ isEditActive }}.</i><br/>    <i>isAddActive BOUTON : {{ isAddActive }}.</i><br/>    <i>icone : {{ icone }}.</i><br/>    <i>isFormValid FORMULAIRE : {{ isFormValid }}.</i><br/>    nbObjectifs : {{ nbObjectifs }}<br/><br/> -->    <!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d\'édition -->    <ng-container *ngIf="icone === \'add\' && !isEditActive && !isAddActive && nbObjectifs === 0">        <b>            Nouvel element :            <!-- <ng-container *ngTemplateOutlet="add"></ng-container> -->            <ng-container *ngIf="nbObjectifs === 0; then add"></ng-container>        </b>    </ng-container>    <ng-container *ngIf="nbObjectifs === -1 || isEditActive || isAddActive">        <ng-container *ngTemplateOutlet="edit"></ng-container>    </ng-container></div><ng-template #add>    <button mat-icon-button        matTooltip="Ajouter"        class="btn-edition"        (click)="onToggleAction()">        <mat-icon>{{ icone }}</mat-icon>    </button></ng-template><ng-template #edit>    <ng-content *ngIf="isEditActive || isAddActive; then editOn; else editOff"></ng-content></ng-template><ng-template #editOn>    <!-- Bouton sauvegarder - Grisé ou non -->    <ng-container *ngIf="isFormValid; then saveBtnEnabled; else saveBtnDisabled"></ng-container>        <!-- Bouton annuler -->    <button mat-icon-button        matTooltip="Annuler"        class="btn-annulation"        (click)="onCancelAction()">        <mat-icon>close</mat-icon>    </button></ng-template><!-- Bouton pour rentrer en mode add ou edit --><ng-template #editOff>    <button mat-icon-button        matTooltip="Annuler indesirable"        [matTooltip]="tooltip"        class="btn-edition"        (click)="onToggleAction()">        <mat-icon>{{ icone }}</mat-icon>    </button></ng-template><ng-template #saveBtnEnabled>    <button mat-icon-button        matTooltip="Sauvegarder"        class="btn-sauvegarde"        (click)="onSave()">        <mat-icon>save</mat-icon>    </button></ng-template><ng-template #saveBtnDisabled>    <button mat-icon-button        matTooltip="Sauvegarde impossible, vérifiez les champs obligatoires"        class="btn-sauvegarde-disabled"        disabled>        <mat-icon>save</mat-icon>    </button></ng-template></div>'
+    var COMPONENTS = [{'name': 'AdminComponent', 'selector': 'app-admin'},{'name': 'AdminUsersComponent', 'selector': 'app-admin-users'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BackToTopComponent', 'selector': 'app-back-to-top'},{'name': 'CardComponent', 'selector': 'app-card'},{'name': 'DetailDescriptionComponent', 'selector': 'app-detail-description'},{'name': 'DetailGestionComponent', 'selector': 'app-detail-gestion'},{'name': 'DetailHabitatsComponent', 'selector': 'app-detail-habitats'},{'name': 'DetailInfosComponent', 'selector': 'app-detail-infos'},{'name': 'DetailMfuComponent', 'selector': 'app-detail-mfu'},{'name': 'DetailProjetsComponent', 'selector': 'app-detail-projets'},{'name': 'DocumentationComponent', 'selector': 'app-documentation'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'FormButtonsComponent', 'selector': 'app-form-buttons'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoginComponent', 'selector': 'app-login'},{'name': 'MapComponent', 'selector': 'app-map'},{'name': 'ObjectifComponent', 'selector': 'app-objectif'},{'name': 'OperationComponent', 'selector': 'app-operation'},{'name': 'ProjetComponent', 'selector': 'app-dialog-operation'},{'name': 'ProjetVComponent', 'selector': 'app-dialog-operation'},{'name': 'SiteDetailComponent', 'selector': 'app-site-detail'},{'name': 'SitesComponent', 'selector': 'app-site'},{'name': 'SitesDisplayComponent', 'selector': 'app-sites-display'},{'name': 'SitesResearchComponent', 'selector': 'app-sites-research'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'FormButtonsComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'FormButtonsComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

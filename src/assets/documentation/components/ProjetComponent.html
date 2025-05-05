@@ -1,0 +1,3207 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>site-cenca documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">site-cenca documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  ProjetComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/sites/site-detail/detail-projets/projet/projet.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">providers</td>
+                <td class="col-md-9">
+                            <code>{ provide: MAT_DATE_LOCALE, useValue:  }</code>
+                            <code>provideMomentDateAdapter()</code>
+                            <code>{
+    provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false },
+}</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-dialog-operation</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                                <code><a href="../components/FormButtonsComponent.html" target="_self" >FormButtonsComponent</a></code>
+                                <code><a href="../components/DetailGestionComponent.html" target="_self" >DetailGestionComponent</a></code>
+                            <code>CommonModule</code>
+                                <code><a href="../components/MapComponent.html" target="_self" >MapComponent</a></code>
+                            <code>MatSlideToggleModule</code>
+                            <code>MatDialogModule</code>
+                            <code>MatDialogTitle</code>
+                            <code>MatDialogContent</code>
+                            <code>MatIconModule</code>
+                            <code>MatStepperModule</code>
+                            <code>FormsModule</code>
+                            <code>ReactiveFormsModule</code>
+                            <code>MatFormFieldModule</code>
+                            <code>MatInputModule</code>
+                            <code>MatSelectModule</code>
+                            <code>MatDatepickerModule</code>
+                            <code>MatNativeDateModule</code>
+                            <code>MatButtonModule</code>
+                            <code>MatProgressSpinnerModule</code>
+                            <code>AsyncPipe</code>
+                                <code><a href="../components/ObjectifComponent.html" target="_self" >ObjectifComponent</a></code>
+                                <code><a href="../components/OperationComponent.html" target="_self" >OperationComponent</a></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./projet.component.scss,<br>../../detail-infos/detail-infos.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./projet.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_adapter" >_adapter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_intl" >_intl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_locale" >_locale</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#data" >data</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#dateFormatString" >dateFormatString</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#formStatusSubscription" >formStatusSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#initialFormValues" >initialFormValues</a>
+                            </li>
+                            <li>
+                                <a href="#isAddObjectif" >isAddObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#isAddOperation" >isAddOperation</a>
+                            </li>
+                            <li>
+                                <a href="#isEditObjectif" >isEditObjectif</a>
+                            </li>
+                            <li>
+                                <a href="#isEditOperation" >isEditOperation</a>
+                            </li>
+                            <li>
+                                <a href="#isEditProjet" >isEditProjet</a>
+                            </li>
+                            <li>
+                                <a href="#isFormValid" >isFormValid</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                <a href="#loadingDelay" >loadingDelay</a>
+                            </li>
+                            <li>
+                                <a href="#newProjet" >newProjet</a>
+                            </li>
+                            <li>
+                                <a href="#projectTypes" >projectTypes</a>
+                            </li>
+                            <li>
+                                <a href="#projet" >projet</a>
+                            </li>
+                            <li>
+                                <a href="#projetForm" >projetForm</a>
+                            </li>
+                            <li>
+                                <a href="#projetLite" >projetLite</a>
+                            </li>
+                            <li>
+                                <a href="#selectedProjetType" >selectedProjetType</a>
+                            </li>
+                            <li>
+                                <a href="#statusTypes" >statusTypes</a>
+                            </li>
+                            <li>
+                                <a href="#stepperOrientation" >stepperOrientation</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetch" >fetch</a>
+                            </li>
+                            <li>
+                                <a href="#getInvalidFields" >getInvalidFields</a>
+                            </li>
+                            <li>
+                                <a href="#getLibelle" >getLibelle</a>
+                            </li>
+                            <li>
+                                <a href="#getTypeInterv" >getTypeInterv</a>
+                            </li>
+                            <li>
+                                <a href="#handleAddObjectifChange" >handleAddObjectifChange</a>
+                            </li>
+                            <li>
+                                <a href="#handleAddOperationChange" >handleAddOperationChange</a>
+                            </li>
+                            <li>
+                                <a href="#handleEditObjectifChange" >handleEditObjectifChange</a>
+                            </li>
+                            <li>
+                                <a href="#handleEditOperationChange" >handleEditOperationChange</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onSubmit" >onSubmit</a>
+                            </li>
+                            <li>
+                                <a href="#toggleEditProjet" >toggleEditProjet</a>
+                            </li>
+                            <li>
+                                <a href="#unsubForm" >unsubForm</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#step1Form" >step1Form</a>
+                                </li>
+                                <li>
+                                    <a href="#step2Form" >step2Form</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(sitesService: <a href="../injectables/ProjetService.html" target="_self">ProjetService</a>, formService: <a href="../injectables/FormService.html" target="_self">FormService</a>, cdr: ChangeDetectorRef, fb: FormBuilder, snackBar: MatSnackBar, data: <a href="../interfaces/ProjetLite.html" target="_self">ProjetLite</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="148" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:148</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>sitesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ProjetService.html" target="_self" >ProjetService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>formService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FormService.html" target="_self" >FormService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>cdr</td>
+                                                  
+                                                        <td>
+                                                                    <code>ChangeDetectorRef</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fb</td>
+                                                  
+                                                        <td>
+                                                                    <code>FormBuilder</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>snackBar</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatSnackBar</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>data</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/ProjetLite.html" target="_self" >ProjetLite</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetch"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>fetch</b></span>
+                        <a href="#fetch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetch(uuid_proj: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>, type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank">String</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="181"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:181</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>uuid_proj</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" >String</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Projet.html" target="_self" >Promise&lt;Projet&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getInvalidFields"></a>
+                    <span class="name">
+                        <span ><b>getInvalidFields</b></span>
+                        <a href="#getInvalidFields"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getInvalidFields()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="371"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:371</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLibelle"></a>
+                    <span class="name">
+                        <span ><b>getLibelle</b></span>
+                        <a href="#getLibelle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getLibelle(cd_type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, list: <a href="../interfaces/SelectValue.html" target="_self">SelectValue[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="301"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:301</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>cd_type</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>list</td>
+                                            <td>
+                                                            <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTypeInterv"></a>
+                    <span class="name">
+                        <span ><b>getTypeInterv</b></span>
+                        <a href="#getTypeInterv"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getTypeInterv(generation: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:169</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>generation</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleAddObjectifChange"></a>
+                    <span class="name">
+                        <span ><b>handleAddObjectifChange</b></span>
+                        <a href="#handleAddObjectifChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleAddObjectifChange(isAdd: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="356"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:356</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isAdd</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleAddOperationChange"></a>
+                    <span class="name">
+                        <span ><b>handleAddOperationChange</b></span>
+                        <a href="#handleAddOperationChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleAddOperationChange(isAdd: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="366"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:366</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isAdd</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleEditObjectifChange"></a>
+                    <span class="name">
+                        <span ><b>handleEditObjectifChange</b></span>
+                        <a href="#handleEditObjectifChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleEditObjectifChange(isEdit: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="351"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:351</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isEdit</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleEditOperationChange"></a>
+                    <span class="name">
+                        <span ><b>handleEditOperationChange</b></span>
+                        <a href="#handleEditOperationChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleEditOperationChange(isEdit: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="361"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:361</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isEdit</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="293"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:293</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="202"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:202</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSubmit"></a>
+                    <span class="name">
+                        <span ><b>onSubmit</b></span>
+                        <a href="#onSubmit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSubmit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="385"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:385</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toggleEditProjet"></a>
+                    <span class="name">
+                        <span ><b>toggleEditProjet</b></span>
+                        <a href="#toggleEditProjet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>toggleEditProjet()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="330"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:330</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unsubForm"></a>
+                    <span class="name">
+                        <span ><b>unsubForm</b></span>
+                        <a href="#unsubForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>unsubForm()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="377"
+                                    class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:377</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_adapter"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_adapter</b></span>
+                        <a href="#_adapter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject&lt;DateAdapter&lt;unknown, unknown&gt;&gt;(DateAdapter)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="106" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:106</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_intl"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_intl</b></span>
+                        <a href="#_intl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(MatDatepickerIntl)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:107</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_locale"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_locale</b></span>
+                        <a href="#_locale"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>signal(inject&lt;unknown&gt;(MAT_DATE_LOCALE))</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="data"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>data</b></span>
+                        <a href="#data"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ProjetLite.html" target="_self" >ProjetLite</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Inject(MAT_DIALOG_DATA)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="157" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:157</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dateFormatString"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>dateFormatString</b></span>
+                        <a href="#dateFormatString"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>this._locale() &#x3D;&#x3D;&#x3D; &#x27;fr&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="109" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:109</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="formStatusSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>formStatusSubscription</b></span>
+                        <a href="#formStatusSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription | null</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="128" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:128</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initialFormValues"></a>
+                    <span class="name">
+                        <span ><b>initialFormValues</b></span>
+                        <a href="#initialFormValues"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>FormGroup</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="127" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:127</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isAddObjectif"></a>
+                    <span class="name">
+                        <span ><b>isAddObjectif</b></span>
+                        <a href="#isAddObjectif"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="123" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:123</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isAddOperation"></a>
+                    <span class="name">
+                        <span ><b>isAddOperation</b></span>
+                        <a href="#isAddOperation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="120" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:120</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isEditObjectif"></a>
+                    <span class="name">
+                        <span ><b>isEditObjectif</b></span>
+                        <a href="#isEditObjectif"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="122" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:122</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isEditOperation"></a>
+                    <span class="name">
+                        <span ><b>isEditOperation</b></span>
+                        <a href="#isEditOperation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="119" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:119</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isEditProjet"></a>
+                    <span class="name">
+                        <span ><b>isEditProjet</b></span>
+                        <a href="#isEditProjet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="117" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:117</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFormValid"></a>
+                    <span class="name">
+                        <span ><b>isFormValid</b></span>
+                        <a href="#isFormValid"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="113" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:113</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadingDelay"></a>
+                    <span class="name">
+                        <span ><b>loadingDelay</b></span>
+                        <a href="#loadingDelay"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>500</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="114" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newProjet"></a>
+                    <span class="name">
+                        <span ><b>newProjet</b></span>
+                        <a href="#newProjet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="116" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:116</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="projectTypes"></a>
+                    <span class="name">
+                        <span ><b>projectTypes</b></span>
+                        <a href="#projectTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="131" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:131</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="projet"></a>
+                    <span class="name">
+                        <span ><b>projet</b></span>
+                        <a href="#projet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Projet.html" target="_self" >Projet</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="112" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:112</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="projetForm"></a>
+                    <span class="name">
+                        <span ><b>projetForm</b></span>
+                        <a href="#projetForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>FormGroup</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="125" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:125</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="projetLite"></a>
+                    <span class="name">
+                        <span ><b>projetLite</b></span>
+                        <a href="#projetLite"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ProjetLite.html" target="_self" >ProjetLite</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="111" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:111</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedProjetType"></a>
+                    <span class="name">
+                        <span ><b>selectedProjetType</b></span>
+                        <a href="#selectedProjetType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="132" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:132</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="statusTypes"></a>
+                    <span class="name">
+                        <span ><b>statusTypes</b></span>
+                        <a href="#statusTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/SelectValue.html" target="_self" >SelectValue[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    {cd_type: &#x27;En cours&#x27;, libelle: &#x27;En cours&#x27;},
+    {cd_type: &#x27;Terminé&#x27;, libelle: &#x27;Terminé&#x27;},
+    {cd_type: &#x27;Annulé&#x27;, libelle: &#x27;Annulé&#x27;},
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="142" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:142</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="stepperOrientation"></a>
+                    <span class="name">
+                        <span ><b>stepperOrientation</b></span>
+                        <a href="#stepperOrientation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Observable&lt;StepperOrientation&gt;</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="148" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:148</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="step1Form"></a>
+                        <span class="name"><b>step1Form</b><a href="#step1Form"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>step1Form()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="193" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:193</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="step2Form"></a>
+                        <span class="name"><b>step2Form</b><a href="#step2Form"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>step2Form()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="197" class="link-to-prism">src/app/sites/site-detail/detail-projets/projet/projet.component.ts:197</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy, Input } from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from &#x27;@angular/forms&#x27;;
+import { MatButtonModule } from &#x27;@angular/material/button&#x27;;
+
+// import { ApiResponse } from &#x27;../../../../shared/interfaces/api&#x27;;
+import { ProjetLite, Projet } from &#x27;../projets&#x27;;
+import { SelectValue } from &#x27;../../../../shared/interfaces/formValues&#x27;;
+import { ProjetService } from &#x27;../projets.service&#x27;;
+import { FormService } from &#x27;../../../../services/form.service&#x27;;
+
+import { DetailGestionComponent } from &#x27;../../detail-gestion/detail-gestion.component&#x27;; 
+import { FormButtonsComponent } from &#x27;../../../../shared/form-buttons/form-buttons.component&#x27;;
+
+import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from &#x27;@angular/material/dialog&#x27;;
+
+import { MatFormFieldModule } from &#x27;@angular/material/form-field&#x27;;
+
+import { MatIconModule } from &#x27;@angular/material/icon&#x27;;
+import { MatStepperModule, StepperOrientation } from &#x27;@angular/material/stepper&#x27;;
+import { STEPPER_GLOBAL_OPTIONS } from &#x27;@angular/cdk/stepper&#x27;;
+
+import { MatInputModule } from &#x27;@angular/material/input&#x27;; 
+import { MatSelectModule } from &#x27;@angular/material/select&#x27;;
+import { MatProgressSpinnerModule } from &#x27;@angular/material/progress-spinner&#x27;;
+
+import { MatSlideToggleModule } from &#x27;@angular/material/slide-toggle&#x27;;
+import { MatDatepickerIntl, MatDatepickerModule} from &#x27;@angular/material/datepicker&#x27;;
+import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from &#x27;@angular/material/core&#x27;;
+import { provideMomentDateAdapter } from &#x27;@angular/material-moment-adapter&#x27;;
+import &#x27;moment/locale/fr&#x27;;
+
+import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;; // Importer MatSnackBar
+
+import { AsyncPipe } from &#x27;@angular/common&#x27;;
+import { map } from &#x27;rxjs/operators&#x27;;
+import { Observable } from &#x27;rxjs&#x27;;
+import { BreakpointObserver } from &#x27;@angular/cdk/layout&#x27;;
+
+import { ObjectifComponent } from &#x27;./objectif/objectif.component&#x27;;
+import { OperationComponent } from &#x27;./operation/operation.component&#x27;;
+import { MapComponent } from &#x27;../../../../map/map.component&#x27;;
+
+// import { Projection } from &#x27;leaflet&#x27;;
+// NE PAS oublier de décommenter la
+import { Subscription } from &#x27;rxjs&#x27;;
+
+
+// Configuration des formats de date
+export const MY_DATE_FORMATS &#x3D; {
+  parse: {
+    dateInput: &#x27;DD/MM/YYYY&#x27;,
+  },
+  display: {
+    dateInput: &#x27;DD/MM/YYYY&#x27;,
+    monthYearLabel: &#x27;MMM YYYY&#x27;,
+    dateA11yLabel: &#x27;DD/MM/YYYY&#x27;,
+    monthYearA11yLabel: &#x27;MMMM YYYY&#x27;,
+  },
+};
+
+@Component({
+  selector: &#x27;app-dialog-operation&#x27;,
+  standalone: true,
+  providers: [
+    {provide: MAT_DATE_LOCALE, useValue: &#x27;fr-FR&#x27;},
+
+    // Moment can be provided globally to your app by adding &#x60;provideMomentDateAdapter&#x60;
+    // to your app config. We provide it at the component level here, due to limitations
+    // of our example generation script.
+    provideMomentDateAdapter(),
+
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: {displayDefaultIndicatorType: false},
+    },
+  ],
+  imports: [
+    FormButtonsComponent,
+    DetailGestionComponent,
+    CommonModule,
+    MapComponent,
+    MatSlideToggleModule,
+    MatDialogModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatIconModule,
+    MatStepperModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    AsyncPipe, // Ajouté pour le spinner
+    ObjectifComponent,
+    OperationComponent
+],
+  templateUrl: &#x27;./projet.component.html&#x27;,
+  styleUrls: [&#x27;./projet.component.scss&#x27;, &#x27;../../detail-infos/detail-infos.component.scss&#x27;], // Correct &#x27;styleUrl&#x27; to &#x27;styleUrls&#x27;
+})
+export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnInit to use the lifecycle method
+  private readonly _adapter &#x3D; inject&lt;DateAdapter&lt;unknown, unknown&gt;&gt;(DateAdapter);
+  private readonly _intl &#x3D; inject(MatDatepickerIntl);
+  private readonly _locale &#x3D; signal(inject&lt;unknown&gt;(MAT_DATE_LOCALE));
+  readonly dateFormatString &#x3D; this._locale() &#x3D;&#x3D;&#x3D; &#x27;fr&#x27;;
+
+  projetLite: ProjetLite;
+  projet!: Projet;
+  isLoading: boolean &#x3D; true;  // Initialisation à &#x27;true&#x27; pour activer le spinner
+  loadingDelay: number &#x3D; 500;
+  
+  newProjet: boolean &#x3D; false;
+  isEditProjet: boolean &#x3D; false;
+  //
+  isEditOperation: boolean &#x3D; false; // Si on doit cacher le stepper pour voir le composant operation
+  isAddOperation: boolean &#x3D; false; // Si on doit cacher le stepper pour voir le composant operation
+  //
+  isEditObjectif: boolean &#x3D; false; // Si on doit cacher le stepper pour voir le composant objectif
+  isAddObjectif: boolean &#x3D; false; // Si on doit cacher le stepper pour voir le composant objectif
+  
+  projetForm!: FormGroup;
+  isFormValid: boolean &#x3D; false;
+  initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
+  private formStatusSubscription: Subscription | null &#x3D; null;
+  
+  // Listes de choix du formulaire
+  projectTypes!: SelectValue[];
+  selectedProjetType: string &#x3D; &#x27;&#x27;;
+  
+  // projectTypes: SelectValue[] &#x3D; [
+  //   {value: &#x27;TRV&#x27;, viewValue: &#x27;Travaux&#x27;},
+  //   {value: &#x27;ETU&#x27;, viewValue: &#x27;Etude scientifique&#x27;},
+  //   {value: &#x27;FON&#x27;, viewValue: &#x27;Foncier&#x27;},
+  //   {value: &#x27;PAR&#x27;, viewValue: &#x27;Partenariat et Ancrage territorial&#x27;},
+  //   {value: &#x27;SEN&#x27;, viewValue: &#x27;Sensibilisation et Communication&#x27;},
+  // ];
+
+  statusTypes: SelectValue[] &#x3D; [
+    {cd_type: &#x27;En cours&#x27;, libelle: &#x27;En cours&#x27;},
+    {cd_type: &#x27;Terminé&#x27;, libelle: &#x27;Terminé&#x27;},
+    {cd_type: &#x27;Annulé&#x27;, libelle: &#x27;Annulé&#x27;},
+  ];
+
+  stepperOrientation: Observable&lt;StepperOrientation&gt;;
+  
+  constructor(
+    private sitesService: ProjetService,
+    private formService: FormService,
+    // private projetService: ProjetService,
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
+    ) {
+      // Données en entrée provenant de la liste simple des projets tous confondus
+      this.projetLite &#x3D; data;
+
+      // Sert pour le stepper
+      const breakpointObserver &#x3D; inject(BreakpointObserver);
+      this.stepperOrientation &#x3D; breakpointObserver.observe(&#x27;(min-width: 800px)&#x27;).pipe(map(({matches}) &#x3D;&gt; (matches ? &#x27;horizontal&#x27; : &#x27;vertical&#x27;)));
+
+      // console.log(&quot;this.projetLite dans le dialog :&quot;, this.projetLite);
+    }
+  
+  getTypeInterv(generation: string): string {
+    // Renvoie le type d&#x27;intervention en fonction de son code : &quot;gestion&quot; ou &quot;autre&quot;
+    // @param : typ_interve : correspond au champ &quot;generation&quot; de la vue &quot;ope.synthesesites&quot;
+    let type &#x3D; &#x27;&#x27;;
+    if (generation &#x3D;&#x3D;&#x3D; &#x27;1_TVX&#x27;) {
+      type &#x3D; &#x27;gestion&#x27;;
+    } else if (generation &#x3D;&#x3D;&#x3D; &#x27;1_AUT&#x27;) {
+      type &#x3D; &#x27;autre&#x27;;
+    }
+    return type;
+  }
+
+  async fetch(uuid_proj: String, type: String): Promise&lt;Projet&gt; {
+    // Récupérer les données d&#x27;un projet à partir de son UUID
+    // @param : gestion ou autre pour que le back sache quelle table interroger
+    // !! Le backend ne fera pas la meme requete SQL si on est en gestion ou autre
+    // Il s&#x27;agira de deux schémas different où les données sont stockées
+    const subroute &#x3D; &#x60;projets/uuid&#x3D;${uuid_proj}/full/${type}&#x60;; // Full puisque UN SEUL projet
+    console.log(&quot;Récupération des données du projet avec l&#x27;UUID du projet :&quot; + uuid_proj);
+    const projet &#x3D; await this.sitesService.getProjet(subroute);
+    if (projet.typ_projet) this.selectedProjetType &#x3D; projet.typ_projet; // Assigner le type de projet sélectionné à la variable
+    return projet;
+  }
+
+  get step1Form(): FormGroup {
+  return this.projetForm.get(&#x27;step1&#x27;) as FormGroup;
+  }
+
+  get step2Form(): FormGroup {
+  return this.projetForm.get(&#x27;step2&#x27;) as FormGroup;
+  }
+
+
+  async ngOnInit() {
+    // Initialiser les valeurs du formulaire principal quand le composant a fini de s&#x27;initialiser
+    
+    // Récupérer les données d&#x27;un projet ou créer un nouveau projet
+    // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
+    if (this.projetLite?.uuid_proj) {
+      // Quand un UUID est passé en paramètre
+      try {
+        // Simuler un délai artificiel
+        setTimeout(async () &#x3D;&gt; {
+          // Accéder aux données du projet (va prendre dans le scheme opegerer ou opeautre)
+          const projetObject &#x3D; await this.fetch(this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation));
+
+          // Accéder données du projet
+          if (projetObject.uuid_proj) {
+            this.projet &#x3D; projetObject; // Assigner l&#x27;objet projet directement
+
+            console.log(&#x27;Projet après extraction :&#x27;, this.projet);
+
+            // Défini un formulaire pour le projet
+            this.projetForm &#x3D; this.formService.newProjetForm(this.projet, undefined, this.projet.pro_webapp);
+
+            // Souscrire aux changements du statut du formulaire principal (projetForm)
+            this.formStatusSubscription &#x3D; this.projetForm.statusChanges.subscribe(status &#x3D;&gt; {
+              this.isFormValid &#x3D; this.projetForm.valid;  // Mettre à jour isFormValid en temps réel
+              // console.log(&#x27;Statut du formulaire principal :&#x27;, status);
+              // console.log(&quot;this.isFormValid &#x3D; this.projetForm.valid :&quot;);
+              // console.log(this.isFormValid + &quot; &#x3D; &quot; + this.projetForm.valid);
+              // console.log(&quot;isFormValid passé à l&#x27;enfant:&quot;, this.isFormValid);
+              this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+            });
+
+            this.isLoading &#x3D; false;  // Le chargement est terminé
+            
+          }
+        }, this.loadingDelay);
+      } catch (error) {
+        console.error(&#x27;Erreur lors de la récupération des données du projet&#x27;, error);
+        this.isLoading &#x3D; false;  // Même en cas d&#x27;erreur, arrêter le spinner
+        this.cdr.detectChanges();
+      }
+    } else {
+      // Projet neuf à créer
+      console.log(&quot;Nous avons visiblement un projet neuf à créer. Pas de uuid_proj dans this.projetLite.&quot;);
+      console.log(this.projetLite);
+      try {
+        this.newProjet &#x3D; true;
+        // Passer directement en mode edition
+        this.isEditProjet &#x3D; true; // On est en mode édition
+        
+        // Créer un formulaire vide
+        if (this.projetLite.uuid_site) {
+          // Le form_group correspondant aux projet neuf à créer
+          this.projetForm &#x3D; this.formService.newProjetForm(undefined, this.projetLite.uuid_site, true);
+
+          // Souscrire aux changements du statut du formulaire principal (projetForm)
+          this.formStatusSubscription &#x3D; this.projetForm.statusChanges.subscribe(status &#x3D;&gt; {
+            this.isFormValid &#x3D; this.projetForm.valid;  // Mettre à jour isFormValid en temps réel
+            // console.log(&#x27;Statut du formulaire principal :&#x27;, status);
+            // console.log(&quot;this.isFormValid &#x3D; this.projetForm.valid :&quot;);
+            // console.log(this.isFormValid + &quot; &#x3D; &quot; + this.projetForm.valid);
+            // console.log(&quot;isFormValid passé à l&#x27;enfant:&quot;, this.isFormValid);
+            this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+          });
+
+          this.isLoading &#x3D; false;  // Le chargement est terminé
+          
+        }
+      } catch (error) {
+        console.error(&#x27;Erreur lors de la création du formulaire du nouveau projet.&#x27;, error);
+        this.isLoading &#x3D; false;  // Même en cas d&#x27;erreur, arrêter le spinner
+        this.cdr.detectChanges();
+      }
+    }
+
+    // Récuperer les listes de choix
+    const subrouteTypes &#x3D; &#x60;sites/selectvalues&#x3D;${&#x27;ope.typ_projets&#x27;}&#x60;;
+    this.formService.getSelectValues$(subrouteTypes).subscribe(
+      (selectValues: SelectValue[] | undefined) &#x3D;&gt; {
+        console.log(&#x27;Liste de choix type de projets récupérées avec succès :&#x27;);
+        
+        this.projectTypes &#x3D; selectValues || [];
+        console.log(&quot;this.projectTypes : &quot;);
+        console.log(this.projectTypes);
+      },
+      (error) &#x3D;&gt; {
+        console.error(&#x27;Erreur lors de la récupération de la liste de choix&#x27;, error);
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    // Désabonnement lors de la destruction du composant
+    if (this.formStatusSubscription) {
+      this.formStatusSubscription.unsubscribe();
+    }
+    console.log(&#x27;Destruction du composant, on se désabonne.&#x27;);
+  }
+
+  getLibelle(cd_type: string, list: SelectValue[]): string {
+    const libelle &#x3D; this.formService.getLibelleFromCd(cd_type, list);
+    return libelle;
+  }
+
+
+  // onSelect(operation: Operation): void {
+  //   // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d&#x27;un projet.
+  //   // L&#x27;OPERATION SELECTIONNE PAR L&#x27;UTILISATEUR dans la variable ope
+
+  //   // Ca se passe dans la vue du component dialog-operation
+  //   if(operation.uuid_ope !&#x3D;&#x3D; undefined){
+  //     // OUVRIR LA FENETRE DE DIALOGUE
+  //     this.openDialog(operation);
+  //   }else{
+  //     console.log(&quot;Pas de d&#x27;opération sur ce projet : &quot; + operation.titre);
+  //   }
+  // }
+
+  // // Pour l&#x27;affichage de la fenetre de dialogue
+  // dialog &#x3D; inject(MatDialog);
+  // openDialog(operation: Operation): void {
+  //   let dialogComponent: any &#x3D; OperationComponent;
+
+  //   this.dialog.open(dialogComponent, {
+  //     data : operation
+  //   });
+  // }
+
+  toggleEditProjet(): void {
+    this.isEditProjet &#x3D; this.formService.simpleToggle(this.isEditProjet); // Changer le mode du booleen
+    this.formService.toggleFormState(this.projetForm, this.isEditProjet, this.initialFormValues); // Changer l&#x27;état du formulaire
+    this.cdr.detectChanges(); // Forcer la détection des changements
+  }
+
+  // toggleEdit(bool: boolean, force: boolean &#x3D; false): void {
+  //   // Pour ajouter un projet dans le template
+
+  //   // Logique de basculement du booleen 
+  //   // Trop simple pour l&#x27;instant je garde au cas où
+  //   if (!force) { // Si on force pas le changement
+  //     // Inverser la valeur du booléen
+  //     bool &#x3D; this.formService.simpleToggle(bool);
+  //   } else {
+  //     // Sinon, forcer le changement de la valeur du booléen
+  //     bool &#x3D; force;
+  //   }
+  //   this.cdr.detectChanges(); // Forcer la détection des changements
+  // }
+
+  handleEditObjectifChange(isEdit: boolean): void {
+    // console.log(&#x27;État de l\&#x27;édition reçu du composant enfant:&#x27;, isEdit);
+    this.isEditOperation &#x3D; isEdit;
+  }
+
+  handleAddObjectifChange(isAdd: boolean): void {
+    // console.log(&#x27;État de l\&#x27;ajout reçu du composant enfant:&#x27;, isAdd);
+    this.isAddOperation &#x3D; isAdd;
+  }
+
+  handleEditOperationChange(isEdit: boolean): void {
+    // console.log(&#x27;État de l\&#x27;édition reçu du composant enfant:&#x27;, isEdit);
+    this.isEditOperation &#x3D; isEdit;
+  }
+
+  handleAddOperationChange(isAdd: boolean): void {
+    // console.log(&#x27;État de l\&#x27;ajout reçu du composant enfant:&#x27;, isAdd);
+    this.isAddOperation &#x3D; isAdd;
+  }
+
+  getInvalidFields(): string[] {
+    return this.formService.getInvalidFields(this.projetForm);
+  }
+
+
+  // Désabonnement lors de la destruction du composant
+  unsubForm(): void {
+    if (this.formStatusSubscription) {
+      this.formStatusSubscription.unsubscribe();
+      console.log(&#x27;On se désabonne.&#x27;);
+    }
+    
+  }
+
+  onSubmit(): void {
+    // Mettre à jour le formulaire
+
+    if(!this.newProjet){
+      console.log(&quot;Modification d&#x27;un projet existant. this.newProjet &#x3D; &quot; + this.newProjet);
+      
+      let uuid_proj: string &#x3D; &#x27;&#x27;;
+      if (this.projetLite.uuid_proj !&#x3D;&#x3D; undefined) {
+        uuid_proj &#x3D; this.projetLite.uuid_proj;
+      }else if (this.projetForm.get(uuid_proj) !&#x3D;&#x3D; undefined) {
+        uuid_proj &#x3D; this.projet.uuid_proj;
+      }
+
+      const submitObservable &#x3D; this.formService.putBdd(&#x27;update&#x27;, &#x27;projets&#x27;, this.projetForm, this.isEditProjet, this.snackBar, uuid_proj, this.initialFormValues);
+
+      // S&#x27;abonner à l&#x27;observable
+      if (submitObservable) {
+        submitObservable.subscribe(
+          (result) &#x3D;&gt; {
+            this.isEditProjet &#x3D; result.isEditMode;
+            this.initialFormValues &#x3D; result.formValue;
+            console.log(&#x27;Projet mis à jour avec succès:&#x27;, result.formValue);
+          },
+          (error) &#x3D;&gt; {
+            console.error(&#x27;Erreur lors de la mise à jour du formulaire&#x27;, error);
+          }
+        );
+      }
+    }else if (this.newProjet){
+      console.log(&quot;Création d&#x27;un nouveau projet dans la BDD. this.newProjet &#x3D; &quot; + this.newProjet);
+
+      const submitObservable &#x3D; this.formService.putBdd(&#x27;insert&#x27;, &#x27;projets&#x27;, this.projetForm, this.isEditProjet, this.snackBar);
+      
+      // S&#x27;abonner à l&#x27;observable
+      if (submitObservable) {
+        submitObservable.subscribe(
+          (result) &#x3D;&gt; {
+            this.isEditProjet &#x3D; result.isEditMode;
+            this.initialFormValues &#x3D; result.formValue;
+            this.newProjet &#x3D; false; // On n&#x27;est plus en mode création, donc maintenant le formulaire s&#x27;affiche normalement
+            this.projet &#x3D; result.formValue;
+            console.log(&#x27;Nouveau projet enregistré avec succès:&#x27;, result.formValue);
+          },
+          (error) &#x3D;&gt; {
+            console.error(&#x27;Erreur lors de la mise à jour du formulaire&#x27;, error);
+          }
+        );
+      }
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;mat-dialog-content *ngIf&#x3D;&quot;!isLoading; else loading&quot;&gt;
+  &lt;div class&#x3D;&quot;conteneur-projet&quot;&gt;
+    &lt;div class&#x3D;&quot;gerer&quot;&gt;Gérer&lt;/div&gt;
+
+    &lt;!-- -- Variable isEditOperation : {{ isEditOperation }}&lt;br&gt;
+    -- Variable isAddOperation : {{ isAddOperation }}&lt;br&gt;
+    -- Variable isEditProjet : {{ isEditProjet }}&lt;br&gt;
+    -- Variable isEditProjet : {{ isEditProjet }}&lt;br&gt;
+    -- Variable newProjet : {{ newProjet }}&lt;br&gt; --&gt;
+    -- pro_webapp : {{ projet?.pro_webapp }}&lt;br&gt;
+
+
+    &lt;!-- isEditOperation est une donnée qui remonte de l&#x27;enfant operation, veut dire que --&gt;
+    &lt;ng-container *ngTemplateOutlet&#x3D;&quot;stepper&quot;&gt;&lt;/ng-container&gt;
+
+    &lt;!-- FORMULAIRE STEPPER (NORMAL) --&gt;
+    &lt;ng-template #stepper&gt;
+
+      &lt;h2 *ngIf&#x3D;&quot;!isEditProjet &amp;&amp; !newProjet&quot;&gt;Consultation d&#x27;un projet&lt;/h2&gt;
+      &lt;h2 *ngIf&#x3D;&quot;isEditProjet &amp;&amp; !newProjet&quot;&gt;Modification d&#x27;un projet&lt;/h2&gt;
+      &lt;h2 *ngIf&#x3D;&quot;isEditProjet &amp;&amp; newProjet&quot;&gt;Création d&#x27;un projet&lt;/h2&gt;
+
+      &lt;!-- Réglage de l&#x27;animation du stepper --&gt;
+      &lt;div class&#x3D;&quot;example-input-wrapper&quot;&gt;
+        &lt;!-- &lt;label for&#x3D;&quot;duration&quot;&gt;Animation duration:&lt;/label&gt; --&gt;
+        &lt;input hidden id&#x3D;&quot;duration&quot; value&#x3D;&quot;300&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; step&#x3D;&quot;100&quot; #duration&gt;
+      &lt;/div&gt;
+
+      &lt;app-form-buttons
+        *ngIf&#x3D;&quot;!isEditOperation &amp;&amp; !isAddOperation&quot; 
+        [isEditActive]&#x3D;&quot;isEditProjet&quot; 
+        icone&#x3D;&quot;edit&quot; 
+        [isFormValid]&#x3D;&quot;isFormValid&quot; 
+        (toggleAction)&#x3D;&quot;toggleEditProjet()&quot; 
+        (onSubmit)&#x3D;&quot;onSubmit()&quot; 
+      &gt;&lt;/app-form-buttons&gt;
+
+      &lt;mat-stepper labelPosition&#x3D;&quot;bottom&quot; 
+                    [linear]&#x3D;&quot;newProjet&quot;  
+                    #stepper 
+                    [animationDuration]&#x3D;&quot;duration.value&quot; 
+                    class&#x3D;&quot;margin-stepper&quot;
+                    [orientation]&#x3D;&quot;(stepperOrientation | async)!&quot;&gt;
+
+
+        &lt;!-- state&#x3D;&quot;info&quot; est l&#x27;icone a utiliser pour le step --&gt;
+
+        &lt;mat-step [stepControl]&#x3D;&quot;step1Form&quot;&gt;
+
+          &lt;ng-template matStepLabel&gt;Description&lt;/ng-template&gt;
+          &lt;!-- Affichage en mode consultation (editMode &#x3D;&#x3D; false) --&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;!isEditProjet&quot;&gt;
+            &lt;div&gt;
+
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Nom&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;nom&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Type de projet&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;this.getLibelle(step1Form.get(&#x27;typ_projet&#x27;)?.value, projectTypes) || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Statut&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;this.getLibelle(step1Form.get(&#x27;statut&#x27;)?.value, statusTypes) || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+
+              &lt;mat-slide-toggle
+                class&#x3D;&quot;toggle&quot;
+                [checked]&#x3D;&quot;step1Form.get(&#x27;validite&#x27;)?.value || false&quot;
+                [disabled]&#x3D;&quot;true&quot;&gt;
+
+                Validité*
+
+              &lt;/mat-slide-toggle&gt;
+            &lt;/div&gt;
+
+            &lt;div&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Année d&#x27;execution&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;annee&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+              &lt;mat-form-field&gt;
+                &lt;mat-label&gt;Période de travaux&lt;/mat-label&gt;
+                &lt;mat-date-range-input [rangePicker]&#x3D;&quot;picker&quot;&gt;
+                  &lt;input matStartDate placeholder&#x3D;&quot;Date début&quot; [value]&#x3D;&quot;step1Form.get(&#x27;pro_debut&#x27;)?.value&quot; readonly&gt;
+                  &lt;input matEndDate placeholder&#x3D;&quot;Date fin&quot; [value]&#x3D;&quot;step1Form.get(&#x27;pro_fin&#x27;)?.value&quot; readonly&gt;
+                &lt;/mat-date-range-input&gt;
+                &lt;mat-date-range-picker #picker&gt;&lt;/mat-date-range-picker&gt;
+              &lt;/mat-form-field&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Date création projet&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;date_crea&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+            &lt;/div&gt;
+
+            &lt;div&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Code&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;code&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Responsable&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;responsable&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Maitre d&#x27;ouvrage&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;pro_maitre_ouvrage&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Perspectives&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;perspectives&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+            &lt;/div&gt;
+
+            &lt;div&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Programme&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;programme&#x27;)?.value || &#x27;Non renseignée&#x27;&quot; readonly&gt;
+              &lt;/mat-form-field&gt;
+              &lt;mat-form-field class&#x3D;&quot;custom-mat-form-field&quot;&gt;
+                &lt;mat-label&gt;Itinéraire technique&lt;/mat-label&gt;
+                &lt;input matInput [value]&#x3D;&quot;step1Form.get(&#x27;itin_tech&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+
+              &lt;/mat-form-field&gt;
+            &lt;/div&gt;
+          &lt;/ng-container&gt;
+
+          &lt;!-- Affichage en mode édition (editMode &#x3D;&#x3D; true) --&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;isEditProjet&quot;&gt;
+            &lt;form [formGroup]&#x3D;&quot;step1Form&quot;&gt;
+              &lt;ng-container&gt;
+                &lt;div&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Nom&lt;/mat-label&gt;
+                    &lt;textarea matInput formControlName&#x3D;&quot;nom&quot;&gt;&lt;/textarea&gt;
+                  &lt;/mat-form-field&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Type de projet&lt;/mat-label&gt;
+                    &lt;mat-select [(ngModel)]&#x3D;&quot;selectedProjetType&quot; formControlName&#x3D;&quot;typ_projet&quot;&gt;
+                      @for (type of projectTypes; track type) {
+                        &lt;mat-option [value]&#x3D;&quot;type.cd_type&quot;&gt;{{type.libelle}}&lt;/mat-option&gt;
+                      }
+                    &lt;/mat-select&gt;
+
+                  &lt;/mat-form-field&gt;
+
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Statut&lt;/mat-label&gt;
+                    &lt;mat-select formControlName&#x3D;&quot;statut&quot;&gt;
+                      &lt;mat-option *ngFor&#x3D;&quot;let status of statusTypes&quot; [value]&#x3D;&quot;status.cd_type&quot;&gt;
+                        {{status.libelle}}
+                      &lt;/mat-option&gt;
+                    &lt;/mat-select&gt;
+                  &lt;/mat-form-field&gt;
+
+                  &lt;mat-slide-toggle formControlName&#x3D;&quot;validite&quot;&gt;Validité*&lt;/mat-slide-toggle&gt;
+
+                &lt;/div&gt;
+                
+                &lt;div&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Année d&#x27;execution&lt;/mat-label&gt;
+                    &lt;textarea matInput formControlName&#x3D;&quot;annee&quot;&gt;&lt;/textarea&gt;
+                  &lt;/mat-form-field&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Date de début&lt;/mat-label&gt;
+                    &lt;input matInput [matDatepicker]&#x3D;&quot;startDatePicker&quot; formControlName&#x3D;&quot;pro_debut&quot; &gt;
+                    &lt;mat-datepicker-toggle matSuffix [for]&#x3D;&quot;startDatePicker&quot;&gt;&lt;/mat-datepicker-toggle&gt;
+                    &lt;mat-datepicker #startDatePicker&gt;&lt;/mat-datepicker&gt;
+                  &lt;/mat-form-field&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Date de fin&lt;/mat-label&gt;
+                    &lt;input matInput [matDatepicker]&#x3D;&quot;endDatePicker&quot; formControlName&#x3D;&quot;pro_fin&quot; required&gt;
+                    &lt;mat-datepicker-toggle matSuffix [for]&#x3D;&quot;endDatePicker&quot;&gt;&lt;/mat-datepicker-toggle&gt;
+                    &lt;mat-datepicker #endDatePicker&gt;&lt;/mat-datepicker&gt;
+                  &lt;/mat-form-field&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Code&lt;/mat-label&gt;
+                    &lt;textarea matInput formControlName&#x3D;&quot;code&quot;&gt;&lt;/textarea&gt;
+                  &lt;/mat-form-field&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Résponsable&lt;/mat-label&gt;
+                    &lt;textarea matInput formControlName&#x3D;&quot;responsable&quot;&gt;&lt;/textarea&gt;
+                  &lt;/mat-form-field&gt;
+                  &lt;mat-form-field&gt;
+                    &lt;mat-label&gt;Maitre d&#x27;ouvrage&lt;/mat-label&gt;
+                    &lt;textarea matInput formControlName&#x3D;&quot;pro_maitre_ouvrage&quot; &gt;&lt;/textarea&gt;
+                  &lt;/mat-form-field&gt;
+                  &lt;mat-form-field&gt;
+
+                    &lt;mat-label&gt;Perspectives&lt;/mat-label&gt;
+                    &lt;textarea matInput formControlName&#x3D;&quot;perspectives&quot; &gt;&lt;/textarea&gt;
+                  &lt;/mat-form-field&gt;
+                &lt;/div&gt;
+                &lt;/ng-container&gt;
+            &lt;/form&gt;
+          &lt;/ng-container&gt;
+
+          &lt;div&gt;
+            &lt;button mat-button matStepperNext&gt;SUIVANT&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/mat-step&gt;
+
+        &lt;mat-step state&#x3D;&quot;flag&quot; *ngIf&#x3D;&quot;projet &amp;&amp; newProjet &#x3D;&#x3D;&#x3D; false&quot;&gt;
+          &lt;ng-template matStepLabel&gt;Objectifs&lt;/ng-template&gt;
+
+          &lt;!-- Si dans aucun mode d&#x27;edition ou d&#x27;ajout --&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;!isEditObjectif || !isAddObjectif; then objectif;&quot;&gt;
+
+          &lt;/ng-container&gt;
+
+          &lt;div&gt;
+            &lt;button mat-button matStepperPrevious&gt;Précédent&lt;/button&gt;
+            &lt;button mat-button matStepperNext&gt;Suivant&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/mat-step&gt;
+
+        &lt;mat-step state&#x3D;&quot;pin&quot;&gt;
+          &lt;!-- &lt;mat-step [stepControl]&#x3D;&quot;UGFormGroup&quot;&gt; --&gt;
+          &lt;ng-template matStepLabel&gt;Unités de gestion&lt;/ng-template&gt;
+          
+          &lt;!-- Affichage en mode consultation (editMode &#x3D;&#x3D; false) --&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;!isEditProjet&quot;&gt;
+            &lt;div&gt;
+              
+                &lt;mat-form-field &gt;
+                  &lt;mat-label&gt;Pression ciblée&lt;/mat-label&gt;
+                  &lt;input matInput [value]&#x3D;&quot;projetForm.get(&#x27;pro_pression_ciblee&#x27;)?.value || &#x27;Non renseignée&#x27;&quot; readonly&gt;
+                &lt;/mat-form-field&gt;
+
+                &lt;mat-form-field &gt;
+                  &lt;mat-label&gt;Résultats attendus&lt;/mat-label&gt;
+                  &lt;input matInput [value]&#x3D;&quot;projetForm.get(&#x27;pro_results_attendus&#x27;)?.value || &#x27;Non renseigné&#x27;&quot; readonly&gt;
+                &lt;/mat-form-field&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;div class&#x3D;&quot;container-carte&quot;&gt;
+                  &lt;!-- &lt;div class&#x3D;&quot;map&quot;&gt;---------------------------------------------------------------------------------------------------
+                    &lt;h2&gt;Carte provisoire :&lt;/h2&gt;
+                    &lt;app-map&gt;&lt;/app-map&gt;
+                  &lt;/div&gt; --&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+          &lt;/ng-container&gt;
+
+          &lt;!-- Affichage en mode édition (editMode &#x3D;&#x3D; true) --&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;isEditProjet&quot;&gt;
+            &lt;form [formGroup]&#x3D;&quot;step2Form&quot;&gt;
+              &lt;ng-container&gt;
+                &lt;mat-form-field&gt;
+                  &lt;mat-label&gt;Pression ciblée&lt;/mat-label&gt;
+                  &lt;textarea matInput formControlName&#x3D;&quot;pro_pression_ciblee&quot; &gt;&lt;/textarea&gt;
+                &lt;/mat-form-field&gt;
+                &lt;mat-form-field&gt;
+                  &lt;mat-label&gt;Résultats attendus&lt;/mat-label&gt;
+                  &lt;textarea matInput formControlName&#x3D;&quot;pro_results_attendus&quot; &gt;&lt;/textarea&gt;
+                &lt;/mat-form-field&gt;
+              &lt;/ng-container&gt;
+
+              &lt;!-- Bouton visible uniquement avec un projet existant --&gt;
+              &lt;button *ngIf&#x3D;&quot;!newProjet&quot; mat-button matStepperNext&gt;SUIVANT&lt;/button&gt;
+            &lt;/form&gt;
+          &lt;/ng-container&gt;
+
+          &lt;div&gt;
+            &lt;button mat-button matStepperPrevious&gt;Précédent&lt;/button&gt;
+            &lt;button mat-button matStepperNext&gt;Suivant&lt;/button&gt;
+          &lt;/div&gt;
+
+        &lt;/mat-step&gt;
+
+        &lt;mat-step state&#x3D;&quot;landscape&quot;&gt;
+          &lt;ng-template matStepLabel&gt;ENP concerné&lt;/ng-template&gt;
+
+          &lt;form *ngIf&#x3D;&quot;isEditProjet &#x3D;&#x3D; true&quot;&gt;
+
+            &lt;!-- &lt;mat-form-field&gt;
+              &lt;input matInput placeholder&#x3D;&quot;Espace Naturel Protégé&quot; formControlName&#x3D;&quot;ENPCtrl&quot; required&gt;
+            &lt;/mat-form-field&gt; --&gt;
+
+          &lt;/form&gt;
+
+          &lt;app-detail-gestion *ngIf&#x3D;&quot;!newProjet&quot; [inputUUIDsite]&#x3D;&quot;projetLite.uuid_site&quot;&gt; &lt;/app-detail-gestion&gt;
+
+          &lt;div&gt;
+            &lt;button mat-button matStepperPrevious&gt;Précédent&lt;/button&gt;
+            &lt;button mat-button matStepperNext&gt;Suivant&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/mat-step&gt;
+
+        &lt;mat-step state&#x3D;&quot;troubleshoot&quot; *ngIf&#x3D;&quot;newProjet &#x3D;&#x3D;&#x3D; false&quot;&gt;
+          &lt;ng-template matStepLabel&gt;Indicateurs&lt;/ng-template&gt;
+          &lt;div class&#x3D;&quot;container-carte&quot;&gt;
+            Tableau des indicateurs projet
+          &lt;/div&gt;
+
+          &lt;form *ngIf&#x3D;&quot;isEditProjet &#x3D;&#x3D; true&quot;&gt;
+            Ajouter un indicateur dans le tableau
+          &lt;/form&gt;
+
+          &lt;div&gt;
+            &lt;button mat-button matStepperPrevious&gt;Précédent&lt;/button&gt;
+            &lt;button mat-button matStepperNext&gt;Suivant&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/mat-step&gt;
+
+        &lt;!-- Ce step s&#x27;affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai --&gt;
+        &lt;mat-step state&#x3D;&quot;construction&quot; *ngIf&#x3D;&quot;projet &amp;&amp; newProjet &#x3D;&#x3D;&#x3D; false &amp;&amp; projet.pro_webapp &#x3D;&#x3D;&#x3D; true&quot;&gt;
+          &lt;ng-template matStepLabel&gt;Opérations&lt;/ng-template&gt;
+
+          &lt;!-- Si dans aucun mode d&#x27;edition ou d&#x27;ajout --&gt;
+          &lt;ng-container *ngIf&#x3D;&quot;!isEditOperation || !isAddOperation; then operation;&quot;&gt;
+
+          &lt;/ng-container&gt;
+
+          &lt;div&gt;
+            &lt;button mat-button matStepperPrevious&gt;Précédent&lt;/button&gt;
+            &lt;button mat-button matStepperNext&gt;Suivant&lt;/button&gt;
+          &lt;/div&gt;
+
+        &lt;/mat-step&gt;
+
+        &lt;mat-step state&#x3D;&quot;flag&quot; *ngIf&#x3D;&quot;projet &amp;&amp; newProjet &#x3D;&#x3D;&#x3D; false&quot;&gt;
+          &lt;ng-template matStepLabel&gt;Bilan d&#x27;execution&lt;/ng-template&gt;
+          A definir ...
+
+          &lt;ng-container *ngIf&#x3D;&quot;isEditProjet&quot;&gt;&lt;/ng-container&gt;
+          &lt;form [formGroup]&#x3D;&quot;projetForm&quot; (ngSubmit)&#x3D;&quot;onSubmit()&quot;&gt;
+            &lt;ng-container&gt;
+              &lt;!-- Ajoutez d&#x27;autres champs si nécessaire --&gt;
+            &lt;/ng-container&gt;
+            &lt;!-- &lt;button mat-button type&#x3D;&quot;submit&quot;&gt;SOUMETTRE&lt;/button&gt; --&gt;
+          &lt;/form&gt;
+          
+          &lt;div&gt;
+            &lt;button mat-button matStepperPrevious&gt;Précédent&lt;/button&gt;
+            &lt;button mat-button (click)&#x3D;&quot;stepper.reset()&quot;&gt;Retour au début (étape 1)&lt;/button&gt;
+          &lt;/div&gt;
+
+        &lt;/mat-step&gt;
+
+        &lt;!-- Icon overrides. --&gt;
+        &lt;ng-template matStepperIcon&#x3D;&quot;info&quot;&gt;
+          &lt;mat-icon&gt;info&lt;/mat-icon&gt;
+        &lt;/ng-template&gt;
+        &lt;ng-template matStepperIcon&#x3D;&quot;landscape&quot;&gt;
+          &lt;mat-icon&gt;landscape&lt;/mat-icon&gt;
+        &lt;/ng-template&gt;
+        &lt;ng-template matStepperIcon&#x3D;&quot;pin&quot;&gt;
+          &lt;mat-icon&gt;pin_drop&lt;/mat-icon&gt;
+        &lt;/ng-template&gt;
+        &lt;ng-template matStepperIcon&#x3D;&quot;troubleshoot&quot;&gt;
+          &lt;mat-icon&gt;troubleshoot&lt;/mat-icon&gt;
+        &lt;/ng-template&gt;
+        &lt;ng-template matStepperIcon&#x3D;&quot;euro&quot;&gt;
+          &lt;mat-icon&gt;euro&lt;/mat-icon&gt;
+        &lt;/ng-template&gt;
+        &lt;ng-template matStepperIcon&#x3D;&quot;construction&quot;&gt;
+          &lt;mat-icon&gt;construction&lt;/mat-icon&gt;
+        &lt;/ng-template&gt;
+        &lt;ng-template matStepperIcon&#x3D;&quot;flag&quot;&gt;
+          &lt;mat-icon&gt;flag&lt;/mat-icon&gt;
+        &lt;/ng-template&gt;
+
+      &lt;/mat-stepper&gt;
+    &lt;/ng-template&gt;
+
+    &lt;!-- Composant objectif --&gt;
+    &lt;ng-template #objectif&gt;
+
+      &lt;!-- isEditFromObjectif vient de app-objectif et app-projet --&gt;
+      &lt;!-- geojson_site est donné que quand projet.pro_webapp est N&#x27;EST PAS VRAI --&gt;
+      &lt;app-objectif 
+                    rattachementOperation&#x3D;&quot;projet&quot;
+                    (isEditFromObjectif)&#x3D;&quot;handleEditObjectifChange($event)&quot;
+                    (isAddFromObjectif)&#x3D;&quot;handleAddObjectifChange($event)&quot;
+                    [isEditObjectif]&#x3D;&quot;isEditObjectif&quot;
+                    [isAddObjectif]&#x3D;&quot;isAddObjectif&quot;
+                    [projetEditMode]&#x3D;&quot;isEditProjet&quot;
+                    [ref_uuid_proj]&#x3D;&quot;projet.uuid_proj&quot;
+                    [isEditProjet]&#x3D;&quot;isEditProjet&quot;
+                    [geojson_site]&#x3D;&quot;!projet.pro_webapp ? projetLite.geojson_site : undefined&quot;&gt;
+                    &gt;
+      &lt;/app-objectif&gt;
+
+    &lt;/ng-template&gt;
+
+    &lt;!-- Composant operation --&gt;
+    &lt;ng-template #operation&gt;
+
+      &lt;!-- isEditFromOperation vient de app-operation et app-projet --&gt;
+      &lt;!-- geojson_site est donné que quand projet.pro_webapp est VRAI --&gt;
+      &lt;app-operation 
+                    (isEditFromOperation)&#x3D;&quot;handleEditOperationChange($event)&quot;
+                    (isAddFromOperation)&#x3D;&quot;handleAddOperationChange($event)&quot;
+                    [isEditOperation]&#x3D;&quot;isEditOperation&quot;
+                    [isAddOperation]&#x3D;&quot;isAddOperation&quot;
+                    [projetEditMode]&#x3D;&quot;isEditProjet&quot;
+                    [ref_uuid_proj]&#x3D;&quot;projet.uuid_proj&quot;
+                    [geojson_site]&#x3D;&quot;projet.pro_webapp ? projetLite.geojson_site : undefined&quot;&gt;
+                    &gt;
+      &lt;/app-operation&gt;
+
+    &lt;/ng-template&gt;
+  &lt;/div&gt;
+&lt;/mat-dialog-content&gt;
+
+
+&lt;!-- Template de chargement --&gt;
+&lt;ng-template #loading&gt;
+  &lt;div class&#x3D;&quot;loading-container&quot;&gt;
+    &lt;mat-spinner&gt;&lt;/mat-spinner&gt;
+    &lt;p&gt;Veuillez patienter...&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/ng-template&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./projet.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;../../../../styles/mixins.scss&quot;;
+@import &quot;../../../../styles/variables.scss&quot;;
+
+*,
+.mat-mdc-dialog-content,
+.mdc-dialog__content ng-star-inserted {
+  padding: 0;
+  margin: 0;
+
+}
+.conteneur-projet {
+  // display: flex;
+}
+.conteneur {
+  padding: 20px;
+}
+
+// bande sur le coté
+.gerer {
+  padding-bottom: 15px;
+  @include bandeau($gerer);
+}
+//boutons edit/save/cancel
+.edition {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  gap: 15px;
+  .btn-edition {
+    @include btn-icon($couleur-territoire, $vertC);
+    @include icon(white, black);
+  }
+  .btn-sauvegarde {
+    @include btn-icon(white, $couleur-territoire);
+    @include icon($couleur-flore, white);
+  }
+  .btn-annulation {
+    @include btn-icon(white, red);
+    @include icon(red, white);
+  }
+}
+// boutons du stepper
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100px; /* Ajuste selon ton besoin */
+}
+.mat-mdc-dialog-container .mat-mdc-dialog-content {
+  padding: 0;
+}
+
+// .example-stepper {
+//   margin-top: 8px;
+// }
+
+// .mat-mdc-form-field {
+//   margin-top: 16px;
+// }
+
+// .example-input-wrapper {
+//   margin-bottom: 16px;
+// }
+
+// .container-carte {
+//   h2 {
+//     @include Typo($p14, $normal, $couleur-flore);
+//     margin-bottom: 0;
+//   }
+//   img {
+//     width: 30%;
+//   }
+// }
+</code></pre>
+                <p class="comment">
+                    <code>../../detail-infos/detail-infos.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;../../../styles/mixins.scss&quot;;
+@import &quot;../../../styles/variables.scss&quot;;
+
+.container {
+  display: grid;
+  grid-template-columns: 6fr 6fr;
+  flex-wrap: wrap;
+  grid-gap: 131px;
+  margin: 20px auto;
+  @include align(top, center);
+}
+.container-champ {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 30px;
+  @include dim(100%, auto);
+
+  h2 {
+    @include Typo($p14, $normal, $couleur-flore);
+    margin-bottom: 0;
+  }
+
+  .infos {
+    width: 100%;
+  }
+  .parties-consernées,
+  input {
+    @include input($couleur-faune, black);
+  }
+  .ligne2,
+  .ligne3,
+  .ligne5 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .ligne4 {
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+    gap: 16px;
+  }
+  .ligne6 {
+    display: grid;
+    grid-template-columns: 3fr 3fr;
+    gap: 16px;
+  }
+  .zh {
+    mat-slide-toggle {
+      margin: 8px 0;
+      display: block;
+      text-align: center;
+    }
+    ::ng-deep mat-slide-toggle {
+      transform: scale(1.5); /* Agrandit l&#x27;élément */
+    }
+    ::ng-deep mat-slide-toggle .mat-slide-toggle-bar {
+      height: 4px; /* Change la hauteur de la barre du slider */
+      background-color: rgba(
+        248,
+        244,
+        186,
+        0.5
+      ); /* Change la couleur de la barre du slider */
+    }
+    ::ng-deep mat-slide-toggle .mat-slide-toggle-thumb {
+      width: 20px; /* Ajuste la taille du &quot;bouton&quot; circulaire */
+      height: 20px;
+    }
+  }
+
+  .commune {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
+
+.container-carte {
+  @include dim(100%, auto);
+  .map {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+.edition {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  gap: 15px;
+  .btn-edition {
+    @include btn-icon($couleur-faune, $orangeC);
+    @include icon(white, black);
+  }
+  .btn-sauvegarde {
+    @include btn-icon(white, $couleur-territoire);
+    @include icon($couleur-flore, white);
+  }
+
+  .btn-sauvegarde-disabled {
+    // Couleur fond :  normal / hover
+    @include btn-icon(grey, rgb(87, 87, 87));
+
+    // Couleur icone :  normal / hover
+    @include icon(rgb(223, 223, 223), rgb(194, 194, 194));
+    
+
+
+  .btn-annulation {
+    @include btn-icon(white, red);
+    @include icon(red, white);
+  }
+
+}
+
+@media screen and (max-width: $mobile) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-gap: 50px;
+    h2 {
+      font-size: 12px;
+    }
+    .ligne3,
+    .ligne5 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .infos {
+      min-height: 36px;
+      height: auto;
+    }
+  }
+  .container-carte {
+    @include dim(100%, auto);
+    .map {
+      width: 50%;
+      height: 50%;
+    }
+  }
+}
+
+@media screen and (max-width: $tablette) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-gap: 50px;
+    h2 {
+      font-size: 12px;
+    }
+    .infos {
+      min-height: 36px;
+      height: auto;
+    }
+  }
+  .container-carte {
+    @include dim(100%, auto);
+    .map {
+      width: 70%;
+      height: 70%;
+    }
+  }
+}
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><mat-dialog-content *ngIf="!isLoading; else loading">  <div class="conteneur-projet">    <div class="gerer">Gérer</div>    <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>    -- Variable isAddOperation : {{ isAddOperation }}<br>    -- Variable isEditProjet : {{ isEditProjet }}<br>    -- Variable isEditProjet : {{ isEditProjet }}<br>    -- Variable newProjet : {{ newProjet }}<br> -->    -- pro_webapp : {{ projet?.pro_webapp }}<br>    <!-- isEditOperation est une donnée qui remonte de l\'enfant operation, veut dire que -->    <ng-container *ngTemplateOutlet="stepper"></ng-container>    <!-- FORMULAIRE STEPPER (NORMAL) -->    <ng-template #stepper>      <h2 *ngIf="!isEditProjet && !newProjet">Consultation d\'un projet</h2>      <h2 *ngIf="isEditProjet && !newProjet">Modification d\'un projet</h2>      <h2 *ngIf="isEditProjet && newProjet">Création d\'un projet</h2>      <!-- Réglage de l\'animation du stepper -->      <div class="example-input-wrapper">        <!-- <label for="duration">Animation duration:</label> -->        <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>      </div>      <app-form-buttons        *ngIf="!isEditOperation && !isAddOperation"         [isEditActive]="isEditProjet"         icone="edit"         [isFormValid]="isFormValid"         (toggleAction)="toggleEditProjet()"         (onSubmit)="onSubmit()"       ></app-form-buttons>      <mat-stepper labelPosition="bottom"                     [linear]="newProjet"                      #stepper                     [animationDuration]="duration.value"                     class="margin-stepper"                    [orientation]="(stepperOrientation | async)!">        <!-- state="info" est l\'icone a utiliser pour le step -->        <mat-step [stepControl]="step1Form">          <ng-template matStepLabel>Description</ng-template>          <!-- Affichage en mode consultation (editMode == false) -->          <ng-container *ngIf="!isEditProjet">            <div>              <mat-form-field class="custom-mat-form-field">                <mat-label>Nom</mat-label>                <input matInput [value]="step1Form.get(\'nom\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>              <mat-form-field class="custom-mat-form-field">                <mat-label>Type de projet</mat-label>                <input matInput [value]="this.getLibelle(step1Form.get(\'typ_projet\')?.value, projectTypes) || \'Non renseigné\'" readonly>              </mat-form-field>              <mat-form-field class="custom-mat-form-field">                <mat-label>Statut</mat-label>                <input matInput [value]="this.getLibelle(step1Form.get(\'statut\')?.value, statusTypes) || \'Non renseigné\'" readonly>              </mat-form-field>              <mat-slide-toggle                class="toggle"                [checked]="step1Form.get(\'validite\')?.value || false"                [disabled]="true">                Validité*              </mat-slide-toggle>            </div>            <div>              <mat-form-field class="custom-mat-form-field">                <mat-label>Année d\'execution</mat-label>                <input matInput [value]="step1Form.get(\'annee\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>              <mat-form-field>                <mat-label>Période de travaux</mat-label>                <mat-date-range-input [rangePicker]="picker">                  <input matStartDate placeholder="Date début" [value]="step1Form.get(\'pro_debut\')?.value" readonly>                  <input matEndDate placeholder="Date fin" [value]="step1Form.get(\'pro_fin\')?.value" readonly>                </mat-date-range-input>                <mat-date-range-picker #picker></mat-date-range-picker>              </mat-form-field>              <mat-form-field class="custom-mat-form-field">                <mat-label>Date création projet</mat-label>                <input matInput [value]="step1Form.get(\'date_crea\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>            </div>            <div>              <mat-form-field class="custom-mat-form-field">                <mat-label>Code</mat-label>                <input matInput [value]="step1Form.get(\'code\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>              <mat-form-field class="custom-mat-form-field">                <mat-label>Responsable</mat-label>                <input matInput [value]="step1Form.get(\'responsable\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>              <mat-form-field class="custom-mat-form-field">                <mat-label>Maitre d\'ouvrage</mat-label>                <input matInput [value]="step1Form.get(\'pro_maitre_ouvrage\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>              <mat-form-field class="custom-mat-form-field">                <mat-label>Perspectives</mat-label>                <input matInput [value]="step1Form.get(\'perspectives\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>            </div>            <div>              <mat-form-field class="custom-mat-form-field">                <mat-label>Programme</mat-label>                <input matInput [value]="step1Form.get(\'programme\')?.value || \'Non renseignée\'" readonly>              </mat-form-field>              <mat-form-field class="custom-mat-form-field">                <mat-label>Itinéraire technique</mat-label>                <input matInput [value]="step1Form.get(\'itin_tech\')?.value || \'Non renseigné\'" readonly>              </mat-form-field>            </div>          </ng-container>          <!-- Affichage en mode édition (editMode == true) -->          <ng-container *ngIf="isEditProjet">            <form [formGroup]="step1Form">              <ng-container>                <div>                  <mat-form-field>                    <mat-label>Nom</mat-label>                    <textarea matInput formControlName="nom"></textarea>                  </mat-form-field>                  <mat-form-field>                    <mat-label>Type de projet</mat-label>                    <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">                      @for (type of projectTypes; track type) {                        <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>                      }                    </mat-select>                  </mat-form-field>                  <mat-form-field>                    <mat-label>Statut</mat-label>                    <mat-select formControlName="statut">                      <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">                        {{status.libelle}}                      </mat-option>                    </mat-select>                  </mat-form-field>                  <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>                </div>                                <div>                  <mat-form-field>                    <mat-label>Année d\'execution</mat-label>                    <textarea matInput formControlName="annee"></textarea>                  </mat-form-field>                  <mat-form-field>                    <mat-label>Date de début</mat-label>                    <input matInput [matDatepicker]="startDatePicker" formControlName="pro_debut" >                    <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>                    <mat-datepicker #startDatePicker></mat-datepicker>                  </mat-form-field>                  <mat-form-field>                    <mat-label>Date de fin</mat-label>                    <input matInput [matDatepicker]="endDatePicker" formControlName="pro_fin" required>                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>                    <mat-datepicker #endDatePicker></mat-datepicker>                  </mat-form-field>                </div>                <div>                  <mat-form-field>                    <mat-label>Code</mat-label>                    <textarea matInput formControlName="code"></textarea>                  </mat-form-field>                  <mat-form-field>                    <mat-label>Résponsable</mat-label>                    <textarea matInput formControlName="responsable"></textarea>                  </mat-form-field>                  <mat-form-field>                    <mat-label>Maitre d\'ouvrage</mat-label>                    <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>                  </mat-form-field>                  <mat-form-field>                    <mat-label>Perspectives</mat-label>                    <textarea matInput formControlName="perspectives" ></textarea>                  </mat-form-field>                </div>                </ng-container>            </form>          </ng-container>          <div>            <button mat-button matStepperNext>SUIVANT</button>          </div>        </mat-step>        <mat-step state="flag" *ngIf="projet && newProjet === false">          <ng-template matStepLabel>Objectifs</ng-template>          <!-- Si dans aucun mode d\'edition ou d\'ajout -->          <ng-container *ngIf="!isEditObjectif || !isAddObjectif; then objectif;">          </ng-container>          <div>            <button mat-button matStepperPrevious>Précédent</button>            <button mat-button matStepperNext>Suivant</button>          </div>        </mat-step>        <mat-step state="pin">          <!-- <mat-step [stepControl]="UGFormGroup"> -->          <ng-template matStepLabel>Unités de gestion</ng-template>                    <!-- Affichage en mode consultation (editMode == false) -->          <ng-container *ngIf="!isEditProjet">            <div>                              <mat-form-field >                  <mat-label>Pression ciblée</mat-label>                  <input matInput [value]="projetForm.get(\'pro_pression_ciblee\')?.value || \'Non renseignée\'" readonly>                </mat-form-field>                <mat-form-field >                  <mat-label>Résultats attendus</mat-label>                  <input matInput [value]="projetForm.get(\'pro_results_attendus\')?.value || \'Non renseigné\'" readonly>                </mat-form-field>              </div>              <div>                <div class="container-carte">                  <!-- <div class="map">---------------------------------------------------------------------------------------------------                    <h2>Carte provisoire :</h2>                    <app-map></app-map>                  </div> -->                </div>            </div>          </ng-container>          <!-- Affichage en mode édition (editMode == true) -->          <ng-container *ngIf="isEditProjet">            <form [formGroup]="step2Form">              <ng-container>                <mat-form-field>                  <mat-label>Pression ciblée</mat-label>                  <textarea matInput formControlName="pro_pression_ciblee" ></textarea>                </mat-form-field>                <mat-form-field>                  <mat-label>Résultats attendus</mat-label>                  <textarea matInput formControlName="pro_results_attendus" ></textarea>                </mat-form-field>              </ng-container>              <!-- Bouton visible uniquement avec un projet existant -->              <button *ngIf="!newProjet" mat-button matStepperNext>SUIVANT</button>            </form>          </ng-container>          <div>            <button mat-button matStepperPrevious>Précédent</button>            <button mat-button matStepperNext>Suivant</button>          </div>        </mat-step>        <mat-step state="landscape">          <ng-template matStepLabel>ENP concerné</ng-template>          <form *ngIf="isEditProjet == true">            <!-- <mat-form-field>              <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>            </mat-form-field> -->          </form>          <app-detail-gestion *ngIf="!newProjet" [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>          <div>            <button mat-button matStepperPrevious>Précédent</button>            <button mat-button matStepperNext>Suivant</button>          </div>        </mat-step>        <mat-step state="troubleshoot" *ngIf="newProjet === false">          <ng-template matStepLabel>Indicateurs</ng-template>          <div class="container-carte">            Tableau des indicateurs projet          </div>          <form *ngIf="isEditProjet == true">            Ajouter un indicateur dans le tableau          </form>          <div>            <button mat-button matStepperPrevious>Précédent</button>            <button mat-button matStepperNext>Suivant</button>          </div>        </mat-step>        <!-- Ce step s\'affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai -->        <mat-step state="construction" *ngIf="projet && newProjet === false && projet.pro_webapp === true">          <ng-template matStepLabel>Opérations</ng-template>          <!-- Si dans aucun mode d\'edition ou d\'ajout -->          <ng-container *ngIf="!isEditOperation || !isAddOperation; then operation;">          </ng-container>          <div>            <button mat-button matStepperPrevious>Précédent</button>            <button mat-button matStepperNext>Suivant</button>          </div>        </mat-step>        <mat-step state="flag" *ngIf="projet && newProjet === false">          <ng-template matStepLabel>Bilan d\'execution</ng-template>          A definir ...          <ng-container *ngIf="isEditProjet"></ng-container>          <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">            <ng-container>              <!-- Ajoutez d\'autres champs si nécessaire -->            </ng-container>            <!-- <button mat-button type="submit">SOUMETTRE</button> -->          </form>                    <div>            <button mat-button matStepperPrevious>Précédent</button>            <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button>          </div>        </mat-step>        <!-- Icon overrides. -->        <ng-template matStepperIcon="info">          <mat-icon>info</mat-icon>        </ng-template>        <ng-template matStepperIcon="landscape">          <mat-icon>landscape</mat-icon>        </ng-template>        <ng-template matStepperIcon="pin">          <mat-icon>pin_drop</mat-icon>        </ng-template>        <ng-template matStepperIcon="troubleshoot">          <mat-icon>troubleshoot</mat-icon>        </ng-template>        <ng-template matStepperIcon="euro">          <mat-icon>euro</mat-icon>        </ng-template>        <ng-template matStepperIcon="construction">          <mat-icon>construction</mat-icon>        </ng-template>        <ng-template matStepperIcon="flag">          <mat-icon>flag</mat-icon>        </ng-template>      </mat-stepper>    </ng-template>    <!-- Composant objectif -->    <ng-template #objectif>      <!-- isEditFromObjectif vient de app-objectif et app-projet -->      <!-- geojson_site est donné que quand projet.pro_webapp est N\'EST PAS VRAI -->      <app-objectif                     rattachementOperation="projet"                    (isEditFromObjectif)="handleEditObjectifChange($event)"                    (isAddFromObjectif)="handleAddObjectifChange($event)"                    [isEditObjectif]="isEditObjectif"                    [isAddObjectif]="isAddObjectif"                    [projetEditMode]="isEditProjet"                    [ref_uuid_proj]="projet.uuid_proj"                    [isEditProjet]="isEditProjet"                    [geojson_site]="!projet.pro_webapp ? projetLite.geojson_site : undefined">                    >      </app-objectif>    </ng-template>    <!-- Composant operation -->    <ng-template #operation>      <!-- isEditFromOperation vient de app-operation et app-projet -->      <!-- geojson_site est donné que quand projet.pro_webapp est VRAI -->      <app-operation                     (isEditFromOperation)="handleEditOperationChange($event)"                    (isAddFromOperation)="handleAddOperationChange($event)"                    [isEditOperation]="isEditOperation"                    [isAddOperation]="isAddOperation"                    [projetEditMode]="isEditProjet"                    [ref_uuid_proj]="projet.uuid_proj"                    [geojson_site]="projet.pro_webapp ? projetLite.geojson_site : undefined">                    >      </app-operation>    </ng-template>  </div></mat-dialog-content><!-- Template de chargement --><ng-template #loading>  <div class="loading-container">    <mat-spinner></mat-spinner>    <p>Veuillez patienter...</p>  </div></ng-template></div>'
+    var COMPONENTS = [{'name': 'AdminComponent', 'selector': 'app-admin'},{'name': 'AdminUsersComponent', 'selector': 'app-admin-users'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BackToTopComponent', 'selector': 'app-back-to-top'},{'name': 'CardComponent', 'selector': 'app-card'},{'name': 'DetailDescriptionComponent', 'selector': 'app-detail-description'},{'name': 'DetailGestionComponent', 'selector': 'app-detail-gestion'},{'name': 'DetailHabitatsComponent', 'selector': 'app-detail-habitats'},{'name': 'DetailInfosComponent', 'selector': 'app-detail-infos'},{'name': 'DetailMfuComponent', 'selector': 'app-detail-mfu'},{'name': 'DetailProjetsComponent', 'selector': 'app-detail-projets'},{'name': 'DocumentationComponent', 'selector': 'app-documentation'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'FormButtonsComponent', 'selector': 'app-form-buttons'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoginComponent', 'selector': 'app-login'},{'name': 'MapComponent', 'selector': 'app-map'},{'name': 'ObjectifComponent', 'selector': 'app-objectif'},{'name': 'OperationComponent', 'selector': 'app-operation'},{'name': 'ProjetComponent', 'selector': 'app-dialog-operation'},{'name': 'ProjetVComponent', 'selector': 'app-dialog-operation'},{'name': 'SiteDetailComponent', 'selector': 'app-site-detail'},{'name': 'SitesComponent', 'selector': 'app-site'},{'name': 'SitesDisplayComponent', 'selector': 'app-sites-display'},{'name': 'SitesResearchComponent', 'selector': 'app-sites-research'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'ProjetComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ProjetComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

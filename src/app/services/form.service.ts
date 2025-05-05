@@ -2,14 +2,13 @@ import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Projet } from '../sites/site-detail/detail-projets/projets';
 import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
 import { Objectif } from '../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { SelectValue } from '../shared/interfaces/formValues';
-
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -34,6 +33,17 @@ export class FormService {
     private fb: FormBuilder, 
     private snackBar: MatSnackBar,
   ) {}
+
+  // Validation personnalisée pour vérifier qu'un champ contient au moins 2 mots si non vide
+  minWordsValidator(minWords: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.trim().length === 0) {
+        return null; // Pas d'erreur si le champ est vide
+      }
+      const wordCount = control.value.trim().split(/\s+/).length;
+      return wordCount >= minWords ? null : { minWords: true };
+    };
+  }
 
   // Récupérer les valeurs de la liste déroulante
   getSelectValues$(subroute: string): Observable<SelectValue[] | undefined> {
@@ -85,22 +95,53 @@ export class FormService {
     const libelle = list.find(type => type.cd_type === cd_type);
     return libelle ? libelle.libelle : '';
   }
+
+  /**
+   * Valide qu'un nombre maximum de cases à cocher sélectionnées n'est pas dépassé.
+   * 
+   * @param max - Le nombre maximum de cases à cocher autorisées.
+   * @returns Une fonction de validation qui prend un contrôle `AbstractControl` 
+   *          et retourne une erreur de validation si le nombre de cases cochées 
+   *          dépasse la limite spécifiée, ou `null` si la validation est réussie.
+   * 
+   * @example
+   * ```typescript
+   * const formArray = new FormArray([
+   *   new FormGroup({ checked: new FormControl(true) }),
+   *   new FormGroup({ checked: new FormControl(false) }),
+   *   new FormGroup({ checked: new FormControl(true) }),
+   * ]);
+   * 
+   * const validator = maxSelectedCheckboxes(2);
+   * const result = validator(formArray); // null (validation réussie)
+   * 
+   * formArray.at(2).get('checked')?.setValue(true);
+   * const result2 = validator(formArray); // { maxSelected: true } (validation échouée)
+   * ```
+   */
+  maxSelectedCheckboxes(max: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const selectedCount = (control as FormArray).controls.filter(c => c.get('checked')?.value).length;
+      return selectedCount > max ? { maxSelected: true } : null;
+    };
+  }
   
 
   // Créer un nouveau formulaire de projet
 
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
-  // !!! Attention, uuid_proj est généré automatiquement si non indiqué !!!
-  newProjetForm(projet?: Projet, site?: String): FormGroup {
+  // !!! Attention, projet.uuid_proj est généré automatiquement si non indiqué !!!
+  newProjetForm(projet?: Projet, site?: String, isWebApp: boolean = true): FormGroup {
     return this.fb.group({
       uuid_proj: [projet?.uuid_proj || uuidv4()],
       site: [site || projet?.site],
       
-      pro_webapp: [projet?.pro_webapp || true],
+      pro_webapp: [projet?.pro_webapp !== undefined ? projet.pro_webapp : isWebApp],
+      pro_surf_totale: [projet?.pro_surf_totale || true],
       
       // Peut etre pas nécessaire
       document: [projet?.document || ''],
-      createur: [projet?.createur || null],
+      createur: [projet?.createur || null], // Valeur par défaut définie dans le composant
 
       step1: this.fb.group({
         typ_projet: [projet?.typ_projet || null, Validators.required],
@@ -151,17 +192,17 @@ export class FormService {
   // Créer un nouveau formulaire d'opération
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
-    return this.fb.group({
-
+    const form = this.fb.group({
       uuid_ope: [operation?.uuid_ope || uuidv4()],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
+      obj_ope: [operation?.obj_ope || '', Validators.required],
       code: [operation?.code || ''],
-      titre: [operation?.titre || '', Validators.required],
+      titre: [operation?.titre || ''],
       inscrit_pdg: [operation?.inscrit_pdg || ''],
       rmq_pdg: [operation?.rmq_pdg || ''],
-      description: [operation?.description || ''],
+      description: [operation?.description || '', [this.minWordsValidator(2)]],
       interv_zh: [operation?.interv_zh || ''],
-
+  
       surf: [operation?.surf || null],
       lin: [operation?.lin || null],
       app_fourr: [operation?.app_fourr || null],
@@ -170,18 +211,54 @@ export class FormService {
       nbjours: [operation?.nbjours || null],
       charge_moy: [operation?.charge_moy || null],
       charge_inst: [operation?.charge_inst || null],
-      remarque: [operation?.remarque || ''],
-      validite: [operation?.validite || false],
+      remarque: [operation?.remarque || '', this.minWordsValidator(2)],
+      validite: [operation?.validite],
       action: [operation?.action || '', Validators.required],
+      action_2: [operation?.action_2 || '', Validators.required],
+      cadre_intervention: [operation?.cadre_intervention ?? null, Validators.required], // Utiliser null explicitement
+      cadre_intervention_detail: [operation?.cadre_intervention_detail ?? null], // Pas encore requis
       objectif: [operation?.objectif || ''],
-
-      typ_intervention: [operation?.typ_intervention || 'NR', Validators.required],
-      date_debut: [operation?.date_debut || null],
-      date_fin: [operation?.date_fin || null],
+  
+      typ_intervention: [operation?.typ_intervention || '', Validators.required],
+      nom_mo: [operation?.nom_mo || '', Validators.required],
+      date_debut: [operation?.date_debut ? new Date(operation.date_debut) : null],
+      date_fin: [operation?.date_fin ? new Date(operation.date_fin) : null],
+      date_ajout: [operation?.date_ajout ? new Date(operation.date_ajout) : null],
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
-      ben_heures: [operation?.ben_heures || null]
+      ben_heures: [operation?.ben_heures || null],
+      description_programme: [operation?.description_programme || null],
+      unite: [operation?.unite || null],
+      quantite: [operation?.quantite || null],
+      
+      // Ajouter un FormArray pour gérer les programmes
+      liste_ope_programmes: this.fb.array(
+        operation?.liste_ope_programmes?.map(programme =>
+          this.fb.group({
+            lib_id: [programme.lib_id],
+            lib_libelle: [programme.lib_libelle],
+            checked: [programme.checked || false], // Initialise avec la valeur actuelle
+          })
+        ) || [],
+        [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
+      ),
+      
     });
+  
+    // Ajouter une validation conditionnelle pour cadre_intervention_detail
+    // Cela rechange le formulaire en fonction de la valeur de cadre_intervention
+    // La valeur 12 est utilisée pour les chantiers nature.
+    form.get('cadre_intervention')?.valueChanges.subscribe((value) => {
+      const cadreDetailControl = form.get('cadre_intervention_detail');
+      if (value === 12) {
+        cadreDetailControl?.setValidators(Validators.required); // Rendre requis
+      } else {
+        cadreDetailControl?.clearValidators(); // Supprimer les validateurs
+      }
+      cadreDetailControl?.updateValueAndValidity(); // Mettre à jour la validité
+    });
+  
+    return form;
   }
 
   newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {
@@ -230,6 +307,20 @@ export class FormService {
     });
     return cleanedFormValue;
   }
+
+  /**
+   * Prépare les données d'un projet pour soumission en nettoyant les valeurs du formulaire
+   * et en structurant les données dans un objet conforme au type `Projet`.
+   *
+   * @param form - Le formulaire Angular (`FormGroup`) contenant les données du projet.
+   * @returns Un objet `Projet` contenant les données nettoyées et structurées prêtes à être envoyées au backend.
+   *
+   * @remarks
+   * - Les champs spécifiés dans `fieldsToClean` sont nettoyés avant la soumission.
+   * - Les données sont organisées en fonction des étapes du formulaire (Step 1 et Step 2).
+   * - Un log des données nettoyées est affiché dans la console avant la soumission.
+   */
+
   private prepareProjetDataForSubmission(form: FormGroup): Projet {
     const fieldsToClean = [
       'document',
@@ -300,26 +391,56 @@ export class FormService {
     }
   
     if (form.valid) {
+      // Dupliquer le FormGroup en un nouvel objet nommé workingForm
+      const workingForm = this.fb.group({});
+
+      // Copier les contrôles et leurs valeurs dans workingForm
+      Object.keys(form.controls).forEach(key => {
+        const control = form.get(key);
+        if (control instanceof FormGroup) {
+          workingForm.addControl(key, this.fb.group(control.controls));
+        } else if (control instanceof FormArray) {
+          workingForm.addControl(key, this.fb.array(control.controls));
+        } else {
+          workingForm.addControl(key, this.fb.control(control?.value, control?.validator, control?.asyncValidator));
+        }
+      });
+
+      console.log('Formulaire original :', form.value);
+      
+
+      // Supprimer le contrôle 'liste_ope_programmes' du workingForm s'il existe
+      if (workingForm.contains('liste_ope_programmes')) {
+        workingForm.removeControl('liste_ope_programmes');
+        console.log('Contrôle liste_ope_programmes supprimé du workingForm');
+      }
+      
+      console.log('Formulaire dupliqué (workingForm) :', workingForm.value);
+      
       let value = {};
 
       // Nettoyer les champs de date pour les projets 
       if (table === 'projets') {
-        const fieldsToClean = [
-          'document',
-          'pro_debut',
-          'pro_fin',
-          'pro_pression_ciblee',
-          'pro_results_attendus',
-        ];
+        // Commenté depuis l'utilisation de la fonction prepareProjetDataForSubmission()
+        // const fieldsToClean = [
+        //   'document',
+        //   'pro_debut',
+        //   'pro_fin',
+        //   'pro_pression_ciblee',
+        //   'pro_results_attendus',
+        // ];
 
         // Nettoyer les champs de date
-        // value = this.cleanFormValues(form.value, fieldsToClean); // En test --- à supprimer
-        value = this.prepareProjetDataForSubmission(form);
+        value = this.prepareProjetDataForSubmission(workingForm);
 
-        console.log('Données du formulaire nettoyé :', value);
-      } else {
+        console.log('Données du formulaire nettoyé :', workingForm);
+      } else if (table === 'objectifs') {
+        
+
+      }
+       else {
         // Si ce n'est pas un projet
-        value = form.value;
+        value = workingForm.value;
       }
 
       console.log('------- DEBUG :');
@@ -342,7 +463,7 @@ export class FormService {
             // Retourner l'objet avec isEditMode et formValue
             return {
               isEditMode: false,
-              formValue: form.value
+              formValue: value
             };
           }),
           tap(() => {
@@ -367,7 +488,7 @@ export class FormService {
             // Retourner l'objet avec isEditMode et formValue
             return {
               isEditMode: false,
-              formValue: form.value
+              formValue: value
             };
           }),
           tap(() => {
@@ -391,4 +512,53 @@ export class FormService {
       return undefined;
     }
   }
+  /**
+   * Convertir les dates javascript en format PostgreSQL (YYYY-MM-DD)
+   * Ne prend pas en compte les heures, minutes et secondes donc le fuseau horaire n'est pas pris en compte
+   * @param date 
+   * @returns annee-mois-jour
+   */
+  formatDateToPostgres(date: any): string {
+    console.log('Valeur de date avant conversion :', date);
+
+    if (date?._isAMomentObject) {
+      // Si c'est un objet Moment.js, utilisez ses méthodes pour extraire les informations
+      // console.log('La date est un objet Moment.js');
+      date = date.format('YYYY-MM-DD'); // Utilisez Moment.js pour formater la date
+    }
+  
+    if (!(date instanceof Date)) {
+      // Si la date est une chaîne ou un autre type, essayez de la convertir en objet Date
+      // console.log('Conversion de la chaîne en objet Date');
+      // console.log('Valeur de date :', date);
+      date = new Date(date);
+    } else {
+      console.log('Date déjà un objet Date');
+      console.log('Valeur de date :', date);
+    }
+  
+    // Vérifiez à nouveau si c'est une date valide
+    if (isNaN(date.getTime())) {
+      console.error('La date fournie est invalide :', date);
+      return ''; // Retournez une chaîne vide ou gérez l'erreur selon vos besoins
+    }
+  
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Les mois commencent à 0
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Vérifie si une date a été modifiée dans un formulaire.
+   *
+   * @param fieldName - Le nom du champ dans le formulaire à vérifier.
+   * @param operationDate - La date de l'opération à comparer (peut être null).
+   * @param form - Le groupe de formulaire Angular contenant le champ.
+   * @returns `true` si la valeur du champ est différente de la date de l'opération, sinon `false`.
+   */
+  isDateModified(form: FormGroup, fieldName: string, operationDate: Date | undefined): boolean {
+          return (form.get(fieldName)?.value ?? null) != (operationDate ?? null);
+  }
+
 }

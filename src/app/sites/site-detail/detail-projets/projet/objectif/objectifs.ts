@@ -1,5 +1,5 @@
 export interface Objectif {
-  uuid_objectif: string;
+  uuid_objectif?: string;
   typ_objectif?: string;
   enjeux_eco?: string;
   nv_enjeux?: string;

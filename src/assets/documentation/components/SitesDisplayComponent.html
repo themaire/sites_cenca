@@ -1,0 +1,1215 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>site-cenca documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">site-cenca documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  SitesDisplayComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/sites/sites-display/sites-display.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-sites-display</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">standalone</td>
+                <td class="col-md-9"><code>true</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">imports</td>
+                <td class="col-md-9">
+                            <code>CommonModule</code>
+                            <code>RouterLink</code>
+                            <code>RouterOutlet</code>
+                                <code><a href="../components/SiteDetailComponent.html" target="_self" >SiteDetailComponent</a></code>
+                            <code>MatTableModule</code>
+                            <code>MatFormFieldModule</code>
+                            <code>MatInputModule</code>
+                            <code>MatPaginatorModule</code>
+                                <code><a href="../components/BackToTopComponent.html" target="_self" >BackToTopComponent</a></code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./sites-display.component.html</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrl</td>
+                <td class="col-md-9"><code>./sites-display.component.scss</code></td>
+            </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#dataSource" >dataSource</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#displayedColumns" >displayedColumns</a>
+                            </li>
+                            <li>
+                                <a href="#research" >research</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#selectedSite" >selectedSite</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#sites" >sites</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#applyFilter" >applyFilter</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onSelect" >onSelect</a>
+                            </li>
+                            <li>
+                                <a href="#resetSelected" >resetSelected</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#paginator" >paginator</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(route: ActivatedRoute, router: Router)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:63</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>route</td>
+                                                  
+                                                        <td>
+                                                                    <code>ActivatedRoute</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="applyFilter"></a>
+                    <span class="name">
+                        <span ><b>applyFilter</b></span>
+                        <a href="#applyFilter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>applyFilter(event: Event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:109</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+                                            <td>
+                                                        <code>Event</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:67</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSelect"></a>
+                    <span class="name">
+                        <span ><b>onSelect</b></span>
+                        <a href="#onSelect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSelect(site: <a href="../interfaces/ListSite.html" target="_self">ListSite</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:122</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>site</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ListSite.html" target="_self" >ListSite</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resetSelected"></a>
+                    <span class="name">
+                        <span ><b>resetSelected</b></span>
+                        <a href="#resetSelected"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>resetSelected()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="137"
+                                    class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:137</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataSource"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>dataSource</b></span>
+                        <a href="#dataSource"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ListSite.html" target="_self" >MatTableDataSource&lt;ListSite&gt;</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayedColumns"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>displayedColumns</b></span>
+                        <a href="#displayedColumns"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    &#x27;code&#x27;,
+    &#x27;nom&#x27;,
+    &#x27;statut&#x27;,
+    &#x27;communes&#x27;,
+    &#x27;milieux_naturels&#x27;,
+    &#x27;bassin_agence&#x27;,
+    &#x27;responsable&#x27;,
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="research"></a>
+                    <span class="name">
+                        <span ><b>research</b></span>
+                        <a href="#research"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/SitesService.html" target="_self" >SitesService</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>inject(SitesService)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedSite"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>selectedSite</b></span>
+                        <a href="#selectedSite"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ListSite.html" target="_self" >ListSite</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sites"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>sites</b></span>
+                        <a href="#sites"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ListSite.html" target="_self" >ListSite[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="paginator"></a>
+                        <span class="name"><b>paginator</b><a href="#paginator"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>paginator(value: MatPaginator)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/app/sites/sites-display/sites-display.component.ts:57</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                        <td>Type</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>value</td>
+                                                    
+                                                            <td>
+                                                                        <code>MatPaginator</code>
+                                                            </td>
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, inject, ViewChild } from &#x27;@angular/core&#x27;;
+import { CommonModule } from &#x27;@angular/common&#x27;;
+import { ActivatedRoute, Router, Params } from &#x27;@angular/router&#x27;;
+import { RouterLink, RouterOutlet } from &#x27;@angular/router&#x27;;
+
+import { ListSite } from &#x27;../site&#x27;; // prototype d&#x27;un site
+import { SitesService } from &#x27;../sites.service&#x27;; // service de données
+import { SiteDetailComponent } from &#x27;../site-detail/site-detail.component&#x27;; // service de données
+import { BackToTopComponent } from &#x27;../../back-to-top/back-to-top.component&#x27;;
+
+import { MatPaginator, MatPaginatorModule } from &#x27;@angular/material/paginator&#x27;;
+import { MatSort, MatSortModule } from &#x27;@angular/material/sort&#x27;;
+import { MatTableDataSource, MatTableModule } from &#x27;@angular/material/table&#x27;;
+import { MatInputModule } from &#x27;@angular/material/input&#x27;;
+import { MatFormFieldModule } from &#x27;@angular/material/form-field&#x27;;
+
+@Component({
+  selector: &#x27;app-sites-display&#x27;,
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterOutlet,
+    SiteDetailComponent,
+
+    MatTableModule,
+
+    MatFormFieldModule,
+    MatInputModule,
+
+    // MatSortModule,
+    MatPaginatorModule,
+
+    BackToTopComponent,
+  ],
+  templateUrl: &#x27;./sites-display.component.html&#x27;,
+  styleUrl: &#x27;./sites-display.component.scss&#x27;,
+})
+export class SitesDisplayComponent {
+  public sites: ListSite[] &#x3D; []; // La liste des sites à afficher
+  public selectedSite?: ListSite;
+
+  // Pour la liste des sites : le tableau Material
+  public dataSource!: MatTableDataSource&lt;ListSite&gt;;
+  public displayedColumns: string[] &#x3D; [
+    &#x27;code&#x27;,
+    &#x27;nom&#x27;,
+    &#x27;statut&#x27;,
+    &#x27;communes&#x27;,
+    &#x27;milieux_naturels&#x27;,
+    &#x27;bassin_agence&#x27;,
+    &#x27;responsable&#x27;,
+  ];
+  // listTheaders: Array&lt;string&gt; &#x3D; [&quot;--&quot;, &quot;Codes&quot;, &quot;Nom&quot;, &quot;Status&quot;, &quot;Communes(s)&quot;, &quot;Milieux naturels&quot;, &quot;Bassin agence&quot;, &quot;Responsable&quot;,]
+
+  @ViewChild(MatPaginator, { static: false })
+  set paginator(value: MatPaginator) {
+    if (this.dataSource) {
+      this.dataSource.paginator &#x3D; value;
+    }
+  }
+
+  research: SitesService &#x3D; inject(SitesService);
+
+  constructor(private route: ActivatedRoute, private router: Router) {}
+
+  ngOnInit() {
+    // Rechercher et obtenir une liste de sites selon des critères passés en paramètre via la route.
+    this.route.params.subscribe((params: Params) &#x3D;&gt; {
+      console.log(&#x27;Route param type :&#x27; + params[&#x27;type&#x27;]);
+      // console.log(this.route.params);
+      let subroute: string &#x3D; &#x27;&#x27;;
+
+      if (params[&#x27;type&#x27;] !&#x3D;&#x3D; undefined) {
+        // Cas d&#x27;une recherche sur critères
+        subroute &#x3D;
+          &#x27;criteria/&#x27; +
+          params[&#x27;type&#x27;] +
+          &#x27;/&#x27; +
+          params[&#x27;code&#x27;] +
+          &#x27;/&#x27; +
+          params[&#x27;nom&#x27;] +
+          &#x27;/&#x27; +
+          params[&#x27;commune&#x27;] +
+          &#x27;/&#x27; +
+          params[&#x27;milieux_naturels&#x27;] +
+          &#x27;/&#x27; +
+          params[&#x27;responsable&#x27;];  
+
+        this.research.getSites(subroute).then((sitesGuetted: ListSite[]) &#x3D;&gt; {
+          this.sites &#x3D; sitesGuetted;
+
+          // console.log(&#x27;sitesGuetted : &#x27;);
+          // console.log(sitesGuetted);
+
+          this.dataSource &#x3D; new MatTableDataSource(this.sites);
+          const fakeEvent &#x3D; { target: { value: &#x27;@&#x27; } } as unknown as Event;
+          this.applyFilter(fakeEvent);
+          this.dataSource.paginator &#x3D; this.paginator;
+        });
+
+        console.log(&#x27;subroute : &#x27; + subroute);
+        console.log(&#x27;Tableau sites : &#x27;);
+        console.log(this.sites);
+      }
+    });
+  }
+
+  applyFilter(event: Event) {
+    // Filtre du tableau mat-table
+    const filterValue &#x3D; (event.target as HTMLInputElement).value;
+
+    console.log(filterValue.trim().toLowerCase());
+    this.dataSource.filter &#x3D; filterValue.trim().toLowerCase();
+    console.log(&#x27;datasource filtrée : &#x27; + this.dataSource);
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  onSelect(site: ListSite): void {
+    // Sert au bouton qui fait rentrer dans le detail d&#x27;un site.
+    // LE SITE SELECTIONNE PAR L&#x27;UTILISATEUR dans la variable selectedSite
+
+    // Si this.selectedSite &#x3D;&#x3D; undefined on affiche la liste de sites
+    // Si this.selectedSite &#x3D;&#x3D; &quot;un site&quot; on le detail du site
+
+    // Ca se passe dans la vue du component sites-display
+    if (site.uuid_site !&#x3D;&#x3D; undefined) {
+      this.selectedSite &#x3D; site;
+    } else {
+      console.log(&#x27;Pas de uuid pour afficher le site : &#x27; + site.uuid_site);
+    }
+  }
+
+  resetSelected(): void {
+    // Remettre à zéro pour justement vider la variable pour ré afficher la liste
+    // des sites.
+
+    // !!! Cette fonction est utilisé (un bouton retour) dans le sous component site-detail
+    // pour quitter la vue &quot;detail&quot;.
+    this.selectedSite &#x3D; undefined;
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div id&#x3D;&quot;top&quot; class&#x3D;&quot;site-display&quot;&gt;
+    &lt;!-- ICI deux div. On affiche l&#x27;une ou l&#x27;autre : 
+
+      Soit :
+          -- la liste des sites
+          -- le détail d&#x27;un site
+
+      C&#x27;est la fonction ts onSelect() utilisé à la fin du mat-table 
+      du resultat des sites selectionnés qui assigne la variable selectedSite. --&gt;
+
+  &lt;!-- &quot;On affiche le détail -- si on a selectionné le site dans la liste&quot; --&gt;
+  &lt;div *ngIf&#x3D;&quot;selectedSite !&#x3D;&#x3D; undefined&quot;&gt;
+    &lt;app-site-detail [site]&#x3D;&quot;selectedSite&quot; (selectedSite)&#x3D;&quot;resetSelected()&quot;&gt;
+    &lt;/app-site-detail&gt;
+  &lt;/div&gt;
+
+  &lt;!-- &quot;On affiche la liste du resultat de recherche -- si on a PAS selectionné de site dans la liste&quot; --&gt;
+  &lt;div *ngIf&#x3D;&quot;selectedSite &#x3D;&#x3D; undefined&quot;&gt;
+    &lt;p&gt;Liste des sites sélectionnés parmis votre filtrage :&lt;/p&gt;
+
+    &lt;mat-form-field class&#x3D;&quot;filtre&quot;&gt;
+      &lt;mat-label&gt;Mots-clés&lt;/mat-label&gt;
+      &lt;input
+        matInput
+        (keyup)&#x3D;&quot;applyFilter($event)&quot;
+        placeholder&#x3D;&quot;Marais, église...&quot;
+        #input
+
+        value&#x3D;&quot;@&quot;
+
+        
+      /&gt;
+    &lt;/mat-form-field&gt;
+
+    &lt;table mat-table [dataSource]&#x3D;&quot;dataSource&quot; matSort class&#x3D;&quot;mat-elevation-z8&quot;&gt;
+      &lt;!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition&quot; --&gt;
+
+      &lt;!-- code Column --&gt;
+      &lt;ng-container matColumnDef&#x3D;&quot;code&quot; class&#x3D;&quot;code&quot;&gt;
+        &lt;th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class&#x3D;&quot;code titre&quot;
+        &gt;
+          Code
+        &lt;/th&gt;
+        &lt;td mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;code&quot;&gt;
+          {{ element.code }}
+        &lt;/td&gt;
+      &lt;/ng-container&gt;
+
+      &lt;!-- statut Column --&gt;
+      &lt;ng-container matColumnDef&#x3D;&quot;statut&quot; class&#x3D;&quot;statut&quot;&gt;
+        &lt;th mat-header-cell *matHeaderCellDef mat-sort-header class&#x3D;&quot;statut&quot;&gt;
+          Statut
+        &lt;/th&gt;
+        &lt;td mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;statut&quot;&gt;
+          {{ element.statut }}
+        &lt;/td&gt;
+      &lt;/ng-container&gt;
+
+      &lt;!-- nom Column --&gt;
+      &lt;ng-container matColumnDef&#x3D;&quot;nom&quot; class&#x3D;&quot;nom&quot;&gt;
+        &lt;th mat-header-cell *matHeaderCellDef mat-sort-header class&#x3D;&quot;nom&quot;&gt;
+          Nom
+        &lt;/th&gt;
+        &lt;td mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;nom&quot;&gt;
+          {{ element.nom }}
+        &lt;/td&gt;
+      &lt;/ng-container&gt;
+
+      &lt;!-- communes Column --&gt;
+      &lt;ng-container matColumnDef&#x3D;&quot;communes&quot; class&#x3D;&quot;communes&quot;&gt;
+        &lt;th mat-header-cell *matHeaderCellDef mat-sort-header class&#x3D;&quot;communes&quot;&gt;
+          Communes
+        &lt;/th&gt;
+        &lt;td mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;communes&quot;&gt;
+          {{ element.communes }}
+        &lt;/td&gt;
+      &lt;/ng-container&gt;
+
+      &lt;!-- milieux_naturels Column --&gt;
+      &lt;ng-container matColumnDef&#x3D;&quot;milieux_naturels&quot; class&#x3D;&quot;milieux_naturels&quot;&gt;
+        &lt;th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class&#x3D;&quot;milieux_naturels&quot;
+        &gt;
+          Milieux naturels
+        &lt;/th&gt;
+        &lt;td mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;milieux_naturels&quot;&gt;
+          {{ element.milieux_naturels }}
+        &lt;/td&gt;
+      &lt;/ng-container&gt;
+
+      &lt;!-- bassin_agence Column --&gt;
+      &lt;ng-container matColumnDef&#x3D;&quot;bassin_agence&quot; class&#x3D;&quot;bassin_agence&quot;&gt;
+        &lt;th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class&#x3D;&quot;bassin_agence&quot;
+        &gt;
+          Bassin agence
+        &lt;/th&gt;
+        &lt;td mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;bassin_agence&quot;&gt;
+          {{ element.bassin_agence }}
+        &lt;/td&gt;
+      &lt;/ng-container&gt;
+
+      &lt;!-- responsable Column --&gt;
+      &lt;ng-container matColumnDef&#x3D;&quot;responsable&quot;&gt;
+        &lt;th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class&#x3D;&quot;responsable&quot;
+        &gt;
+          Responsable
+        &lt;/th&gt;
+        &lt;td mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;responsable&quot;&gt;
+          {{ element.responsable }}
+        &lt;/td&gt;
+      &lt;/ng-container&gt;
+
+      &lt;tr mat-header-row *matHeaderRowDef&#x3D;&quot;displayedColumns&quot;&gt;&lt;/tr&gt;
+      &lt;tr
+        mat-row
+        *matRowDef&#x3D;&quot;let row; columns: displayedColumns&quot;
+        (click)&#x3D;&quot;onSelect(row)&quot;
+      &gt;&lt;/tr&gt;
+
+      &lt;!-- Row shown when there is no matching data. --&gt;
+      &lt;tr class&#x3D;&quot;mat-row&quot; *matNoDataRow&gt;
+        &lt;td class&#x3D;&quot;mat-cell&quot; colspan&#x3D;&quot;7&quot;&gt;
+          Pas de donnée correspondante à votre filtre sur le mot clé : &quot;{{
+            input.value
+          }}&quot;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/table&gt;
+
+    &lt;mat-paginator
+      [pageSizeOptions]&#x3D;&quot;[5, 10, 20]&quot;
+      showFirstLastButtons
+      aria-label&#x3D;&quot;Select page of periodic elements&quot;
+    &gt;
+    &lt;/mat-paginator&gt;
+
+    &lt;!-- Flèche qui fait remontrer tout en haut --&gt;
+    &lt;app-back-to-top&gt;&lt;/app-back-to-top&gt;
+
+  &lt;/div&gt;
+  
+&lt;/div&gt;
+
+</code></pre>
+    </div>
+
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div id="top" class="site-display">    <!-- ICI deux div. On affiche l\'une ou l\'autre :       Soit :          -- la liste des sites          -- le détail d\'un site      C\'est la fonction ts onSelect() utilisé à la fin du mat-table       du resultat des sites selectionnés qui assigne la variable selectedSite. -->  <!-- "On affiche le détail -- si on a selectionné le site dans la liste" -->  <div *ngIf="selectedSite !== undefined">    <app-site-detail [site]="selectedSite" (selectedSite)="resetSelected()">    </app-site-detail>  </div>  <!-- "On affiche la liste du resultat de recherche -- si on a PAS selectionné de site dans la liste" -->  <div *ngIf="selectedSite == undefined">    <p>Liste des sites sélectionnés parmis votre filtrage :</p>    <mat-form-field class="filtre">      <mat-label>Mots-clés</mat-label>      <input        matInput        (keyup)="applyFilter($event)"        placeholder="Marais, église..."        #input        value="@"              />    </mat-form-field>    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">      <!--- Note that these columns can be defined in any order.              The actual rendered columns are set as a property on the row definition" -->      <!-- code Column -->      <ng-container matColumnDef="code" class="code">        <th          mat-header-cell          *matHeaderCellDef          mat-sort-header          class="code titre"        >          Code        </th>        <td mat-cell *matCellDef="let element" class="code">          {{ element.code }}        </td>      </ng-container>      <!-- statut Column -->      <ng-container matColumnDef="statut" class="statut">        <th mat-header-cell *matHeaderCellDef mat-sort-header class="statut">          Statut        </th>        <td mat-cell *matCellDef="let element" class="statut">          {{ element.statut }}        </td>      </ng-container>      <!-- nom Column -->      <ng-container matColumnDef="nom" class="nom">        <th mat-header-cell *matHeaderCellDef mat-sort-header class="nom">          Nom        </th>        <td mat-cell *matCellDef="let element" class="nom">          {{ element.nom }}        </td>      </ng-container>      <!-- communes Column -->      <ng-container matColumnDef="communes" class="communes">        <th mat-header-cell *matHeaderCellDef mat-sort-header class="communes">          Communes        </th>        <td mat-cell *matCellDef="let element" class="communes">          {{ element.communes }}        </td>      </ng-container>      <!-- milieux_naturels Column -->      <ng-container matColumnDef="milieux_naturels" class="milieux_naturels">        <th          mat-header-cell          *matHeaderCellDef          mat-sort-header          class="milieux_naturels"        >          Milieux naturels        </th>        <td mat-cell *matCellDef="let element" class="milieux_naturels">          {{ element.milieux_naturels }}        </td>      </ng-container>      <!-- bassin_agence Column -->      <ng-container matColumnDef="bassin_agence" class="bassin_agence">        <th          mat-header-cell          *matHeaderCellDef          mat-sort-header          class="bassin_agence"        >          Bassin agence        </th>        <td mat-cell *matCellDef="let element" class="bassin_agence">          {{ element.bassin_agence }}        </td>      </ng-container>      <!-- responsable Column -->      <ng-container matColumnDef="responsable">        <th          mat-header-cell          *matHeaderCellDef          mat-sort-header          class="responsable"        >          Responsable        </th>        <td mat-cell *matCellDef="let element" class="responsable">          {{ element.responsable }}        </td>      </ng-container>      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>      <tr        mat-row        *matRowDef="let row; columns: displayedColumns"        (click)="onSelect(row)"      ></tr>      <!-- Row shown when there is no matching data. -->      <tr class="mat-row" *matNoDataRow>        <td class="mat-cell" colspan="7">          Pas de donnée correspondante à votre filtre sur le mot clé : "{{            input.value          }}"        </td>      </tr>    </table>    <mat-paginator      [pageSizeOptions]="[5, 10, 20]"      showFirstLastButtons      aria-label="Select page of periodic elements"    >    </mat-paginator>    <!-- Flèche qui fait remontrer tout en haut -->    <app-back-to-top></app-back-to-top>  </div>  </div></div>'
+    var COMPONENTS = [{'name': 'AdminComponent', 'selector': 'app-admin'},{'name': 'AdminUsersComponent', 'selector': 'app-admin-users'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BackToTopComponent', 'selector': 'app-back-to-top'},{'name': 'CardComponent', 'selector': 'app-card'},{'name': 'DetailDescriptionComponent', 'selector': 'app-detail-description'},{'name': 'DetailGestionComponent', 'selector': 'app-detail-gestion'},{'name': 'DetailHabitatsComponent', 'selector': 'app-detail-habitats'},{'name': 'DetailInfosComponent', 'selector': 'app-detail-infos'},{'name': 'DetailMfuComponent', 'selector': 'app-detail-mfu'},{'name': 'DetailProjetsComponent', 'selector': 'app-detail-projets'},{'name': 'DocumentationComponent', 'selector': 'app-documentation'},{'name': 'FooterComponent', 'selector': 'app-footer'},{'name': 'FormButtonsComponent', 'selector': 'app-form-buttons'},{'name': 'HeaderComponent', 'selector': 'app-header'},{'name': 'HomeComponent', 'selector': 'app-home'},{'name': 'LoginComponent', 'selector': 'app-login'},{'name': 'MapComponent', 'selector': 'app-map'},{'name': 'ObjectifComponent', 'selector': 'app-objectif'},{'name': 'OperationComponent', 'selector': 'app-operation'},{'name': 'ProjetComponent', 'selector': 'app-dialog-operation'},{'name': 'ProjetVComponent', 'selector': 'app-dialog-operation'},{'name': 'SiteDetailComponent', 'selector': 'app-site-detail'},{'name': 'SitesComponent', 'selector': 'app-site'},{'name': 'SitesDisplayComponent', 'selector': 'app-sites-display'},{'name': 'SitesResearchComponent', 'selector': 'app-sites-research'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'SitesDisplayComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'SitesDisplayComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

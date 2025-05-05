@@ -6,11 +6,44 @@
 .mdc-dialog__content ng-star-inserted {
   padding: 0;
   margin: 0;
+}
 
+.custom-dialog-container {
+  max-width: 90vw; /* Ajuste la largeur maximale */
+  width: 90vw; /* Fixe la largeur */
+  height: 90vh; /* Fixe la hauteur */
+  margin: 0 auto; /* Centre la boîte de dialogue */
+  overflow: hidden; /* Empêche le débordement */
+}
+
+.dialogue {
+  // min-height: 100vh;
+  // height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 .conteneur-projet {
-  // display: flex;
+  display: flex;
+  width: 100%;
+  // height: auto;
+  min-height: 101%;
+  // min-height: 120vh;
+  flex-grow: 1;
+  
 }
+.projet {
+  display: flex;
+  flex-direction: column;
+  width: 1500px;
+  // margin: 0 50px 25px 29px;
+  // min-height: 100vh;
+
+  margin: 0; /* Supprime les marges inutiles */
+  padding: 0; /* Supprime les paddings inutiles */
+  height: 100%; /* Adapte la hauteur */
+}
+
 .conteneur {
   padding: 20px;
 }
