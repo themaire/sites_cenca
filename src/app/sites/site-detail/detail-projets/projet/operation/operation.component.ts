@@ -1120,5 +1120,4 @@ export class OperationComponent implements OnInit, OnDestroy {
       });
     });
   }
-  
 }

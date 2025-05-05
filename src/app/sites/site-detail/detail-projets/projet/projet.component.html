@@ -43,7 +43,6 @@
                       class="margin-stepper"
                       [orientation]="(stepperOrientation | async)!">
 
-
           <!-- state="info" est l'icone a utiliser pour le step -->
 
           <mat-step [stepControl]="step1Form">
@@ -82,6 +81,7 @@
                 <mat-form-field class="custom-mat-form-field">
                   <mat-label>Année d'execution</mat-label>
                   <input matInput [value]="step1Form.get('annee')?.value || 'Non renseigné'" readonly>
+
                 </mat-form-field>
                 <mat-form-field>
                   <mat-label>Période de travaux</mat-label>

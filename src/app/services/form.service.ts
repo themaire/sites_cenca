@@ -320,6 +320,7 @@ export class FormService {
    * - Les données sont organisées en fonction des étapes du formulaire (Step 1 et Step 2).
    * - Un log des données nettoyées est affiché dans la console avant la soumission.
    */
+
   private prepareProjetDataForSubmission(form: FormGroup): Projet {
     const fieldsToClean = [
       'document',
