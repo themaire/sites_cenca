@@ -1,7 +1,6 @@
 import { Component, Input, ElementRef, AfterViewInit, OnDestroy, Renderer2 } from '@angular/core';
 import * as L from 'leaflet'; // Import de Leaflet
 import 'leaflet.fullscreen'; // Import du plugin Fullscreen
-import 'leaflet.fullscreen/Control.FullScreen.css'; // Import du style CSS du plugin Fullscreen
 import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de GeoJsonObject et Feature
 
 // Étendre l'interface MapOptions pour inclure fullscreenControl
