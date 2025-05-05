@@ -28,11 +28,14 @@
               "./src/app/styles/indigo-pink-custom.css",
               "./src/styles.scss",
               "./node_modules/leaflet/dist/leaflet.css",
-              "node_modules/leaflet.fullscreen/Control.FullScreen.css",
-  "src/styles.scss"
+              "./src/assets/styles/leaflet/Control.FullScreen.css"
             ],
             "scripts": [
               "./node_modules/jquery/dist/jquery.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "leaflet.fullscreen"
             ]
           },
           "configurations": {
@@ -51,7 +54,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kb",
+                  "maximumWarning": "5kb",
                   "maximumError": "8kb"
                 }
               ],
