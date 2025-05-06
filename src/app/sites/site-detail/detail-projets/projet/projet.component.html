@@ -277,16 +277,16 @@
 
           </mat-step>
 
-          <mat-step state="landscape">
+          <!-- <mat-step state="landscape">
             <ng-template matStepLabel>ENP concerné</ng-template>
 
-            <form *ngIf="isEditProjet == true">
+            <form *ngIf="isEditProjet == true"> -->
 
               <!-- <mat-form-field>
                 <input matInput placeholder="Espace Naturel Protégé" formControlName="ENPCtrl" required>
               </mat-form-field> -->
 
-            </form>
+            <!-- </form>
 
             <app-detail-gestion *ngIf="!newProjet" [inputUUIDsite]="projetLite.uuid_site"> </app-detail-gestion>
 
@@ -294,23 +294,7 @@
               <button mat-button matStepperPrevious>Précédent</button>
               <button mat-button matStepperNext>Suivant</button>
             </div>
-          </mat-step>
-
-          <mat-step state="troubleshoot" *ngIf="newProjet === false">
-            <ng-template matStepLabel>Indicateurs</ng-template>
-            <div class="container-carte">
-              Tableau des indicateurs projet
-            </div>
-
-            <form *ngIf="isEditProjet == true">
-              Ajouter un indicateur dans le tableau
-            </form>
-
-            <div>
-              <button mat-button matStepperPrevious>Précédent</button>
-              <button mat-button matStepperNext>Suivant</button>
-            </div>
-          </mat-step>
+          </mat-step> -->
 
           <!-- Ce step s'affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai -->
           <mat-step state="construction" *ngIf="projet && newProjet === false && projet.pro_webapp === true">
