@@ -103,7 +103,6 @@ export const MY_DATE_FORMATS = {
     MatProgressSpinnerModule,
     MatTableModule,
     MatSlideToggleModule,
-    AsyncPipe  // Ajouté pour le spinner
   ],
   templateUrl: './operation.component.html',
   styleUrls: ['./operation.component.scss']

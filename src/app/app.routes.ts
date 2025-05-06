@@ -3,6 +3,7 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
+
 import { DocumentationComponent } from './documentation.component';
 
 export const routes: Routes = [
