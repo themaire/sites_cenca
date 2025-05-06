@@ -1,4 +1,4 @@
-import { Routes, provideRouter, withHashLocation } from '@angular/router';
+import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
@@ -19,29 +19,26 @@ export const routes: Routes = [
     path: 'login',
     component: LoginComponent,
   },
+
+  // Lazy-load
   {
     path: 'sites',
+    // component : SitesComponent // Avant
     loadChildren: () =>
       import('./sites/sites.routes').then((mod) => mod.SITES_ROUTES),
     canActivate: [isLoggedInGuard],
   },
+
+  // Lazy-load
   {
     path: 'admin',
     loadChildren: () =>
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),
     canActivate: [isLoggedInGuard],
   },
+
   {
     path: 'documentation',
     component: DocumentationComponent,
   },
-  {
-    path: '**',
-    redirectTo: '',
-  },
-];
-
-// Fournir le routeur avec le mode hash activé
-export const appRoutingProviders = [
-  provideRouter(routes, withHashLocation()),
 ];
