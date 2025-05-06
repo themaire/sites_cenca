@@ -65,6 +65,7 @@ export class LoginService {
    * 3. Met à jour l'état de l'utilisateur en utilisant la méthode `this.user.set()`.
    */
   getUsers(): Observable<User | undefined | null> {
+    console.log('LoginService: getUsers() appelé');
     return this.http.get(environment.apiUrl + 'auth/me').pipe(
       tap((result: any) => {
         let user = Object.assign(new User(), result);

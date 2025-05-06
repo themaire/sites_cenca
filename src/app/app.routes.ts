@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { NotFoundComponent } from './not-found/not-found.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
@@ -23,10 +24,9 @@ export const routes: Routes = [
   // Lazy-load
   {
     path: 'sites',
-    // component : SitesComponent // Avant
     loadChildren: () =>
       import('./sites/sites.routes').then((mod) => mod.SITES_ROUTES),
-    canActivate: [isLoggedInGuard],
+    // canActivate: [isLoggedInGuard], // Désactivé temporairement
   },
 
   // Lazy-load
@@ -40,5 +40,11 @@ export const routes: Routes = [
   {
     path: 'documentation',
     component: DocumentationComponent,
+    canActivate: [isLoggedInGuard],
+  },
+
+  {
+    path: '**',
+    component: NotFoundComponent, // Créez un composant pour afficher une page 404
   },
 ];

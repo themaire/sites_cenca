@@ -32,29 +32,39 @@ export class AppComponent implements OnInit {
     this.checkToken();
   }
 
+  /**
+   * Vérifie si un token d'authentification existe et redirige l'utilisateur en conséquence.
+   * Si le token est valide, l'utilisateur est redirigé vers la page d'accueil.
+   * Si le token n'est pas valide ou inexistant, l'utilisateur est redirigé vers la page de connexion.
+   */
   checkToken() {
     if (this.token) {
       console.log('Token exists:', this.token);
-
+  
       this.loginService.getUsers().subscribe({
         next: (result: User | undefined | null) => {
           console.log('User:', result);
-          // Ne redirige que si l'utilisateur est sur la page de login ou d'accueil
-          if (this.router.url === '/' || this.router.url === '/login') {
+  
+          // Ne redirige que si l'utilisateur est sur la page de login
+          if (this.router.url === '/login') {
             this.navigate(); // Redirige vers la page d'accueil
           }
         },
         error: (error: Error) => {
           console.log('Error:', error);
+  
+          // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
           if (this.router.url !== '/login') {
-            this.navigate('login'); // Redirige vers la page de connexion
+            this.navigate('login');
           }
         },
       });
     } else {
       console.log('No token found');
+  
+      // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
       if (this.router.url !== '/login') {
-        this.navigate('login'); // Redirige vers la page de connexion
+        this.navigate('login');
       }
     }
   }
