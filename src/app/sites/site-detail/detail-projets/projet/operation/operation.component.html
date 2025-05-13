@@ -210,7 +210,6 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
         <div>
           <mat-form-field>
             <mat-label>Maitre d'oeuvre</mat-label>
-            <!-- <mat-label>Type d'intervention</mat-label> -->
             <mat-select formControlName="typ_intervention">
               <mat-option *ngFor="let type of maitreOeuvreTypes" [value]="type.cd_type">
                 {{ type.libelle }}
@@ -393,8 +392,9 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
                   </mat-form-field>
                 </div>
 
+                <!-- S'affiche uniquement dans le cas contraire à celle ci dessus -->
                 <div *ngIf="type.cd_type === form.get('action_2')?.value && form.get('action_2')?.value != '204'">
-                  <i>Pas d'informations supplémentaires à renseigner.</i>
+                  <i>Pas d'informations supplémentaires à renseigner pour cette catégorie.</i>
                 </div>
 
               </div>
@@ -409,14 +409,17 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           
           <!-- Contenu -->
           <div>
-              <!-- Pour chaque element de la liste des types d'opération -->
-              <div *ngFor="let type of operationTypesPat" class="operation-info">
-                <!-- On montre le libellé de chaque type -->
-                <div [ngClass]="type.cd_type === form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
-                  {{ type.libelle }}
-                </div>
+            <!-- Pour chaque element de la liste des types d'opération -->
+            <div *ngFor="let type of operationTypesPat" class="operation-info">
+              <!-- On montre le libellé de chaque type -->
+              <div [ngClass]="type.cd_type === form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+                <!-- {{ type.libelle }} - {{ type.cd_type }} - {{ form.get('action_2')?.value }} -->
+                {{ type.libelle }}
+              </div>
 
-                <!-- On montre les cases à cocher des animaux -->
+              <!-- On montre les cases à cocher des animaux -->
+              <!-- Si la clé bouclée est égale à la clé du déroulant 'action_2' ET que c'est 'fauche' (204) -->
+              <div *ngIf="type.cd_type === form.get('action_2')?.value && form.get('action_2')?.value === '210'">
                 <div formArrayName="liste_ope_animaux_paturage">
                   <div *ngFor="let animal of listeOpeAnimaux.controls; let i = index" [formGroupName]="i">
                     <mat-checkbox formControlName="checked">
@@ -424,16 +427,60 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
                     </mat-checkbox>
                   </div>
                 </div>
-              </div>
+
+              <mat-form-field>
+                <mat-label>Effectif</mat-label>
+                <input matInput type="number" formControlName="effectif_paturage">
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Nombre de jour</mat-label>
+                <input matInput type="number" formControlName="nb_jours_paturage">
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Chargement (UGB/ha)</mat-label>
+                <input matInput type="number" formControlName="chargement_paturage">
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Taux d'abroutissement moyen</mat-label>
+                <mat-select formControlName="abroutissement_paturage">
+                  <mat-option *ngFor="let type of 
+                    [{cd_type: 1, libelle: 'Faible'}, 
+                    {cd_type: 2, libelle: 'Moyen'},
+                    {cd_type: 3, libelle: 'Bon'}]" 
+                    [value]="type.cd_type">
+                    
+                    {{ type.libelle }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Recouvrement en ligneux bas moyen</mat-label>
+                <mat-select formControlName="recouvrement_ligneux_paturage">
+                  <mat-option *ngFor="let type of 
+                    [{cd_type: 1, libelle: 'Faible'}, 
+                    {cd_type: 2, libelle: 'Moyen'},
+                    {cd_type: 3, libelle: 'Bon'}]" 
+                    [value]="type.cd_type">
+                    
+                    {{ type.libelle }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <!-- S'affiche uniquement dans le cas contraire à celle ci dessus -->
+            <div *ngIf="type.cd_type === form.get('action_2')?.value && form.get('action_2')?.value != '210'">
+              <i>Pas d'informations supplémentaires à renseigner pour cette catégorie.</i>
+            </div>
+
+            </div>
           </div>
           
         </div>
-
-
-
-
-
-
 
         <div>
           <button mat-button matStepperPrevious>Retour</button>

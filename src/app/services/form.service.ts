@@ -239,10 +239,12 @@ export class FormService {
       nb_jours_paturage: [operation?.nb_jours_paturage || null],
       chargement_paturage: [operation?.chargement_paturage || null],
       abroutissement_paturage: [operation?.abroutissement_paturage || null],
-      recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux__paturage || null],
+      recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux_paturage || null],
       interv_cloture: [operation?.interv_cloture || null],
 
-      // Ajouter un FormArray pour gérer les programmes
+      // Ajouter un FormArray pour gérer les programmes. 
+      // this.putBdd() le supprimera avant de l'envoyer au backend
+      // car liste_ope_programmes n'est pas un champ de la table opération
       liste_ope_programmes: this.fb.array(
         operation?.liste_ope_programmes?.map(programme =>
           this.fb.group({
@@ -254,7 +256,9 @@ export class FormService {
         [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
       ),
 
-      // Ajouter un FormArray pour gérer les animaux d'un paturage
+      // Ajouter un FormArray pour gérer les animaux d'un paturage.
+      // this.putBdd() le supprimera avant de l'envoyer au backend
+      // car liste_ope_animaux_paturage n'est pas un champ de la table opération
       liste_ope_animaux_paturage: this.fb.array(
         operation?.liste_ope_animaux_paturage?.map(animal =>
           this.fb.group({

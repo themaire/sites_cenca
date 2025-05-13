@@ -46,14 +46,17 @@ export interface OperationLite {
   cadre_intervention_detail?: number;
   quantite?: number;
   unite?: number;
+
   exportation_fauche?: boolean;
   total_exporte_fauche?: number;
   productivite_fauche?: number;
+
   effectif_paturage?: number;
   nb_jours_paturage?: number;
   chargement_paturage?: number;
   abroutissement_paturage?: number;
-  recouvrement_ligneux__paturage?: number;
+  recouvrement_ligneux_paturage?: number;
+
   interv_cloture?: number;
 
   // Nouvelles propriétés pour les cases à cocher des programmes

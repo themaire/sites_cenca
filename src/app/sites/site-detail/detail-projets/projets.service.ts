@@ -82,8 +82,8 @@ export class ProjetService {
   *   Utilisé dans operation.component.ts - Ajouter un élément revient à cocher une case dans le formulaire
   *   @param operationProgramme : l'objet contenant les informations du programme d'une opération
   */
-  insertOperationCheckbox(operationProgramme: OperationCheckbox): Observable<ApiResponse> {
-    const url = `${this.activeUrl}put/table=operation_programmes/insert`;
+  insertOperationCheckbox(operationProgramme: OperationCheckbox, table: string): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=${table}/insert`;
     return this.http.put<ApiResponse>(url, operationProgramme);
   }
 
@@ -92,8 +92,8 @@ export class ProjetService {
   *   @param uuid_ope : l'uuid de l'opération
   *   @param programme_id : l'id du programme
   */
-  deleteOperationCheckbox(uuid_ope: string, programme_id: number): Observable<ApiResponse> {
-    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.operation_programmes/uuid=${uuid_ope}/checkbox_id/${programme_id}`).pipe(
+  deleteOperationCheckbox(uuid_ope: string, programme_id: number, table: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.${table}/uuid=${uuid_ope}/checkbox_id/${programme_id}`).pipe(
       catchError(error => {
         const messageTxt = `Erreur lors de la suppression de l'opération-programme (uuid: ${uuid_ope}, checkbox_id: ${programme_id})`;
         console.error(messageTxt, error);

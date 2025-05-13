@@ -763,8 +763,8 @@ export class OperationComponent implements OnInit, OnDestroy {
               console.log("Enregistrement de l'opération avec succès :", response);
               this.unsubForm(); // Se désabonner des changements du formulaire
               
-              // Synchroniser les programmes après la mise à jour
-              this.syncOperationProgrammes();
+              // Synchroniser les programmes et les animaux après la mise à jour
+              this.syncCheckboxs();
               
               // Afficher le message dans le Snackbar
               const message = "Opération bien enregistrée"; // Message par défaut
@@ -808,7 +808,7 @@ export class OperationComponent implements OnInit, OnDestroy {
                 console.log('Formulaire mis à jour avec succès:', result.formValue);
 
                 // Synchroniser les programmes après la mise à jour
-                this.syncOperationProgrammes();
+                this.syncCheckboxs();
                 
                 // Accéder à la liste des opérations et remplir le tableau Material des operationLite
                 this.operation = undefined; // Réinitialiser l'opération
@@ -1151,7 +1151,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         checkbox_id: programme.lib_id, // Remplir l'identifiant du programme
       };
 
-      this.projetService.insertOperationCheckbox(operationProgramme).subscribe({
+      this.projetService.insertOperationCheckbox(operationProgramme, 'operation_programmes').subscribe({
         next: () => {
           console.log(`Programme ajouté : ${programme.lib_libelle}`);
         },
@@ -1163,7 +1163,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   
     // Supprimer les programmes non sélectionnés
     programmesToRemove.forEach(programme => {
-      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, programme.lib_id).subscribe({
+      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, programme.lib_id, 'operation_programmes').subscribe({
         next: () => {
           console.log(`Programme supprimé : ${programme.lib_libelle}`);
         },
@@ -1213,7 +1213,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         checkbox_id: animal.lib_id, // Remplir l'identifiant de l'animal
       };
 
-      this.projetService.insertOperationCheckbox(operationAnimal).subscribe({
+      this.projetService.insertOperationCheckbox(operationAnimal, 'operation_animaux').subscribe({
         next: () => {
           console.log(`Programme ajouté : ${animal.lib_libelle}`);
         },
@@ -1225,7 +1225,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   
     // Supprimer les animaux non sélectionnés
     programmesToRemove.forEach(animal => {
-      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, animal.lib_id).subscribe({
+      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
         next: () => {
           console.log(`Programme supprimé : ${animal.lib_libelle}`);
         },
@@ -1234,5 +1234,10 @@ export class OperationComponent implements OnInit, OnDestroy {
         }
       });
     });
+  }
+
+  syncCheckboxs(): void {
+    this.syncOperationProgrammes();
+    this.syncOperationAnimaux()
   }
 }
