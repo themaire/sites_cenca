@@ -227,10 +227,21 @@ export class FormService {
       date_approx: [operation?.date_approx || ''],
       ben_participants: [operation?.ben_participants || null],
       ben_heures: [operation?.ben_heures || null],
+      
       description_programme: [operation?.description_programme || null],
       unite: [operation?.unite || null],
       quantite: [operation?.quantite || null],
       
+      exportation_fauche: [operation?.exportation_fauche || false],
+      total_exporte_fauche: [operation?.total_exporte_fauche || null],
+      productivite_fauche: [operation?.productivite_fauche || null],
+      effectif_paturage: [operation?.effectif_paturage || null],
+      nb_jours_paturage: [operation?.nb_jours_paturage || null],
+      chargement_paturage: [operation?.chargement_paturage || null],
+      abroutissement_paturage: [operation?.abroutissement_paturage || null],
+      recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux__paturage || null],
+      interv_cloture: [operation?.interv_cloture || null],
+
       // Ajouter un FormArray pour gérer les programmes
       liste_ope_programmes: this.fb.array(
         operation?.liste_ope_programmes?.map(programme =>
@@ -241,6 +252,18 @@ export class FormService {
           })
         ) || [],
         [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
+      ),
+
+      // Ajouter un FormArray pour gérer les animaux d'un paturage
+      liste_ope_animaux_paturage: this.fb.array(
+        operation?.liste_ope_animaux_paturage?.map(animal =>
+          this.fb.group({
+            lib_id: [animal.lib_id],
+            lib_libelle: [animal.lib_libelle],
+            checked: [animal.checked || false], // Initialise avec la valeur actuelle
+          })
+        ) || [],
+        [] // Validateur pour limiter le nombre de cases cochées
       ),
       
     });
@@ -372,7 +395,7 @@ export class FormService {
     // Vérifie si le formulaire est valide
     // Envoie les modifications au serveur
     // Affiche un message dans le Snackbar
-    // Sort du mode édition après la sauvegarde (passe this.isEditMode à false)à false en cas de succès)
+    // Sort du mode édition après la sauvegarde (passe this.isEditMode à false) à false en cas de succès)
     
     // Vérifier si le formulaire a été modifié
     if(mode === 'update' && initialFormValues != null) {
@@ -409,11 +432,20 @@ export class FormService {
       console.log('Formulaire original :', form.value);
       
 
-      // Supprimer le contrôle 'liste_ope_programmes' du workingForm s'il existe
-      if (workingForm.contains('liste_ope_programmes')) {
-        workingForm.removeControl('liste_ope_programmes');
-        console.log('Contrôle liste_ope_programmes supprimé du workingForm');
-      }
+      // Supprimer les contrôles 'liste_ope_programmes' et 'liste_ope_animaux_paturage' du workingForm s'il existe
+      // Rappel, un controle de type FormArray est un tableau de FormGroup
+      // et chaque FormGroup contient un tableau de FormControl
+      // et chaque FormControl contient une valeur
+      // et une fonction de validation
+      // Donc un controle est un champ de formulaire en quelque sorte !!
+      // Liste des contrôles à supprimer du workingForm
+      const controlsToRemove = ['liste_ope_programmes', 'liste_ope_animaux_paturage'];
+      controlsToRemove.forEach(controlName => {
+        if (workingForm.contains(controlName)) {
+          workingForm.removeControl(controlName);
+          console.log(`Contrôle ${controlName} supprimé du workingForm`);
+        }
+      });
       
       console.log('Formulaire dupliqué (workingForm) :', workingForm.value);
       

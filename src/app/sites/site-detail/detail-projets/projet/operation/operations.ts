@@ -46,16 +46,29 @@ export interface OperationLite {
   cadre_intervention_detail?: number;
   quantite?: number;
   unite?: number;
+  exportation_fauche?: boolean;
+  total_exporte_fauche?: number;
+  productivite_fauche?: number;
+  effectif_paturage?: number;
+  nb_jours_paturage?: number;
+  chargement_paturage?: number;
+  abroutissement_paturage?: number;
+  recouvrement_ligneux__paturage?: number;
+  interv_cloture?: number;
 
-  // Nouvelles propriétés
+  // Nouvelles propriétés pour les cases à cocher des programmes
   ope_programmes?: { lib_id: number; lib_libelle: string }[]; // Liste des programmes associés
   liste_ope_programmes?: { lib_id: number; lib_libelle: string, checked: boolean }[]; // Liste complète des programmes disponibles
+
+  // Nouvelles propriétés pour les cases à cocher des types d'animaux
+  ope_animal_paturage?: { lib_id: number; lib_libelle: string }[]; // Liste des programmes associés
+  liste_ope_animaux_paturage?: { lib_id: number; lib_libelle: string, checked: boolean }[]; // Liste complète des programmes disponibles
 }
   
-  export interface OperationProgramme {
+  export interface OperationCheckbox {
     lib_libelle?: any;
     lib_id?: any;
     uuid_ope: string; // Identifiant unique de l'opération
-    programme_id?: number; // Identifiant du programme associé
-    programme_ids?: number[]; // Tableau contenant les IDs des programmes associés
+    checkbox_id?: number; // Identifiant du programme associé
+    checkbox_ids?: number[]; // Tableau contenant les IDs des programmes associés
   }

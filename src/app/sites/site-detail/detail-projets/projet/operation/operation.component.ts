@@ -10,7 +10,7 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, F
 
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
-import { OperationLite, Operation, OperationProgramme } from './operations';
+import { OperationLite, Operation, OperationCheckbox } from './operations';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
@@ -232,6 +232,11 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     }
   
+  getLibelleByCdType(cdType: string): string | undefined {
+    const type = this.operationTypesFamilles.find(t => t.cd_type === cdType);
+    return type?.libelle;
+  }
+
   async ngOnInit() {
     // Remplir this.form soit vide soit avec les données passées en entrée
     // Attendre un certain temps avant de continuer
@@ -298,18 +303,6 @@ export class OperationComponent implements OnInit, OnDestroy {
       );
     }
 
-    const subrouteProgramme = `sites/selectvalues=${'ope.listprogrammes'}`;
-    this.formService.getSelectValues$(subrouteProgramme).subscribe(
-      (selectValues: SelectValue[] | undefined) => {
-        console.log('Liste de choix des codes programme récupérée avec succès :');
-        console.log(selectValues);
-        this.programmeTypes = selectValues || [];
-      },
-      (error) => {
-        console.error('Erreur lors de la récupération de la liste de choix', error);
-      }
-    );
-
     const subrouteMaitreOeuvre = `sites/selectvalues=${'ope.typ_interventions'}`;
     this.formService.getSelectValues$(subrouteMaitreOeuvre).subscribe(
       (selectValues: SelectValue[] | undefined) => {
@@ -357,6 +350,8 @@ export class OperationComponent implements OnInit, OnDestroy {
         console.error('Erreur lors de la récupération de la liste de choix', error);
       }
     );
+
+
 
     try {
       if (this.ref_uuid_proj !== undefined || this.ref_uuid_objectif !== undefined) {
@@ -511,7 +506,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Méthode pour récupérer les opérations
+   * Méthode pour récupérer les programmes ou les animaux d'une opération
    * Utilisée dans la méthode fetch() au moment de récupérer l'operation entière
    * Transforme une liste de programmes en un tableau d'objets contenant uniquement
    * les propriétés `lib_id` et `lib_libelle`.
@@ -520,7 +515,7 @@ export class OperationComponent implements OnInit, OnDestroy {
    * Chaque objet doit contenir au moins les propriétés `lib_id` et `lib_libelle`.
    * @returns Un tableau d'objets simplifiés, chacun contenant les propriétés `lib_id` et `lib_libelle`.
    */
-  private transformProgrammes(programmes: any[]): { lib_id: number; lib_libelle: string, checked : boolean }[] {
+  private transformProgrammesAnimaux(programmes: any[]): { lib_id: number; lib_libelle: string, checked : boolean }[] {
     return programmes.map(programme => ({
       lib_id: programme.lib_id,
       lib_libelle: programme.lib_libelle,
@@ -552,26 +547,45 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
+      
       const subrouteOperationProgramme = `ope-programmes/uuid=${uuid_ope}`;
       const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
+
+      const subrouteOperationAnimaux = `ope-programmes/uuid=${uuid_ope}`;
+      const subrouteOperationAnimauxListe = `ope-animaux/uuid=`;
 
       try {
         let operation = await this.projetService.getOperation(subroute);
         // console.log('Opération avant le return de fetch() :', operation);
 
+        // CASES A COCHER (MULTIPLE CHOIX) POUR LES PROGRAMMES
         // On récupère les eventuels programmes associés à l'opération
         const ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgramme);
         // console.log('Programmes associés à l\'opération :', ope_programmes);
-
+        //
         // On récupère la liste des programmes possibles
         const liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
         // console.log('Liste des programmes possibles :', liste_ope_programmes);
 
-        // Ajouter les programmes à l'objet operation
+        // CASES A COCHER (MULTIPLE CHOIX) POUR LES ANIMAUX
+        // On récupère les eventuels animaux associés à l'opération
+        const ope_animal_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimaux);
+        // console.log('Programmes associés à l\'opération :', ope_animal_paturage);
+        //
+        // On récupère la liste des animaux d'un paturage possibles
+        const liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
+        // console.log('Liste des programmes possibles :', liste_ope_animaux_paturage);
+
+        // Ajouter les programmes et les animaux à l'objet operation
         operation = {
           ...operation,
-          ope_programmes: this.transformProgrammes(ope_programmes),
-          liste_ope_programmes: this.transformProgrammes(liste_ope_programmes),
+          ope_programmes: this.transformProgrammesAnimaux(ope_programmes),
+          liste_ope_programmes: this.transformProgrammesAnimaux(liste_ope_programmes)
+        };
+        operation = {
+          ...operation,
+          ope_animal_paturage: this.transformProgrammesAnimaux(ope_animal_paturage),
+          liste_ope_animaux_paturage: this.transformProgrammesAnimaux(liste_ope_animaux_paturage),
         };
 
         if (operation.liste_ope_programmes && operation.ope_programmes) {
@@ -583,6 +597,17 @@ export class OperationComponent implements OnInit, OnDestroy {
           }));
         
           // console.log('Après mise à jour des cases :', operation.liste_ope_programmes);
+        }
+
+        if (operation.liste_ope_animaux_paturage && operation.ope_animal_paturage) {
+          // console.log('Avant mise à jour des cases :', operation.liste_ope_animaux_paturage);
+        
+          operation.liste_ope_animaux_paturage = operation.liste_ope_animaux_paturage.map(animal => ({
+            ...animal,
+            checked: operation.ope_animal_paturage?.some(ope => ope.lib_id === animal.lib_id) || false,
+          }));
+        
+          // console.log('Après mise à jour des cases :', operation.liste_ope_animaux_paturage);
         }
 
         // Pré remplir le sous formulaire d'envoi du shapefile
@@ -772,8 +797,8 @@ export class OperationComponent implements OnInit, OnDestroy {
           
           console.log('Formulaire juste avant le onUpdate :', this.form.value);
           const updateObservable = this.formService.putBdd('update', 'operations', this.form, this.isEditOperation, this.snackBar, this.form.value.uuid_ope, this.initialFormValues);
+          
           // S'abonner à l'observable. onUpdate 
-
           if (updateObservable) {
             updateObservable.subscribe(
               (result) => {
@@ -1029,6 +1054,15 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Détecte le changement de la valeur du champ `cadre_intervention` dans le formulaire.
+   * 
+   * @param newValue - La nouvelle valeur sélectionnée pour le cadre d'intervention.
+   * 
+   * Lorsque ce champ change, la méthode réinitialise la valeur du champ
+   * `cadre_intervention_detail` à `null` sans émettre d'événement, afin de garantir
+   * la cohérence des données du formulaire.
+   */
   onCadreInterventionChange(newValue: number): void {
     console.log('Changement de cadre_intervention détecté, nouvelle valeur :', newValue);
 
@@ -1040,7 +1074,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Getter pour accéder à la liste des programmes d'opération
+   * Getter pour accéder à la liste des differents programmes d'opération disponibles
    * @returns {FormArray} La liste des programmes d'opération
    */
   get listeOpeProgrammes(): FormArray {
@@ -1048,10 +1082,30 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Méthode pour mettre à jour this.operation en fonction programmes sélectionnés par l'utilisateur
+   * Getter pour accéder à la liste des differents animaux d'une opération disponibles
+   * @returns {FormArray} La liste des animaux d'une opération
+   */
+  get listeOpeAnimaux(): FormArray {
+    return this.form.get('liste_ope_animaux_paturage') as FormArray;
+  }
+
+  /**
+  * Méthode pour mettre à jour this.operation en fonction des programmes sélectionnés par l'utilisateur
   */
   getSelectedProgrammes(): { lib_id: number; lib_libelle: string }[] {
     return this.listeOpeProgrammes.controls
+      .filter(control => control.get('checked')?.value)
+      .map(control => ({
+        lib_id: control.get('lib_id')?.value,
+        lib_libelle: control.get('lib_libelle')?.value,
+      }));
+  }
+
+  /**
+  * Méthode pour mettre à jour this.operation en fonction des animaux sélectionnés par l'utilisateur
+  */
+  getSelectedAnimaux(): { lib_id: number; lib_libelle: string }[] {
+    return this.listeOpeAnimaux.controls
       .filter(control => control.get('checked')?.value)
       .map(control => ({
         lib_id: control.get('lib_id')?.value,
@@ -1092,12 +1146,12 @@ export class OperationComponent implements OnInit, OnDestroy {
     programmesToAdd.forEach(programme => {
 
       // Créer un objet OperationProgramme à partir du programme sélectionné
-      const operationProgramme: OperationProgramme = {
+      const operationProgramme: OperationCheckbox = {
         uuid_ope: this.operation!.uuid_ope,
-        programme_id: programme.lib_id, // Remplir l'identifiant du programme
+        checkbox_id: programme.lib_id, // Remplir l'identifiant du programme
       };
 
-      this.projetService.insertOperationProgramme(operationProgramme).subscribe({
+      this.projetService.insertOperationCheckbox(operationProgramme).subscribe({
         next: () => {
           console.log(`Programme ajouté : ${programme.lib_libelle}`);
         },
@@ -1109,12 +1163,74 @@ export class OperationComponent implements OnInit, OnDestroy {
   
     // Supprimer les programmes non sélectionnés
     programmesToRemove.forEach(programme => {
-      this.projetService.deleteOperationProgramme(this.operation!.uuid_ope, programme.lib_id).subscribe({
+      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, programme.lib_id).subscribe({
         next: () => {
           console.log(`Programme supprimé : ${programme.lib_libelle}`);
         },
         error: (error) => {
           console.error(`Erreur lors de la suppression du programme : ${programme.lib_libelle}`, error);
+        }
+      });
+    });
+  }
+
+  // A voir pour faire une méthode commune avec celle de syncOperationProgrammes()
+  /**
+   * Synchronise les programmes sélectionnés avec la base de données.
+   * Ajoute ou supprime les programmes en fonction des changements effectués par l'utilisateur.
+   */
+  private syncOperationAnimaux(): void {
+    if (!this.operation || !this.operation.liste_ope_animaux_paturage) {
+      console.error('Impossible de synchroniser les programmes : données manquantes.');
+      return;
+    }
+  
+    // Animaux sélectionnés par l'utilisateur
+    const selectedAnimals = this.getSelectedAnimaux();
+  
+    // Animaux déjà enregistrés en base
+    const existingAnimals = this.operation.ope_animal_paturage || [];
+  
+    // Identifier les animaux à ajouter
+    const animalsToAdd = selectedAnimals.filter(
+      selected => !existingAnimals.some(existing => existing.lib_id === selected.lib_id)
+    );
+    console.log('Programmes à ajouter :', animalsToAdd);
+  
+    // Identifier les animaux à supprimer
+    const programmesToRemove = existingAnimals.filter(
+      existing => !selectedAnimals.some(selected => selected.lib_id === existing.lib_id)
+    );
+    console.log('Programmes à supprimer :', programmesToRemove);
+  
+    // Ajouter les nouveaux animaux
+  
+    animalsToAdd.forEach(animal => {
+
+      // Créer un objet operationAnimal à partir de l'animal sélectionné
+      const operationAnimal: OperationCheckbox = {
+        uuid_ope: this.operation!.uuid_ope,
+        checkbox_id: animal.lib_id, // Remplir l'identifiant de l'animal
+      };
+
+      this.projetService.insertOperationCheckbox(operationAnimal).subscribe({
+        next: () => {
+          console.log(`Programme ajouté : ${animal.lib_libelle}`);
+        },
+        error: (error) => {
+          console.error(`Erreur lors de l'ajout du programme : ${animal.lib_libelle}`, error);
+        }
+      });
+    });
+  
+    // Supprimer les animaux non sélectionnés
+    programmesToRemove.forEach(animal => {
+      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, animal.lib_id).subscribe({
+        next: () => {
+          console.log(`Programme supprimé : ${animal.lib_libelle}`);
+        },
+        error: (error) => {
+          console.error(`Erreur lors de la suppression du programme : ${animal.lib_libelle}`, error);
         }
       });
     });

@@ -1,3 +1,27 @@
+@import "../../../../../styles/mixins.scss";
+@import "../../../../../styles/variables.scss";
+
+.conteneur-type-operation {
+  display: flex;
+  width: 100%;
+  // height: auto;
+  min-height: 101%;
+  // min-height: 120vh;
+  flex-grow: 1;
+  column-gap: 20px;
+}
+
+.type-operation {
+  padding-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline-start : 20px;
+  padding-inline-end: 20px;
+  @include bandeau($type-operation);
+  color: rgb(78, 78, 78);
+}
+
 .file-upload-container {
     margin: 20px 0;
     
@@ -13,4 +37,30 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-}
+
+  }
+
+  .operation-info {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+
+  .cat_txv_active {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+
+    // color: rgb(1, 90, 1);
+    @include Typo($p16, $gras, rgb(1, 90, 1));
+  }
+
+  .cat_txv_inactive {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+
+    color: grey;
+  }

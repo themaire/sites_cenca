@@ -53,6 +53,7 @@
   padding-bottom: 15px;
   @include bandeau($gerer);
 }
+
 //boutons edit/save/cancel
 .edition {
   display: flex;

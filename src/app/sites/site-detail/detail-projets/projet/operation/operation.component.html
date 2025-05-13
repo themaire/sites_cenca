@@ -316,7 +316,124 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
               </mat-option>
             </mat-select>
           </mat-form-field>
-        </div> 
+        </div>
+
+        <!-- 0
+        : 
+        {cd_type: '027_TRAV_MECA_V2', libelle: 'Traitement de la végétation', commentaire: null}
+        1
+        : 
+        {cd_type: '028_TRAV_PAT_V2', libelle: 'Pâturage et opérations associées', commentaire: null}
+        2
+        : 
+        {cd_type: '008_TRAV_AMEN_V2', libelle: 'Aménagement et accueil du public', commentaire: null}
+        3
+        : 
+        {cd_type: '005_TRAV_HYDRO_V2', libelle: 'Gestion hydraulique', commentaire: null}
+        4
+        : 
+        {cd_type: '200_TRAV_DECH_V2', libelle: 'Gestion des déchets', commentaire: null} -->
+
+        <!-- 0
+        : 
+        {cd_type: '206', libelle: 'Arrachage', commentaire: null}
+        1
+        : 
+        {cd_type: '205', libelle: 'Taille', commentaire: null}
+        2
+        : 
+        {cd_type: '204', libelle: 'Fauche', commentaire: null}
+        3
+        : 
+        {cd_type: '203', libelle: 'Broyage', commentaire: null}
+        4
+        : 
+        {cd_type: '202', libelle: 'Débroussaillage', commentaire: null}
+        5
+        : 
+        {cd_type: '201', libelle: 'Bûcheronnage', commentaire: null} -->
+
+        <!-- Si l'operation est de type 'Traitement de la végétation' (027_TRAV_MECA_V2) et action_2 = 204 (fauche) -->
+        <div *ngIf="form.get('action')?.value === '027_TRAV_MECA_V2'" class="conteneur-type-operation">
+        
+            <!-- Bandeau -->
+            <div class="type-operation">{{ getLibelleByCdType(form.get('action')?.value) }}</div>
+
+            <!-- Contenu -->
+            <div>
+              <!-- Pour chaque element de la liste des types d'opération -->
+              <div *ngFor="let type of operationTypesMeca" class="operation-info">
+                
+                <!-- On montre le libellé de chaque type -->
+                <div [ngClass]="type.cd_type === form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+                  <!-- {{ type.libelle }} - {{ type.cd_type }} - {{ form.get('action_2')?.value }} -->
+                  {{ type.libelle }}
+                </div>
+
+                <!-- Si la clé bouclée est égale à la clé du déroulant 'action_2' ET que c'est 'fauche' (204) -->
+                <div *ngIf="type.cd_type === form.get('action_2')?.value && form.get('action_2')?.value === '204'">
+                  <mat-slide-toggle
+                    formControlName="exportation_fauche"
+                    class="toggle"
+                    [checked]="form.get('exportation_fauche')?.value || false"
+                    [disabled]="false">
+  
+                    Exportation de la fauche
+                  </mat-slide-toggle>
+                  <!-- <mat-checkbox formControlName="exportation_fauche">
+                    Exportation de la fauche
+                  </mat-checkbox> -->
+                  <mat-form-field>
+                    <mat-label>Total exporté (kg)</mat-label>
+                    <input matInput type="number" formControlName="total_exporte_fauche">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Productivité (kg/ha)</mat-label>
+                    <input matInput type="number" formControlName="productivite_fauche">
+                  </mat-form-field>
+                </div>
+
+                <div *ngIf="type.cd_type === form.get('action_2')?.value && form.get('action_2')?.value != '204'">
+                  <i>Pas d'informations supplémentaires à renseigner.</i>
+                </div>
+
+              </div>
+
+            </div>
+
+        </div>
+
+        <div *ngIf="form.get('action')?.value === '028_TRAV_PAT_V2'" class="conteneur-type-operation">
+          <!-- Bandeau -->
+            <div class="type-operation">{{ getLibelleByCdType(form.get('action')?.value) }}</div>
+          
+          <!-- Contenu -->
+          <div>
+              <!-- Pour chaque element de la liste des types d'opération -->
+              <div *ngFor="let type of operationTypesPat" class="operation-info">
+                <!-- On montre le libellé de chaque type -->
+                <div [ngClass]="type.cd_type === form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+                  {{ type.libelle }}
+                </div>
+
+                <!-- On montre les cases à cocher des animaux -->
+                <div formArrayName="liste_ope_animaux_paturage">
+                  <div *ngFor="let animal of listeOpeAnimaux.controls; let i = index" [formGroupName]="i">
+                    <mat-checkbox formControlName="checked">
+                      {{ animal.get('lib_libelle')?.value }}
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </div>
+          </div>
+          
+        </div>
+
+
+
+
+
+
 
         <div>
           <button mat-button matStepperPrevious>Retour</button>
