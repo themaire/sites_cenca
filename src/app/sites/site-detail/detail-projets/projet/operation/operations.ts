@@ -7,9 +7,9 @@ export interface OperationLite {
     description?: string;
     surf?: number;
     date_debut?: Date;
-  }
+}
 
-  export interface Operation {
+export interface Operation {
   uuid_ope: string;
   code?: string;
   titre?: string;
@@ -67,11 +67,11 @@ export interface OperationLite {
   ope_animal_paturage?: { lib_id: number; lib_libelle: string }[]; // Liste des programmes associés
   liste_ope_animaux_paturage?: { lib_id: number; lib_libelle: string, checked: boolean }[]; // Liste complète des programmes disponibles
 }
-  
-  export interface OperationCheckbox {
+
+export interface OperationCheckbox {
     lib_libelle?: any;
     lib_id?: any;
     uuid_ope: string; // Identifiant unique de l'opération
     checkbox_id?: number; // Identifiant du programme associé
     checkbox_ids?: number[]; // Tableau contenant les IDs des programmes associés
-  }
+}

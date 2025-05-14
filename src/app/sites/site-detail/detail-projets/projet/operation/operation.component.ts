@@ -44,7 +44,7 @@ import 'moment/locale/fr';
 
 import { AsyncPipe } from '@angular/common';
 import { catchError, map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, of, zip } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { MapComponent } from '../../../../../map/map.component';
@@ -130,6 +130,10 @@ export class OperationComponent implements OnInit, OnDestroy {
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
   operation!: Operation | void; // Pour les détails d'une opération
 
+  // Pour le formulaire d'édition d'une opération
+  // Stoque l'ancienne valeur de l'action 2
+  previousAction2Value: string | null = null;
+
   // Listes de choix du formulaire
   typeObjectifOpe!: SelectValue[];
   selectedtypeObjectifOpe: string = '';
@@ -185,6 +189,10 @@ export class OperationComponent implements OnInit, OnDestroy {
   chantierNatureTypes!: SelectValue[];
   unitesTypes!: SelectValue[];
 
+  // Pour les cases à cocher (multiple choix) dans le step Information de l'opération du formulaire d'édition d'une opération
+  liste_ope_animaux_paturage!: OperationCheckbox[];
+
+  // Encore utilisé?
   onProgrammeChange(value: string): void {
     this.selectedProgrammeType = value;
     // console.log('Programme sélectionné :', this.selectedProgrammeType);
@@ -232,10 +240,23 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     }
   
-  getLibelleByCdType(cdType: string): string | undefined {
-    const type = this.operationTypesFamilles.find(t => t.cd_type === cdType);
-    return type?.libelle;
+  getLibelleByCdType(
+  cdType: string | number | null,
+  liste1: SelectValue[],
+  liste2?: SelectValue[],
+  liste3?: SelectValue[],
+  liste4?: SelectValue[],
+  liste5?: SelectValue[]
+): string | undefined {
+  const listes = [liste1, liste2, liste3, liste4, liste5].filter(Boolean) as SelectValue[][];
+  for (const liste of listes) {
+    const type = liste.find(t => t.cd_type === cdType);
+    if (type?.libelle) {
+      return type.libelle;
+    }
   }
+  return undefined;
+}
 
   async ngOnInit() {
     // Remplir this.form soit vide soit avec les données passées en entrée
@@ -378,6 +399,117 @@ export class OperationComponent implements OnInit, OnDestroy {
     
   }
 
+  /**
+   * Méthode pour récupérer les opérations d'un projet
+   * @param uuid_ope - UUID de l'opération à récupérer
+   * @returns L'opération complète ou une liste d'opérations lite
+   */
+  async fetch(uuid_ope?: String): Promise<Operation | void> {
+    if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
+      // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
+      console.log("----------!!!!!!!!!!!!--------fetch() dans le composant operation");
+      const uuid = this.ref_uuid_proj;
+      const subroute = `operations/uuid=${uuid}/lite`;
+      this.projetService.getOperations(subroute).then(
+        (operations) => {
+          this.operations = operations;
+          if (Array.isArray(this.operations) && this.operations.length > 0) {
+            this.dataSourceOperations = new MatTableDataSource(this.operations);
+            this.cdr.detectChanges();
+            console.log('Liste des opérations bien mises à jour.');
+          }
+        }
+      ).catch(
+        (error) => {
+          console.error('Erreur lors de la récupération des opérations', error);
+        }
+      );
+    } else if (uuid_ope !== undefined) {
+      // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
+      console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
+      const subroute = `operations/uuid=${uuid_ope}/full`;
+      
+      const subrouteOperationProgramme = `ope-programmes/uuid=${uuid_ope}`;
+      const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
+
+      const subrouteOperationAnimaux = `ope-animaux/uuid=${uuid_ope}`;
+      const subrouteOperationAnimauxListe = `ope-animaux/uuid=`;
+
+      try {
+        let operation = await this.projetService.getOperation(subroute);
+        // console.log('Opération avant le return de fetch() :', operation);
+
+        // CASES A COCHER (MULTIPLE CHOIX) POUR LES PROGRAMMES
+        // On récupère les eventuels programmes associés à l'opération
+        const ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgramme);
+        // console.log('Programmes associés à l\'opération :', ope_programmes);
+        //
+        // On récupère la liste des programmes possibles
+        const liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
+        // console.log('Liste des programmes possibles :', liste_ope_programmes);
+
+        // CASES A COCHER (MULTIPLE CHOIX) POUR LES ANIMAUX
+        // On récupère les eventuels animaux associés à l'opération
+        const ope_animal_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimaux);
+        // console.log('Programmes associés à l\'opération :', ope_animal_paturage);
+        //
+        // On récupère la liste des animaux d'un paturage possibles
+        this.liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
+        // console.log('Liste des programmes possibles :', liste_ope_animaux_paturage);
+
+        // Ajouter les programmes et les animaux à l'objet operation
+        operation = {
+          ...operation,
+          ope_programmes: this.transformCheckboxDatas(ope_programmes),
+          liste_ope_programmes: this.transformCheckboxDatas(liste_ope_programmes)
+        };
+        operation = {
+          ...operation,
+          ope_animal_paturage: this.transformCheckboxDatas(ope_animal_paturage),
+          liste_ope_animaux_paturage: this.transformCheckboxDatas(this.liste_ope_animaux_paturage),
+        };
+
+        if (operation.liste_ope_programmes && operation.ope_programmes) {
+          // console.log('Avant mise à jour des cases :', operation.liste_ope_programmes);
+        
+          operation.liste_ope_programmes = operation.liste_ope_programmes.map(programme => ({
+            ...programme,
+            checked: operation.ope_programmes?.some(ope => ope.lib_id === programme.lib_id) || false,
+          }));
+        
+          // console.log('Après mise à jour des cases :', operation.liste_ope_programmes);
+        }
+
+        if (operation.liste_ope_animaux_paturage && operation.ope_animal_paturage) {
+          // console.log('Avant mise à jour des cases :', operation.liste_ope_animaux_paturage);
+        
+          operation.liste_ope_animaux_paturage = operation.liste_ope_animaux_paturage.map(animal => ({
+            ...animal,
+            checked: operation.ope_animal_paturage?.some(ope => ope.lib_id === animal.lib_id) || false,
+          }));
+        
+          // console.log('Après mise à jour des cases :', operation.liste_ope_animaux_paturage);
+        }
+
+        // Pré remplir le sous formulaire d'envoi du shapefile
+        this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
+
+        // Récupérer les localisations de l'opération
+        this.localisations = await this.getLocalisation(uuid_ope);
+
+        // Attention il s'agit d'une liste de localisations !
+        console.log('Localisation de l\'opération :');
+        console.log(this.localisations);
+
+        return operation;
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'opération : ", error);
+      }
+    } else {
+      console.error("Aucun identifiant de projet ou d'opération n\'a été trouvé.");
+    }
+  }
+
   // ngAfterViewInit() {
   //   // Forcer la détection des changements après l'initialisation de la vue
   //   this.cdr.detectChanges();
@@ -415,17 +547,15 @@ export class OperationComponent implements OnInit, OnDestroy {
     // A chaque fois qu'il y a un changement, ces lignes de code seront exécutées
     this.formOpeSubscription = this.form.statusChanges.subscribe(status => {
       this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
-      console.log('Statut du formulaire principal :', status);
-      console.log("this.isFormValid = this.projetForm.valid :");
-      console.log(this.isFormValid + " = " + this.form.valid);
-      console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
-
- 
-      
+      //console.log('Statut du formulaire principal :', status);
+      //console.log("this.isFormValid = this.projetForm.valid :");
+      //console.log(this.isFormValid + " = " + this.form.valid);
+      //console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
       // Afficher la liste des champs invalides
-      console.log('Champs invalides :', this.getInvalidFields());
+      // console.log('Champs invalides :', this.getInvalidFields());
 
-      
+      console.log('Ancienne valeur de action2 :', this.getLibelleByCdType(this.previousAction2Value, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech));
+      console.log('Données du formulaire principal :', this.form.value);
 
       this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
     });
@@ -474,27 +604,11 @@ export class OperationComponent implements OnInit, OnDestroy {
     
   }
 
-  // isStepCompleted(stepIndex: number): boolean {
-  //   // Pour utiliser cette méthode dans le stepper
-  //   // il faut que le stepper soit en mode linear
-  //   // Fonctionn comme ceci dans le html :
-  //   // <mat-step [stepControl]="form" [completed]="isStepCompleted(2)">
-  //   switch (stepIndex) {
-  //     case 1:
-  //       return this.form.get('titre')?.valid || false;
-  //     case 2:
-  //       // return true || false;
-  //       return true;
-  //     case 3:
-  //       return true;
-  //     case 4:
-  //       return this.form.get('typ_intervention')?.valid || false;
-
-  //     default:
-  //       return false;
-  //   }
-  // }
-
+  /**
+   * Méthode pour récupérer la localisations d'une opération
+   * @param uuid_ope - UUID de l'opération
+   * @returns Un tableau de localisations associées à l'opération à donner au composant de carte
+   */
   async getLocalisation(uuid_ope: String): Promise<Localisation[]> {
     const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
     try {
@@ -515,118 +629,12 @@ export class OperationComponent implements OnInit, OnDestroy {
    * Chaque objet doit contenir au moins les propriétés `lib_id` et `lib_libelle`.
    * @returns Un tableau d'objets simplifiés, chacun contenant les propriétés `lib_id` et `lib_libelle`.
    */
-  private transformProgrammesAnimaux(programmes: any[]): { lib_id: number; lib_libelle: string, checked : boolean }[] {
+  private transformCheckboxDatas(programmes: any[]): { lib_id: number; lib_libelle: string, checked : boolean }[] {
     return programmes.map(programme => ({
       lib_id: programme.lib_id,
       lib_libelle: programme.lib_libelle,
       checked : false // Ajout d'une propriété checked initialisée à false
     }));
-  }
-
-  async fetch(uuid_ope?: String): Promise<Operation | void> {
-    if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
-      // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
-      console.log("----------!!!!!!!!!!!!--------fetch() dans le composant operation");
-      const uuid = this.ref_uuid_proj;
-      const subroute = `operations/uuid=${uuid}/lite`;
-      this.projetService.getOperations(subroute).then(
-        (operations) => {
-          this.operations = operations;
-          if (Array.isArray(this.operations) && this.operations.length > 0) {
-            this.dataSourceOperations = new MatTableDataSource(this.operations);
-            this.cdr.detectChanges();
-            console.log('Liste des opérations bien mises à jour.');
-          }
-        }
-      ).catch(
-        (error) => {
-          console.error('Erreur lors de la récupération des opérations', error);
-        }
-      );
-    } else if (uuid_ope !== undefined) {
-      // Si on un uuid d'opératon passé en paramètre pour en avoir les détails complets
-      console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
-      const subroute = `operations/uuid=${uuid_ope}/full`;
-      
-      const subrouteOperationProgramme = `ope-programmes/uuid=${uuid_ope}`;
-      const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
-
-      const subrouteOperationAnimaux = `ope-programmes/uuid=${uuid_ope}`;
-      const subrouteOperationAnimauxListe = `ope-animaux/uuid=`;
-
-      try {
-        let operation = await this.projetService.getOperation(subroute);
-        // console.log('Opération avant le return de fetch() :', operation);
-
-        // CASES A COCHER (MULTIPLE CHOIX) POUR LES PROGRAMMES
-        // On récupère les eventuels programmes associés à l'opération
-        const ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgramme);
-        // console.log('Programmes associés à l\'opération :', ope_programmes);
-        //
-        // On récupère la liste des programmes possibles
-        const liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
-        // console.log('Liste des programmes possibles :', liste_ope_programmes);
-
-        // CASES A COCHER (MULTIPLE CHOIX) POUR LES ANIMAUX
-        // On récupère les eventuels animaux associés à l'opération
-        const ope_animal_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimaux);
-        // console.log('Programmes associés à l\'opération :', ope_animal_paturage);
-        //
-        // On récupère la liste des animaux d'un paturage possibles
-        const liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
-        // console.log('Liste des programmes possibles :', liste_ope_animaux_paturage);
-
-        // Ajouter les programmes et les animaux à l'objet operation
-        operation = {
-          ...operation,
-          ope_programmes: this.transformProgrammesAnimaux(ope_programmes),
-          liste_ope_programmes: this.transformProgrammesAnimaux(liste_ope_programmes)
-        };
-        operation = {
-          ...operation,
-          ope_animal_paturage: this.transformProgrammesAnimaux(ope_animal_paturage),
-          liste_ope_animaux_paturage: this.transformProgrammesAnimaux(liste_ope_animaux_paturage),
-        };
-
-        if (operation.liste_ope_programmes && operation.ope_programmes) {
-          // console.log('Avant mise à jour des cases :', operation.liste_ope_programmes);
-        
-          operation.liste_ope_programmes = operation.liste_ope_programmes.map(programme => ({
-            ...programme,
-            checked: operation.ope_programmes?.some(ope => ope.lib_id === programme.lib_id) || false,
-          }));
-        
-          // console.log('Après mise à jour des cases :', operation.liste_ope_programmes);
-        }
-
-        if (operation.liste_ope_animaux_paturage && operation.ope_animal_paturage) {
-          // console.log('Avant mise à jour des cases :', operation.liste_ope_animaux_paturage);
-        
-          operation.liste_ope_animaux_paturage = operation.liste_ope_animaux_paturage.map(animal => ({
-            ...animal,
-            checked: operation.ope_animal_paturage?.some(ope => ope.lib_id === animal.lib_id) || false,
-          }));
-        
-          // console.log('Après mise à jour des cases :', operation.liste_ope_animaux_paturage);
-        }
-
-        // Pré remplir le sous formulaire d'envoi du shapefile
-        this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
-
-        // Récupérer les localisations de l'opération
-        this.localisations = await this.getLocalisation(uuid_ope);
-
-        // Attention il s'agit d'une liste de localisations !
-        console.log('Localisation de l\'opération :');
-        console.log(this.localisations);
-
-        return operation;
-      } catch (error) {
-        console.error("Erreur lors de la récupération de l'opération : ", error);
-      }
-    } else {
-      console.error("Aucun identifiant de projet ou d'opération n\'a été trouvé.");
-    }
   }
 
   /**
@@ -710,9 +718,15 @@ export class OperationComponent implements OnInit, OnDestroy {
         console.error('Paramètres operation et empty non definis.');
         return;
     }
+
+    if (this.form !== undefined) {
+      // Si le formulaire a été créé avec succès
+      this.form.get('action_2')?.valueChanges.subscribe((newValue) => {
+        this.previousAction2Value = this.selectedOperationType; // Met à jour l'ancienne valeur
+      });
+    }
   }
 
-  // Méthode pour soumettre le formulaire
   /**
    * Gère la soumission du formulaire pour une opération.
    *
@@ -1055,7 +1069,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Détecte le changement de la valeur du champ `cadre_intervention` dans le formulaire.
+   * Détecte le changement de la valeur du champ `action_2` (Type opération 2) dans le formulaire.
    * 
    * @param newValue - La nouvelle valeur sélectionnée pour le cadre d'intervention.
    * 
@@ -1063,13 +1077,78 @@ export class OperationComponent implements OnInit, OnDestroy {
    * `cadre_intervention_detail` à `null` sans émettre d'événement, afin de garantir
    * la cohérence des données du formulaire.
    */
-  onCadreInterventionChange(newValue: number): void {
-    console.log('Changement de cadre_intervention détecté, nouvelle valeur :', newValue);
+  onFieldChange(newValue: number, field: string, previousValue?: string | number | null): void {
+    const newValueText = this.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+    
+    // Si on charge à détecter que l'on a passé d'une valeur à une autre
+    if (previousValue === undefined || previousValue != null) {
+      const previousValueText = this.getLibelleByCdType(previousValue!, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+      // console.log(`Changement de ${field} détecté, ancienne et nouvelle valeur : ${previousValueText}} / ${newValueText}.`);
 
-    // Mettre à null la valeur de cadre_intervention_detail
-    if (this.form?.get('cadre_intervention_detail')) {
-      this.form.get('cadre_intervention_detail')!.setValue(null, { emitEvent: false });
-      console.log('Le champ cadre_intervention_detail a été réinitialisé à null.');
+      if (field === 'action_2') {
+        // Mettre à null les valeur d'information d'opération de paturage
+        if (previousValueText == 'Pâturage' && newValueText != 'Pâturage') {
+          // Cases à cocher des animaux du formulaire
+          if(this.form?.get('liste_ope_animaux_paturage')) {
+            (this.form.get('liste_ope_animaux_paturage') as FormArray).controls.forEach(element => {
+              element.get('checked')!.setValue(false, { emitEvent: false });
+            });
+          }
+          
+          // Champs de nombres et listes déroulantes du formulaire
+          if (this.form?.get('effectif_paturage')) {
+            this.form.get('effectif_paturage')!.setValue(null, { emitEvent: false });
+          }
+          if (this.form?.get('nb_jours_paturage')) {
+            this.form.get('nb_jours_paturage')!.setValue(null, { emitEvent: false });
+          }
+          if (this.form?.get('chargement_paturage')) {
+            this.form.get('chargement_paturage')!.setValue(null, { emitEvent: false });
+          }
+          if (this.form?.get('abroutissement_paturage')) {
+            this.form.get('abroutissement_paturage')!.setValue(null, { emitEvent: false });
+          }
+          if (this.form?.get('recouvrement_ligneux_paturage')) {
+            this.form.get('recouvrement_ligneux_paturage')!.setValue(null, { emitEvent: false });
+          }
+
+          // Supprimer tous les animaux possibles de l'opération en base de
+          this.liste_ope_animaux_paturage.forEach((animal) => {
+            if (animal.lib_id) {
+              this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
+                next: () => {
+                  console.log(`Programme supprimé : ${animal.lib_libelle}`);
+                },
+                error: (error) => {
+                  console.error(`Erreur lors de la suppression du programme : ${animal.lib_libelle}`, error);
+                }
+              });
+            }
+          });
+        } else if (previousValueText == 'Fauche' && newValueText != 'Fauche') {
+          // Champs de nombres et listes déroulantes du formulaire
+          if (this.form?.get('exportation_fauche')) {
+            this.form.get('exportation_fauche')!.setValue(null, { emitEvent: false });
+          }
+          if (this.form?.get('total_exporte_fauche')) {
+            this.form.get('total_exporte_fauche')!.setValue(null, { emitEvent: false });
+          }
+          if (this.form?.get('productivite_fauche')) {
+            this.form.get('productivite_fauche')!.setValue(null, { emitEvent: false });
+          }
+        }
+      }
+    } else {
+      // console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValue}.`);
+      // console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
+      
+      if (field === 'cadre_intervention') {
+        // Mettre à null la valeur de cadre_intervention_detail
+        if (this.form?.get('cadre_intervention_detail')) {
+          this.form.get('cadre_intervention_detail')!.setValue(null, { emitEvent: false });
+          console.log('Le champ cadre_intervention_detail a été réinitialisé à null.');
+        }
+      }
     }
   }
 

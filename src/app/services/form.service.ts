@@ -235,11 +235,13 @@ export class FormService {
       exportation_fauche: [operation?.exportation_fauche || false],
       total_exporte_fauche: [operation?.total_exporte_fauche || null],
       productivite_fauche: [operation?.productivite_fauche || null],
+      
       effectif_paturage: [operation?.effectif_paturage || null],
       nb_jours_paturage: [operation?.nb_jours_paturage || null],
       chargement_paturage: [operation?.chargement_paturage || null],
       abroutissement_paturage: [operation?.abroutissement_paturage || null],
       recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux_paturage || null],
+      
       interv_cloture: [operation?.interv_cloture || null],
 
       // Ajouter un FormArray pour gérer les programmes. 
