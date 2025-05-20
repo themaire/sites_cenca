@@ -48,8 +48,8 @@ export interface Projet {
     createur?: string;
     date_crea?: Date;
     site?: string;
-    pro_debut?: Date;
-    pro_fin?: Date;
+    // pro_debut?: Date;
+    // pro_fin?: Date;
     pro_pression_ciblee?: string;
     pro_webapp?: boolean
     pro_results_attendus?: number;

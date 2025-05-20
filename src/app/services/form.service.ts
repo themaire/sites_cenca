@@ -144,16 +144,16 @@ export class FormService {
       createur: [projet?.createur || null], // Valeur par défaut définie dans le composant
 
       step1: this.fb.group({
+        // nom: [projet?.nom || ''],
         typ_projet: [projet?.typ_projet || null, Validators.required],
         statut: [projet?.statut || null],
         validite: [projet?.validite || '', Validators.required],
         
         annee: [projet?.annee || null],
-        pro_debut: [projet?.pro_debut || null],
-        pro_fin: [projet?.pro_fin || ''],
+        // pro_debut: [projet?.pro_debut || null],
+        // pro_fin: [projet?.pro_fin || ''],
         date_crea: [projet?.date_crea || null],
         
-        nom: [projet?.nom || ''],
         code: [projet?.code || ''],
         responsable: [projet?.responsable || null],
         pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
@@ -187,93 +187,107 @@ export class FormService {
       surf_prevue: [objectif?.surf_prevue || null],
     });
   }
-
-
+  
+  
   // Créer un nouveau formulaire d'opération
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
   newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
     const form = this.fb.group({
       uuid_ope: [operation?.uuid_ope || uuidv4()],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
-      obj_ope: [operation?.obj_ope || '', Validators.required],
-      code: [operation?.code || ''],
-      titre: [operation?.titre || ''],
-      inscrit_pdg: [operation?.inscrit_pdg || ''],
-      rmq_pdg: [operation?.rmq_pdg || ''],
-      description: [operation?.description || '', [this.minWordsValidator(2)]],
-      interv_zh: [operation?.interv_zh || ''],
-  
-      surf: [operation?.surf || null],
-      lin: [operation?.lin || null],
-      app_fourr: [operation?.app_fourr || null],
-      pression_moy: [operation?.pression_moy || null],
-      ugb_moy: [operation?.ugb_moy || null],
-      nbjours: [operation?.nbjours || null],
-      charge_moy: [operation?.charge_moy || null],
-      charge_inst: [operation?.charge_inst || null],
-      remarque: [operation?.remarque || '', this.minWordsValidator(2)],
-      validite: [operation?.validite],
-      action: [operation?.action || '', Validators.required],
-      action_2: [operation?.action_2 || '', Validators.required],
-      cadre_intervention: [operation?.cadre_intervention ?? null, Validators.required], // Utiliser null explicitement
-      cadre_intervention_detail: [operation?.cadre_intervention_detail ?? null], // Pas encore requis
-      objectif: [operation?.objectif || ''],
-  
-      typ_intervention: [operation?.typ_intervention || '', Validators.required],
-      nom_mo: [operation?.nom_mo || '', Validators.required],
-      date_debut: [operation?.date_debut ? new Date(operation.date_debut) : null],
-      date_fin: [operation?.date_fin ? new Date(operation.date_fin) : null],
       date_ajout: [operation?.date_ajout ? new Date(operation.date_ajout) : null],
-      date_approx: [operation?.date_approx || ''],
-      ben_participants: [operation?.ben_participants || null],
-      ben_heures: [operation?.ben_heures || null],
       
-      description_programme: [operation?.description_programme || null],
-      unite: [operation?.unite || null],
-      quantite: [operation?.quantite || null],
+      step1: this.fb.group({
+        validite: [operation?.validite],
+        obj_ope: [operation?.obj_ope || '', Validators.required],
+        action: [operation?.action || '', Validators.required],
+        action_2: [operation?.action_2 || '', Validators.required],
+        description: [operation?.description || '', [this.minWordsValidator(2)]],
+        remarque: [operation?.remarque || '', this.minWordsValidator(2)],
+      }),
       
-      exportation_fauche: [operation?.exportation_fauche || false],
-      total_exporte_fauche: [operation?.total_exporte_fauche || null],
-      productivite_fauche: [operation?.productivite_fauche || null],
+      step2: this.fb.group({
+        typ_intervention: [operation?.typ_intervention || '', Validators.required],
+        nom_mo: [operation?.nom_mo || '', Validators.required],
+        cadre_intervention: [operation?.cadre_intervention ?? null, Validators.required], // Utiliser null explicitement
+        cadre_intervention_detail: [operation?.cadre_intervention_detail ?? null], // Pas encore requis
+      }),
       
-      effectif_paturage: [operation?.effectif_paturage || null],
-      nb_jours_paturage: [operation?.nb_jours_paturage || null],
-      chargement_paturage: [operation?.chargement_paturage || null],
-      abroutissement_paturage: [operation?.abroutissement_paturage || null],
-      recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux_paturage || null],
+      step3: this.fb.group({
+        // Ajouter un FormArray pour gérer les programmes. 
+        // this.putBdd() le supprimera avant de l'envoyer au backend
+        // car liste_ope_programmes n'est pas un champ de la table opération
+        liste_ope_programmes: this.fb.array(
+          operation?.liste_ope_programmes?.map(programme =>
+            this.fb.group({
+              lib_id: [programme.lib_id],
+              lib_libelle: [programme.lib_libelle],
+              checked: [programme.checked || false], // Initialise avec la valeur actuelle
+            })
+          ) || [],
+          [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
+        ),
+        description_programme: [operation?.description_programme || null],
+      }),
       
-      interv_cloture: [operation?.interv_cloture || null],
-
-      // Ajouter un FormArray pour gérer les programmes. 
-      // this.putBdd() le supprimera avant de l'envoyer au backend
-      // car liste_ope_programmes n'est pas un champ de la table opération
-      liste_ope_programmes: this.fb.array(
-        operation?.liste_ope_programmes?.map(programme =>
-          this.fb.group({
-            lib_id: [programme.lib_id],
-            lib_libelle: [programme.lib_libelle],
-            checked: [programme.checked || false], // Initialise avec la valeur actuelle
-          })
-        ) || [],
-        [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
-      ),
-
-      // Ajouter un FormArray pour gérer les animaux d'un paturage.
-      // this.putBdd() le supprimera avant de l'envoyer au backend
-      // car liste_ope_animaux_paturage n'est pas un champ de la table opération
-      liste_ope_animaux_paturage: this.fb.array(
-        operation?.liste_ope_animaux_paturage?.map(animal =>
-          this.fb.group({
-            lib_id: [animal.lib_id],
-            lib_libelle: [animal.lib_libelle],
-            checked: [animal.checked || false], // Initialise avec la valeur actuelle
-          })
-        ) || [],
-        [] // Validateur pour limiter le nombre de cases cochées
-      ),
+      step4: this.fb.group({
+        date_debut: [operation?.date_debut ? new Date(operation.date_debut) : null],
+        date_fin: [operation?.date_fin ? new Date(operation.date_fin) : null],
+        
+        quantite: [operation?.quantite || null],
+        unite: [operation?.unite || null],
+        
+        exportation_fauche: [operation?.exportation_fauche || false],
+        total_exporte_fauche: [operation?.total_exporte_fauche || null],
+        productivite_fauche: [operation?.productivite_fauche || null],
+        
+        // Ajouter un FormArray pour gérer les animaux d'un paturage.
+        // this.putBdd() le supprimera avant de l'envoyer au backend
+        // car liste_ope_animaux_paturage n'est pas un champ de la table opération
+        liste_ope_animaux_paturage: this.fb.array(
+          operation?.liste_ope_animaux_paturage?.map(animal =>
+            this.fb.group({
+              lib_id: [animal.lib_id],
+              lib_libelle: [animal.lib_libelle],
+              checked: [animal.checked || false], // Initialise avec la valeur actuelle
+            })
+          ) || [],
+          [] // Validateur pour limiter le nombre de cases cochées
+        ),
+        effectif_paturage: [operation?.effectif_paturage || null],
+        nb_jours_paturage: [operation?.nb_jours_paturage || null],
+        chargement_paturage: [operation?.chargement_paturage || null],
+        abroutissement_paturage: [operation?.abroutissement_paturage || null],
+        recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux_paturage || null],
+        
+        interv_cloture: [operation?.interv_cloture || null],
+        
+        type_intervention_hydro: [operation?.type_intervention_hydro || null],
+      }),
       
+      step5: this.fb.group({
+        // Peut etre non utilisés pour la nouvelle version de la gestion des opérations
+        // mais ils sont là pour le moment
+        titre: [operation?.titre || ''],
+        code: [operation?.code || ''],
+        inscrit_pdg: [operation?.inscrit_pdg || ''],
+        rmq_pdg: [operation?.rmq_pdg || ''],
+        nbjours: [operation?.nbjours || null],
+        app_fourr: [operation?.app_fourr || null],
+        ugb_moy: [operation?.ugb_moy || null],
+        pression_moy: [operation?.pression_moy || null],
+        charge_moy: [operation?.charge_moy || null],
+        charge_inst: [operation?.charge_inst || null],
+        interv_zh: [operation?.interv_zh || ''],
+        surf: [operation?.surf || null],
+        lin: [operation?.lin || null],
+        date_approx: [operation?.date_approx || ''],
+        objectif: [operation?.objectif || ''],
+        ben_participants: [operation?.ben_participants || null],
+        ben_heures: [operation?.ben_heures || null],
+      }),
     });
-  
+    
     // Ajouter une validation conditionnelle pour cadre_intervention_detail
     // Cela rechange le formulaire en fonction de la valeur de cadre_intervention
     // La valeur 12 est utilisée pour les chantiers nature.
@@ -286,10 +300,10 @@ export class FormService {
       }
       cadreDetailControl?.updateValueAndValidity(); // Mettre à jour la validité
     });
-  
+    
     return form;
   }
-
+  
   newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {
     return this.fb.group({
       uuid_ope: [uuid_ope || null, Validators.required],
@@ -372,8 +386,8 @@ export class FormService {
       validite: formValue.step1.validite,
 
       annee: formValue.step1.annee,
-      pro_debut: formValue.step1.pro_debut,
-      pro_fin: formValue.step1.pro_fin,
+      // pro_debut: formValue.step1.pro_debut,
+      // pro_fin: formValue.step1.pro_fin,
       date_crea: formValue.step1.date_crea,
 
       nom: formValue.step1.nom,
@@ -395,6 +409,87 @@ export class FormService {
 
     return dataToSubmit;
   }
+
+/**
+ * Prépare les données d'une opération pour soumission en nettoyant les valeurs du formulaire
+ * et en structurant les données dans un objet conforme au type `Operation`.
+ *
+ * @param form - Le formulaire Angular (`FormGroup`) contenant les données de l'opération.
+ * @returns Un objet `Operation` contenant les données nettoyées et structurées prêtes à être envoyées au backend.
+ *
+ * @remarks
+ * - Les champs inutiles (comme les listes de cases à cocher) sont supprimés.
+ * - Les données sont organisées en fonction des étapes du formulaire (step1 à step5).
+ * - Un log des données nettoyées est affiché dans la console avant la soumission.
+ */
+private prepareOperationDataForSubmission(form: FormGroup): Operation {
+  // On clone la valeur brute du formulaire
+  const formValue = { ...form.value };
+
+  // Construction de l'objet final
+  const dataToSubmit: Operation = {
+    uuid_ope: formValue.uuid_ope,
+    ref_uuid_proj: formValue.ref_uuid_proj,
+    date_ajout: formValue.date_ajout,
+
+    // Step 1
+    validite: formValue.step1?.validite,
+    obj_ope: formValue.step1?.obj_ope,
+    action: formValue.step1?.action,
+    action_2: formValue.step1?.action_2,
+    description: formValue.step1?.description,
+    remarque: formValue.step1?.remarque,
+
+    // Step 2
+    typ_intervention: formValue.step2?.typ_intervention,
+    nom_mo: formValue.step2?.nom_mo,
+    cadre_intervention: formValue.step2?.cadre_intervention,
+    cadre_intervention_detail: formValue.step2?.cadre_intervention_detail,
+
+    // Step 3
+    description_programme: formValue.step3?.description_programme,
+
+    // Step 4
+    date_debut: formValue.step4?.date_debut,
+    date_fin: formValue.step4?.date_fin,
+    quantite: formValue.step4?.quantite,
+    unite: formValue.step4?.unite,
+    exportation_fauche: formValue.step4?.exportation_fauche,
+    total_exporte_fauche: formValue.step4?.total_exporte_fauche,
+    productivite_fauche: formValue.step4?.productivite_fauche,
+    effectif_paturage: formValue.step4?.effectif_paturage,
+    nb_jours_paturage: formValue.step4?.nb_jours_paturage,
+    chargement_paturage: formValue.step4?.chargement_paturage,
+    abroutissement_paturage: formValue.step4?.abroutissement_paturage,
+    recouvrement_ligneux_paturage: formValue.step4?.recouvrement_ligneux_paturage,
+    interv_cloture: formValue.step4?.interv_cloture,
+    type_intervention_hydro: formValue.step4?.type_intervention_hydro,
+
+    // Step 5
+    titre: formValue.step5?.titre,
+    code: formValue.step5?.code,
+    inscrit_pdg: formValue.step5?.inscrit_pdg,
+    rmq_pdg: formValue.step5?.rmq_pdg,
+    nbjours: formValue.step5?.nbjours,
+    app_fourr: formValue.step5?.app_fourr,
+    ugb_moy: formValue.step5?.ugb_moy,
+    pression_moy: formValue.step5?.pression_moy,
+    charge_moy: formValue.step5?.charge_moy,
+    charge_inst: formValue.step5?.charge_inst,
+    interv_zh: formValue.step5?.interv_zh,
+    surf: formValue.step5?.surf,
+    lin: formValue.step5?.lin,
+    date_approx: formValue.step5?.date_approx,
+    objectif: formValue.step5?.objectif,
+    ben_participants: formValue.step5?.ben_participants,
+    ben_heures: formValue.step5?.ben_heures,
+  } as Operation;
+
+  console.log("Données du formulaire OPERATION nettoyé juste avant d'être envoyé vers le backend pour INSERT / UPDATE :");
+  console.log(dataToSubmit);
+
+  return dataToSubmit;
+}
 
   putBdd(mode: String, table: String, form: FormGroup, isEditMode: boolean, snackbar: MatSnackBar, uuid?: String, initialFormValues?: any): Observable<{ isEditMode: boolean, formValue: any }> | undefined {
     // Cette fonction permet de sauvegarder les modifications
@@ -468,12 +563,16 @@ export class FormService {
         //   'pro_results_attendus',
         // ];
 
-        // Nettoyer les champs de date
+        // Mettre les steps du form Angular à plat et nettoyer les champs de date
         value = this.prepareProjetDataForSubmission(workingForm);
 
         console.log('Données du formulaire nettoyé :', workingForm);
-      } else if (table === 'objectifs') {
+      } else if (table === 'operations') {
         
+        // Mettre les steps du form Angular à plat et nettoyer les champs de date
+        value = this.prepareOperationDataForSubmission(workingForm);
+
+        console.log('Données du formulaire nettoyé :', workingForm);
 
       }
        else {
@@ -485,7 +584,6 @@ export class FormService {
       console.log('Données du formulaire value tout court :', value);
       console.log('mode actuel :' + mode + '. Table de travail :', table, '. uuid :', uuid);
 
-      
       // Envoi des modifications au serveur
       if (mode === 'update' && uuid != null) {
         return this.sitesService.updateTable(table, uuid, value).pipe(
@@ -550,6 +648,7 @@ export class FormService {
       return undefined;
     }
   }
+
   /**
    * Convertir les dates javascript en format PostgreSQL (YYYY-MM-DD)
    * Ne prend pas en compte les heures, minutes et secondes donc le fuseau horaire n'est pas pris en compte

@@ -52,10 +52,10 @@
             <ng-container *ngIf="!isEditProjet">
               <div>
 
-                <mat-form-field class="custom-mat-form-field">
+                <!-- <mat-form-field class="custom-mat-form-field">
                   <mat-label>Nom</mat-label>
                   <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <mat-form-field class="custom-mat-form-field">
                   <mat-label>Type de projet</mat-label>
@@ -83,14 +83,14 @@
                   <input matInput [value]="step1Form.get('annee')?.value || 'Non renseigné'" readonly>
 
                 </mat-form-field>
-                <mat-form-field>
+                <!-- <mat-form-field>
                   <mat-label>Période de travaux</mat-label>
                   <mat-date-range-input [rangePicker]="picker">
                     <input matStartDate placeholder="Date début" [value]="step1Form.get('pro_debut')?.value" readonly>
                     <input matEndDate placeholder="Date fin" [value]="step1Form.get('pro_fin')?.value" readonly>
                   </mat-date-range-input>
                   <mat-date-range-picker #picker></mat-date-range-picker>
-                </mat-form-field>
+                </mat-form-field> -->
                 <mat-form-field class="custom-mat-form-field">
                   <mat-label>Date création projet</mat-label>
                   <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
@@ -134,10 +134,11 @@
               <form [formGroup]="step1Form">
                 <ng-container>
                   <div>
-                    <mat-form-field>
+                    <!-- <mat-form-field>
                       <mat-label>Nom</mat-label>
                       <textarea matInput formControlName="nom"></textarea>
-                    </mat-form-field>
+                    </mat-form-field> -->
+                    
                     <mat-form-field>
                       <mat-label>Type de projet</mat-label>
                       <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
@@ -166,7 +167,7 @@
                       <mat-label>Année d'execution</mat-label>
                       <textarea matInput formControlName="annee"></textarea>
                     </mat-form-field>
-                    <mat-form-field>
+                    <!-- <mat-form-field>
                       <mat-label>Date de début</mat-label>
                       <input matInput [matDatepicker]="startDatePicker" formControlName="pro_debut" >
                       <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
@@ -177,7 +178,7 @@
                       <input matInput [matDatepicker]="endDatePicker" formControlName="pro_fin" required>
                       <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                       <mat-datepicker #endDatePicker></mat-datepicker>
-                    </mat-form-field>
+                    </mat-form-field> -->
                   </div>
 
                   <div>

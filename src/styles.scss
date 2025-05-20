@@ -104,3 +104,15 @@ body {
 .snackbar-error {
   background-color: red;
 }
+
+.custom-backdrop {
+  background: rgba(15, 34, 3, 0.5) !important;
+  opacity: 1 !important;
+  transition: opacity 225ms cubic-bezier(0.4,0.0,0.2,1), background 225ms cubic-bezier(0.4,0.0,0.2,1) !important;
+}
+
+.custom-dialog-backdrop-delete {
+  background: rgba(77, 36, 36, 0.8) !important;
+  opacity: 1 !important;
+  transition: opacity 225ms cubic-bezier(0.4,0.0,0.2,1), background 225ms cubic-bezier(0.4,0.0,0.2,1) !important;
+}

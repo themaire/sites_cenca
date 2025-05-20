@@ -16,6 +16,7 @@ import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
 import { Localisation } from '../../../../../shared/interfaces/localisation';
+import { ConfirmationDialogComponent } from '../../../../../confirmation/confirmation.component';
 
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
@@ -28,6 +29,7 @@ import { TooltipPosition, MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
@@ -85,8 +87,11 @@ export const MY_DATE_FORMATS = {
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormButtonsComponent,
+    ConfirmationDialogComponent,
     MapComponent,
+    MatDialogModule,
     MatSnackBarModule,
     MatSelectModule,
     MatIconModule,
@@ -131,7 +136,8 @@ export class OperationComponent implements OnInit, OnDestroy {
   operation!: Operation | void; // Pour les détails d'une opération
 
   // Pour le formulaire d'édition d'une opération
-  // Stoque l'ancienne valeur de l'action 2
+  // Stoque l'ancienne valeur de l'action 1 et 2
+  previousActionValue: string | null = null;
   previousAction2Value: string | null = null;
 
   // Listes de choix du formulaire
@@ -159,8 +165,8 @@ export class OperationComponent implements OnInit, OnDestroy {
     this.selectedOperationType = '';
 
     // Réinitialiser le champ action_2 du formulaire si nécessaire
-    if (this.form?.get('action_2')) {
-      this.form.get('action_2')!.reset('', { emitEvent: false });
+    if (this.step1Form && this.step1Form.get('action_2')) {
+      this.step1Form.get('action_2')!.reset('', { emitEvent: false });
       console.log('Le champ action_2 du formulaire a été réinitialisé.');
     } else {
       console.warn('Le champ action_2 est introuvable ou le formulaire n\'est pas initialisé.');
@@ -172,7 +178,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   operationTypesAme!: SelectValue[];
   operationTypesHydro!: SelectValue[];
   operationTypesDech!: SelectValue[];
-  operationTypesSol!: SelectValue[];
+  // operationTypesSol!: SelectValue[];
   selectedOperationType: string = '';
   
   maitreOeuvreTypes!: SelectValue[];
@@ -190,6 +196,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   unitesTypes!: SelectValue[];
 
   // Pour les cases à cocher (multiple choix) dans le step Information de l'opération du formulaire d'édition d'une opération
+  liste_ope_programmes!: OperationCheckbox[];
   liste_ope_animaux_paturage!: OperationCheckbox[];
 
   // Encore utilisé?
@@ -210,6 +217,26 @@ export class OperationComponent implements OnInit, OnDestroy {
   
   // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
   form: FormGroup;
+
+  get step1Form(): FormGroup {
+  return this.form.get('step1') as FormGroup;
+  }
+
+  get step2Form(): FormGroup {
+  return this.form.get('step2') as FormGroup;
+  }
+
+  get step3Form(): FormGroup {
+  return this.form.get('step3') as FormGroup;
+  }
+
+  get step4Form(): FormGroup {
+  return this.form.get('step4') as FormGroup;
+  }
+
+  get step5Form(): FormGroup {
+  return this.form.get('step5') as FormGroup;
+  }
 
   shapeForm?: FormGroup;
 
@@ -248,6 +275,10 @@ export class OperationComponent implements OnInit, OnDestroy {
   liste4?: SelectValue[],
   liste5?: SelectValue[]
 ): string | undefined {
+  if (!liste1) {
+    console.warn('getLibelleFromCd appelé avec une liste undefined');
+    return '';
+  }
   const listes = [liste1, liste2, liste3, liste4, liste5].filter(Boolean) as SelectValue[][];
   for (const liste of listes) {
     const type = liste.find(t => t.cd_type === cdType);
@@ -314,9 +345,10 @@ export class OperationComponent implements OnInit, OnDestroy {
           this.operationTypesHydro = selectValues || [];
           } else if (key == 'dech') {
           this.operationTypesDech = selectValues || [];
-          } else if (key == 'sol') {
-          this.operationTypesSol = selectValues || [];
-          }
+          } 
+          // else if (key == 'sol') {
+          // this.operationTypesSol = selectValues || [];
+          // }
         },
         (error) => {
           console.error(`Erreur lors de la récupération de la liste de choix (${key})`, error);
@@ -372,6 +404,14 @@ export class OperationComponent implements OnInit, OnDestroy {
       }
     );
 
+    // On récupère les listes pour les toutes cases à cocher (programmes et animaux) possibles d'un thème
+    // Ces variables sont utilisées dans this.fetch()
+    const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
+    this.liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
+    const subrouteOperationAnimauxListe = `ope-animaux/uuid=`; // Pas de UUID donc on recuperer tous les animaux
+    this.liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
+    console.log('Liste des programmes possibles :', this.liste_ope_programmes);
+    console.log('Liste des animaux possibles :', this.liste_ope_animaux_paturage);
 
 
     try {
@@ -379,7 +419,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Si on a bien une uuid de projet ou d'objectif pour recuperer les opérations lite
         
         setTimeout(async () => {
-          // Accéder à la liste des opérations et remplir le tableau Material des operationLite
+          // Accéder à la liste des opérations lite et remplir le tableau Material des operationLite
           this.fetch();
           
           console.log('Le composant est maintenant complètement initialisé.');
@@ -396,12 +436,11 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }
 
-    
   }
 
   /**
    * Méthode pour récupérer les opérations d'un projet
-   * @param uuid_ope - UUID de l'opération à récupérer
+   * @param uuid_ope - OPTIONNEL - UUID de l'opération à récupérer
    * @returns L'opération complète ou une liste d'opérations lite
    */
   async fetch(uuid_ope?: String): Promise<Operation | void> {
@@ -412,7 +451,9 @@ export class OperationComponent implements OnInit, OnDestroy {
       const subroute = `operations/uuid=${uuid}/lite`;
       this.projetService.getOperations(subroute).then(
         (operations) => {
-          this.operations = operations;
+
+          this.operations = operations; // Les operations lite sont de type OperationLite[]
+
           if (Array.isArray(this.operations) && this.operations.length > 0) {
             this.dataSourceOperations = new MatTableDataSource(this.operations);
             this.cdr.detectChanges();
@@ -430,10 +471,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       const subroute = `operations/uuid=${uuid_ope}/full`;
       
       const subrouteOperationProgramme = `ope-programmes/uuid=${uuid_ope}`;
-      const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
-
       const subrouteOperationAnimaux = `ope-animaux/uuid=${uuid_ope}`;
-      const subrouteOperationAnimauxListe = `ope-animaux/uuid=`;
 
       try {
         let operation = await this.projetService.getOperation(subroute);
@@ -443,30 +481,22 @@ export class OperationComponent implements OnInit, OnDestroy {
         // On récupère les eventuels programmes associés à l'opération
         const ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgramme);
         // console.log('Programmes associés à l\'opération :', ope_programmes);
-        //
-        // On récupère la liste des programmes possibles
-        const liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
-        // console.log('Liste des programmes possibles :', liste_ope_programmes);
 
         // CASES A COCHER (MULTIPLE CHOIX) POUR LES ANIMAUX
-        // On récupère les eventuels animaux associés à l'opération
+        // On récupère les eventuels animaux associés à l'opération depuis la base de données
         const ope_animal_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimaux);
         // console.log('Programmes associés à l\'opération :', ope_animal_paturage);
-        //
-        // On récupère la liste des animaux d'un paturage possibles
-        this.liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
-        // console.log('Liste des programmes possibles :', liste_ope_animaux_paturage);
 
         // Ajouter les programmes et les animaux à l'objet operation
         operation = {
           ...operation,
-          ope_programmes: this.transformCheckboxDatas(ope_programmes),
-          liste_ope_programmes: this.transformCheckboxDatas(liste_ope_programmes)
+          ope_programmes: ope_programmes,
+          liste_ope_programmes: this.liste_ope_programmes,
         };
         operation = {
           ...operation,
-          ope_animal_paturage: this.transformCheckboxDatas(ope_animal_paturage),
-          liste_ope_animaux_paturage: this.transformCheckboxDatas(this.liste_ope_animaux_paturage),
+          ope_animal_paturage: ope_animal_paturage,
+          liste_ope_animaux_paturage: this.liste_ope_animaux_paturage,
         };
 
         if (operation.liste_ope_programmes && operation.ope_programmes) {
@@ -554,7 +584,10 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Afficher la liste des champs invalides
       // console.log('Champs invalides :', this.getInvalidFields());
 
-      console.log('Ancienne valeur de action2 :', this.getLibelleByCdType(this.previousAction2Value, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech));
+      console.log('Ancienne valeur de action :', this.previousActionValue);
+      // console.log('Ancienne valeur de action :', this.getLibelleByCdType(this.previousActionValue, this.operationTypesFamilles));
+      console.log('Ancienne valeur de action2 :', this.previousAction2Value);
+      // console.log('Ancienne valeur de action2 :', this.getLibelleByCdType(this.previousAction2Value, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech));
       console.log('Données du formulaire principal :', this.form.value);
 
       this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
@@ -593,11 +626,13 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("isAddOperation apres toggleEditOperation('" + mode +"') :", this.isAddOperation);
       
     } else {
-      this.form = this.initialFormValues; // Réinitialiser le formulaire aux valeurs initiales
-      this.isEditOperation = false; // Sortir du mode édition
-      this.isAddOperation = false; // Sortir du mode ajout
-      this.isEditFromOperation.emit(this.isEditOperation); // Envoyer l'état de l'édition de l'operation au parent
-      this.isAddFromOperation.emit(this.isAddOperation); // Envoyer l'état de l'édition de l'operation au parent
+      if (this.initialFormValues && this.form) {
+        this.form.reset(this.initialFormValues);
+      }
+      this.isEditOperation = false;
+      this.isAddOperation = false;
+      this.isEditFromOperation.emit(this.isEditOperation);
+      this.isAddFromOperation.emit(this.isAddOperation);
       console.log("On vient de sortir du mode édition / ajout d'opération.");
     }
     this.cdr.detectChanges(); // Forcer la détection des changements
@@ -617,24 +652,6 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.error("Erreur lors de la récupération de la localisation de l'opération : ", error);
       return [];
     }
-  }
-
-  /**
-   * Méthode pour récupérer les programmes ou les animaux d'une opération
-   * Utilisée dans la méthode fetch() au moment de récupérer l'operation entière
-   * Transforme une liste de programmes en un tableau d'objets contenant uniquement
-   * les propriétés `lib_id` et `lib_libelle`.
-   *
-   * @param programmes - Un tableau d'objets représentant les programmes à transformer.
-   * Chaque objet doit contenir au moins les propriétés `lib_id` et `lib_libelle`.
-   * @returns Un tableau d'objets simplifiés, chacun contenant les propriétés `lib_id` et `lib_libelle`.
-   */
-  private transformCheckboxDatas(programmes: any[]): { lib_id: number; lib_libelle: string, checked : boolean }[] {
-    return programmes.map(programme => ({
-      lib_id: programme.lib_id,
-      lib_libelle: programme.lib_libelle,
-      checked : false // Ajout d'une propriété checked initialisée à false
-    }));
   }
 
   /**
@@ -663,7 +680,15 @@ export class OperationComponent implements OnInit, OnDestroy {
     if (empty) {
       // Création d'un formulaire vide - Si empty est vrai
       try {
-        this.form = this.formService.newOperationForm(undefined, this.ref_uuid_proj) as FormGroup;
+        // Création d'un objet Operation "neuf" avec les listes fixes
+        const newOperation: Operation = {
+          uuid_ope: crypto.randomUUID(), // remplir avec un UUID aléatoire car cette propriété est obligatoire dans la definition de l'objet Operation
+          ref_uuid_proj: this.ref_uuid_proj as string,
+          liste_ope_programmes: this.liste_ope_programmes,
+          liste_ope_animaux_paturage: this.liste_ope_animaux_paturage,
+          // Ajoutez ici les autres propriétés requises de Operation avec des valeurs par défaut si besoin
+        } as Operation;
+        this.form = this.formService.newOperationForm(newOperation, this.ref_uuid_proj) as FormGroup;
         this.selectedtypeObjectifOpe = '';
         this.selectedOperationFamille = '';
         this.selectedOperationType = '';
@@ -705,6 +730,8 @@ export class OperationComponent implements OnInit, OnDestroy {
 
           this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
           this.initialFormValues = this.form.value; // Stocker les valeurs initiales du formulaire
+          this.previousActionValue = this.step1Form.get('action')?.value || '';
+          console.log('Valeur initiale de action :', this.previousActionValue);
         }
 
         this.toggleEditOperation("edit")
@@ -721,9 +748,24 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     if (this.form !== undefined) {
       // Si le formulaire a été créé avec succès
-      this.form.get('action_2')?.valueChanges.subscribe((newValue) => {
-        this.previousAction2Value = this.selectedOperationType; // Met à jour l'ancienne valeur
+      this.step1Form.get('action')?.valueChanges.subscribe((newValue) => {
+        this.onFieldChange(newValue, 'action', this.previousActionValue);
+        this.previousActionValue = newValue; // Met à jour l'ancienne valeur
+        console.log('Vient de changer la nouvelle valeur devient l ancienne :', newValue, "donc this.previousActionValue = ", this.previousActionValue);
       });
+      this.step1Form.get('action_2')?.valueChanges.subscribe((newValue) => {
+        this.onFieldChange(newValue, 'action_2', this.previousAction2Value);
+        this.previousAction2Value = newValue; // Met à jour l'ancienne valeur
+        console.log('Action_2 vient de changer la nouvelle valeur devient l ancienne;:', newValue, "donc this.previousAction2Value = ", this.previousAction2Value);
+      });
+
+      // Test si this.step1Form existe et est rempli
+      if (this.step1Form) {
+        console.log('Formulaire d\'opération créé avec succès :', this.step1Form.value);
+        this.isComponentInitialized = true; // Indiquer que le composant est complètement initialisé
+      } else {
+        console.error('Le formulaire d\'opération n\'a pas été créé correctement.');
+      }
     }
   }
 
@@ -772,34 +814,34 @@ export class OperationComponent implements OnInit, OnDestroy {
 
         // Nouvelle opération
         if (this.isAddOperation === true){
-          this.projetService.insertOperation(this.form.value).subscribe(
-            (response: ApiResponse) => {
-              console.log("Enregistrement de l'opération avec succès :", response);
-              this.unsubForm(); // Se désabonner des changements du formulaire
-              
-              // Synchroniser les programmes et les animaux après la mise à jour
-              this.syncCheckboxs();
-              
-              // Afficher le message dans le Snackbar
-              const message = "Opération bien enregistrée"; // Message par défaut
-              
-              this.snackBar.open(message, 'Fermer', {
-                duration: 3000,
-                panelClass: ['snackbar-success']
-              });
+          console.log('Ajout de l\'opération en cours...');
+          console.log('Formulaire juste avant le insert :', this.form.value);
+          const updateObservable = this.formService.putBdd('insert', 'operations', this.form, this.isEditOperation, this.snackBar);
+          
+          // S'abonner à l'observable updateObservable 
+          if (updateObservable) {
+            updateObservable.subscribe(
+              (result) => {
+                this.isEditOperation = result.isEditMode;
+                this.isEditFromOperation.emit(this.isEditOperation);
+                
+                console.log('Opération ajoutés avec succès:', result.formValue);
 
-              // Mise a jout de la liste des opérations
-              // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
-              this.fetch();
-            },
-            (error) => {
-              console.error('Erreur lors de l\'enregistrement de l\'opération', error);
-              this.snackBar.open('Erreur lors de l\'enregistrement de l\'opération', 'Fermer', {
-                duration: 3000,
-                panelClass: ['snackbar-error']
-              });
-            }
-          );
+                // Synchroniser les cases à cocher après l'ajout
+                this.syncCheckboxs();
+                
+                // Accéder à la liste des opérations et remplir le tableau Material des operationLite
+                this.operation = undefined; // Réinitialiser l'opération
+
+                // Mise a jout de la liste des opérations (liste liste - tableau "material table")
+                // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
+                this.fetch();
+              },
+              (error) => {
+                console.error('Erreur lors de l\'enregistrement du formulaire', error);
+              }
+            );
+          }
 
           // Changer l'état dans ce composant et celui du parent
           this.isAddOperation = false; // Changer le mode du booleen
@@ -807,12 +849,11 @@ export class OperationComponent implements OnInit, OnDestroy {
 
         // Modification d'une opération
         } else if (this.isEditOperation === true) {
-          console.log('Enregistrement de l\'opération en cours suite à demande de validation...');
-          
-          console.log('Formulaire juste avant le onUpdate :', this.form.value);
+          console.log('Enregistrement de l\'opération en cours...');
+          console.log('Formulaire juste avant le update :', this.form.value);
           const updateObservable = this.formService.putBdd('update', 'operations', this.form, this.isEditOperation, this.snackBar, this.form.value.uuid_ope, this.initialFormValues);
           
-          // S'abonner à l'observable. onUpdate 
+          // S'abonner à l'observable updateObservable 
           if (updateObservable) {
             updateObservable.subscribe(
               (result) => {
@@ -821,7 +862,7 @@ export class OperationComponent implements OnInit, OnDestroy {
                 
                 console.log('Formulaire mis à jour avec succès:', result.formValue);
 
-                // Synchroniser les programmes après la mise à jour
+                // Synchroniser les cases à cocher après la mise à jour
                 this.syncCheckboxs();
                 
                 // Accéder à la liste des opérations et remplir le tableau Material des operationLite
@@ -1042,6 +1083,23 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
+  dialog = inject(MatDialog);
+
+  confirmDeleteOperation(): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Confirmation de suppression',
+        message: 'Voulez-vous vraiment supprimer cette opération ? Cette action est irréversible.'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.deleteItem('operation');
+      }
+    });
+  }
+
   // Utilisée à l'interieur de this.deleteItem() pour afficher un message de suppression
   callSnackDelete(mode: string, table: string, response?: ApiResponse): void {
     if(mode === 'normal' && response !== undefined) {
@@ -1069,21 +1127,38 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Détecte le changement de la valeur du champ `action_2` (Type opération 2) dans le formulaire.
+   * Détecte le changement de la valeur du champ `action_2` (Type opération 2)
+   * et de `cadre_intervention_detail` dans le formulaire.
    * 
    * @param newValue - La nouvelle valeur sélectionnée pour le cadre d'intervention.
    * 
-   * Lorsque ce champ change, la méthode réinitialise la valeur du champ
+   * Par exemple lorsque le champ `cadre_intervention` change, la méthode réinitialise la valeur du champ
    * `cadre_intervention_detail` à `null` sans émettre d'événement, afin de garantir
    * la cohérence des données du formulaire.
    */
   onFieldChange(newValue: number, field: string, previousValue?: string | number | null): void {
-    const newValueText = this.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+    let newValueText = undefined;
+    let previousValueText = undefined;
+    console.log(`Changement de ${field} détecté, nouvelle valeur brute : ${newValue}.`);
+    if (field === 'action') {
+      newValueText = this.getLibelleByCdType(newValue, this.operationTypesFamilles);
+      if (previousValue) {
+        previousValueText = this.getLibelleByCdType(previousValue, this.operationTypesFamilles);
+      }
+      console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
+      // Mettre à null la valeur de cadre_intervention_detail
+    } else if (field === 'action_2') {
+      newValueText = this.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+      if (previousValue) {
+        previousValueText = this.getLibelleByCdType(previousValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+      }
+      console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
+    }
     
-    // Si on charge à détecter que l'on a passé d'une valeur à une autre
+
+    // Si on détecte que l'on a passé d'une valeur à une autre
     if (previousValue === undefined || previousValue != null) {
-      const previousValueText = this.getLibelleByCdType(previousValue!, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
-      // console.log(`Changement de ${field} détecté, ancienne et nouvelle valeur : ${previousValueText}} / ${newValueText}.`);
+      console.log(`Changement de ${field} détecté, ancienne et nouvelle valeur : ${previousValueText} / ${newValueText}.`);
 
       if (field === 'action_2') {
         // Mettre à null les valeur d'information d'opération de paturage
@@ -1096,23 +1171,23 @@ export class OperationComponent implements OnInit, OnDestroy {
           }
           
           // Champs de nombres et listes déroulantes du formulaire
-          if (this.form?.get('effectif_paturage')) {
-            this.form.get('effectif_paturage')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('effectif_paturage')) {
+            this.step4Form.get('effectif_paturage')!.setValue(null, { emitEvent: false });
           }
-          if (this.form?.get('nb_jours_paturage')) {
-            this.form.get('nb_jours_paturage')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('nb_jours_paturage')) {
+            this.step4Form.get('nb_jours_paturage')!.setValue(null, { emitEvent: false });
           }
-          if (this.form?.get('chargement_paturage')) {
-            this.form.get('chargement_paturage')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('chargement_paturage')) {
+            this.step4Form.get('chargement_paturage')!.setValue(null, { emitEvent: false });
           }
-          if (this.form?.get('abroutissement_paturage')) {
-            this.form.get('abroutissement_paturage')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('abroutissement_paturage')) {
+            this.step4Form.get('abroutissement_paturage')!.setValue(null, { emitEvent: false });
           }
-          if (this.form?.get('recouvrement_ligneux_paturage')) {
-            this.form.get('recouvrement_ligneux_paturage')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('recouvrement_ligneux_paturage')) {
+            this.step4Form.get('recouvrement_ligneux_paturage')!.setValue(null, { emitEvent: false });
           }
 
-          // Supprimer tous les animaux possibles de l'opération en base de
+          // Supprimer tous les animaux possibles de l'opération en base de données
           this.liste_ope_animaux_paturage.forEach((animal) => {
             if (animal.lib_id) {
               this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
@@ -1127,14 +1202,27 @@ export class OperationComponent implements OnInit, OnDestroy {
           });
         } else if (previousValueText == 'Fauche' && newValueText != 'Fauche') {
           // Champs de nombres et listes déroulantes du formulaire
-          if (this.form?.get('exportation_fauche')) {
-            this.form.get('exportation_fauche')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('exportation_fauche')) {
+            this.step4Form.get('exportation_fauche')!.setValue(null, { emitEvent: false });
           }
-          if (this.form?.get('total_exporte_fauche')) {
-            this.form.get('total_exporte_fauche')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('total_exporte_fauche')) {
+            this.step4Form.get('total_exporte_fauche')!.setValue(null, { emitEvent: false });
           }
-          if (this.form?.get('productivite_fauche')) {
-            this.form.get('productivite_fauche')!.setValue(null, { emitEvent: false });
+          if (this.step4Form.get('productivite_fauche')) {
+            this.step4Form.get('productivite_fauche')!.setValue(null, { emitEvent: false });
+          }
+        } else if (previousValueText == 'Intervention sur clôtures' && newValueText != 'Intervention sur clôtures') {
+          // Champs de nombres et listes déroulantes du formulaire
+          if (this.step4Form.get('interv_cloture')) {
+            this.step4Form.get('interv_cloture')!.setValue(null, { emitEvent: false });
+          }
+        } else if (
+          (previousValueText == 'Creusement' || previousValueText == 'Intervention sur les berges' || previousValueText == "Aménagement de plans d'eau") &&
+          (newValueText != 'Creusement' && newValueText != "Intervention sur les berges" && newValueText != "Aménagement de plans d'eau")
+        ) {
+          // Champs de nombres et listes déroulantes du formulaire
+          if (this.step4Form.get('type_intervention_hydro')) {
+            this.step4Form.get('type_intervention_hydro')!.setValue(null, { emitEvent: false });
           }
         }
       }
@@ -1142,10 +1230,11 @@ export class OperationComponent implements OnInit, OnDestroy {
       // console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValue}.`);
       // console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
       
+      // Cas du chantier nature
       if (field === 'cadre_intervention') {
         // Mettre à null la valeur de cadre_intervention_detail
-        if (this.form?.get('cadre_intervention_detail')) {
-          this.form.get('cadre_intervention_detail')!.setValue(null, { emitEvent: false });
+        if (this.step4Form.get('cadre_intervention_detail')) {
+          this.step4Form.get('cadre_intervention_detail')!.setValue(null, { emitEvent: false });
           console.log('Le champ cadre_intervention_detail a été réinitialisé à null.');
         }
       }
@@ -1157,7 +1246,7 @@ export class OperationComponent implements OnInit, OnDestroy {
    * @returns {FormArray} La liste des programmes d'opération
    */
   get listeOpeProgrammes(): FormArray {
-    return this.form.get('liste_ope_programmes') as FormArray;
+    return this.step3Form.get('liste_ope_programmes') as FormArray;
   }
 
   /**
@@ -1165,7 +1254,7 @@ export class OperationComponent implements OnInit, OnDestroy {
    * @returns {FormArray} La liste des animaux d'une opération
    */
   get listeOpeAnimaux(): FormArray {
-    return this.form.get('liste_ope_animaux_paturage') as FormArray;
+    return this.step4Form.get('liste_ope_animaux_paturage') as FormArray;
   }
 
   /**
@@ -1181,8 +1270,8 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Méthode pour mettre à jour this.operation en fonction des animaux sélectionnés par l'utilisateur
-  */
+   * Méthode pour mettre à jour this.operation en fonction des animaux sélectionnés par l'utilisateur
+   */
   getSelectedAnimaux(): { lib_id: number; lib_libelle: string }[] {
     return this.listeOpeAnimaux.controls
       .filter(control => control.get('checked')?.value)
@@ -1193,130 +1282,107 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Synchronise les programmes sélectionnés avec la base de données.
-   * Ajoute ou supprime les programmes en fonction des changements effectués par l'utilisateur.
+   * Ajoute les checkbox sélectionnés dans la base de données avec les choix effectués par l'utilisateur.
    */
-  private syncOperationProgrammes(): void {
-    if (!this.operation || !this.operation.liste_ope_programmes) {
-      console.error('Impossible de synchroniser les programmes : données manquantes.');
-      return;
-    }
-  
-    // Programmes sélectionnés par l'utilisateur
-    const selectedProgrammes = this.getSelectedProgrammes();
-  
-    // Programmes déjà enregistrés en base
-    const existingProgrammes = this.operation.ope_programmes || [];
-  
-    // Identifier les programmes à ajouter
-    const programmesToAdd = selectedProgrammes.filter(
-      selected => !existingProgrammes.some(existing => existing.lib_id === selected.lib_id)
-    );
-    console.log('Programmes à ajouter :', programmesToAdd);
-  
-    // Identifier les programmes à supprimer
-    const programmesToRemove = existingProgrammes.filter(
-      existing => !selectedProgrammes.some(selected => selected.lib_id === existing.lib_id)
-    );
-    console.log('Programmes à supprimer :', programmesToRemove);
-  
-    // Ajouter les nouveaux programmes
-  
-    programmesToAdd.forEach(programme => {
-
+  insertCheckbox(insertList: OperationCheckbox[], table: string): void {
+    insertList.forEach(item => {
       // Créer un objet OperationProgramme à partir du programme sélectionné
-      const operationProgramme: OperationCheckbox = {
+      const itemToInsert: OperationCheckbox = {
         uuid_ope: this.operation!.uuid_ope,
-        checkbox_id: programme.lib_id, // Remplir l'identifiant du programme
+        checkbox_id: item.lib_id, // Remplir l'identifiant du programme
       };
 
-      this.projetService.insertOperationCheckbox(operationProgramme, 'operation_programmes').subscribe({
+      this.projetService.insertCheckbox(item, table).subscribe({
         next: () => {
-          console.log(`Programme ajouté : ${programme.lib_libelle}`);
+          console.log(`Programme ajouté : ${item.lib_libelle}`);
         },
         error: (error) => {
-          console.error(`Erreur lors de l'ajout du programme : ${programme.lib_libelle}`, error);
+          console.error(`Erreur lors de l'ajout du programme : ${item.lib_libelle}`, error);
         }
       });
-    });
-  
-    // Supprimer les programmes non sélectionnés
-    programmesToRemove.forEach(programme => {
-      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, programme.lib_id, 'operation_programmes').subscribe({
-        next: () => {
-          console.log(`Programme supprimé : ${programme.lib_libelle}`);
-        },
-        error: (error) => {
-          console.error(`Erreur lors de la suppression du programme : ${programme.lib_libelle}`, error);
-        }
-      });
+
     });
   }
 
-  // A voir pour faire une méthode commune avec celle de syncOperationProgrammes()
   /**
-   * Synchronise les programmes sélectionnés avec la base de données.
-   * Ajoute ou supprime les programmes en fonction des changements effectués par l'utilisateur.
+   * Synchronise les cases à cocher sélectionnées (programmes ou animaux...) avec la base de données.
+   * @param type 'programmes' ou 'animaux'
    */
-  private syncOperationAnimaux(): void {
-    if (!this.operation || !this.operation.liste_ope_animaux_paturage) {
-      console.error('Impossible de synchroniser les programmes : données manquantes.');
+  private syncOperationCheckboxes(type: 'programmes' | 'animaux'): void {
+    let selected: { lib_id: number; lib_libelle: string }[] = [];
+    let existing: OperationCheckbox[] = [];
+    let liste: OperationCheckbox[] | undefined;
+    let ope: OperationCheckbox[] | undefined;
+    let table = '';
+  
+    if (!this.operation) {
+      console.error('Impossible de synchroniser : données manquantes.');
       return;
     }
   
-    // Animaux sélectionnés par l'utilisateur
-    const selectedAnimals = this.getSelectedAnimaux();
+    if (type === 'programmes') {
+      selected = this.getSelectedProgrammes();
+      liste = this.operation.liste_ope_programmes;
+      ope = this.operation.ope_programmes;
+      table = 'operation_programmes';
+    } else {
+      selected = this.getSelectedAnimaux();
+      liste = this.operation.liste_ope_animaux_paturage;
+      ope = this.operation.ope_animal_paturage;
+      table = 'operation_animaux';
+    }
   
-    // Animaux déjà enregistrés en base
-    const existingAnimals = this.operation.ope_animal_paturage || [];
+    if (!liste) {
+      console.error(`Impossible de synchroniser les ${type} : données manquantes.`);
+      return;
+    }
   
-    // Identifier les animaux à ajouter
-    const animalsToAdd = selectedAnimals.filter(
-      selected => !existingAnimals.some(existing => existing.lib_id === selected.lib_id)
+    existing = ope || [];
+  
+    // À ajouter
+    const toAdd = selected.filter(
+      sel => !existing.some(ex => ex.lib_id === sel.lib_id)
     );
-    console.log('Programmes à ajouter :', animalsToAdd);
-  
-    // Identifier les animaux à supprimer
-    const programmesToRemove = existingAnimals.filter(
-      existing => !selectedAnimals.some(selected => selected.lib_id === existing.lib_id)
+    // À supprimer
+    const toRemove = existing.filter(
+      ex => !selected.some(sel => sel.lib_id === ex.lib_id)
     );
-    console.log('Programmes à supprimer :', programmesToRemove);
   
-    // Ajouter les nouveaux animaux
+    console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} à ajouter :`, toAdd);
+    console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} à supprimer :`, toRemove);
   
-    animalsToAdd.forEach(animal => {
-
-      // Créer un objet operationAnimal à partir de l'animal sélectionné
-      const operationAnimal: OperationCheckbox = {
+    // Ajout
+    toAdd.forEach(item => {
+      const checkbox: OperationCheckbox = {
         uuid_ope: this.operation!.uuid_ope,
-        checkbox_id: animal.lib_id, // Remplir l'identifiant de l'animal
+        checkbox_id: item.lib_id,
       };
-
-      this.projetService.insertOperationCheckbox(operationAnimal, 'operation_animaux').subscribe({
+      this.projetService.insertCheckbox(checkbox, table).subscribe({
         next: () => {
-          console.log(`Programme ajouté : ${animal.lib_libelle}`);
+          console.log(`${type} ajouté : ${item.lib_libelle}`);
         },
         error: (error) => {
-          console.error(`Erreur lors de l'ajout du programme : ${animal.lib_libelle}`, error);
+          console.error(`Erreur lors de l'ajout du ${type} : ${item.lib_libelle}`, error);
         }
       });
     });
   
-    // Supprimer les animaux non sélectionnés
-    programmesToRemove.forEach(animal => {
-      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
+    // Suppression
+    toRemove.forEach(item => {
+      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, item.lib_id, table).subscribe({
         next: () => {
-          console.log(`Programme supprimé : ${animal.lib_libelle}`);
+          console.log(`${type} supprimé : ${item.lib_libelle}`);
         },
         error: (error) => {
-          console.error(`Erreur lors de la suppression du programme : ${animal.lib_libelle}`, error);
+          console.error(`Erreur lors de la suppression du ${type} : ${item.lib_libelle}`, error);
         }
       });
     });
   }
 
   syncCheckboxs(): void {
-    this.syncOperationProgrammes();
-    this.syncOperationAnimaux()
+    // Faire tout d'un coup
+    this.syncOperationCheckboxes('programmes');
+    this.syncOperationCheckboxes('animaux');
   }
 }

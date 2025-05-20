@@ -16,7 +16,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 
 import {
-  MatDialog,
+  MatDialog, 
+  MatDialogModule,
   MAT_DIALOG_DATA,
   MatDialogTitle,
   MatDialogContent,
@@ -26,6 +27,7 @@ import {
   selector: 'app-detail-projets',
   standalone: true,
   imports: [CommonModule,
+            MatDialogModule,
             MatTableModule, 
             MatTooltipModule, 
             MatIcon,
@@ -136,6 +138,14 @@ export class DetailProjetsComponent {
     // tout en créant la constante dialogRef
     const dialogRef = this.dialog.open(dialogComponent, {
       data: projetlite,
+      // width: '90vw',         // Largeur à 90% de la fenêtre
+      maxWidth: '95vw',      // Largeur maximale à 98% de la fenêtre
+      maxHeight: '95vh',     // Hauteur maximale à 90% de la fenêtre
+      // height: '70vh',     // (optionnel) Hauteur fixe si tu veux forcer une taille
+      hasBackdrop: true, // Pas de fond sombre
+      backdropClass: 'custom-backdrop',
+      enterAnimationDuration: '300ms',
+      exitAnimationDuration: '300ms'
       // panelClass: 'custom-dialog-container' // Classe personnalisée si l'encapsulation des styles css de material est désactivée dans le composant projet.
     });
 

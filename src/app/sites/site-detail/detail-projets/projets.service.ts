@@ -78,13 +78,13 @@ export class ProjetService {
     );
   }
 
-  /** Ajouter un programme d'une opération - Gestion des cases à cocher dans le formulaire d'édition d'une opération
+  /** Gestion des cases à cocher dans un formumaire
   *   Utilisé dans operation.component.ts - Ajouter un élément revient à cocher une case dans le formulaire
-  *   @param operationProgramme : l'objet contenant les informations du programme d'une opération
+  *   @param checkBoxList: OperationCheckbox[] : l'objet contenant les informations du programme d'une opération
   */
-  insertOperationCheckbox(operationProgramme: OperationCheckbox, table: string): Observable<ApiResponse> {
+  insertCheckbox(checkBoxList: OperationCheckbox, table: string): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=${table}/insert`;
-    return this.http.put<ApiResponse>(url, operationProgramme);
+    return this.http.put<ApiResponse>(url, checkBoxList);
   }
 
   /** Supprimer un programme d'une opération - Gestion des cases à cocher dans le formulaire d'édition d'une opération

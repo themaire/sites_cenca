@@ -413,19 +413,19 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     console.log("Je me concentre sur ", this.projetForm.get('step1.pro_fin')?.value);
 
     // Formater les dates avant l'envoi au backend        
-    if (
-      this.formService.isDateModified(this.projetForm, 'step1.pro_debut', this.projet?.pro_debut) ||
-      this.formService.isDateModified(this.projetForm, 'step1.pro_fin', this.projet?.pro_fin)
-    ) {
-      console.log("Une des 3 dates à été modifiée par l'utilisateur.");
-      this.projetForm.patchValue({
-        step1: {
-          pro_debut: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_debut')?.value),
-          pro_fin: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_fin')?.value),
-        }
-      });
-      console.log("Formulaire patché avec les bonnes dates: ", this.projetForm.value);
-    }
+    // if (
+    //   this.formService.isDateModified(this.projetForm, 'step1.pro_debut', this.projet?.pro_debut) ||
+    //   this.formService.isDateModified(this.projetForm, 'step1.pro_fin', this.projet?.pro_fin)
+    // ) {
+    //   console.log("Une des 3 dates à été modifiée par l'utilisateur.");
+    //   this.projetForm.patchValue({
+    //     step1: {
+    //       pro_debut: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_debut')?.value),
+    //       pro_fin: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_fin')?.value),
+    //     }
+    //   });
+    //   console.log("Formulaire patché avec les bonnes dates: ", this.projetForm.value);
+    // }
 
     if(!this.newProjet){
       console.log("Modification d'un projet existant. this.newProjet = " + this.newProjet);

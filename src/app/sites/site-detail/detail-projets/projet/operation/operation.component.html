@@ -79,17 +79,27 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
   <!-- (nom_dans_composant)='mathode à utiliser depuis le composant du bouton' -->
 
-  <mat-horizontal-stepper [linear]="linearMode" #stepper>
+  <!-- Réglage de l'animation du stepper -->
+  <div class="example-input-wrapper">
+    <!-- <label for="duration">Animation duration:</label> -->
+    <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
+  </div>
+      
+  <mat-stepper labelPosition="bottom" 
+                      [linear]="operation ? false : true"
+                      #stepper 
+                      [animationDuration]="duration.value" 
+                      class="margin-stepper"
+                      *ngIf="form">
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="step1Form">
+      <form [formGroup]="step1Form">
         <ng-template matStepLabel>Type de l'opération</ng-template>
         <div>
           <mat-slide-toggle
                 formControlName="validite"
                 class="toggle"
-                [checked]="form.get('validite')?.value || false"
-                [disabled]="false">
+                [checked]="step1Form?.get('validite')?.value || false">
 
                 Validité de l'opération
 
@@ -117,7 +127,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
           <mat-form-field>
             <mat-label>Type d'opération 1</mat-label>
-            <mat-select [(ngModel)]="selectedOperationFamille" formControlName="action">
+            <mat-select formControlName="action">
               <mat-option *ngFor="let type of operationTypesFamilles" [value]="type.cd_type">
                 {{ type.libelle }}
               </mat-option>
@@ -125,8 +135,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
 
           <!-- Differents types d'opérations selon la famille sélectionnée -->
-          <ng-container *ngIf="selectedOperationFamille != ''">
-            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '027_TRAV_MECA_V2'">
+          <ng-container *ngIf="selectedOperationFamille != undefined">
+            <mat-form-field *ngIf ="previousActionValue == '027_TRAV_MECA_V2'">
               <mat-label>Type d'opération 2</mat-label>
               <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
                 @for (type of operationTypesMeca; track type) {
@@ -134,7 +144,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '028_TRAV_PAT_V2'">
+            <mat-form-field *ngIf ="previousActionValue == '028_TRAV_PAT_V2'">
               <mat-label>Type d'opération 2</mat-label>
               <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
                 @for (type of operationTypesPat; track type) {
@@ -142,7 +152,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '008_TRAV_AMEN_V2'">
+            <mat-form-field *ngIf ="previousActionValue == '008_TRAV_AMEN_V2'">
               <mat-label>Type d'opération 2</mat-label>
               <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
                 @for (type of operationTypesAme; track type) {
@@ -150,7 +160,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '005_TRAV_HYDRO_V2'">
+            <mat-form-field *ngIf ="previousActionValue == '005_TRAV_HYDRO_V2'">
               <mat-label>Type d'opération 2</mat-label>
               <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
                 @for (type of operationTypesHydro; track type) {
@@ -158,7 +168,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="selectedOperationFamille !== undefined && selectedOperationFamille == '200_TRAV_DECH_V2'">
+            <mat-form-field *ngIf ="previousActionValue == '200_TRAV_DECH_V2'">
               <mat-label>Type d'opération 2</mat-label>
               <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
                 @for (type of operationTypesDech; track type) {
@@ -168,31 +178,28 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-form-field>
           </ng-container>
 
-          <button mat-icon-button matTooltip="Décrire/Détailler l'opération en deux ou trois phrases." class="info-button">
-            <mat-icon>info</mat-icon>
-          </button>
-          <mat-form-field>
+          <mat-form-field matTooltip="Décrire/Détailler l'opération en deux ou trois phrases.">
             <mat-label>Description (détails)</mat-label>
-            <input matInput formControlName="description" placeholder="Exemple :● Fauche avec exportation des rémanents et mise en ballot
-            ● Débroussaillage de la végétation ligneuse avec mise en tas des rémanents en lisière.">
-            <mat-icon matSuffix (click)="form.get('description')?.setValue('')">clear</mat-icon>
-            <mat-error *ngIf="form.get('description')?.hasError('required')">
+            <textarea matInput formControlName="description" placeholder="Exemple :● Fauche avec exportation des rémanents et mise en ballot
+            ● Débroussaillage de la végétation ligneuse avec mise en tas des rémanents en lisière."></textarea>
+            <mat-icon matSuffix (click)="step1Form.get('description')?.setValue('')">clear</mat-icon>
+            <mat-error *ngIf="step1Form.get('description')?.hasError('required')">
               Ce champ est obligatoire.
             </mat-error>
-            <mat-error *ngIf="form.get('description')?.hasError('minWords')">
+            <mat-error *ngIf="step1Form.get('description')?.hasError('minWords')">
               La description doit contenir au moins 2 mots.
             </mat-error>
           </mat-form-field>
 
           <mat-form-field>
             <mat-label>Remarques particulières</mat-label>
-            <input matInput formControlName="remarque" placeholder="Exemple :● En raison des conditions hydriques exceptionnelles de cette année, la fauche a eu lieu tardivement en saison
-● Dégradation du site par des engins sylvicoles.">
-            <mat-icon matSuffix (click)="form.get('remarque')?.setValue('')">clear</mat-icon>
-            <mat-error *ngIf="form.get('remarque')?.hasError('required')">
+            <textarea matInput formControlName="remarque" placeholder="Exemple :● En raison des conditions hydriques exceptionnelles de cette année, la fauche a eu lieu tardivement en saison
+● Dégradation du site par des engins sylvicoles."></textarea>
+            <mat-icon matSuffix (click)="step1Form.get('remarque')?.setValue('')">clear</mat-icon>
+            <mat-error *ngIf="step1Form.get('remarque')?.hasError('required')">
               Ce champ est obligatoire.
             </mat-error>
-            <mat-error *ngIf="form.get('remarque')?.hasError('minWords')">
+            <mat-error *ngIf="step1Form.get('remarque')?.hasError('minWords')">
               Vos remarques doivent contenir au moins 2 mots.
             </mat-error>
           </mat-form-field>
@@ -204,8 +211,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="step2Form">
+      <form [formGroup]="step2Form">
         <ng-template matStepLabel>Type de l'intervention</ng-template>
         <div>
           <mat-form-field>
@@ -232,7 +239,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
               </mat-option>
             </mat-select>
           </mat-form-field>
-            <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || form.get('cadre_intervention')?.value === 12">
+            <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step1Form?.get('cadre_intervention')?.value === 12">
             <mat-label>Détail du cadre</mat-label>
             <mat-select formControlName="cadre_intervention_detail">
               @for (type of chantierNatureTypes; track type) {
@@ -248,15 +255,19 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step state="euro">
-      <form [formGroup]="form!">
+    <mat-step state="euro"  [stepControl]="step3Form">
+      <form [formGroup]="step3Form">
         <ng-template matStepLabel>Financement</ng-template>
 
         <mat-error *ngIf="!listeOpeProgrammes.valid">
           Vous ne pouvez pas sélectionner plus de 3 programmes.
         </mat-error>
         
-        <div formArrayName="liste_ope_programmes">
+        <div>
+          Le getter listeOpeProgrammes donne une liste de {{ listeOpeProgrammes.length }} programmes.<br>
+          La liste des programmes {{ listeOpeProgrammes }} a une longueur de {{ listeOpeProgrammes.length }}.<br>
+        </div>
+        <div formArrayName="liste_ope_programmes" *ngIf="listeOpeProgrammes && listeOpeProgrammes.length > 0">
           <div *ngFor="let programme of listeOpeProgrammes.controls; let i = index" [formGroupName]="i">
             <mat-checkbox formControlName="checked">
               {{ programme.get('lib_libelle')?.value }}
@@ -264,7 +275,6 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </div>
         </div>
 
-        
         <mat-error *ngIf="!listeOpeProgrammes.valid">
           Vous ne pouvez pas sélectionner plus de 3 programmes.
         </mat-error>
@@ -283,8 +293,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="step4Form">
+      <form [formGroup]="step4Form">
         <ng-template matStepLabel>Informations sur l'opération</ng-template>
         <div>
           <mat-form-field>
@@ -304,11 +314,11 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
         <div>
           <!-- Nombre -- Si surface, alors aller lire dans la surface du polygone -->
-          <mat-form-field *ngIf="getLibelleByCdType(form.get('unite')?.value, unitesTypes) !== 'Hectare'">
+          <mat-form-field *ngIf="getLibelleByCdType(step1Form.get('unite')?.value, unitesTypes) !== 'Hectare'">
             <mat-label>Quantité</mat-label>
             <input matInput type="number" formControlName="quantite">
           </mat-form-field>
-          <mat-form-field *ngIf="getLibelleByCdType(form.get('unite')?.value, unitesTypes) === 'Hectare'">
+          <mat-form-field *ngIf="getLibelleByCdType(step1Form.get('unite')?.value, unitesTypes) === 'Hectare'">
             <mat-label>Surface à déterminer</mat-label>
             <input matInput disabled>
           </mat-form-field>
@@ -325,8 +335,11 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
         </div>
 
         <!-- Affichage des champs en fonction du type d'opération -->
-        <ng-container *ngIf="getLibelleByCdType(form.get('action')?.value, operationTypesFamilles) === 'Traitement de la végétation'; then traitementVegetation"></ng-container>
-        <ng-container *ngIf="getLibelleByCdType(form.get('action')?.value, operationTypesFamilles) === 'Pâturage et opérations associées'; then paturageOperationsAssociees"></ng-container>
+        <ng-container *ngIf="getLibelleByCdType(step1Form.get('action')?.value, operationTypesFamilles) === 'Traitement de la végétation'; then traitementVegetation"></ng-container>
+        <ng-container *ngIf="getLibelleByCdType(step1Form.get('action')?.value, operationTypesFamilles) === 'Pâturage et opérations associées'; then paturageOperationsAssociees"></ng-container>
+        <ng-container *ngIf="getLibelleByCdType(step1Form.get('action')?.value, operationTypesFamilles) === 'Aménagement de site'; then amenagementDeSite"></ng-container>
+        <ng-container *ngIf="getLibelleByCdType(step1Form.get('action')?.value, operationTypesFamilles) === 'Gestion hydraulique'; then gestionHydraulique"></ng-container>
+        <ng-container *ngIf="getLibelleByCdType(step1Form.get('action')?.value, operationTypesFamilles) === 'Gestion des déchets'; then gestionDechets"></ng-container>
         
         <div>
           <button mat-button matStepperPrevious>Retour</button>
@@ -335,7 +348,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       </form>
     </mat-step>
 
-    <mat-step [stepControl]="form!">
+    <mat-step [stepControl]="form!" *ngIf="operation !== undefined && operation !== null">
       <ng-template matStepLabel>Données spatiales</ng-template>
 
       <div *ngIf="localisations !== undefined && localisations.length > 0">
@@ -379,8 +392,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       <button mat-button matStepperNext>Suivant</button>
     </mat-step>
 
-    <!-- <mat-step [stepControl]="form!">
-      <form [formGroup]="form!">
+    <mat-step [stepControl]="step5Form">
+      <form [formGroup]="step5Form">
         <ng-template matStepLabel>Champs non utilisés</ng-template>
         <div>
 
@@ -465,19 +478,19 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           <button mat-button matStepperPrevious>Retour</button>
         </div>
       </form>
-    </mat-step> -->
+    </mat-step>
 
-  </mat-horizontal-stepper>
+  </mat-stepper>
   
-  <div>
+  <div *ngIf="operation !== undefined && operation !== null">
     <button mat-button (click)="deleteItem('operation')">Supprimer l'opération</button>
   </div>
 </ng-template>
 
 <ng-template #traitementVegetation>
-  <div [formGroup]="form" class="conteneur-type-operation">
+  <div [formGroup]="step4Form" class="conteneur-type-operation">
     <!-- Bandeau -->
-    <div class="type-operation">{{ getLibelleByCdType(form.get('action')?.value, this.operationTypesFamilles) }}</div>
+    <div class="type-operation">{{ getLibelleByCdType(step1Form.get('action')?.value, this.operationTypesFamilles) }}</div>
 
     <!-- Contenu -->
     <div>
@@ -485,17 +498,19 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
       <div *ngFor="let type of operationTypesMeca" class="operation-info">
         
         <!-- On montre le libellé de chaque type. La classe cat_txv_active mets le libellé actif en évidence -->
-        <div [ngClass]="type.cd_type === form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
-          <!-- {{ type.libelle }} - {{ type.cd_type }} - {{ form.get('action_2')?.value }} -->
+        <div [ngClass]="type.cd_type === step1Form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+          <!-- {{ type.libelle }} - {{ type.cd_type }} - {{ step1Form.get('action_2')?.value }} -->
           {{ type.libelle }}
         </div>
 
         <!-- Si la clé bouclée est égale à la clé du déroulant 'action_2' ET que c'est 'fauche' (204) -->
-        <div *ngIf="type.cd_type === form.get('action_2')?.value && form.get('action_2')?.value === '204'">
+        <div *ngIf="
+          type.cd_type === step1Form.get('action_2')?.value && 
+          step1Form.get('action_2')?.value === '204'">
           <mat-slide-toggle
             formControlName="exportation_fauche"
             class="toggle"
-            [checked]="form.get('exportation_fauche')?.value || false"
+            [checked]="step1Form.get('exportation_fauche')?.value || false"
             [disabled]="false">
 
             Exportation de la fauche
@@ -514,8 +529,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
         </div>
 
         <!-- S'affiche uniquement dans le cas contraire à celle ci dessus -->
-        <div *ngIf="type.cd_type === form.get('action_2')?.value && form.get('action_2')?.value != '204'">
-          <i>Pas d'informations supplémentaires à renseigner pour cette catégorie.</i>
+        <div *ngIf="type.cd_type === step1Form.get('action_2')?.value && step1Form.get('action_2')?.value != '204'">
+          <i>Pas d'informations supplémentaires à renseigner ici pour cette catégorie. Utilisez le champ description si vous avez des remarques.</i>
         </div>
 
       </div>
@@ -526,27 +541,33 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 </ng-template>
 
 <ng-template #paturageOperationsAssociees>
-  <div [formGroup]="form" class="conteneur-type-operation">
+  <div [formGroup]="step4Form" class="conteneur-type-operation">
     <!-- Bandeau -->
-    <div class="type-operation">{{ getLibelleByCdType(form.get('action')?.value, this.operationTypesFamilles) }}</div>
+    <div class="type-operation">{{ getLibelleByCdType(step1Form.get('action')?.value, this.operationTypesFamilles) }}</div>
     
     <!-- Contenu -->
     <div>
       <!-- Pour chaque element de la liste des types d'opération -->
       <div *ngFor="let type of operationTypesPat" class="operation-info">
         <!-- On montre le libellé de chaque type -->
-        <div [ngClass]="type.cd_type === form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+        <div [ngClass]="type.cd_type === step1Form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
           {{ type.libelle }}
         </div>
 
-        <div *ngIf="type.cd_type === form.get('action_2')?.value && getLibelleByCdType(form.get('action_2')?.value, operationTypesPat) === 'Pâturage'">
+        <div *ngIf="
+          type.cd_type === step1Form.get('action_2')?.value && 
+            getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesPat) === 'Pâturage'">
           <!-- On montre les cases à cocher des animaux -->
-          <div formArrayName="liste_ope_animaux_paturage">
+          <div formArrayName="liste_ope_animaux_paturage" *ngIf="(listeOpeAnimaux?.controls?.length ?? 0) > 0">
             <div *ngFor="let animal of listeOpeAnimaux.controls; let i = index" [formGroupName]="i">
               <mat-checkbox formControlName="checked">
                 {{ animal.get('lib_libelle')?.value }}
               </mat-checkbox>
             </div>
+          </div>
+
+          <div formArrayName="liste_ope_animaux_paturage" *ngIf="(listeOpeAnimaux?.controls?.length ?? 0) == 0">
+            La liste des animaux est vide. C'est a dire que le getter listeOpeAnimaux est undefined ou n'a pas de controls.
           </div>
         
           <mat-form-field>
@@ -591,10 +612,12 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
 
-        <div *ngIf="type.cd_type === form.get('action_2')?.value && getLibelleByCdType(form.get('action_2')?.value, operationTypesPat) === 'Intervention sur clôtures'">
+        <div *ngIf="
+          type.cd_type === step1Form.get('action_2')?.value && 
+          getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesPat) === 'Intervention sur clôtures'">
           <mat-form-field>
             <mat-label>Type d'intervention sur clôtures</mat-label>
-            <mat-select formControlName="abroutissement_paturage">
+            <mat-select formControlName="interv_cloture">
               <mat-option *ngFor="let type of 
                 [{cd_type: 1, libelle: 'Installation de clôtures fixes'}, 
                 {cd_type: 2, libelle: 'Retrait de clôtures fixes'},
@@ -609,11 +632,146 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
         <!-- S'affiche uniquement dans le cas contraire à celle ci dessus -->
         <div 
           *ngIf="
-            type.cd_type === form.get('action_2')?.value && 
-            getLibelleByCdType(form.get('action_2')?.value, operationTypesPat) != 'Pâturage' && 
-            getLibelleByCdType(form.get('action_2')?.value, operationTypesPat) != 'Intervention sur clôtures'
+            type.cd_type === step1Form.get('action_2')?.value && 
+            getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesPat) != 'Pâturage' && 
+            getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesPat) != 'Intervention sur clôtures'
           ">
-          <i>Pas d'informations supplémentaires à renseigner pour cette catégorie.</i>
+          <i>Pas d'informations supplémentaires à renseigner ici pour cette catégorie. Utilisez le champ description si vous avez des remarques.</i>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #amenagementDeSite>
+  <div [formGroup]="step4Form" class="conteneur-type-operation">
+    <!-- Bandeau -->
+    <div class="type-operation">{{ getLibelleByCdType(step1Form.get('action')?.value, this.operationTypesFamilles) }}</div>
+    
+    <!-- Contenu -->
+    <div>
+      <!-- Pour chaque element de la liste des types d'opération -->
+      <div *ngFor="let type of operationTypesAme" class="operation-info">
+        <!-- On montre le libellé de chaque type -->
+        <div [ngClass]="type.cd_type === step1Form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+          {{ type.libelle }}
+        </div>
+
+        <!-- S'affiche uniquement dans le cas contraire à celle ci dessus -->
+        <div *ngIf="
+            type.cd_type === step1Form.get('action_2')?.value
+          ">
+          <i>Pas d'informations supplémentaires à renseigner ici pour cette catégorie. Utilisez le champ description si vous avez des remarques.</i>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #gestionHydraulique>
+  <div [formGroup]="step4Form" class="conteneur-type-operation">
+    <!-- Bandeau -->
+    <div class="type-operation">{{ getLibelleByCdType(step1Form.get('action')?.value, this.operationTypesFamilles) }}</div>
+
+    <!-- Contenu -->
+    <div>
+      <!-- Pour chaque element de la liste des types d'opération -->
+      <div *ngFor="let type of operationTypesHydro" class="operation-info">
+        
+        <!-- On montre le libellé de chaque type. La classe cat_txv_active mets le libellé actif en évidence -->
+        <div [ngClass]="type.cd_type === step1Form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+          <!-- {{ type.libelle }} - {{ type.cd_type }} - {{ step1Form.get('action_2')?.value }} -->
+          {{ type.libelle }}
+        </div>
+
+        <!-- Si la clé bouclée est égale à la clé du déroulant 'action_2' ET que c'est 'fauche' (204) -->
+        <div *ngIf="
+          type.cd_type === step1Form.get('action_2')?.value && 
+          getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesHydro) === 'Creusement'">
+          <mat-form-field>
+            <mat-label>Type d'intervention</mat-label>
+            <mat-select formControlName="type_intervention_hydro">
+              <mat-option *ngFor="let type of 
+                [{cd_type: 1, libelle: 'Mare'}, 
+                {cd_type: 2, libelle: 'Dépression'},
+                {cd_type: 3, libelle: 'Fossé'}]" 
+                [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="
+          type.cd_type === step1Form.get('action_2')?.value && 
+          getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesHydro) === 'Intervention sur les berges'">
+          <mat-form-field>
+            <mat-label>Type d'intervention</mat-label>
+            <mat-select formControlName="type_intervention_hydro">
+              <mat-option *ngFor="let type of 
+                [{cd_type: 4, libelle: 'Reprofilage de berges'}, 
+                {cd_type: 5, libelle: 'Entretien de berges'}]"
+                [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="
+          type.cd_type === step1Form.get('action_2')?.value && 
+          getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesHydro) === &quot;Aménagement de plans d'eau&quot;">
+          <mat-form-field>
+            <mat-label>Type d'intervention</mat-label>
+            <mat-select formControlName="type_intervention_hydro">
+              <mat-option *ngFor="let type of 
+                [{cd_type: 5, libelle: 'Vidange'}, 
+                {cd_type: 6, libelle: 'îlot'},
+                {cd_type: 7, libelle: 'Digues'}]" 
+                [value]="type.cd_type">
+                {{ type.libelle }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- S'affiche uniquement dans le cas contraire à celle ci dessus -->
+        <div 
+          *ngIf="
+            type.cd_type === step1Form.get('action_2')?.value && 
+            getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesHydro) != 'Creusement' && 
+            getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesHydro) != 'Intervention sur les berges' && 
+            getLibelleByCdType(step1Form.get('action_2')?.value, operationTypesHydro) != &quot;Aménagement de plans d'eau&quot;
+          ">
+          <i>Pas d'informations supplémentaires à renseigner ici pour cette catégorie. Utilisez le champ description si vous avez des remarques.</i>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</ng-template>
+
+<ng-template #gestionDechets>
+  <div [formGroup]="step4Form" class="conteneur-type-operation">
+    <!-- Bandeau -->
+    <div class="type-operation">{{ getLibelleByCdType(step1Form.get('action')?.value, this.operationTypesFamilles) }}</div>
+    
+    <!-- Contenu -->
+    <div>
+      <!-- Pour chaque element de la liste des types d'opération -->
+      <div *ngFor="let type of operationTypesDech" class="operation-info">
+        <!-- On montre le libellé de chaque type -->
+        <div [ngClass]="type.cd_type === step1Form.get('action_2')?.value ? 'cat_txv_active' : 'cat_txv_inactive'">
+          {{ type.libelle }}
+        </div>
+
+        <!-- S'affiche uniquement dans le cas contraire à celle ci dessus -->
+        <div *ngIf="
+            type.cd_type === step1Form.get('action_2')?.value
+          ">
+          <i>Pas d'informations supplémentaires à renseigner ici pour cette catégorie. Utilisez le champ description si vous avez des remarques.</i>
         </div>
       </div>
     </div>
