@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, EventEmitter, OnDestroy, AfterViewInit, AfterViewChecked, ViewChild, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -62,6 +62,8 @@ export class ObjectifComponent {
   @Input() isEditProjet!: boolean;
   @Input() uuid_projet?: string; // L'identifiant du projet selectionné pour voir son/ses objectif(s)
   @Input() new_projet?: boolean; // Si projet nouvelle generation (avec webapp)
+  
+  @Output() objectifProjet = new EventEmitter<string>(); // Pour envoyer l'objectif au parent
   
   // @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
   // @ViewChild('listOperations', { static: false }) listOperationsTemplate: any;
@@ -280,27 +282,6 @@ export class ObjectifComponent {
     }
   }
 
-  // isStepCompleted(stepIndex: number): boolean {
-  //   // Pour utiliser cette méthode dans le stepper
-  //   // il faut que le stepper soit en mode linear
-  //   // Fonctionn comme ceci dans le html :
-  //   // <mat-step [stepControl]="form" [completed]="isStepCompleted(2)">
-  //   switch (stepIndex) {
-  //     case 1:
-  //       return this.form.get('titre')?.valid || false;
-  //     case 2:
-  //       // return true || false;
-  //       return true;
-  //     case 3:
-  //       return true;
-  //     case 4:
-  //       return this.form.get('typ_intervention')?.valid || false;
-
-  //     default:
-  //       return false;
-  //   }
-  // }
-
   async fetch(uuid_objectif?: String): Promise<Objectif | void> {
     if (this.ref_uuid_proj !== undefined && uuid_objectif == undefined) {
       // Si on a un uuid de d'objectif passé en paramètre pour recuperer une liste d'objectifs.
@@ -313,6 +294,11 @@ export class ObjectifComponent {
           this.nbObjectifs = objectifs.length;
           if (Array.isArray(this.objectifs) && this.objectifs.length > 0) {
             this.dataSource = new MatTableDataSource(this.objectifs);
+
+            // On prend le premier (ou celui que tu veux) pour obtenir un morceau di sitre du composant projet
+            const obj_ope = this.objectifs[0].obj_ope; // ou autre logique pour choisir l'élément
+            this.objectifProjet.emit(this.projetService.getLibelleByCdType(obj_ope ?? null, this.typeObjectifOpe));
+            
             this.cdr.detectChanges();
             console.log('Liste des objectifs bien mises à jour.');
           }

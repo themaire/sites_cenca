@@ -8,11 +8,12 @@ import { ProjetLite, Projet } from '../projets';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { ProjetService } from '../projets.service';
 import { FormService } from '../../../../services/form.service';
+import { ConfirmationService } from '../../../../services/confirmation.service';
 
 import { DetailGestionComponent } from '../../detail-gestion/detail-gestion.component'; 
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 
-import { MatDialog, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -85,7 +86,7 @@ export const MY_DATE_FORMATS = {
     FormButtonsComponent,
     DetailGestionComponent,
     CommonModule,
-    MapComponent,
+    // MapComponent,
     MatSlideToggleModule,
     MatDialogModule,
     MatDialogTitle,
@@ -117,7 +118,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   projetLite: ProjetLite;
   projet!: Projet;
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
-  loadingDelay: number = 500;
+  loadingDelay: number = 1000;
+
+  objectifProjet: string = ''; // Objectif du projet provenant du composant objectif
   
   newProjet: boolean = false;
   isEditProjet: boolean = false;
@@ -154,8 +157,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
-    private sitesService: ProjetService,
+    private dialogRef: MatDialogRef<ProjetComponent>,
+    private projetService: ProjetService,
     private formService: FormService,
+    private confirmationService: ConfirmationService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
@@ -191,7 +196,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // Il s'agira de deux schémas different où les données sont stockées
     const subroute = `projets/uuid=${uuid_proj}/full/${type}`; // Full puisque UN SEUL projet
     console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
-    const projet = await this.sitesService.getProjet(subroute);
+    const projet = await this.projetService.getProjet(subroute);
     if (projet.typ_projet) this.selectedProjetType = projet.typ_projet; // Assigner le type de projet sélectionné à la variable
     return projet;
   }
@@ -216,7 +221,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
-          // Accéder aux données du projet (va prendre dans le scheme opegerer ou opeautre)
+          // Accéder aux données du projet (va prendre dans le schema opegerer ou opeautre)
           const projetObject = await this.fetch(this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation));
 
           // Accéder données du projet
@@ -474,4 +479,81 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       }
     }
   }
+
+  /**
+ * Configuration de la boîte de dialogue de confirmation pour la suppression
+ * d'une opération ou d'une localisation.
+ */
+  dialogConfig = {
+    // minWidth: '20vw',
+    // maxWidth: '95vw',
+    width: '580px',
+    height: '220px',
+    // maxHeight: '90vh',
+    hasBackdrop: true, // Activer le fond
+    backdropClass: 'custom-backdrop-delete', // Classe personnalisé
+    enterAnimationDuration: '300ms',
+    exitAnimationDuration: '300ms'
+  };
+
+/**
+ * Affiche une boîte de dialogue de confirmation pour la suppression d'une opération ou d'une localisation.
+ * Récupère le libellé de l'opération à partir du formulaire, puis ouvre une boîte de dialogue
+ * demandant à l'utilisateur de confirmer la suppression. Si l'utilisateur confirme,
+ * la méthode `deleteItem` contenue dans projetService.ts est appelée pour supprimer l'élément.
+ *
+ * @remarks
+ * Cette action est irréversible. La boîte de dialogue utilise un fond personnalisé
+ * et des animations d'entrée/sortie.
+ */
+  deleteItemConfirm(): void {
+    // Fabriquer le libellé du projet
+    // let libelle = '';
+    // if (type == 'operation') {
+    //   if (this.step1Form.get('action_2') !== undefined) {
+    //     const value = this.step1Form.get('action_2')?.value;
+    //     libelle = "opération de type " + this.getLibelleByCdType(
+    //       value,
+    //       this.operationTypesMeca,
+    //       this.operationTypesPat,
+    //       this.operationTypesAme,
+    //       this.operationTypesHydro,
+    //       this.operationTypesDech
+    //     ) || "";
+    //   }
+    // } else if (type == 'localisation') {
+    //   if (this.localisations && this.localisations.length > 0) {
+    //     libelle = type;
+    //   }
+    // }
+
+    // const message = `Voulez-vous vraiment supprimer cette ${libelle}?\n<strong>Cette action est irréversible.</strong>`
+    const message = `Voulez-vous vraiment supprimer ce projet?\n<strong>Cette action est irréversible.</strong>`
+    
+    // Appel de la boîte de dialogue de confirmation
+    this.confirmationService.confirm('Confirmation de suppression', message, this.dialogConfig).subscribe(result => {
+      if (result) {
+        // L'utilisateur a confirmé la suppression
+        // Utiliser le service projetService pour supprimer l'élément
+        this.projetService.deleteItem('projet', undefined, undefined, this.projet).subscribe(success => {
+          if (success) {
+            // success === true ici si la suppression a réussi on ferme la fenetre de dialogue
+            this.isEditProjet = false;
+            this.dialogRef.close(); // Ferme la boîte de dialogue
+          } else {
+            // success === false ici si la suppression a échoué
+            // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
+          }
+        });;
+      }
+    });
+
+  }
+
+onObjectifProjetChange(obj_ope: string) {
+  // Fais ce que tu veux avec le type d'objectif reçu
+  this.objectifProjet = obj_ope;
+  console.log('Objectif operationnel reçu du composant objectif :', obj_ope);
+}
+
 }

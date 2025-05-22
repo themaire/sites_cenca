@@ -14,7 +14,8 @@ import { OperationLite } from '../../sites/site-detail/detail-projets/projet/ope
   styleUrl: './form-buttons.component.scss'
 })
 export class FormButtonsComponent {
-  @Input() icone!: string;  // Valeur par défaut pour voir si c'est vide
+  @Input() icone!: string;
+  @Input() theme!: string;
   @Input() isFormValid!: boolean;
   @Input() isAddActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
   @Input() isEditActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
@@ -28,7 +29,15 @@ export class FormButtonsComponent {
 
   constructor(private cdr: ChangeDetectorRef) {}
   
-  public tooltip: string = "";
+  public tooltip: string = '';
+
+  ngOnInit(): void {
+    if (this.icone == 'add'){
+      this.tooltip = 'Ajouter';
+    } else if (this.icone == 'edit') {
+      this.tooltip = 'Modifier';
+    }
+  }
 
   // Ces methodes sont appelées au travers des boutons du HTML
   ngOnChanges(changes: SimpleChanges): void {

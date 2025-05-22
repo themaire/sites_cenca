@@ -12,11 +12,13 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
 
 import { OperationLite, Operation, OperationCheckbox } from './operations';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
+
 import { ProjetService } from '../../projets.service';
 import { FormService } from '../../../../../services/form.service';
+import { ConfirmationService } from '../../../../../services/confirmation.service';
+
 import { ApiResponse } from '../../../../../shared/interfaces/api';
 import { Localisation } from '../../../../../shared/interfaces/localisation';
-import { ConfirmationDialogComponent } from '../../../../../confirmation/confirmation.component';
 
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
@@ -28,8 +30,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TooltipPosition, MatTooltipModule } from '@angular/material/tooltip';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
@@ -44,7 +44,7 @@ import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
-import { AsyncPipe } from '@angular/common';
+// import { AsyncPipe } from '@angular/common';
 import { catchError, map } from 'rxjs/operators';
 import { Observable, of, zip } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -89,9 +89,7 @@ export const MY_DATE_FORMATS = {
     CommonModule,
     ReactiveFormsModule,
     FormButtonsComponent,
-    ConfirmationDialogComponent,
     MapComponent,
-    MatDialogModule,
     MatSnackBarModule,
     MatSelectModule,
     MatIconModule,
@@ -254,6 +252,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private formService: FormService,
+    private confirmationService: ConfirmationService,
     private fb: FormBuilder,
     private projetService: ProjetService,
     private snackBar: MatSnackBar, // Injecter MatSnackBar
@@ -265,29 +264,13 @@ export class OperationComponent implements OnInit, OnDestroy {
       // console.log("this.ref_uuid_proj venant du input :", this.ref_uuid_proj);
       this.form = fb.group({});
 
-    }
-  
-  getLibelleByCdType(
-  cdType: string | number | null,
-  liste1: SelectValue[],
-  liste2?: SelectValue[],
-  liste3?: SelectValue[],
-  liste4?: SelectValue[],
-  liste5?: SelectValue[]
-): string | undefined {
-  if (!liste1) {
-    console.warn('getLibelleFromCd appelé avec une liste undefined');
-    return '';
   }
-  const listes = [liste1, liste2, liste3, liste4, liste5].filter(Boolean) as SelectValue[][];
-  for (const liste of listes) {
-    const type = liste.find(t => t.cd_type === cdType);
-    if (type?.libelle) {
-      return type.libelle;
-    }
+
+  public getFamilleLibelle(cd_type: string, liste: SelectValue[]): string {
+    // Récupérer le libellé de la famille d'opération à partir de cd_type
+    const selectValue = this.projetService.getLibelleByCdType(cd_type, liste);
+    return selectValue ? selectValue : '';
   }
-  return undefined;
-}
 
   async ngOnInit() {
     // Remplir this.form soit vide soit avec les données passées en entrée
@@ -800,13 +783,13 @@ export class OperationComponent implements OnInit, OnDestroy {
 
         // Formater les dates avant l'envoi au backend        
         if (
-          this.formService.isDateModified(this.form, 'date_debut', this.operation?.date_debut) ||
-          this.formService.isDateModified(this.form, 'date_fin', this.operation?.date_fin)
+          this.formService.isDateModified(this.step4Form, 'date_debut', this.operation?.date_debut) ||
+          this.formService.isDateModified(this.step4Form, 'date_fin', this.operation?.date_fin)
         ) {
           console.log("Une des 3 dates à été modifiée par l'utilisateur.");
-          this.form.patchValue({
-            date_debut: this.formService.formatDateToPostgres(this.form.get('date_debut')?.value),
-            date_fin: this.formService.formatDateToPostgres(this.form.get('date_fin')?.value),
+          this.step4Form.patchValue({
+            date_debut: this.formService.formatDateToPostgres(this.step4Form.get('date_debut')?.value),
+            date_fin: this.formService.formatDateToPostgres(this.step4Form.get('date_fin')?.value),
           });
           console.log("Formulaire patché avec les bonnes dates: ", this.form.value);
         }
@@ -1022,109 +1005,93 @@ export class OperationComponent implements OnInit, OnDestroy {
    * un élément d'ancrage et déclencher un téléchargement programmatique. Assurez-vous
    * que le chemin du fichier `'assets/shapefile_polygone_modele.zip'` est correct
    * et accessible dans votre projet.
-   */
-  downloadShapefileExample(): void {
-    const link = document.createElement('a');
-    link.href = 'assets/shapefile_polygone_modele.zip';
-    link.download = 'shapefile_polygone_modele.zip';
-    link.click();
+  */
+ downloadShapefileExample(): void {
+   const link = document.createElement('a');
+   link.href = 'assets/shapefile_polygone_modele.zip';
+   link.download = 'shapefile_polygone_modele.zip';
+   link.click();
   }
 
-  // Pour supprimer une localisation ou une opération
-  deleteItem(type: 'localisation' | 'operation'): void {
-    if (type === 'localisation' && this.localisations && this.localisations.length > 0) {
-      const localisationId = this.localisations[0].loc_id;
-      this.projetService.deleteLocalisation(localisationId).subscribe(
-        (response: ApiResponse) => {
-          if (response.success) {
-            this.localisations = undefined; // Réinitialiser les localisations après suppression
-            this.callSnackDelete("normal", 'localisation', response);
-          }
-        },
-        (error) => {
-          this.callSnackDelete('error', 'localisation');
-        }
-      );
-    } else if (type === 'operation' && this.operation) {
-      const operationId = this.operation.uuid_ope;
-      this.projetService.deleteOperation(operationId).subscribe(
-        (response: ApiResponse) => {
-          if (response.success) {
-            console.log('Opération supprimée avec succès');
+/**
+ * Configuration de la boîte de dialogue de confirmation pour la suppression
+ * d'une opération ou d'une localisation.
+ */
+dialogConfig = {
+  // minWidth: '20vw',
+  // maxWidth: '95vw',
+  width: '580px',
+  height: '220px',
+  // maxHeight: '90vh',
+  hasBackdrop: true, // Activer le fond
+  backdropClass: 'custom-backdrop-delete', // Classe personnalisé
+  enterAnimationDuration: '300ms',
+  exitAnimationDuration: '300ms'
+};
+
+/**
+ * Affiche une boîte de dialogue de confirmation pour la suppression d'une opération ou d'une localisation.
+ * Récupère le libellé de l'opération à partir du formulaire, puis ouvre une boîte de dialogue
+ * demandant à l'utilisateur de confirmer la suppression. Si l'utilisateur confirme,
+ * la méthode `deleteItem` contenue dans projetService.ts est appelée pour supprimer l'élément.
+ *
+ * @remarks
+ * Cette action est irréversible. La boîte de dialogue utilise un fond personnalisé
+ * et des animations d'entrée/sortie.
+ */
+  deleteItemConfirm(type: 'localisation' | 'operation'): void {
+    const ope2delete = this.operation;
+    const loca2delete = this.localisations?.[0];
+    
+    // Fabriquer le libellé de l'opération
+    let libelle = '';
+    if (type == 'operation') {
+      if (this.step1Form.get('action_2') !== undefined) {
+        const value = this.step1Form.get('action_2')?.value;
+        libelle = "opération de type " + this.projetService.getLibelleByCdType(
+          value,
+          this.operationTypesMeca,
+          this.operationTypesPat,
+          this.operationTypesAme,
+          this.operationTypesHydro,
+          this.operationTypesDech
+        ) || "";
+      }
+    } else if (type == 'localisation') {
+      if (this.localisations && this.localisations.length > 0) {
+        libelle = type;
+      }
+    }
+
+    const message = `Voulez-vous vraiment supprimer cette ${libelle}?\n<strong>Cette action est irréversible.</strong>`
+    
+    // Appel de la boîte de dialogue de confirmation
+    this.confirmationService.confirm('Confirmation de suppression', message, this.dialogConfig).subscribe(result => {
+    if (result) {
+      // L'utilisateur a confirmé la suppression
+      // Utiliser le service projetService pour supprimer l'élément
+      this.projetService.deleteItem(type, ope2delete, loca2delete).subscribe(success => {
+        if (success) {
+          // success === true ici si la suppression a réussi
+          if (type == 'operation') {
             this.operation = undefined; // Réinitialiser l'opération après suppression
             this.isEditOperation = false; // Sortir du mode édition
-            this.snackBar.open('Opération supprimée avec succès', 'Fermer', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
-            });
             this.fetch(); // Rafraîchir la liste des opérations
-          } else {
-            console.error('Erreur lors de la suppression de l\'opération', response.message);
-            this.snackBar.open(response.message || 'Erreur lors de la suppression de l\'opération', 'Fermer', {
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
           }
-        },
-        (error) => {
-          console.error('Erreur lors de la suppression de l\'opération', error);
-          this.snackBar.open('Erreur lors de la suppression de l\'opération', 'Fermer', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
+          if (type == 'localisation') {
+            this.localisations = undefined; // Réinitialiser les localisations après suppression
+          }
+        } else {
+          // success === false ici si la suppression a échoué
+          // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
         }
-      );
-    } else {
-      console.error(`Aucun ${type} à supprimer`);
-      this.snackBar.open(`Aucun ${type} à supprimer`, 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+      });;
     }
+  });
+
   }
 
-  dialog = inject(MatDialog);
 
-  confirmDeleteOperation(): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        title: 'Confirmation de suppression',
-        message: 'Voulez-vous vraiment supprimer cette opération ? Cette action est irréversible.'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.deleteItem('operation');
-      }
-    });
-  }
-
-  // Utilisée à l'interieur de this.deleteItem() pour afficher un message de suppression
-  callSnackDelete(mode: string, table: string, response?: ApiResponse): void {
-    if(mode === 'normal' && response !== undefined) {
-      if (response.success) {
-        console.log(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimée avec succès`);
-        this.snackBar.open(`${table.charAt(0).toUpperCase() + table.slice(1)} supprimé avec succès`, 'Fermer', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-      } else {
-        console.error(`Erreur lors de la suppression. Type : ${table}`, response.message);
-        this.snackBar.open(response.message || `Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    } else if (mode === 'error') {
-      console.error(`Erreur lors de la suppression. Type : ${table}`);
-      this.snackBar.open(`Erreur lors de la suppression. Type : ${table}`, 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-
-    }
-  }
 
   /**
    * Détecte le changement de la valeur du champ `action_2` (Type opération 2)
@@ -1141,16 +1108,16 @@ export class OperationComponent implements OnInit, OnDestroy {
     let previousValueText = undefined;
     console.log(`Changement de ${field} détecté, nouvelle valeur brute : ${newValue}.`);
     if (field === 'action') {
-      newValueText = this.getLibelleByCdType(newValue, this.operationTypesFamilles);
+      newValueText = this.projetService.getLibelleByCdType(newValue, this.operationTypesFamilles);
       if (previousValue) {
-        previousValueText = this.getLibelleByCdType(previousValue, this.operationTypesFamilles);
+        previousValueText = this.projetService.getLibelleByCdType(previousValue, this.operationTypesFamilles);
       }
       console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
       // Mettre à null la valeur de cadre_intervention_detail
     } else if (field === 'action_2') {
-      newValueText = this.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+      newValueText = this.projetService.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
       if (previousValue) {
-        previousValueText = this.getLibelleByCdType(previousValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+        previousValueText = this.projetService.getLibelleByCdType(previousValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
       }
       console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
     }
@@ -1190,7 +1157,7 @@ export class OperationComponent implements OnInit, OnDestroy {
           // Supprimer tous les animaux possibles de l'opération en base de données
           this.liste_ope_animaux_paturage.forEach((animal) => {
             if (animal.lib_id) {
-              this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
+              this.projetService.deleteCheckbox('uuid_ope', this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
                 next: () => {
                   console.log(`Programme supprimé : ${animal.lib_libelle}`);
                 },
@@ -1369,7 +1336,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   
     // Suppression
     toRemove.forEach(item => {
-      this.projetService.deleteOperationCheckbox(this.operation!.uuid_ope, item.lib_id, table).subscribe({
+      this.projetService.deleteCheckbox('uuid_ope', this.operation!.uuid_ope, item.lib_id, table).subscribe({
         next: () => {
           console.log(`${type} supprimé : ${item.lib_libelle}`);
         },

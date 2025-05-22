@@ -97,8 +97,12 @@
     @include icon(white, black);
   }
   .btn-sauvegarde {
-    @include btn-icon(white, $couleur-territoire);
-    @include icon($couleur-flore, white);
+    @include btn-icon(white, $couleur-faune);
+    @include icon($orangeM, white);
+  }
+  .btn-annulation {
+    @include btn-icon(white, red);
+    @include icon(red, white);
   }
 
   .btn-sauvegarde-disabled {
@@ -107,14 +111,6 @@
 
     // Couleur icone :  normal / hover
     @include icon(rgb(223, 223, 223), rgb(194, 194, 194));
-    
-
-
-  .btn-annulation {
-    @include btn-icon(white, red);
-    @include icon(red, white);
-  }
-
 }
 
 @media screen and (max-width: $mobile) {

@@ -4,13 +4,25 @@
 .edition {
     display: flex;
     @include align(center, start);
-    margin-bottom: 20px;
+    margin: 6px 0 15px 6px;
     gap: 15px;
-    .btn-edition {
+    
+    // Theme proteger
+    .btn-edition-proteger {
       @include btn-icon($couleur-faune, $orangeC);
       @include icon(white, black);
     }
-    .btn-sauvegarde {
+    .btn-sauvegarde-proteger {
+      @include btn-icon(white, $couleur-territoire);
+      @include icon($couleur-flore, white);
+    }
+
+    // Theme gerer
+    .btn-edition-gerer {
+      @include btn-icon($couleur-territoire, $vertC);
+      @include icon(white, black);
+    }
+    .btn-sauvegarde-gerer {
       @include btn-icon(white, $couleur-territoire);
       @include icon($couleur-flore, white);
     }

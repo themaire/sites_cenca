@@ -24,8 +24,8 @@
 
 <ng-template #add>
     <button mat-icon-button
-        matTooltip="Ajouter"
-        class="btn-edition"
+        [matTooltip]="tooltip"
+        [ngClass]="'btn-edition-' + theme"
         (click)="onToggleAction()">
         <mat-icon>{{ icone }}</mat-icon>
     </button>
@@ -53,9 +53,8 @@
 <!-- Bouton pour rentrer en mode add ou edit -->
 <ng-template #editOff>
     <button mat-icon-button
-        matTooltip="Annuler indesirable"
         [matTooltip]="tooltip"
-        class="btn-edition"
+        [ngClass]="'btn-edition-' + theme"
         (click)="onToggleAction()">
         <mat-icon>{{ icone }}</mat-icon>
     </button>
@@ -65,7 +64,7 @@
 <ng-template #saveBtnEnabled>
     <button mat-icon-button
         matTooltip="Sauvegarder"
-        class="btn-sauvegarde"
+        [ngClass]="'btn-edition-' + theme"
         (click)="onSave()">
         <mat-icon>save</mat-icon>
     </button>

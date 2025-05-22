@@ -1,6 +1,12 @@
 @import "../../../../styles/mixins.scss";
 @import "../../../../styles/variables.scss";
 
+// :host {
+//   background-color: $vertTC; 
+//   display: block; // Nécessaire pour que le fond s’applique sur tout le composant
+//   min-height: 100vh; // Pour couvrir toute la hauteur de la page
+// }
+
 *,
 .mat-mdc-dialog-content,
 .mdc-dialog__content ng-star-inserted {
@@ -11,47 +17,61 @@
 .custom-dialog-container {
   max-width: 90vw; /* Ajuste la largeur maximale */
   width: 90vw; /* Fixe la largeur */
-  height: 90vh; /* Fixe la hauteur */
+  height: 80vh; /* Fixe la hauteur */
   margin: 0 auto; /* Centre la boîte de dialogue */
   overflow: hidden; /* Empêche le débordement */
 }
 
 .dialogue {
+  background-color: $vertTC; 
   // min-height: 100vh;
   // height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
 }
+
+mat-dialog-content.dialogue {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
 .conteneur-projet {
+  height: 100%;
+  min-height: 100%;
   display: flex;
-  width: 100%;
-  // height: auto;
-  min-height: 101%;
-  // min-height: 120vh;
-  flex-grow: 1;
-  
-}
-.projet {
-  display: flex;
-  flex-direction: column;
-  width: 1500px;
-  // margin: 0 50px 25px 29px;
-  // min-height: 100vh;
-
-  margin: 0; /* Supprime les marges inutiles */
-  padding: 0; /* Supprime les paddings inutiles */
-  height: 100%; /* Adapte la hauteur */
-}
-
-.conteneur {
-  padding: 20px;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden; /* ou hidden si tu ne veux pas de scroll interne */
 }
 
 // bande sur le coté
 .gerer {
   padding-bottom: 15px;
   @include bandeau($gerer);
+}
+
+.projet {
+  display: flex;
+  flex-direction: column;
+  width: 1400px;
+
+  flex: 1 1 auto; // <-- prend toute la place disponible
+  min-height: 0;  // <-- évite les débordements
+  overflow: auto;
+}
+
+.button-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0px 0px 5px;
+}
+
+.title-border {
+  margin: 0px 0 0px 10px;
 }
 
 //boutons edit/save/cancel
@@ -73,14 +93,14 @@
     @include icon(red, white);
   }
 }
-// boutons du stepper
 
 .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100px; /* Ajuste selon ton besoin */
+  height: 100%; /* Ajuste selon ton besoin */
+  width: 100%;
 }
 .mat-mdc-dialog-container .mat-mdc-dialog-content {
   padding: 0;
@@ -107,3 +127,39 @@
 //     width: 30%;
 //   }
 // }
+
+.nav-buttons {
+  @include nav-buttons();
+}
+
+// Pour le bouton de suppression
+.btn {
+    display: flex;
+    @include align(center, flex-end);
+    padding: 0 30px 0 0px;
+    button {
+      @include btn($superRed, #f1fcf3, white, $superRed);
+      @include align(center, center);
+    }
+}
+
+::ng-deep .mat-mdc-stepper-horizontal,
+::ng-deep .mat-mdc-stepper-vertical,
+::ng-deep .mat-stepper-horizontal,
+::ng-deep .mat-stepper-vertical {
+  background-color: $vertTC !important;
+}
+::ng-deep .mat-mdc-stepper-content,
+::ng-deep .mat-stepper-content {
+  background-color: $vertTC !important;
+}
+::ng-deep .mat-mdc-step-header,
+::ng-deep .mat-step-header {
+  background: transparent !important;
+}
+::ng-deep .mat-mdc-step-icon,
+::ng-deep .mat-step-icon {
+  background-color: $couleur-territoire !important; // ta couleur de fond
+  color: white !important; // couleur de l'icône ou du numéro
+  border: none !important;
+}

@@ -13,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatIcon } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 
 import {
   MatDialog, 
@@ -30,7 +30,7 @@ import {
             MatDialogModule,
             MatTableModule, 
             MatTooltipModule, 
-            MatIcon,
+            MatIconModule,
 
             MatFormFieldModule, MatInputModule, 
   ],
@@ -92,6 +92,7 @@ export class DetailProjetsComponent {
       // Ca se passe dans la vue du component dialog-operation
       if(projetlite.uuid_proj !== undefined && projetlite.generation == "1_TVX"){
         // OUVRIR LA FENETRE DE DIALOGUE
+        projetlite.nom = this.inputDetail?.nom;
         this.openDialog(projetlite);
       }else{
         console.log("Pas un projet TRAVAUX ( " + projetlite.generation + " ) ou pas un vrai projet passé en parametre. uuid_proj : " + projetlite.uuid_proj);
@@ -138,15 +139,14 @@ export class DetailProjetsComponent {
     // tout en créant la constante dialogRef
     const dialogRef = this.dialog.open(dialogComponent, {
       data: projetlite,
-      // width: '90vw',         // Largeur à 90% de la fenêtre
-      maxWidth: '95vw',      // Largeur maximale à 98% de la fenêtre
-      maxHeight: '95vh',     // Hauteur maximale à 90% de la fenêtre
-      // height: '70vh',     // (optionnel) Hauteur fixe si tu veux forcer une taille
-      hasBackdrop: true, // Pas de fond sombre
-      backdropClass: 'custom-backdrop',
+      minWidth: '20vw',
+      maxWidth: '95vw',
+      height: '60vh',
+      maxHeight: '90vh',
+      hasBackdrop: true, // Avec fond
+      backdropClass: 'custom-backdrop-gerer', // Personnalisé
       enterAnimationDuration: '300ms',
       exitAnimationDuration: '300ms'
-      // panelClass: 'custom-dialog-container' // Classe personnalisée si l'encapsulation des styles css de material est désactivée dans le composant projet.
     });
 
     // Préparer à l'avance quand la fenetre de dialogue se ferme

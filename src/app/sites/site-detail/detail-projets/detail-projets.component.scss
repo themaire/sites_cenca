@@ -9,6 +9,26 @@ h2 {
   padding-top: 10px;
 }
 
+//boutons edit/save/cancel
+.edition {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  gap: 15px;
+  .btn-edition {
+    @include btn-icon($proteger, $orangeC);
+    @include icon(white, black);
+  }
+  .btn-sauvegarde {
+    @include btn-icon(white, $proteger);
+    @include icon($couleur-flore, white);
+  }
+  .btn-annulation {
+    @include btn-icon(white, red);
+    @include icon(red, white);
+  }
+}
+
 // Taille des colonnes
 .mat-mdc-cell,
 .mat-mdc-table .mat-mdc-header-cell {

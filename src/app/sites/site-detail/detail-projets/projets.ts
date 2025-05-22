@@ -11,6 +11,7 @@ export interface ProjetLite {
     webapp: boolean;
     uuid_site: string;
     geojson_site: string;
+    nom?: string;
 }
 
 // A EFFACTER DES QUE POSSIBLE

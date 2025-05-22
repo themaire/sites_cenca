@@ -10,9 +10,11 @@ $couleur-faune: #d77813;
 
 // Couleur univers chromatique du CENCA
 // Verts
+$vertTC: #fbfffc;
 $vertC: #e0de12;
 $VertM: #c1d112;
 $VertF: #4b6426;
+$blackGreen: rgba(15, 34, 3, 0.5);
 
 // Oranges
 $orangeC: #fec700;
@@ -35,14 +37,30 @@ $violetC: #d0a9cf;
 $violetM: #bb7bb3;
 $violetF: #430035;
 
+//déclinaison de rouge
+$redC: #f8baba;
+$redM: #f4a2a2;
+$redF: #f4a2a2;
+$superRed: rgb(223, 84, 84);
+
 // Couleur du menu
 $proteger: $couleur-faune; // Couleur de fond personnalisée
+
 $connaitre: $bleuC;
+
 $gerer: $couleur-territoire;
+$gererBackdrop: $blackGreen;
+
 $valoriser: $orangeC;
+
 $accompagner: $violetM;
+
 $administrafif: $bleuM;
+
 $liens-utiles: $VertM;
+
+$redBackdrop: rgba(77, 36, 36, 0.8);
+
 $menu-text: white; // Couleur du texte
 $type-operation: #dbdbdb;
 
