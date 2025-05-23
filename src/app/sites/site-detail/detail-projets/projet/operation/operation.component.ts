@@ -51,6 +51,8 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { MapComponent } from '../../../../../map/map.component';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
 
@@ -665,7 +667,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       try {
         // Création d'un objet Operation "neuf" avec les listes fixes
         const newOperation: Operation = {
-          uuid_ope: crypto.randomUUID(), // remplir avec un UUID aléatoire car cette propriété est obligatoire dans la definition de l'objet Operation
+          uuid_ope: uuidv4(), // remplir avec un UUID aléatoire car cette propriété est obligatoire dans la definition de l'objet Operation
           ref_uuid_proj: this.ref_uuid_proj as string,
           liste_ope_programmes: this.liste_ope_programmes,
           liste_ope_animaux_paturage: this.liste_ope_animaux_paturage,
