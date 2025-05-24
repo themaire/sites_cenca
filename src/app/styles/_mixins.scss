@@ -126,3 +126,29 @@
     padding: 5px 10px;
   }
 }
+
+@mixin mat-tabs-theme($main-color, $inactive-color: rgba(22, 65, 148, 0.6)) {
+  --mdc-tab-indicator-active-indicator-color: #{$main-color};
+  --mat-tab-header-pagination-icon-color: #{$main-color};
+  --mat-tab-header-active-label-text-color: #{$main-color};
+  --mat-tab-header-active-ripple-color: #{darken($main-color, 15%)};
+  --mat-tab-header-inactive-ripple-color: #{darken($main-color, 15%)};
+  --mat-tab-header-active-focus-label-text-color: #{$main-color};
+  --mat-tab-header-active-hover-label-text-color: #{$main-color};
+  --mat-tab-header-active-focus-indicator-color: #{$main-color};
+  --mat-tab-header-active-hover-indicator-color: #{$main-color};
+  --mat-tab-header-inactive-label-text-color: #{$inactive-color};
+  --mat-tab-header-inactive-focus-label-text-color: #{$inactive-color};
+  --mat-tab-header-inactive-hover-label-text-color: #{$inactive-color};
+  --mat-tab-header-disabled-ripple-color: rgba(0, 0, 0, 0.38);
+}
+
+@mixin suppression-btn {
+  display: flex;
+  @include align(center, flex-end);
+  padding: 0 30px 10px 0px;
+  button {
+    @include btn($superRed, #f1fcf3, white, $superRed);
+    @include align(center, center);
+  }
+}

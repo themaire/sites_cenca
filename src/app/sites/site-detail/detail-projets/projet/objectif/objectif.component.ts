@@ -2,13 +2,15 @@ import { Component, OnInit, ChangeDetectorRef, inject, signal, Input, Output, Ev
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { OperationComponent } from '../operation/operation.component';
+// import { OperationComponent } from '../operation/operation.component';
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
+
 
 import { Objectif } from './objectifs';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
-import { ProjetService } from '../../projets.service';
-import { FormService } from '../../../../../services/form.service';
+import { ProjetService, DeleteItemTypeEnum } from '../../projets.service';
+import { FormService } from '../../../../../shared/services/form.service';
+import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
 
 import { MatTabsModule } from '@angular/material/tabs';
@@ -22,6 +24,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MatDialogRef, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
 
 // import { AsyncPipe } from '@angular/common';
 // import { map } from 'rxjs/operators';
@@ -35,7 +39,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [
         CommonModule,
-        OperationComponent,
+        // OperationComponent,
         FormButtonsComponent,
         FormsModule,
         ReactiveFormsModule,
@@ -61,7 +65,7 @@ export class ObjectifComponent {
 
   @Input() isEditProjet!: boolean;
   @Input() uuid_projet?: string; // L'identifiant du projet selectionné pour voir son/ses objectif(s)
-  @Input() new_projet?: boolean; // Si projet nouvelle generation (avec webapp)
+  @Input() pro_webapp?: boolean; // Si projet nouvelle generation (avec webapp)
   
   @Output() objectifProjet = new EventEmitter<string>(); // Pour envoyer l'objectif au parent
   
@@ -81,7 +85,7 @@ export class ObjectifComponent {
   dataSource!: MatTableDataSource<Objectif>;
   // Pour la liste des opérations : le tableau Material
   displayedColumns: string[] = ['typ_objectif', 'attentes', 'surf_totale', 'surf_prevue'];
-  objectif!: Objectif; // Pour les détails d'un objectif
+  objectif: Objectif = {} as Objectif; // Pour les détails d'un objectif
   nbObjectifs: number = 0; // Pour le nombre d'objectifs
 
   isEditOperation: boolean = false;
@@ -105,7 +109,7 @@ export class ObjectifComponent {
   selectedOperation: String | undefined;
   
   // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
-  form: FormGroup;
+  form!: FormGroup;
   @Input() ref_uuid_proj!: String; // liste d'opératons venant du parent (boite de dialogue projet) 
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   isFormValid: boolean = false;
@@ -114,7 +118,9 @@ export class ObjectifComponent {
   
   constructor(
     private cdr: ChangeDetectorRef,
+    private dialogRef: MatDialogRef<ObjectifComponent>,
     private formService: FormService,
+    private confirmationService: ConfirmationService,
     private fb: FormBuilder,
     private projetService: ProjetService,
     private snackBar: MatSnackBar, // Injecter MatSnackBar
@@ -284,7 +290,7 @@ export class ObjectifComponent {
 
   async fetch(uuid_objectif?: String): Promise<Objectif | void> {
     if (this.ref_uuid_proj !== undefined && uuid_objectif == undefined) {
-      // Si on a un uuid de d'objectif passé en paramètre pour recuperer une liste d'objectifs.
+      // Si on a un uuid de projet passé en paramètre pour recuperer une liste d'objectifs.
       console.log("----------!!!!!!!!!!!!--------fetch() dans le composant objectif");
       const uuid = this.ref_uuid_proj;
       const subroute = `objectifs/uuid=${uuid}/lite`;
@@ -295,10 +301,15 @@ export class ObjectifComponent {
           if (Array.isArray(this.objectifs) && this.objectifs.length > 0) {
             this.dataSource = new MatTableDataSource(this.objectifs);
 
+            let obj_ope : string | undefined;
+            if (this.objectifs.length > 0) {
             // On prend le premier (ou celui que tu veux) pour obtenir un morceau di sitre du composant projet
-            const obj_ope = this.objectifs[0].obj_ope; // ou autre logique pour choisir l'élément
+              obj_ope = this.objectifs[0].obj_ope; // ou autre logique pour choisir l'élément
+            } else {
+              obj_ope = "(aucun objectif)";
+            }
             this.objectifProjet.emit(this.projetService.getLibelleByCdType(obj_ope ?? null, this.typeObjectifOpe));
-            
+
             this.cdr.detectChanges();
             console.log('Liste des objectifs bien mises à jour.');
           }
@@ -471,5 +482,76 @@ export class ObjectifComponent {
   handleAddOperationChange(isAdd: boolean): void {
     // console.log('État de l\'ajout reçu du composant enfant:', isAdd);
     this.isAddOperation = isAdd;
+  }
+
+
+  /**
+  * Configuration de la boîte de dialogue de confirmation pour la suppression
+  * d'une opération ou d'une localisation.
+  */
+  dialogConfig = {
+    // minWidth: '20vw',
+    // maxWidth: '95vw',
+    width: '580px',
+    height: '220px',
+    // maxHeight: '90vh',
+    hasBackdrop: true, // Activer le fond
+    backdropClass: 'custom-backdrop-delete', // Classe personnalisé
+    enterAnimationDuration: '300ms',
+    exitAnimationDuration: '300ms'
+  };
+
+  /**
+   * Affiche une boîte de dialogue de confirmation pour la suppression d'une opération ou d'une localisation.
+   * Récupère le libellé de l'opération à partir du formulaire, puis ouvre une boîte de dialogue
+   * demandant à l'utilisateur de confirmer la suppression. Si l'utilisateur confirme,
+   * la méthode `deleteItem` contenue dans projetService.ts est appelée pour supprimer l'élément.
+   *
+   * @remarks
+   * Cette action est irréversible. La boîte de dialogue utilise un fond personnalisé
+   * et des animations d'entrée/sortie.
+   */
+  deleteItemConfirm(): void {
+    // Fabriquer le libellé du projet
+    // let libelle = '';
+    // if (type == 'operation') {
+    //   if (this.step1Form.get('action_2') !== undefined) {
+    //     const value = this.step1Form.get('action_2')?.value;
+    //     libelle = "opération de type " + this.getLibelleByCdType(
+    //       value,
+    //       this.operationTypesMeca,
+    //       this.operationTypesPat,
+    //       this.operationTypesAme,
+    //       this.operationTypesHydro,
+    //       this.operationTypesDech
+    //     ) || "";
+    //   }
+    // } else if (type == 'localisation') {
+    //   if (this.localisations && this.localisations.length > 0) {
+    //     libelle = type;
+    //   }
+    // }
+
+    // const message = `Voulez-vous vraiment supprimer cette ${libelle}?\n<strong>Cette action est irréversible.</strong>`
+    const message = `Voulez-vous vraiment supprimer ce projet?\n<strong>Cette action est irréversible.</strong>`
+    
+    // Appel de la boîte de dialogue de confirmation
+    this.confirmationService.confirm('Confirmation de suppression', message, this.dialogConfig).subscribe(result => {
+      if (result) {
+        // L'utilisateur a confirmé la suppression
+        // Utiliser le service projetService pour supprimer l'élément
+        this.projetService.deleteItem(DeleteItemTypeEnum.objectif, undefined, undefined, undefined, this.objectif).subscribe(success => {
+          if (success) {
+            // success === true ici si la suppression a réussi on ferme la fenetre de dialogue
+            this.isEditProjet = false;
+            this.dialogRef.close(); // Ferme la boîte de dialogue
+          } else {
+            // success === false ici si la suppression a échoué
+            // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
+          }
+        });;
+      }
+    });
+
   }
 }

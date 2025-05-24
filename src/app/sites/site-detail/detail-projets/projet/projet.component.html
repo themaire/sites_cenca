@@ -40,20 +40,20 @@
       (onSubmit)="onSubmit()">
     </app-form-buttons>
     
-    <div class="title-border" *ngIf="objectifProjet !== '' or projetLite !== ''">
+    <div class="title-border" *ngIf="objectifProjet !== '' || (projetLite && projetLite.nom !== '')">
       <h2 *ngIf="!isEditProjet">Consultation du projet {{ objectifProjet }} - {{ projetLite.nom }}</h2>
       <h2 *ngIf="isEditProjet">Modification du projet {{ objectifProjet }} - {{ projetLite.nom }}</h2>
       <h2 *ngIf="newProjet">Création d'un projet neuf en cours</h2>
     </div>
     
-    <div class="title-border" *ngIf="objectifProjet === undefined and projetLite === undefined">
-      <h2 *ngIf="!isEditProjet">Consultation du projet</h2>
-      <h2 *ngIf="isEditProjet">Modification du projet</h2>
+    <div class="title-border" *ngIf="objectifProjet.length === 0">
+      <h2 *ngIf="!isEditProjet">Consultation du projet - {{ projetLite.nom }}</h2>
+      <h2 *ngIf="isEditProjet">Modification du projet - {{ projetLite.nom }}</h2>
       <h2 *ngIf="newProjet">Création d'un projet neuf en cours</h2>
     </div>
     
     <div *ngIf="projet !== undefined && projet !== null && !isEditOperation && !isAddOperation">
-      <div class="btn">
+      <div class="suppression">
         <button mat-button (click)="deleteItemConfirm()">Supprimer le projet</button>
       </div>
     </div>
@@ -416,6 +416,7 @@
                 [projetEditMode]="isEditProjet"
                 [ref_uuid_proj]="projet.uuid_proj"
                 [isEditProjet]="isEditProjet"
+                [pro_webapp] = "projet.pro_webapp"
                 >
   </app-objectif>
 
@@ -424,7 +425,7 @@
 <!-- Template de chargement -->
 <ng-template #loading>
   <div class="loading-container">
-    <mat-spinner></mat-spinner>
-    <p>Veuillez patienter...</p>
+    <mat-spinner class="spinner-vert"></mat-spinner>
+    <p>Chargement ...</p>
   </div>
 </ng-template>

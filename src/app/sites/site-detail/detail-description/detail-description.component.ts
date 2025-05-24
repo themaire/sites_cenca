@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackB
 
 import { DetailSite } from '../../site-detail';
 import { SitesService } from '../../sites.service';
-import { FormService } from '../../../services/form.service';
+import { FormService } from '../../../shared/services/form.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({

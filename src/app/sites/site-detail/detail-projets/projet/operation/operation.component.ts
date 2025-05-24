@@ -13,9 +13,10 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
 import { OperationLite, Operation, OperationCheckbox } from './operations';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
 
-import { ProjetService } from '../../projets.service';
-import { FormService } from '../../../../../services/form.service';
-import { ConfirmationService } from '../../../../../services/confirmation.service';
+import { ProjetService, DeleteItemTypeEnum } from '../../projets.service';
+import { FormService } from '../../../../../shared/services/form.service';
+import { ShapefileService } from '../../../../../shared/services/shapefile.service';
+import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
 
 import { ApiResponse } from '../../../../../shared/interfaces/api';
 import { Localisation } from '../../../../../shared/interfaces/localisation';
@@ -254,6 +255,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private formService: FormService,
+    public shapefileService: ShapefileService,
     private confirmationService: ConfirmationService,
     private fb: FormBuilder,
     private projetService: ProjetService,
@@ -428,7 +430,7 @@ export class OperationComponent implements OnInit, OnDestroy {
    * @param uuid_ope - OPTIONNEL - UUID de l'opération à récupérer
    * @returns L'opération complète ou une liste d'opérations lite
    */
-  async fetch(uuid_ope?: String): Promise<Operation | void> {
+  async fetch(uuid_ope?: string): Promise<Operation | void> {
     if (this.ref_uuid_proj !== undefined && uuid_ope == undefined) {
       // Si on a un uuid de projet passé en paramètre pour recuperer les opérations lite.
       console.log("----------!!!!!!!!!!!!--------fetch() dans le composant operation");
@@ -510,7 +512,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
 
         // Récupérer les localisations de l'opération
-        this.localisations = await this.getLocalisation(uuid_ope);
+        this.localisations = await this.shapefileService.getLocalisation(uuid_ope);
 
         // Attention il s'agit d'une liste de localisations !
         console.log('Localisation de l\'opération :');
@@ -567,7 +569,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       //console.log(this.isFormValid + " = " + this.form.valid);
       //console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
       // Afficher la liste des champs invalides
-      // console.log('Champs invalides :', this.getInvalidFields());
+      // console.log('Champs invalides :', this.getInvalidFields(this.form));
 
       console.log('Ancienne valeur de action :', this.previousActionValue);
       // console.log('Ancienne valeur de action :', this.getLibelleByCdType(this.previousActionValue, this.operationTypesFamilles));
@@ -579,10 +581,10 @@ export class OperationComponent implements OnInit, OnDestroy {
     });
   }
 
-  getInvalidFields(): string[] {
+  getInvalidFields(form: FormGroup): string[] {
     // Pour le stepper et le bouton MAJ
     if (this.form !== undefined) {
-      return this.formService.getInvalidFields(this.form);
+      return this.formService.getInvalidFields(form);
     } else {
       return [];
     }
@@ -622,21 +624,6 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
     this.cdr.detectChanges(); // Forcer la détection des changements
     
-  }
-
-  /**
-   * Méthode pour récupérer la localisations d'une opération
-   * @param uuid_ope - UUID de l'opération
-   * @returns Un tableau de localisations associées à l'opération à donner au composant de carte
-   */
-  async getLocalisation(uuid_ope: String): Promise<Localisation[]> {
-    const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
-    try {
-      return await this.projetService.getLocalisations(subrouteLocalisation);
-    } catch (error) {
-      console.error("Erreur lors de la récupération de la localisation de l'opération : ", error);
-      return [];
-    }
   }
 
   /**
@@ -876,143 +863,33 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Méthode pour gérer le téléchargement du fichier shapefile modèle
+  // Gestion du shapefile envoyé par l'utilisateur
+  /** Méthode pour gérer le téléchargement du fichier shapefile modèle */
   onFileSelected(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      this.shapeForm!.patchValue({
-        shapefile: file
-      });
-    }
+    this.shapefileService.onFileSelected(event, this.shapeForm!);
   }
-
-  // Soumettre le shapefile au backend
+  //
+  /** Soumettre le shapefile au backend */
   submitShapefile(): Observable<ApiResponse> {
-    if (!this.shapeForm) {
-      console.error('Formulaire de shapefile introuvable.');
-      return of({ success: false, message: 'Formulaire de shapefile introuvable.' } as ApiResponse);
-    }
-  
-    const formData = new FormData();
-    const file: File = this.shapeForm.get('shapefile')?.value; // Changement de 'file' à 'shapefile'
-    const typeGeometry: string = this.shapeForm.get('type_geometry')?.value;
-    const uuid_ope: string = this.shapeForm.get('uuid_ope')?.value;
-  
-    // Debug logs
-    console.log('Fichier sélectionné:', file);
-    console.log('Type géométrie:', typeGeometry);
-  
-    // Vérification des données avant envoi
-    if (!file || !typeGeometry) {
-      return of({ 
-        success: false, 
-        message: 'Formulaire invalide. Fichier ou type de géométrie manquant.' 
-      } as ApiResponse);
-    }
-
-    // Construction du FormData
-    formData.append('file', file);
-    formData.append('type_geometry', typeGeometry);
-    formData.append('uuid_ope', uuid_ope);
-
-    // Log du FormData
-    formData.forEach((value, key) => {
-      console.log(key + ': ' + value);
-    });
-  
-    return this.projetService.uploadShapefile(formData).pipe(
-      catchError(error => {
-        console.error('Erreur lors de l\'envoi du shapefile:', error);
-        return of({ 
-          success: false, 
-          message: 'Erreur lors de l\'envoi du shapefile' 
-        } as ApiResponse);
-      })
+    return this.shapefileService.submitShapefile(this.shapeForm!);
+  }
+  //
+  /** Méthode pour gérer la soumission du formulaire de shape
+   */
+  handleShapefileSubmission() {
+    this.shapefileService.handleShapefileSubmission(
+      this.shapeForm!,
+      this.fileInput,
+      async (uuid: string) => {
+        this.localisations = await this.shapefileService.getLocalisation(uuid);
+      }
     );
   }
-
-  // Méthode pour gérer la soumission du formulaire de shape
-  handleShapefileSubmission(): void {
-
-    if (!this.shapeForm?.get('type_geometry')?.value) {
-      this.snackBar.open('Type de géométrie manquant', 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
-
-    if (!this.shapeForm?.get('uuid_ope')?.value) {
-      this.snackBar.open('uuid_ope manquant', 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
-
-    if (!this.shapeForm?.get('shapefile')?.value) {
-      this.snackBar.open('Fichier shapefile manquant', 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
-
-    this.submitShapefile().subscribe({
-      next: async (response: ApiResponse) => {
-        if (response.success) {
-          // Réinitialiser uniquement le champ shapefile
-          this.shapeForm!.patchValue({
-            shapefile: null
-          });
-        
-          // Nettoyer l'input file
-          if (this.fileInput) {
-            this.fileInput.nativeElement.value = '';
-          }
-
-          // Rafraîchir la liste des localisations
-          this.localisations = await this.getLocalisation(this.shapeForm?.get('uuid_ope')?.value);
-
-          // Message de succès
-          this.snackBar.open('Shapefile importé avec succès', 'Fermer', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-        } else {
-          this.snackBar.open(response.message || 'Erreur lors de l\'import', 'Fermer', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-        }
-      },
-      error: (error) => {
-        this.snackBar.open('Erreur lors de l\'import du shapefile', 'Fermer', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
-
-  // Méthode pour télécharger le fichier shapefile d'exemple
-  /**
-   * Lance le téléchargement d'un exemple de fichier shapefile en créant un élément
-   * d'ancrage temporaire, en définissant son `href` sur le chemin du shapefile,
-   * et en déclenchant un événement de clic.
-   * Le fichier téléchargé sera nommé `shapefile_polygone_modele.zip`.
-   *
-   * @remarks
-   * Cette méthode utilise l'API `document.createElement` pour créer dynamiquement
-   * un élément d'ancrage et déclencher un téléchargement programmatique. Assurez-vous
-   * que le chemin du fichier `'assets/shapefile_polygone_modele.zip'` est correct
-   * et accessible dans votre projet.
-  */
- downloadShapefileExample(): void {
-   const link = document.createElement('a');
-   link.href = 'assets/shapefile_polygone_modele.zip';
-   link.download = 'shapefile_polygone_modele.zip';
-   link.click();
+  //
+  /** Méthode pour télécharger le fichier shapefile d'exemple
+   */
+  downloadShapefileExample(): void {
+    this.shapefileService.downloadShapefileExample();
   }
 
 /**
@@ -1064,6 +941,14 @@ dialogConfig = {
         libelle = type;
       }
     }
+    
+    // Déterminer le type d'élément à supprimer via l'énumération des types d'éléments supprimables
+    let deleteItemTypeEnumValue: DeleteItemTypeEnum;
+    if (type == 'localisation') {
+      deleteItemTypeEnumValue = DeleteItemTypeEnum.localisation;
+    } else if (type == 'operation') {
+      deleteItemTypeEnumValue = DeleteItemTypeEnum.operation;
+    }
 
     const message = `Voulez-vous vraiment supprimer cette ${libelle}?\n<strong>Cette action est irréversible.</strong>`
     
@@ -1072,7 +957,7 @@ dialogConfig = {
     if (result) {
       // L'utilisateur a confirmé la suppression
       // Utiliser le service projetService pour supprimer l'élément
-      this.projetService.deleteItem(type, ope2delete, loca2delete).subscribe(success => {
+      this.projetService.deleteItem(deleteItemTypeEnumValue, ope2delete, loca2delete).subscribe(success => {
         if (success) {
           // success === true ici si la suppression a réussi
           if (type == 'operation') {

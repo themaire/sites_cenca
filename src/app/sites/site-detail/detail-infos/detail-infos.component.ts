@@ -14,7 +14,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { DetailSite } from '../../site-detail';
 import { Commune } from './commune';
 import { SitesService } from '../../sites.service';
-import { FormService } from '../../../services/form.service';
+import { FormService } from '../../../shared/services/form.service';
 // import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 
 @Component({

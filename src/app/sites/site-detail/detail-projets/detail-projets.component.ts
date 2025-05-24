@@ -88,6 +88,8 @@ export class DetailProjetsComponent {
     // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
     // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
 
+    // console.log("OnSelect parametre projetLite : ", projetlite);
+
     if(projetlite !== undefined){
       // Ca se passe dans la vue du component dialog-operation
       if(projetlite.uuid_proj !== undefined && projetlite.generation == "1_TVX"){
@@ -113,7 +115,10 @@ export class DetailProjetsComponent {
     // Ce qui veut dire que l'on doit créé un projetLite vide mais qui
     // contient l'uuid du site selectionné
 
-    let dialogComponent: any;
+    // console.log("Ouverture de la fenetre de dialogue pour le projetLite : ", projetlite);
+    // console.log("heure minute seconde milliseconde de l'ouverture du dialogue : ", new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
+
+    let dialogComponent = ProjetComponent;
     
     // Si on fournit un projetLite en paramètre
     if(projetlite !== undefined){
@@ -132,20 +137,18 @@ export class DetailProjetsComponent {
       console.log("--------------ProjetLite : ");
       console.log(projetlite);
     }
-    
-    dialogComponent = ProjetComponent;
 
     // Ouverture de la fenetre de dialogue
     // tout en créant la constante dialogRef
     const dialogRef = this.dialog.open(dialogComponent, {
       data: projetlite,
-      minWidth: '20vw',
+      minWidth: '50vw',
       maxWidth: '95vw',
       height: '60vh',
       maxHeight: '90vh',
       hasBackdrop: true, // Avec fond
       backdropClass: 'custom-backdrop-gerer', // Personnalisé
-      enterAnimationDuration: '300ms',
+      enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms'
     });
 

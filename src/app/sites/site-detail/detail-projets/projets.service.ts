@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { SnackbarService } from '../../../services/snackbar.service';
+import { SnackbarService } from '../../../shared/services/snackbar.service';
 
 
 // prototypes utilisés dans la promise de la fonction
@@ -17,6 +17,13 @@ import { ApiResponse } from '../../../shared/interfaces/api';
 import { Localisation } from '../../../shared/interfaces/localisation';
 // import { emitDistinctChangesOnlyDefaultValue } from '@angular/compiler';
 
+export enum DeleteItemTypeEnum {
+    localisation = 'localisation',
+    operation = 'operation',
+    projet = 'projet',
+    objectif = 'objectif'
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -25,7 +32,7 @@ export class ProjetService {
 
   constructor(
     private http: HttpClient,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {}
 
   // PROJETS
@@ -171,7 +178,7 @@ export class ProjetService {
     );
   }
 
-  deleteItem(type: 'localisation' | 'operation' | 'projet', operation?: void | Operation, localisation?: void | Localisation, projet?: void | Projet): Observable<boolean> {
+  deleteItem(type: DeleteItemTypeEnum, operation?: void | Operation, localisation?: void | Localisation, projet?: void | Projet, objectif?: void | Objectif): Observable<boolean> {
     if (type === 'localisation' && localisation) {
       const localisationId = localisation.loc_id;
       return new Observable<boolean>(observer => {

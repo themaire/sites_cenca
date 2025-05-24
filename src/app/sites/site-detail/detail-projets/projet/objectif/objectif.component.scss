@@ -1,0 +1,19 @@
+@import "../../../../../styles/variables.scss";
+@import ".../../../../../../../styles/mixins.scss";
+
+.button-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0px 0px 5px;
+}
+
+.mat-mdc-tab-group {
+  @include mat-tabs-theme($couleur-territoire);
+}
+
+// Pour le bouton de suppression
+.suppression {
+  @include suppression-btn();
+}

@@ -1,19 +1,19 @@
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Projet } from '../sites/site-detail/detail-projets/projets';
-import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
-import { Objectif } from '../sites/site-detail/detail-projets/projet/objectif/objectifs';
-import { SelectValue } from '../shared/interfaces/formValues';
+import { Projet } from '../../sites/site-detail/detail-projets/projets';
+import { Operation } from '../../sites/site-detail/detail-projets/projet/operation/operations';
+import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
+import { SelectValue } from '../interfaces/formValues';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { SitesService } from '../sites/sites.service';
-import { ProjetService } from '../sites/site-detail/detail-projets/projets.service';
+import { SitesService } from '../../sites/sites.service';
+import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -182,7 +182,7 @@ export class FormService {
       attentes: [objectif?.attentes || ''],
       surf_totale: [objectif?.surf_totale || ''],
       unite_gestion: [objectif?.unite_gestion || ''],
-      validite: [objectif?.validite || true, Validators.required],
+      validite: [objectif?.validite || true],
       projet: [projet || objectif?.projet],
       surf_prevue: [objectif?.surf_prevue || null],
     });
@@ -291,8 +291,8 @@ export class FormService {
     // Ajouter une validation conditionnelle pour cadre_intervention_detail
     // Cela rechange le formulaire en fonction de la valeur de cadre_intervention
     // La valeur 12 est utilisée pour les chantiers nature.
-    form.get('cadre_intervention')?.valueChanges.subscribe((value) => {
-      const cadreDetailControl = form.get('cadre_intervention_detail');
+    form.get('step2.cadre_intervention')?.valueChanges.subscribe((value) => {
+      const cadreDetailControl = form.get('step2.cadre_intervention_detail');
       if (value === 12) {
         cadreDetailControl?.setValidators(Validators.required); // Rendre requis
       } else {
@@ -325,6 +325,7 @@ export class FormService {
     return JSON.stringify(form.value) !== JSON.stringify(initialFormValue);
   }
   
+  // A verifier dans le code si snackbar est bien passé en parametre
   snackMessage(message: string, code: number, snackbar: MatSnackBar): void {
     // Afficher le message dans le Snackbar
     if (Number(code) === 0) {
@@ -352,7 +353,7 @@ export class FormService {
   }
 
   /**
-   * Prépare les données d'un projet pour soumission en nettoyant les valeurs du formulaire
+   * Prépare les données à plat d'un projet pour soumission en nettoyant les valeurs du formulaire
    * et en structurant les données dans un objet conforme au type `Projet`.
    *
    * @param form - Le formulaire Angular (`FormGroup`) contenant les données du projet.
@@ -411,7 +412,7 @@ export class FormService {
   }
 
 /**
- * Prépare les données d'une opération pour soumission en nettoyant les valeurs du formulaire
+ * Prépare les données à plat d'une opération pour soumission en nettoyant les valeurs du formulaire
  * et en structurant les données dans un objet conforme au type `Operation`.
  *
  * @param form - Le formulaire Angular (`FormGroup`) contenant les données de l'opération.

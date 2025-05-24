@@ -14,6 +14,7 @@
 mat-tab {
   width: 100%;
 }
+
 .container-btn-h {
   display: flex;
   @include align(center, center);
@@ -31,34 +32,39 @@ mat-tab {
   }
 }
 
+// .mat-mdc-tab-group {
+//   //1. couleur de l'indicateur actif d'un onglet
+//   --mdc-tab-indicator-active-indicator-color: #d77813;
+//   //2. change la couleur de l'effet "ripple" (onde) lorsque l'onglet est désactivé avec une opacité de 0.38
+//   --mat-tab-header-disabled-ripple-color: rgba(0, 0, 0, 0.38);
+//   //3. couleur des icônes de pagination (les flèches)
+//   --mat-tab-header-pagination-icon-color: #d77813;
+//   //4. couleur du texte des onglets inactifs, avec une opacité de 0.6
+//   --mat-tab-header-inactive-label-text-color: rgba(22, 65, 148, 0.6);
+//   //5. couleur du texte des onglets actifs
+//   --mat-tab-header-active-label-text-color: #d77813;
+//   //6. couleur de l'effet "ripple" (onde) lorsque l'onglet est actif est cliqué
+//   --mat-tab-header-active-ripple-color: #d77813;
+//   //7. La couleur de l'effet "ripple" sur les onglets inactifs
+//   --mat-tab-header-inactive-ripple-color: #d77813;
+//   //8. La couleur du texte des onglets inactifs lorsque l'onglet est focalisé (sélectionné via un clavier ou autre) avec une opacité de 0.6
+//   --mat-tab-header-inactive-focus-label-text-color: rgba(22, 65, 148, 0.6);
+//   //9. La couleur du texte des onglets inactifs lorsqu'on passe la souris dessus
+//   --mat-tab-header-inactive-hover-label-text-color: rgba(22, 65, 148, 0.6);
+//   //10. Couleur du texte des onglets actifs lorsqu'ils sont focalisés
+//   --mat-tab-header-active-focus-label-text-color: #d77813;
+//   //11. Couleur du texte des onglets actifs lorsqu'on passe la souris dessus
+//   --mat-tab-header-active-hover-label-text-color: #3f51b5;
+//   //12. Définis la couleur de l'indicateur (la ligne sous l'onglet) lorsque l'onglet actif est focalisé
+//   --mat-tab-header-active-focus-indicator-color: #d77813;
+//   //13. Définis la couleur de l'indicateur lorsque l'onglet actif est survolé
+//   --mat-tab-header-active-hover-indicator-color: #d77813;
+// }
+
 .mat-mdc-tab-group {
-  //1. couleur de l'indicateur actif d'un onglet
-  --mdc-tab-indicator-active-indicator-color: #d77813;
-  //2. change la couleur de l'effet "ripple" (onde) lorsque l'onglet est désactivé avec une opacité de 0.38
-  --mat-tab-header-disabled-ripple-color: rgba(0, 0, 0, 0.38);
-  //3. couleur des icônes de pagination (les flèches)
-  --mat-tab-header-pagination-icon-color: #d77813;
-  //4. couleur du texte des onglets inactifs, avec une opacité de 0.6
-  --mat-tab-header-inactive-label-text-color: rgba(22, 65, 148, 0.6);
-  //5. couleur du texte des onglets actifs
-  --mat-tab-header-active-label-text-color: #d77813;
-  //6. couleur de l'effet "ripple" (onde) lorsque l'onglet est actif est cliqué
-  --mat-tab-header-active-ripple-color: #d77813;
-  //7. La couleur de l'effet "ripple" sur les onglets inactifs
-  --mat-tab-header-inactive-ripple-color: #d77813;
-  //8. La couleur du texte des onglets inactifs lorsque l'onglet est focalisé (sélectionné via un clavier ou autre) avec une opacité de 0.6
-  --mat-tab-header-inactive-focus-label-text-color: rgba(22, 65, 148, 0.6);
-  //9. La couleur du texte des onglets inactifs lorsqu'on passe la souris dessus
-  --mat-tab-header-inactive-hover-label-text-color: rgba(22, 65, 148, 0.6);
-  //10. Couleur du texte des onglets actifs lorsqu'ils sont focalisés
-  --mat-tab-header-active-focus-label-text-color: #d77813;
-  //11. Couleur du texte des onglets actifs lorsqu'on passe la souris dessus
-  --mat-tab-header-active-hover-label-text-color: #3f51b5;
-  //12. Définis la couleur de l'indicateur (la ligne sous l'onglet) lorsque l'onglet actif est focalisé
-  --mat-tab-header-active-focus-indicator-color: #d77813;
-  //13. Définis la couleur de l'indicateur lorsque l'onglet actif est survolé
-  --mat-tab-header-active-hover-indicator-color: #d77813;
+  @include mat-tabs-theme($couleur-faune);
 }
+
 //RESPONSIVE
 @media (max-width: $tablette) {
   .site-detail {
@@ -74,3 +80,4 @@ mat-tab {
     }
   }
 }
+

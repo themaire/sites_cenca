@@ -1,5 +1,5 @@
 <!-- Il y a 2 MODES d'affichage de ce composant -->
-<!-- 1 On liste les opérations existantes - grace a l'appel au backend sur les operations lite -->
+<!-- 1 On liste les objectifs existants - grace a l'appel au backend sur les objectifs lite -->
 <!-- 2 On ajoute ou edite une opération existante -->
 <!-- this.form est généré vide OU this.form est rempli l'opération -->
 
@@ -8,17 +8,26 @@ Variable (objectif) isEditObjectif: {{ isEditObjectif }}<br>
 Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
-<app-form-buttons
-  *ngIf="!projetEditMode"
-  icone="add" 
-  [isEditActive]="isEditObjectif" 
-  [isAddActive]="isAddObjectif" 
-  [isFormValid]="isFormValid" 
-  [nbObjectifs]="nbObjectifs"
-  (toggleAction)="toggleEditObjectif($event)"
-  (makeObjectifForm)="makeForm($event)"
-  (onSubmit)="onSubmit($event)"
-></app-form-buttons>
+<div class = "button-title">
+  <app-form-buttons
+    *ngIf="!projetEditMode"
+    icone="add"
+    [theme]="'gerer'"
+    [isEditActive]="isEditObjectif" 
+    [isAddActive]="isAddObjectif" 
+    [isFormValid]="isFormValid" 
+    [nbObjectifs]="nbObjectifs"
+    (toggleAction)="toggleEditObjectif($event)"
+    (makeObjectifForm)="makeForm($event)"
+    (onSubmit)="onSubmit($event)"
+  ></app-form-buttons>
+
+  <div *ngIf="!isEditProjet && isEditObjectif">
+      <div class="suppression">
+        <button mat-button (click)="deleteItemConfirm()">Supprimer l'objectif</button>
+      </div>
+    </div>
+</div>
 
 <!-- Permet d'appeller un template -->
 <ng-container *ngIf="!isEditObjectif && !isAddObjectif; then listObjectifs; else addEditObjectif"></ng-container>
@@ -30,7 +39,7 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
     <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->
 
     Tableau des objectif(s). Depuis le 01/01/2025 : <b>un objectif par projet</b>.
-    <ng-container *ngIf="objectifs !== undefined; then table else noObjectifs"></ng-container>
+    <ng-container *ngIf="objectifs.length > 0; then table else noObjectifs"></ng-container>
 
     <ng-template #table>
       <div>
@@ -64,7 +73,9 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
     </ng-template>
 
     <ng-template #noObjectifs>
+      <div>
         Il n'y a pas encore d'objectifs sur ce site.
+      </div>
     </ng-template>
 
   </div>
@@ -78,10 +89,10 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
   <!-- Si le projet vient d'un projet webapp, on affiche pas les deux onglets -->
   <!-- Sinon, on affiche deux onglets : infos de l'objectif et operations de l'objectif -->
 
-    <mat-tab-group class="top-tabs">
+    <mat-tab-group class="mat-tabs-theme" *ngIf="form">
 
-      <mat-tab label="Infos de l'objectif">
-        <form [formGroup]="form!">
+      <mat-tab label="Informations de l'objectif">
+        <form *ngIf="form" [formGroup]="form">
           <div>
             <!-- <mat-form-field>
               <mat-label>Ref UUID Objectif</mat-label>
@@ -127,10 +138,10 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
               <input matInput formControlName="surf_totale">
             </mat-form-field>
             
-                      <mat-form-field>
-                        <mat-label>Surface prévue</mat-label>
-                        <input matInput formControlName="surf_prevue">
-                      </mat-form-field>
+            <mat-form-field>
+              <mat-label>Surface prévue</mat-label>
+              <input matInput formControlName="surf_prevue">
+            </mat-form-field>
 
             <mat-form-field>
               <mat-label>Unité de gestion</mat-label>
@@ -150,24 +161,21 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
         </form>
       </mat-tab>
       
-      <mat-tab label="Opérations associées">
-    <!-- Composant operation -->
-
-      <!-- isEditFromOperation vient de app-operation et app-projet -->
-      <app-operation 
-                    rattachementOperation="objectif"
-                    (isEditFromOperation)="handleEditOperationChange($event)"
-                    (isAddFromOperation)="handleAddOperationChange($event)"
-                    [isEditOperation]="isEditOperation"
-                    [isAddOperation]="isAddOperation"
-                    [projetEditMode]="isEditProjet"
-                    [ref_uuid_objectif]="objectif.uuid_objectif || ''"
-                    [geojson_site]="geojson_site"
-                    >
-      </app-operation>
-
-      </mat-tab>
+      <!-- <mat-tab label="Opérations associées" *ngIf="!pro_webapp && form">
+      <ng-template matTabContent>
+        <app-operation 
+          rattachementOperation="objectif"
+          (isEditFromOperation)="handleEditOperationChange($event)"
+          (isAddFromOperation)="handleAddOperationChange($event)"
+          [isEditOperation]="isEditOperation"
+          [isAddOperation]="isAddOperation"
+          [projetEditMode]="isEditProjet"
+          [ref_uuid_objectif]="objectif?.uuid_objectif || ''"
+        ></app-operation>
+      </ng-template>
+    </mat-tab> -->
 
     </mat-tab-group>
 
 </ng-template>
+
