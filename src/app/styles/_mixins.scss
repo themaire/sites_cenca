@@ -127,20 +127,29 @@
   }
 }
 
-@mixin mat-tabs-theme($main-color, $inactive-color: rgba(22, 65, 148, 0.6)) {
+@mixin mat-tabs-theme($main-color, $inactive-color: rgba(0, 0, 0, 0.6)) {
+  // Indicateur actif (ligne sous l'onglet actif)
   --mdc-tab-indicator-active-indicator-color: #{$main-color};
-  --mat-tab-header-pagination-icon-color: #{$main-color};
+  
+  // Couleurs des labels (texte des onglets)
   --mat-tab-header-active-label-text-color: #{$main-color};
-  --mat-tab-header-active-ripple-color: #{darken($main-color, 15%)};
-  --mat-tab-header-inactive-ripple-color: #{darken($main-color, 15%)};
   --mat-tab-header-active-focus-label-text-color: #{$main-color};
   --mat-tab-header-active-hover-label-text-color: #{$main-color};
-  --mat-tab-header-active-focus-indicator-color: #{$main-color};
-  --mat-tab-header-active-hover-indicator-color: #{$main-color};
   --mat-tab-header-inactive-label-text-color: #{$inactive-color};
   --mat-tab-header-inactive-focus-label-text-color: #{$inactive-color};
   --mat-tab-header-inactive-hover-label-text-color: #{$inactive-color};
+  
+  // Effets ripple (ondulation au clic)
+  --mat-tab-header-active-ripple-color: #{darken($main-color, 15%)};
+  --mat-tab-header-inactive-ripple-color: #{darken($main-color, 15%)};
   --mat-tab-header-disabled-ripple-color: rgba(0, 0, 0, 0.38);
+  
+  // Indicateurs de focus/hover
+  --mat-tab-header-active-focus-indicator-color: #{$main-color};
+  --mat-tab-header-active-hover-indicator-color: #{$main-color};
+  
+  // Icône de pagination (si beaucoup d'onglets)
+  --mat-tab-header-pagination-icon-color: #{$main-color};
 }
 
 @mixin suppression-btn {

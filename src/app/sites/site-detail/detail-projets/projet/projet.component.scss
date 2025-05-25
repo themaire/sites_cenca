@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+@import "../../../../styles/themes.scss";
 @import "../../../../styles/mixins.scss";
 @import "../../../../styles/variables.scss";
 
@@ -6,6 +8,27 @@
 //   display: block; // Nécessaire pour que le fond s’applique sur tout le composant
 //   min-height: 100vh; // Pour couvrir toute la hauteur de la page
 // }
+
+// Créer un thème local avec ta palette
+$local-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $gerer-palette,
+    accent: mat.m2-define-palette(mat.$m2-amber-palette),
+    warn: mat.m2-define-palette(mat.$m2-red-palette),
+  )
+));
+
+// Appliquer le thème uniquement à ce composant et ses enfants
+:host {
+  @include mat.all-component-themes($local-theme);
+}
+
+// Ou si tu préfères cibler des éléments spécifiques
+// ::ng-deep .projet-container {
+//   @include mat.all-component-themes($local-theme);
+// }
+
+
 
 *,
 .mat-mdc-dialog-content,
@@ -70,31 +93,39 @@ mat-dialog-content.dialogue {
   justify-content: space-between;
   align-items: center;
   margin: 5px 0px 0px 5px;
+
+  &.center-title {
+    justify-content: center; /* Centre horizontalement si le 3ème élément est absent */
+
+    .form-buttons {
+      order: -1; /* Déplace les boutons au début */
+    }
+
+    .title-container {
+
+      text-align: center; /* Centre le texte à l'intérieur du conteneur */
+      margin: 0 auto; /* Ajout pour centrer le titre */
+    }
+
+    .suppression {
+      display: none; /* Cache le bouton de suppression */
+    }
+  }
+}
+
+//boutons edit/save/cancel
+.form-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 10px 0px 0px 0px;
 }
 
 .title-border {
   margin: 0px 0 0px 10px;
 }
 
-//boutons edit/save/cancel
-.edition {
-  display: flex;
-  @include align(center, start);
-  margin-bottom: 20px;
-  gap: 15px;
-  .btn-edition {
-    @include btn-icon($couleur-territoire, $vertC);
-    @include icon(white, black);
-  }
-  .btn-sauvegarde {
-    @include btn-icon(white, $couleur-territoire);
-    @include icon($couleur-flore, white);
-  }
-  .btn-annulation {
-    @include btn-icon(white, red);
-    @include icon(red, white);
-  }
-}
 
 .mat-mdc-dialog-container .mat-mdc-dialog-content {
   padding: 0;
@@ -131,20 +162,21 @@ mat-dialog-content.dialogue {
 //   background-color: $vertTC !important;
 // }
 
-::ng-deep .mat-mdc-stepper-content,
-::ng-deep .mat-stepper-content {
-  background-color: green !important;
-}
-::ng-deep .mat-mdc-step-header,
-::ng-deep .mat-step-header {
-  background: $vertTC2 !important;
-}
-::ng-deep .mat-mdc-step-icon,
-::ng-deep .mat-step-icon {
-  background-color: $couleur-territoire !important; // Couleur de fond des icones
-  color: white !important; // Couleur de l'icône ou du numéro
-  border: none !important;
-}
+// Forcer les couleurs du stepper
+// ::ng-deep .mat-mdc-stepper-content,
+// ::ng-deep .mat-stepper-content {
+//   background-color: green !important;
+// }
+// ::ng-deep .mat-mdc-step-header,
+// ::ng-deep .mat-step-header {
+//   background: $vertTC2 !important;
+// }
+// ::ng-deep .mat-mdc-step-icon,
+// ::ng-deep .mat-step-icon {
+//   background-color: $couleur-territoire !important; // Couleur de fond des icones
+//   color: white !important; // Couleur de l'icône ou du numéro
+//   border: none !important;
+// }
 
 
 // Pour le bouton de suppression
@@ -152,6 +184,7 @@ mat-dialog-content.dialogue {
   @include suppression-btn();
 }
 
+// Fond de la boîte de dialogue
 ::ng-deep .mat-mdc-dialog-surface {
   background-color: rgb(230, 230, 230) !important;
   height: 100%;
@@ -159,7 +192,28 @@ mat-dialog-content.dialogue {
   align-items: center;
   justify-content: center;
   padding: 0;
-} 
+}
+
+// Pour les champs de saisie du formulaire
+// ::ng-deep .mat-mdc-form-field {
+//   background-color: $superRed !important;
+//   color: bisque !important;
+//   border-radius: 4px;
+//   padding: 10px;
+// }
+
+// ::ng-deep .mat-mdc-form-field-ripple {
+//   background-color: bisque !important; /* Remplace $vertTC par la couleur verte de ton thème */
+// }
+
+// ::ng-deep .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
+//   color: $superRed !important; /* Change la couleur de la bordure si nécessaire */
+// }
+
+// ::ng-deep .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
+//   border-color: blue !important; /* Change la couleur de la bordure épaisse */
+// }
+
 
 .loading-container {
   display: flex;

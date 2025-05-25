@@ -1,0 +1,84 @@
+@use '@angular/material' as mat;
+@import './variables.scss';
+
+// Définir ta palette personnalisée gerer (existante)
+$custom-gerer: (
+  50: #e8f5e8,
+  100: #c8e6c9,
+  200: #a5d6a7,
+  300: #81c784,
+  400: #66bb6a,
+  500: #4caf50,
+  600: #43a047,
+  700: #388e3c,
+  800: #2e7d32,
+  900: #1b5e20,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// Nouvelle palette rouge basée sur tes couleurs
+$custom-red: (
+  50: lighten($redC, 15%),     // #fcdddd (très clair)
+  100: $redC,                  // #f8baba (clair)
+  200: lighten($redM, 5%),     // #f6a9a9 (moyennement clair)
+  300: $redM,                  // #f4a2a2 (moyen)
+  400: darken($redM, 5%),      // #f19999 (moyennement foncé)
+  500: $superRed,              // #df5454 (principal - ton superRed)
+  600: darken($superRed, 10%), // #c94a4a (foncé)
+  700: darken($superRed, 20%), // #b33f3f (très foncé)
+  800: darken($superRed, 30%), // #9d3535 (ultra foncé)
+  900: darken($superRed, 40%), // #872a2a (le plus foncé)
+  A100: $redC,                 // #f8baba (accent clair)
+  A200: $redM,                 // #f4a2a2 (accent moyen)
+  A400: $superRed,             // #df5454 (accent foncé)
+  A700: darken($superRed, 15%), // #bd4444 (accent très foncé)
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,                 // Texte blanc sur ton superRed
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: white,
+    A700: white,
+  )
+);
+
+// Création des palettes
+$gerer-palette: mat.m2-define-palette($custom-gerer);
+$red-palette: mat.m2-define-palette($custom-red);
+
+// Thème associé à la palette gerer
+$gerer-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $gerer-palette,
+    accent: mat.m2-define-palette(mat.$m2-amber-palette),
+    warn: $red-palette, // Utilise ta palette rouge personnalisée au lieu de m2-red
+  )
+));
+
+// Si tu veux un thème entièrement rouge
+$red-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $red-palette,
+    accent: mat.m2-define-palette(mat.$m2-amber-palette),
+    warn: $red-palette,
+  )
+));

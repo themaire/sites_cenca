@@ -9,9 +9,14 @@
   margin: 5px 0px 0px 5px;
 }
 
-.mat-mdc-tab-group {
+// Onglets mat-tab. Obligé d'utiliser une mixin pour appliquer le thème ci
+::ng-deep .mat-mdc-tab-group {
   @include mat-tabs-theme($couleur-territoire);
 }
+// Avec couleur inactive personnalisée
+// ::ng-deep .mat-mdc-tab-group {
+//   @include mat-tabs-theme($superRed, rgba(100, 100, 100, 0.5));
+// }
 
 // Pour le bouton de suppression
 .suppression {

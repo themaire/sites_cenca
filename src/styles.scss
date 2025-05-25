@@ -1,9 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+// LES @use DOIVENT ÊTRE EN PREMIER
+@use '@angular/material' as mat;
+
+// PUIS LES @import
 @import "app/styles/variables.scss";
 @import "app/styles/mixins.scss";
 
-// Theme personalisé Material
-// @import './custom-theme.scss';
+// Définir une palette personnalisée (syntaxe v18)
+// $primary-palette: mat.m2-define-palette(mat.$m2-green-palette);
+// $accent-palette: mat.m2-define-palette(mat.$m2-amber-palette);
+// $warn-palette: mat.m2-define-palette(mat.$m2-red-palette);
+
+// Créer un thème personnalisé (syntaxe v18)
+// $custom-theme: mat.m2-define-light-theme((
+//   color: (
+//     primary: $primary-palette,
+//     accent: $accent-palette,
+//     warn: $warn-palette,
+//   )
+// ));
+// Appliquer le thème (syntaxe v18) SUR TOUT LE SITE!
+// @include mat.all-component-themes($custom-theme);
 
 body,
 html {

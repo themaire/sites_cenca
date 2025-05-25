@@ -263,7 +263,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         
         // Créer un formulaire vide
         if (this.projetLite.uuid_site) {
-          // Le form_group correspondant aux projet neuf à créer
+          // Le form_group correspondant aux projet neuf à créer 
           this.projetForm = this.formService.newProjetForm(undefined, this.projetLite.uuid_site, true);
 
           // Définir les valeurs par défaut pour créateur et responsable

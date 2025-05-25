@@ -17,11 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
 
 import {
   MatDialog, 
-  MatDialogModule,
-  MAT_DIALOG_DATA,
-  MatDialogTitle,
-  MatDialogContent,
+  MatDialogModule
 } from '@angular/material/dialog';
+import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-detail-projets',
@@ -104,8 +102,8 @@ export class DetailProjetsComponent {
     }
   }
 
-  // Pour l'affichage de la fenetre de dialogue
   dialog = inject(MatDialog);
+  overlay = inject(Overlay);
 
   openDialog(projetlite?: ProjetLite): void {
     // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
@@ -118,7 +116,6 @@ export class DetailProjetsComponent {
     // console.log("Ouverture de la fenetre de dialogue pour le projetLite : ", projetlite);
     // console.log("heure minute seconde milliseconde de l'ouverture du dialogue : ", new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
 
-    let dialogComponent = ProjetComponent;
     
     // Si on fournit un projetLite en paramètre
     if(projetlite !== undefined){
@@ -137,10 +134,10 @@ export class DetailProjetsComponent {
       console.log("--------------ProjetLite : ");
       console.log(projetlite);
     }
-
+    
     // Ouverture de la fenetre de dialogue
     // tout en créant la constante dialogRef
-    const dialogRef = this.dialog.open(dialogComponent, {
+    const dialogRef = this.dialog.open(ProjetComponent, {
       data: projetlite,
       minWidth: '50vw',
       maxWidth: '95vw',
@@ -149,7 +146,9 @@ export class DetailProjetsComponent {
       hasBackdrop: true, // Avec fond
       backdropClass: 'custom-backdrop-gerer', // Personnalisé
       enterAnimationDuration: '400ms',
-      exitAnimationDuration: '300ms'
+      exitAnimationDuration: '300ms',
+
+      scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
     });
 
     // Préparer à l'avance quand la fenetre de dialogue se ferme

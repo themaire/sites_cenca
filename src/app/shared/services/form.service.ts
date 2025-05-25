@@ -146,10 +146,10 @@ export class FormService {
       step1: this.fb.group({
         // nom: [projet?.nom || ''],
         typ_projet: [projet?.typ_projet || null, Validators.required],
-        statut: [projet?.statut || null],
-        validite: [projet?.validite || '', Validators.required],
+        statut: [projet?.statut || null, Validators.required],
+        validite: [projet !== undefined && projet?.validite !== null ? projet.validite : true],
         
-        annee: [projet?.annee || null],
+        annee: [projet?.annee || new Date().getFullYear(), Validators.required],
         // pro_debut: [projet?.pro_debut || null],
         // pro_fin: [projet?.pro_fin || ''],
         date_crea: [projet?.date_crea || null],

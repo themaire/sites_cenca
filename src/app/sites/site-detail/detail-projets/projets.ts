@@ -19,7 +19,7 @@ export interface ProjetV {
     uuid_proj: string;
     code: string;
     itin_tech: string;
-    validite: string;
+    validite: boolean;
     document: string;
     programme: string;
     nom: string;
@@ -37,7 +37,7 @@ export interface Projet {
     uuid_proj: string;
     code?: string;
     itin_tech?: string;
-    validite?: string;
+    validite?: boolean;
     document?: string;
     programme?: string;
     nom?: string;
@@ -52,7 +52,7 @@ export interface Projet {
     // pro_debut?: Date;
     // pro_fin?: Date;
     pro_pression_ciblee?: string;
-    pro_webapp?: boolean
+    pro_webapp?: boolean;
     pro_results_attendus?: number;
     pro_maitre_ouvrage?: number;
     pro_surf_totale?: number;

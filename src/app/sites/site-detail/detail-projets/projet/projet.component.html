@@ -29,33 +29,43 @@
     <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
   </div>
   
-  <div class="button-title">
-    <app-form-buttons
-      *ngIf="!isEditOperation && !isAddOperation" 
-      [isEditActive]="isEditProjet" 
-      icone="edit"
-      [theme]="'gerer'"
-      [isFormValid]="isFormValid" 
-      (toggleAction)="toggleEditProjet()" 
-      (onSubmit)="onSubmit()">
-    </app-form-buttons>
-    
-    <div class="title-border" *ngIf="objectifProjet !== '' || (projetLite && projetLite.nom !== '')">
-      <h2 *ngIf="!isEditProjet">Consultation du projet {{ objectifProjet }} - {{ projetLite.nom }}</h2>
-      <h2 *ngIf="isEditProjet">Modification du projet {{ objectifProjet }} - {{ projetLite.nom }}</h2>
-      <h2 *ngIf="newProjet">Création d'un projet neuf en cours</h2>
+  <div class="button-title" [class.center-title]="projet === undefined || projet === null || isEditOperation || isAddOperation">
+    <!-- 1er element -->
+    <div class="form-buttons">
+      <app-form-buttons
+        *ngIf="!isEditOperation && !isAddOperation"
+        [isEditActive]="isEditProjet"
+        icone="edit"
+        [theme]="'gerer'"
+        [isFormValid]="isFormValid"
+        (toggleAction)="toggleEditProjet()"
+        (onSubmit)="onSubmit()"
+      ></app-form-buttons>
     </div>
-    
-    <div class="title-border" *ngIf="objectifProjet.length === 0">
+
+    <!-- 2eme element -->
+    <ng-container *ngIf="!(newProjet)">
+      <div class="title-container">
+        <ng-container *ngTemplateOutlet="title"></ng-container>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="newProjet">
+      <div class="title-container">
+        <ng-container *ngTemplateOutlet="newTitle"></ng-container>
+      </div>
+    </ng-container>
+
+    <ng-template #title>
       <h2 *ngIf="!isEditProjet">Consultation du projet - {{ projetLite.nom }}</h2>
       <h2 *ngIf="isEditProjet">Modification du projet - {{ projetLite.nom }}</h2>
+    </ng-template>
+    <ng-template #newTitle>
       <h2 *ngIf="newProjet">Création d'un projet neuf en cours</h2>
-    </div>
-    
-    <div *ngIf="projet !== undefined && projet !== null && !isEditOperation && !isAddOperation">
-      <div class="suppression">
-        <button mat-button (click)="deleteItemConfirm()">Supprimer le projet</button>
-      </div>
+    </ng-template>
+
+    <!-- 3eme element (facultatif)-->
+    <div class="suppression">
+      <button mat-button (click)="deleteItemConfirm()">Supprimer le projet</button>
     </div>
   </div>
   
@@ -157,6 +167,9 @@
         <form [formGroup]="step1Form">
           <ng-container>
             <div>
+              <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
+            </div>
+            <div>
               <!-- <mat-form-field>
                 <mat-label>Nom</mat-label>
                 <textarea matInput formControlName="nom"></textarea>
@@ -165,9 +178,9 @@
               <mat-form-field>
                 <mat-label>Type de projet</mat-label>
                 <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
-                  @for (type of projectTypes; track type) {
-                    <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
-                  }
+                <mat-option *ngFor="let status of projectTypes" [value]="status.cd_type">
+                    {{status.libelle}}
+                  </mat-option>
                 </mat-select>
 
               </mat-form-field>
@@ -181,14 +194,12 @@
                 </mat-select>
               </mat-form-field>
 
-              <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
-
             </div>
             
             <div>
               <mat-form-field>
                 <mat-label>Année d'execution</mat-label>
-                <textarea matInput formControlName="annee"></textarea>
+                <textarea matInput type="number" formControlName="annee"></textarea>
               </mat-form-field>
               <!-- <mat-form-field>
                 <mat-label>Date de début</mat-label>
@@ -230,7 +241,7 @@
       <div class="nav-buttons">
         <button mat-button matStepperNext>Suivant</button>
       </div>
-      </mat-step>
+    </mat-step>
 
     <mat-step state="flag" *ngIf="projet && newProjet === false">
       <ng-template matStepLabel>Objectifs</ng-template>
@@ -246,7 +257,7 @@
       </div>
     </mat-step>
 
-    <mat-step state="pin">
+    <mat-step state="pin" *ngIf="projet && newProjet === false">
       <!-- <mat-step [stepControl]="UGFormGroup"> -->
       <ng-template matStepLabel>Unités de gestion</ng-template>
       
@@ -256,12 +267,16 @@
           
             <mat-form-field >
               <mat-label>Pression ciblée</mat-label>
-              <input matInput [value]="projetForm.get('pro_pression_ciblee')?.value || 'Non renseignée'" readonly>
+              <input matInput 
+                [value]="projetForm.get('pro_pression_ciblee')?.value || 'Non renseignée'"
+                disabled="true">
             </mat-form-field>
 
             <mat-form-field >
               <mat-label>Résultats attendus</mat-label>
-              <input matInput [value]="projetForm.get('pro_results_attendus')?.value || 'Non renseigné'" readonly>
+              <input matInput 
+                [value]="projetForm.get('pro_results_attendus')?.value || 'Non renseigné'"
+                disabled="true">
             </mat-form-field>
           </div>
           <div>
@@ -320,7 +335,6 @@
       </div>
     </mat-step> -->
 
-    <!-- Ce step s'affichera uniquement si newProjet existe et est faux ET que pro_webapp est vrai -->
     <mat-step state="construction" *ngIf="projet && newProjet === false && projet.pro_webapp === true">
       <ng-template matStepLabel>Opérations</ng-template>
 
