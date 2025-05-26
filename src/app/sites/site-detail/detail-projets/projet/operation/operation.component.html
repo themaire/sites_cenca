@@ -5,7 +5,11 @@
 
 <!-- Variable (Input depuis projet) projetEditMode: {{ projetEditMode }}<br>
 Variable (operation) isEditOperation: {{ isEditOperation }}<br>
-Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
+Variable (operation) isAddOperation: {{ isAddOperation }}<br>
+Variable (operation) form: {{ form }}<br>
+<div *ngIf="form">
+  Variable (operation) form.get('uuid_ope'): {{ form.get('uuid_ope')?.value == undefined ? "Valeur undefined" : form.get('uuid_ope')?.value }}<br>
+</div> -->
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <app-form-buttons
@@ -96,17 +100,18 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     <mat-step [stepControl]="step1Form">
       <form [formGroup]="step1Form">
         <ng-template matStepLabel>Type de l'opération</ng-template>
-        <div>
-          <mat-slide-toggle
-                formControlName="validite"
-                class="toggle"
-                [checked]="step1Form.get('validite')?.value || false">
+        <div class="form-fields">
+          <div>  
+            <mat-slide-toggle
+                  formControlName="validite"
+                  class="toggle"
+                  [checked]="step1Form.get('validite')?.value || false">
 
-                Validité de l'opération
+                  Validité de l'opération
 
-          </mat-slide-toggle>
-        </div>
-        <div>
+            </mat-slide-toggle>
+          </div>
+
 
           <!-- <mat-form-field>
             <mat-label>Ref UUID Operation</mat-label>
@@ -117,7 +122,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             <input matInput formControlName="ref_uuid_proj" readonly>
           </mat-form-field> -->
 
-          <mat-form-field>
+          <mat-form-field class="small-width">
             <mat-label>Objectif opérationnel</mat-label>
             <mat-select formControlName="obj_ope">
               @for (type of typeObjectifOpe; track type) {
@@ -126,7 +131,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field>
+          <mat-form-field class="medium-width">
             <mat-label>Type d'opération 1</mat-label>
             <mat-select formControlName="action">
               <mat-option *ngFor="let type of operationTypesFamilles" [value]="type.cd_type">
@@ -137,51 +142,54 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
           <!-- Differents types d'opérations selon la famille sélectionnée -->
           <ng-container *ngIf="selectedOperationFamille != undefined">
-            <mat-form-field *ngIf ="previousActionValue == '027_TRAV_MECA_V2'">
+            <mat-form-field *ngIf ="step1Form.value.action == '027_TRAV_MECA_V2'" class="small-width">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesMeca; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="previousActionValue == '028_TRAV_PAT_V2'">
+            <mat-form-field *ngIf ="step1Form.value.action == '028_TRAV_PAT_V2'" class="small-width">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesPat; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="previousActionValue == '008_TRAV_AMEN_V2'">
+            <mat-form-field *ngIf ="step1Form.value.action == '008_TRAV_AMEN_V2'" class="small-width">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesAme; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="previousActionValue == '005_TRAV_HYDRO_V2'">
+            <mat-form-field *ngIf ="step1Form.value.action == '005_TRAV_HYDRO_V2'" class="small-width">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesHydro; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field *ngIf ="previousActionValue == '200_TRAV_DECH_V2'">
+            <mat-form-field *ngIf ="step1Form.value.action == '200_TRAV_DECH_V2'" class="small-width">
               <mat-label>Type d'opération 2</mat-label>
-              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2" (selectionChange)="onFieldChange($event.value, 'action_2', previousAction2Value)">
+              <mat-select [(ngModel)]="selectedOperationType" formControlName="action_2">
                 @for (type of operationTypesDech; track type) {
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
           </ng-container>
+        </div>
 
+        <div class="form-textarea">
           <mat-form-field matTooltip="Décrire/Détailler l'opération en deux ou trois phrases.">
             <mat-label>Description (détails)</mat-label>
-            <textarea matInput formControlName="description" placeholder="Exemple :● Fauche avec exportation des rémanents et mise en ballot
+            <textarea matInput formControlName="description" class="desc-haut" placeholder="Exemple :
+            ● Fauche avec exportation des rémanents et mise en ballot
             ● Débroussaillage de la végétation ligneuse avec mise en tas des rémanents en lisière."></textarea>
             <mat-icon matSuffix (click)="step1Form.get('description')?.setValue('')">clear</mat-icon>
             <mat-error *ngIf="step1Form.get('description')?.hasError('required')">
@@ -194,8 +202,9 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
 
           <mat-form-field>
             <mat-label>Remarques particulières</mat-label>
-            <textarea matInput formControlName="remarque" placeholder="Exemple :● En raison des conditions hydriques exceptionnelles de cette année, la fauche a eu lieu tardivement en saison
-● Dégradation du site par des engins sylvicoles."></textarea>
+            <textarea matInput formControlName="remarque" class="remarque-haut" placeholder="Exemple :
+            ● En raison des conditions hydriques exceptionnelles de cette année, la fauche a eu lieu tardivement en saison
+            ● Dégradation du site par des engins sylvicoles."></textarea>
             <mat-icon matSuffix (click)="step1Form.get('remarque')?.setValue('')">clear</mat-icon>
             <mat-error *ngIf="step1Form.get('remarque')?.hasError('required')">
               Ce champ est obligatoire.
@@ -214,8 +223,8 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     <mat-step [stepControl]="step2Form">
       <form [formGroup]="step2Form">
         <ng-template matStepLabel>Type de l'intervention</ng-template>
-        <div>
-          <mat-form-field>
+        <div class="form-fields">
+          <mat-form-field class="medium-width">
             <mat-label>Maitre d'oeuvre</mat-label>
             <mat-select formControlName="typ_intervention">
               <mat-option *ngFor="let type of maitreOeuvreTypes" [value]="type.cd_type">
@@ -223,17 +232,15 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
               </mat-option>
             </mat-select>
           </mat-form-field>
-        </div>
-        <div>
-          <mat-form-field>
+          <mat-form-field class="medium-width">
             <mat-label>Nom du maitre d'oeuvre</mat-label>
             <input matInput formControlName="nom_mo">
           </mat-form-field>
         </div>
-        <div>
-          <mat-form-field>
+        <div class="form-fields">
+          <mat-form-field class="medium-width">
             <mat-label>Cadre de l'intervention</mat-label>
-            <mat-select formControlName="cadre_intervention" (selectionChange)="onFieldChange($event.value, 'cadre_intervention')">
+            <mat-select formControlName="cadre_intervention" (selectionChange)="cleanFields($event.value, 'cadre_intervention')">
               <mat-option *ngFor="let type of cadreInterventionTypes" [value]="type.cd_type">
                 {{ type.libelle }}
               </mat-option>
@@ -248,7 +255,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-select>
             </mat-form-field>
         </div>
-        <div>
+        <div class="form-fields">
           <button mat-button matStepperPrevious>Retour</button>
           <button mat-button matStepperNext>Suivant</button>
         </div>
@@ -263,12 +270,22 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           Vous ne pouvez pas sélectionner plus de 3 programmes.
         </mat-error>
         
-        <div formArrayName="liste_ope_programmes" *ngIf="listeOpeProgrammes && listeOpeProgrammes.length > 0">
-          <div *ngFor="let programme of listeOpeProgrammes.controls; let i = index" [formGroupName]="i">
-            <mat-checkbox formControlName="checked">
-              {{ programme.get('lib_libelle')?.value }}
-            </mat-checkbox>
-          </div>
+        <div formArrayName="liste_ope_programmes" *ngIf="listeOpeProgrammes && listeOpeProgrammes.length > 0" class="form-fields">
+          <ng-container *ngFor="let programme of listeOpeProgrammes.controls; let i = index">
+            <!-- Ouvre une nouvelle div toutes les 4 cases -->
+            <div *ngIf="i % 4 === 0" class="row-programmes">
+              <!-- Affiche les 4 cases suivantes -->
+              <ng-container *ngFor="let j of [0,1,2,3]">
+                <ng-container *ngIf="listeOpeProgrammes.controls[i + j]">
+                  <div [formGroupName]="i + j">
+                    <mat-checkbox formControlName="checked">
+                      {{ listeOpeProgrammes.controls[i + j].get('lib_libelle')?.value }}
+                    </mat-checkbox>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </ng-container>
         </div>
 
         <mat-error *ngIf="!listeOpeProgrammes.valid">
@@ -292,7 +309,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     <mat-step [stepControl]="step4Form">
       <form [formGroup]="step4Form">
         <ng-template matStepLabel>Informations sur l'opération</ng-template>
-        <div>
+        <div class="form-fields">
           <mat-form-field>
             <mat-label>Date de début</mat-label>
             <input matInput [matDatepicker]="picker1" formControlName="date_debut">
@@ -308,7 +325,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
 
-        <div>
+        <div class="form-fields">
           <!-- Nombre -- Si surface, alors aller lire dans la surface du polygone -->
           <mat-form-field *ngIf="getFamilleLibelle(step1Form.get('unite')?.value, unitesTypes) !== 'Hectare'">
             <mat-label>Quantité</mat-label>
@@ -399,7 +416,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
     <mat-step [stepControl]="step5Form">
       <form [formGroup]="step5Form">
         <ng-template matStepLabel>Champs non utilisés</ng-template>
-        <div>
+        <div class="form-fields">
 
           <mat-form-field>
             <mat-label>Inscrit PDG</mat-label>
@@ -425,7 +442,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
 
-        <div>
+        <div class="form-fields">
           <mat-form-field>
             <mat-label>Surface (ha)</mat-label>
             <input matInput formControlName="surf">
@@ -444,7 +461,7 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
           </mat-form-field>
         </div>
 
-        <div>
+        <div class="form-fields">
           <mat-form-field>
             <mat-label>UGB Moy</mat-label>
             <input matInput formControlName="ugb_moy">
@@ -462,13 +479,13 @@ Variable (operation) isAddOperation: {{ isAddOperation }}<br> -->
             <input matInput formControlName="charge_inst">
           </mat-form-field>
         </div>
-        <div>
+        <div class="form-fields">
           <mat-form-field>
             <mat-label>Date Approx</mat-label>
             <input matInput formControlName="date_approx">
           </mat-form-field>
         </div>
-        <div>
+        <div class="form-fields">
           <mat-form-field>
             <mat-label>Ben Participants</mat-label>
             <input matInput formControlName="ben_participants">

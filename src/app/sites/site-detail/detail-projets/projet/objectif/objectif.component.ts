@@ -536,7 +536,7 @@ export class ObjectifComponent {
     const message = `Voulez-vous vraiment supprimer ce projet?\n<strong>Cette action est irréversible.</strong>`
     
     // Appel de la boîte de dialogue de confirmation
-    this.confirmationService.confirm('Confirmation de suppression', message, this.dialogConfig).subscribe(result => {
+    this.confirmationService.confirm('Confirmation de suppression', message).subscribe(result => {
       if (result) {
         // L'utilisateur a confirmé la suppression
         // Utiliser le service projetService pour supprimer l'élément

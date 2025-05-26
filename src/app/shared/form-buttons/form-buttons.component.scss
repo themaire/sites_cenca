@@ -3,6 +3,7 @@
 
 .edition {
     display: flex;
+    flex-wrap: wrap;
     @include align(center, start);
     margin: 6px 0 15px 6px;
     gap: 15px;

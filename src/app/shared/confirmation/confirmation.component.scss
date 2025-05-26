@@ -1,3 +1,9 @@
 .message{
     white-space: pre-line;
 }
+
+.center-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 50px; // espace entre les boutons, ajuste la valeur si besoin
+}

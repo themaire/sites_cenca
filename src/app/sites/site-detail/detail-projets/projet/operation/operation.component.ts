@@ -138,8 +138,8 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   // Pour le formulaire d'édition d'une opération
   // Stoque l'ancienne valeur de l'action 1 et 2
-  previousActionValue: string | null = null;
-  previousAction2Value: string | null = null;
+  changedActionValues:  { previous?: string, actual?: string } = {}
+  changedAction2Values: { previous?: string, actual?: string } = {}
 
   // Listes de choix du formulaire
   typeObjectifOpe!: SelectValue[];
@@ -217,26 +217,26 @@ export class OperationComponent implements OnInit, OnDestroy {
   selectedOperation: String | undefined;
   
   // préparation des formulaires. Soit on crée un nouveau formulaire, soit on récupère un formulaire existant
-  form: FormGroup;
+  form?: FormGroup;
 
   get step1Form(): FormGroup {
-  return this.form.get('step1') as FormGroup;
+  return this.form?.get('step1') as FormGroup;
   }
 
   get step2Form(): FormGroup {
-  return this.form.get('step2') as FormGroup;
+  return this.form?.get('step2') as FormGroup;
   }
 
   get step3Form(): FormGroup {
-  return this.form.get('step3') as FormGroup;
+  return this.form?.get('step3') as FormGroup;
   }
 
   get step4Form(): FormGroup {
-  return this.form.get('step4') as FormGroup;
+  return this.form?.get('step4') as FormGroup;
   }
 
   get step5Form(): FormGroup {
-  return this.form.get('step5') as FormGroup;
+  return this.form?.get('step5') as FormGroup;
   }
 
   shapeForm?: FormGroup;
@@ -264,10 +264,6 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
       this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)').pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
-      
-      // console.log("this.ref_uuid_proj venant du input :", this.ref_uuid_proj);
-      this.form = fb.group({});
-
   }
 
   public getFamilleLibelle(cd_type: string, liste: SelectValue[]): string {
@@ -526,23 +522,6 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.error("Aucun identifiant de projet ou d'opération n\'a été trouvé.");
     }
   }
-
-  // ngAfterViewInit() {
-  //   // Forcer la détection des changements après l'initialisation de la vue
-  //   this.cdr.detectChanges();
-    
-  //   console.log('ngAfterViewInit: table =', this.table);
-  // }
-
-  // ngAfterViewChecked() {
-  //   // Fait déclencher cet evenement a chaque fois qu'il y a un changement dans la vue
-  //   // Vérifier l'initialisation de la table après chaque changement de vue
-  //   if (this.table) {
-  //     console.log('ngAfterViewChecked: table =', this.table);
-  //   } else {
-  //     console.error('La table n\'a pas été trouvée.');
-  //   }
-  // }
   
   ngOnDestroy(): void {
     console.log('Destruction du composant operation');
@@ -562,23 +541,16 @@ export class OperationComponent implements OnInit, OnDestroy {
     // Souscrire aux changements du statut du formulaire
     // C'est a dire que l'on va surveiller les changements du formulaire
     // A chaque fois qu'il y a un changement, ces lignes de code seront exécutées
-    this.formOpeSubscription = this.form.statusChanges.subscribe(status => {
-      this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
-      //console.log('Statut du formulaire principal :', status);
-      //console.log("this.isFormValid = this.projetForm.valid :");
-      //console.log(this.isFormValid + " = " + this.form.valid);
-      //console.log("Etat de isFormValid passé à l'enfant:", this.isFormValid);
-      // Afficher la liste des champs invalides
-      // console.log('Champs invalides :', this.getInvalidFields(this.form));
+    if (this.form) {
+      this.formOpeSubscription = this.form.statusChanges.subscribe(status => {
+        this.isFormValid = this.form ? this.form.valid : false;  // Mettre à jour isFormValid en temps réel
+        // console.log('Champs invalides :', this.getInvalidFields(this.form));
 
-      console.log('Ancienne valeur de action :', this.previousActionValue);
-      // console.log('Ancienne valeur de action :', this.getLibelleByCdType(this.previousActionValue, this.operationTypesFamilles));
-      console.log('Ancienne valeur de action2 :', this.previousAction2Value);
-      // console.log('Ancienne valeur de action2 :', this.getLibelleByCdType(this.previousAction2Value, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech));
-      console.log('Données du formulaire principal :', this.form.value);
+        console.log('Données du formulaire principal :', this.form?.value);
 
-      this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
-    });
+        this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+      });
+    }
   }
 
   getInvalidFields(form: FormGroup): string[] {
@@ -594,7 +566,9 @@ export class OperationComponent implements OnInit, OnDestroy {
     console.log("----------!!!!!!!!!!!!--------toggleEditOperation('" + mode +"') dans le composant operation");
     if (mode === 'edit') {
       this.isEditOperation = this.formService.simpleToggle(this.isEditOperation); // Changer le mode du booleen
-      this.formService.toggleFormState(this.form, this.isEditOperation, this.initialFormValues); // Changer l'état du formulaire
+      if (this.form) {
+        this.formService.toggleFormState(this.form, this.isEditOperation, this.initialFormValues); // Changer l'état du formulaire
+      }
       this.isEditFromOperation.emit(this.isEditOperation); // Envoyer l'état de l'édition de l'operation au parent
       
       console.log("isEditOperation apres toggleEditOperation('" + mode +"') :", this.isEditOperation);
@@ -606,7 +580,9 @@ export class OperationComponent implements OnInit, OnDestroy {
       }
 
       this.isAddOperation = this.formService.simpleToggle(this.isAddOperation); // Changer le mode du booleen
-      this.formService.toggleFormState(this.form, this.isAddOperation, this.initialFormValues); // Changer l'état du formulaire
+      if (this.form) {
+        this.formService.toggleFormState(this.form, this.isAddOperation, this.initialFormValues); // Changer l'état du formulaire
+      }
       
       this.isAddFromOperation.emit(this.isAddOperation); // Envoyer l'état de l'édition de l'operation au parent
       
@@ -637,17 +613,20 @@ export class OperationComponent implements OnInit, OnDestroy {
     // Deux grands modes :
     // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
     // 2. Créer un formulaire avec les données d'une opération
+    
+    this.unsubForm(); // Se désabonner des changements du formulaire précédent
 
-    if (this.projetEditMode){
-      this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir une opération", 'Fermer', { 
-        duration: 3000,});
-        return;
+    if (this.projetEditMode) {
+      this.snackBar.open(
+        "Veuillez terminer l'édition du projet avant d''ouvrir une opération", 
+        'Fermer',
+        { duration: 3000,}
+      );
+      return;
     } else {
       this.snackBar.open("Nous rentrons dans la methode makeForm().", 'Fermer', { 
       duration: 3000,});
     }
-
-    this.unsubForm(); // Se désabonner des changements du formulaire
 
     if (empty) {
       // Création d'un formulaire vide - Si empty est vrai
@@ -698,18 +677,22 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Création du formulaire avec les données de l'opération
         if (this.operation !== undefined) {
           this.form = this.formService.newOperationForm(this.operation); // Remplir this.form avec notre this.operation
-          console.log("Formulaire d'une operation existante initialisé :", this.form.value);
 
           this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
-          this.initialFormValues = this.form.value; // Stocker les valeurs initiales du formulaire
-          this.previousActionValue = this.step1Form.get('action')?.value || '';
-          console.log('Valeur initiale de action :', this.previousActionValue);
+          
+          // Stocker les valeurs initiales du formulaire
+          this.initialFormValues = this.form.value;
+          console.log('----------------------------------------');
+          console.log('données de operation : ', this.operation);
+          this.changedActionValues.previous = this.operation.action || undefined;
+          this.changedAction2Values.previous = this.operation.action_2 || undefined;
+          console.log('Valeurs de changedActionValues :', this.changedActionValues);
+          console.log('Valeurs de changedAction2Values :', this.changedAction2Values);
         }
 
         this.toggleEditOperation("edit")
         
-        console.log("this.form après la création du formulaire :");
-        console.log(this.form);
+        console.log("Formulaire d'une operation existante initialisé :", this.form?.value);
       } catch (error) {
       console.error('Erreur lors de la création du formulaire', error);
       }
@@ -718,26 +701,28 @@ export class OperationComponent implements OnInit, OnDestroy {
         return;
     }
 
+    // Une fois le formulaire créé, on s'abonne aux changements des champs spécifiques action et action_2
+    // pour détecter les changements et utiliser la méthode onFieldChange() qui va ré initialiser les valeurs correspondantes
     if (this.form !== undefined) {
       // Si le formulaire a été créé avec succès
       this.step1Form.get('action')?.valueChanges.subscribe((newValue) => {
-        this.onFieldChange(newValue, 'action', this.previousActionValue);
-        this.previousActionValue = newValue; // Met à jour l'ancienne valeur
-        console.log('Vient de changer la nouvelle valeur devient l ancienne :', newValue, "donc this.previousActionValue = ", this.previousActionValue);
+        this.changedActionValues = {  previous: this.changedActionValues.actual || '', // Stocker l'ancienne valeur
+                                      actual: newValue }; // Mettre à jour la nouvelle valeur
+        console.log('Action vient de changer la nouvelle valeur devient l ancienne :', newValue, "donc this.changedActionValues.previous = ", this.changedActionValues.previous);
       });
       this.step1Form.get('action_2')?.valueChanges.subscribe((newValue) => {
-        this.onFieldChange(newValue, 'action_2', this.previousAction2Value);
-        this.previousAction2Value = newValue; // Met à jour l'ancienne valeur
-        console.log('Action_2 vient de changer la nouvelle valeur devient l ancienne;:', newValue, "donc this.previousAction2Value = ", this.previousAction2Value);
+        this.changedAction2Values = { previous: this.changedAction2Values.actual || '', // Stocker l'ancienne valeur
+                                      actual: newValue }; // Mettre à jour la nouvelle valeur
+        console.log('Action_2 vient de changer la nouvelle valeur devient l ancienne :', newValue, "donc this.changedAction2Values.previous = ", this.changedAction2Values.previous);
       });
 
       // Test si this.step1Form existe et est rempli
-      if (this.step1Form) {
-        console.log('Formulaire d\'opération créé avec succès :', this.step1Form.value);
-        this.isComponentInitialized = true; // Indiquer que le composant est complètement initialisé
-      } else {
-        console.error('Le formulaire d\'opération n\'a pas été créé correctement.');
-      }
+      // if (this.step1Form) {
+      //   // console.log('Formulaire d\'opération créé avec succès :', this.step1Form.value);
+      //   this.isComponentInitialized = true; // Indiquer que le composant est complètement initialisé
+      // } else {
+      //   console.error('Le formulaire d\'opération n\'a pas été créé correctement.');
+      // }
     }
   }
 
@@ -768,19 +753,19 @@ export class OperationComponent implements OnInit, OnDestroy {
       // Déja, si le formulaire est valide
       if (this.form.valid) {
         console.log("----------!!!!!!!!!!!!--------onSubmit('" + mode + "') dans le composant operation");
-        console.log(this.form.value);
+        // console.log(this.form.value);
 
         // Formater les dates avant l'envoi au backend        
         if (
           this.formService.isDateModified(this.step4Form, 'date_debut', this.operation?.date_debut) ||
           this.formService.isDateModified(this.step4Form, 'date_fin', this.operation?.date_fin)
         ) {
-          console.log("Une des 3 dates à été modifiée par l'utilisateur.");
+          // console.log("Une des 3 dates à été modifiée par l'utilisateur.");
           this.step4Form.patchValue({
             date_debut: this.formService.formatDateToPostgres(this.step4Form.get('date_debut')?.value),
             date_fin: this.formService.formatDateToPostgres(this.step4Form.get('date_fin')?.value),
           });
-          console.log("Formulaire patché avec les bonnes dates: ", this.form.value);
+          // console.log("Formulaire patché avec les bonnes dates: ", this.form.value);
         }
         
 
@@ -804,6 +789,9 @@ export class OperationComponent implements OnInit, OnDestroy {
                 
                 // Accéder à la liste des opérations et remplir le tableau Material des operationLite
                 this.operation = undefined; // Réinitialiser l'opération
+                this.form = undefined;
+                this.isAddOperation = false;
+                this.isEditFromOperation.emit(this.isAddOperation);
 
                 // Mise a jout de la liste des opérations (liste liste - tableau "material table")
                 // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
@@ -821,8 +809,20 @@ export class OperationComponent implements OnInit, OnDestroy {
 
         // Modification d'une opération
         } else if (this.isEditOperation === true) {
-          console.log('Enregistrement de l\'opération en cours...');
+          console.log('Debut de l\'enregistrement de l\'opération... UPDATE');
           console.log('Formulaire juste avant le update :', this.form.value);
+          
+          // Si l'action 2 a changé, on peut effacer les valeurs qui concernent l'ancienne catégorie de action 2 grace a this.cleanFields()
+          // avant d'envoyer les données du formulaire au backend
+          if ( this.step1Form.value.action_2 !== this.changedAction2Values.previous ) {
+            console.log("onSubmit() : l'action 2 a changé, " + this.changedAction2Values.previous + " devient " + this.step1Form.value.action_2);
+            this.cleanFields(this.step1Form.value.action_2, 'action_2', this.changedAction2Values.previous);
+          } else if ( this.step1Form.value.action_2 === this.changedAction2Values.previous ) {
+            // Synchroniser les cases à cocher après la mise à jour
+            // On le fait car la catégorie de action 2 n'a pas changé
+            this.syncCheckboxs();
+          }
+          
           const updateObservable = this.formService.putBdd('update', 'operations', this.form, this.isEditOperation, this.snackBar, this.form.value.uuid_ope, this.initialFormValues);
           
           // S'abonner à l'observable updateObservable 
@@ -834,11 +834,10 @@ export class OperationComponent implements OnInit, OnDestroy {
                 
                 console.log('Formulaire mis à jour avec succès:', result.formValue);
 
-                // Synchroniser les cases à cocher après la mise à jour
-                this.syncCheckboxs();
-                
                 // Accéder à la liste des opérations et remplir le tableau Material des operationLite
-                this.operation = undefined; // Réinitialiser l'opération
+                this.operation = undefined;
+                this.form = undefined;
+                this.isEditFromOperation.emit(this.isEditOperation);
 
                 // Mise a jout de la liste des opérations (liste liste - tableau "material table")
                 // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
@@ -893,22 +892,6 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
 /**
- * Configuration de la boîte de dialogue de confirmation pour la suppression
- * d'une opération ou d'une localisation.
- */
-dialogConfig = {
-  // minWidth: '20vw',
-  // maxWidth: '95vw',
-  width: '580px',
-  height: '220px',
-  // maxHeight: '90vh',
-  hasBackdrop: true, // Activer le fond
-  backdropClass: 'custom-backdrop-delete', // Classe personnalisé
-  enterAnimationDuration: '300ms',
-  exitAnimationDuration: '300ms'
-};
-
-/**
  * Affiche une boîte de dialogue de confirmation pour la suppression d'une opération ou d'une localisation.
  * Récupère le libellé de l'opération à partir du formulaire, puis ouvre une boîte de dialogue
  * demandant à l'utilisateur de confirmer la suppression. Si l'utilisateur confirme,
@@ -953,7 +936,7 @@ dialogConfig = {
     const message = `Voulez-vous vraiment supprimer cette ${libelle}?\n<strong>Cette action est irréversible.</strong>`
     
     // Appel de la boîte de dialogue de confirmation
-    this.confirmationService.confirm('Confirmation de suppression', message, this.dialogConfig).subscribe(result => {
+    this.confirmationService.confirm('Confirmation de suppression', message,).subscribe(result => {
     if (result) {
       // L'utilisateur a confirmé la suppression
       // Utiliser le service projetService pour supprimer l'élément
@@ -962,8 +945,14 @@ dialogConfig = {
           // success === true ici si la suppression a réussi
           if (type == 'operation') {
             this.operation = undefined; // Réinitialiser l'opération après suppression
-            this.isEditOperation = false; // Sortir du mode édition
-            this.fetch(); // Rafraîchir la liste des opérations
+            if (this.isEditOperation) {
+              console.log("isEditOperation avant la suppression :", this.isEditOperation);
+              this.isEditOperation = false;
+              this.form = undefined;
+              this.isEditFromOperation.emit(this.isEditOperation);
+              console.log("isEditOperation après la suppression :", this.isEditOperation);
+            }
+              this.fetch(); // Rafraîchir la liste des opérations
           }
           if (type == 'localisation') {
             this.localisations = undefined; // Réinitialiser les localisations après suppression
@@ -978,11 +967,11 @@ dialogConfig = {
 
   }
 
-
-
   /**
-   * Détecte le changement de la valeur du champ `action_2` (Type opération 2)
+   * Détecte le changement de la valeur du champ `action` (Type opération 1) ou `action_2` (Type opération 2)
    * et de `cadre_intervention_detail` dans le formulaire.
+   * 
+   * !!! Utilisé dans méthode `onSubmit()` pour juste avant d'envoyer le formulaire au backend.
    * 
    * @param newValue - La nouvelle valeur sélectionnée pour le cadre d'intervention.
    * 
@@ -990,27 +979,26 @@ dialogConfig = {
    * `cadre_intervention_detail` à `null` sans émettre d'événement, afin de garantir
    * la cohérence des données du formulaire.
    */
-  onFieldChange(newValue: number, field: string, previousValue?: string | number | null): void {
-    let newValueText = undefined;
-    let previousValueText = undefined;
-    console.log(`Changement de ${field} détecté, nouvelle valeur brute : ${newValue}.`);
+  cleanFields(newValue: number, field: string, previousValue?: string | number | null): void {
+    let newValueText, previousValueText: undefined | string = undefined;
+
+    console.log(`cleanFields() ---- Changement de ${field} détecté, nouvelle valeur brute : ${newValue}.`);
+
+    // Bloc qui se souvient de l'ancienne valeur ( previousValue )
     if (field === 'action') {
       newValueText = this.projetService.getLibelleByCdType(newValue, this.operationTypesFamilles);
       if (previousValue) {
         previousValueText = this.projetService.getLibelleByCdType(previousValue, this.operationTypesFamilles);
       }
-      console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
-      // Mettre à null la valeur de cadre_intervention_detail
     } else if (field === 'action_2') {
       newValueText = this.projetService.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
       if (previousValue) {
         previousValueText = this.projetService.getLibelleByCdType(previousValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
       }
-      console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
     }
-    
+    console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
 
-    // Si on détecte que l'on a passé d'une valeur à une autre
+    // Si on détecte un changement de valeur
     if (previousValue === undefined || previousValue != null) {
       console.log(`Changement de ${field} détecté, ancienne et nouvelle valeur : ${previousValueText} / ${newValueText}.`);
 
@@ -1041,19 +1029,9 @@ dialogConfig = {
             this.step4Form.get('recouvrement_ligneux_paturage')!.setValue(null, { emitEvent: false });
           }
 
-          // Supprimer tous les animaux possibles de l'opération en base de données
-          this.liste_ope_animaux_paturage.forEach((animal) => {
-            if (animal.lib_id) {
-              this.projetService.deleteCheckbox('uuid_ope', this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
-                next: () => {
-                  console.log(`Programme supprimé : ${animal.lib_libelle}`);
-                },
-                error: (error) => {
-                  console.error(`Erreur lors de la suppression du programme : ${animal.lib_libelle}`, error);
-                }
-              });
-            }
-          });
+          // Suppression en base de données des animaux cochés
+          this.deleteActiveCheckboxes('operation_animaux');
+
         } else if (previousValueText == 'Fauche' && newValueText != 'Fauche') {
           // Champs de nombres et listes déroulantes du formulaire
           if (this.step4Form.get('exportation_fauche')) {
@@ -1156,6 +1134,32 @@ dialogConfig = {
       });
 
     });
+  }
+
+  /**
+   * Supprime les éléments cochés de la liste correspondante dans le formulaire, en fonction du type spécifié.
+   * 
+   * Si le type est 'operation_animaux', parcourt la liste 'liste_ope_animaux_paturage' du formulaire.
+   * Pour chaque animal coché, appelle le service pour supprimer l'entrée correspondante dans la base de données.
+   * 
+   * @param type - Le type d'opération à traiter (par exemple, 'operation_animaux').
+   */
+  deleteActiveCheckboxes(type: string): void {
+    if (type === 'operation_animaux') {
+      this.step4Form.get('liste_ope_animaux_paturage')?.value.forEach((animal: OperationCheckbox) => {
+        // Si l'animal est coché, on le supprime de la base de données
+        if (animal.checked) {
+          this.projetService.deleteCheckbox('uuid_ope', this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
+            next: () => {
+              console.log(`Programme supprimé : ${animal.lib_libelle}`);
+            },
+            error: (error) => {
+              console.error(`Erreur lors de la suppression du programme : ${animal.lib_libelle}`, error);
+          }
+        });
+      }
+      });
+    } 
   }
 
   /**

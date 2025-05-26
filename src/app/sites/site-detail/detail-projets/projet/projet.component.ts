@@ -89,7 +89,7 @@ export const MY_DATE_FORMATS = {
     // MapComponent,
     MatSlideToggleModule,
     MatDialogModule,
-    MatDialogTitle,
+    // MatDialogTitle,
     MatDialogContent,
     MatIconModule,
     MatStepperModule,
@@ -320,11 +320,6 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     console.log('Destruction du composant, on se désabonne.');
   }
 
-  // getLibelle(cd_type: string, list: SelectValue[]): string {
-  //   const libelle = this.formService.getLibelleFromCd(cd_type, list);
-  //   return libelle;
-  // }
-
   public getLibelle(cd_type: string, list: SelectValue[] | undefined): string {
     if (!list) {
       console.warn('La liste est undefined ou null dans getLibelleFromCd.');
@@ -334,50 +329,11 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     return libelle ? libelle.libelle : '';
   }
 
-
-  // onSelect(operation: Operation): void {
-  //   // Sert à quand on clic sur une ligne du tableau pour rentrer dans le detail d'un projet.
-  //   // L'OPERATION SELECTIONNE PAR L'UTILISATEUR dans la variable ope
-
-  //   // Ca se passe dans la vue du component dialog-operation
-  //   if(operation.uuid_ope !== undefined){
-  //     // OUVRIR LA FENETRE DE DIALOGUE
-  //     this.openDialog(operation);
-  //   }else{
-  //     console.log("Pas de d'opération sur ce projet : " + operation.titre);
-  //   }
-  // }
-
-  // // Pour l'affichage de la fenetre de dialogue
-  // dialog = inject(MatDialog);
-  // openDialog(operation: Operation): void {
-  //   let dialogComponent: any = OperationComponent;
-
-  //   this.dialog.open(dialogComponent, {
-  //     data : operation
-  //   });
-  // }
-
   toggleEditProjet(): void {
     this.isEditProjet = this.formService.simpleToggle(this.isEditProjet); // Changer le mode du booleen
     this.formService.toggleFormState(this.projetForm, this.isEditProjet, this.initialFormValues); // Changer l'état du formulaire
     this.cdr.detectChanges(); // Forcer la détection des changements
   }
-
-  // toggleEdit(bool: boolean, force: boolean = false): void {
-  //   // Pour ajouter un projet dans le template
-
-  //   // Logique de basculement du booleen 
-  //   // Trop simple pour l'instant je garde au cas où
-  //   if (!force) { // Si on force pas le changement
-  //     // Inverser la valeur du booléen
-  //     bool = this.formService.simpleToggle(bool);
-  //   } else {
-  //     // Sinon, forcer le changement de la valeur du booléen
-  //     bool = force;
-  //   }
-  //   this.cdr.detectChanges(); // Forcer la détection des changements
-  // }
 
   handleEditObjectifChange(isEdit: boolean): void {
     // console.log('État de l\'édition reçu du composant enfant:', isEdit);
@@ -531,7 +487,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     const message = `Voulez-vous vraiment supprimer ce projet?\n<strong>Cette action est irréversible.</strong>`
     
     // Appel de la boîte de dialogue de confirmation
-    this.confirmationService.confirm('Confirmation de suppression', message, this.dialogConfig).subscribe(result => {
+    this.confirmationService.confirm('Confirmation de suppression', message).subscribe(result => {
       if (result) {
         // L'utilisateur a confirmé la suppression
         // Utiliser le service projetService pour supprimer l'élément
@@ -550,12 +506,13 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   }
 
-onObjectifProjetChange(obj_ope: string) {
-  // Fais ce que tu veux avec le type d'objectif reçu
-
-  this.objectifProjet = obj_ope;
-
-  console.log('Objectif operationnel reçu du composant objectif :', obj_ope);
-}
+  /**
+   * Pour remplir la variable objectifProjet provenant du composant objectif
+   * @param obj_ope : Objectif opérationnel
+   */
+  onObjectifProjetChange(obj_ope: string) {
+    this.objectifProjet = obj_ope;
+    // console.log('Objectif operationnel reçu du composant objectif :', obj_ope);
+  }
 
 }

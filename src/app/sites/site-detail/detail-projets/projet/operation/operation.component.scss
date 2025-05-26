@@ -57,6 +57,59 @@
   @include Typo($p16, $gras, rgb(1, 90, 1));
 }
 
+.form-fields {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  mat-form-field {
+    min-width: 80px;
+    max-width: 100%;
+  }
+
+  .small-width {
+    width: 230px;
+    min-width: 220px;
+    max-width: 280px;
+  }
+  .medium-width {
+    width: 300px;
+    min-width: 280px;
+    max-width: 330px;
+  }
+  .large-width {
+    width: 200px;
+    min-width: 120px;
+    max-width: 300px;
+  }
+}
+
+.form-textarea {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .desc-haut {
+    height: 160px;
+    min-height: 160px;
+    max-height: 300px;
+  }
+  .remarque-haut {
+    height: 100px;
+    min-height: 100px;
+    max-height: 200px;
+  }
+}
+
 .cat_txv_inactive {
   display: flex;
   align-items: center;

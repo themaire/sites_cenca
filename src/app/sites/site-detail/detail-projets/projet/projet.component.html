@@ -44,20 +44,18 @@
     </div>
 
     <!-- 2eme element -->
-    <ng-container *ngIf="!(newProjet)">
-      <div class="title-container">
-        <ng-container *ngTemplateOutlet="title"></ng-container>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="newProjet">
-      <div class="title-container">
-        <ng-container *ngTemplateOutlet="newTitle"></ng-container>
-      </div>
-    </ng-container>
+    <div class="title-container">
+      <ng-container *ngTemplateOutlet=" newProjet ? newTitle : title "></ng-container>
+    </div>
 
     <ng-template #title>
-      <h2 *ngIf="!isEditProjet">Consultation du projet - {{ projetLite.nom }}</h2>
-      <h2 *ngIf="isEditProjet">Modification du projet - {{ projetLite.nom }}</h2>
+
+      <div class="title-wrapper">
+        <h2 *ngIf="!isEditProjet">Consultation du projet {{ objectifProjet }}</h2>
+        <h2 *ngIf="isEditProjet" >Modification du projet - {{ objectifProjet }}</h2>
+        <h2>{{ projetLite.nom }}</h2>
+      </div>
+
     </ng-template>
     <ng-template #newTitle>
       <h2 *ngIf="newProjet">Création d'un projet neuf en cours</h2>
@@ -339,6 +337,8 @@
       <ng-template matStepLabel>Opérations</ng-template>
 
       <!-- Si dans aucun mode d'edition ou d'ajout -->
+       <!-- <div>isEditOperation : {{ isEditOperation }}</div>
+       <div>isAddOperation : {{ isAddOperation }}</div> -->
       <ng-container *ngIf="!isEditOperation || !isAddOperation; then operation;">
 
       </ng-container>

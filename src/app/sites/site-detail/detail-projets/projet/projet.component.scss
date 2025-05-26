@@ -102,15 +102,31 @@ mat-dialog-content.dialogue {
     }
 
     .title-container {
-
       text-align: center; /* Centre le texte à l'intérieur du conteneur */
       margin: 0 auto; /* Ajout pour centrer le titre */
     }
+
+    
 
     .suppression {
       display: none; /* Cache le bouton de suppression */
     }
   }
+  
+  .title-wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center; /* Centre le titre verticalement */
+      width: 100%; /* Prend toute la largeur disponible */
+    }
+
+    h2 {
+      margin: 10px;
+      padding: 0;
+      // font-size: 24px; 
+      // color: $couleur-territoire;
+    }
 }
 
 //boutons edit/save/cancel
@@ -123,7 +139,7 @@ mat-dialog-content.dialogue {
 }
 
 .title-border {
-  margin: 0px 0 0px 10px;
+  margin: 0 50px 0 20px;
 }
 
 
@@ -224,7 +240,6 @@ mat-dialog-content.dialogue {
   width: 100%;
   background: transparent;
 }
-
 
 .spinner-vert {
   --mdc-circular-progress-active-indicator-color: #{$couleur-territoire};

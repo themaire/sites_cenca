@@ -147,20 +147,25 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
     );
 
+    const satellite ={
+      'IGN OrthoPhoto': ignOrthoPhoto,
+      'Google Satellite': googleSatellite,
+    };
+
     // Ajoute ignOrthoPhoto par défaut
     ignOrthoPhoto.addTo(this.map);
 
     // Sélecteur de couches avec différentes options de fonds de plan
     const baseMaps = {
-      'IGN OrthoPhoto': ignOrthoPhoto, // Ajout de la couche OrthoPhoto
+      
+      'OpenStreetMap': openStreetMap,
       'IGN LIDAR MNT': ignLidarMNT, // Ajout de la couche MNT LIDAR
       'IGN LIDAR MNS': ignLidarMNS, // Ajout de la couche MNS LIDAR
-      'OpenStreetMap': openStreetMap,
-      'Google Satellite': googleSatellite,
+      
     };
 
     // Ajout du sélecteur de couches sur la carte
-    L.control.layers(baseMaps).addTo(this.map);
+    L.control.layers(satellite, baseMaps).addTo(this.map);
 
     // Ajout d'un événement pour détecter l'entrée et la sortie du mode plein écran
     this.map.on('enterFullscreen', () => {

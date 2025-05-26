@@ -46,6 +46,11 @@ export class DetailProjetsComponent {
   research: SitesService = inject(SitesService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
+  constructor(
+    private dialog: MatDialog,
+    private overlay: Overlay
+  ) {}
+
   async ngOnChanges(changes: SimpleChanges){
     // Recuperer les opérations du site selectionné dans un tableau mat-table
     // Ce component est chargé en meme temps que sitesDetail.
@@ -101,9 +106,6 @@ export class DetailProjetsComponent {
       this.openDialog();
     }
   }
-
-  dialog = inject(MatDialog);
-  overlay = inject(Overlay);
 
   openDialog(projetlite?: ProjetLite): void {
     // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
