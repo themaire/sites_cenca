@@ -10,10 +10,14 @@ import { ProjetService, DeleteItemTypeEnum } from '../projets.service';
 import { FormService } from '../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
 
-import { DetailGestionComponent } from '../../detail-gestion/detail-gestion.component'; 
+// import { DetailGestionComponent } from '../../detail-gestion/detail-gestion.component'; 
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 
 import { MatDialogRef, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { 
+        MatTooltipModule,
+          // TooltipPosition 
+        } from '@angular/material/tooltip';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -43,7 +47,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { ObjectifComponent } from './objectif/objectif.component';
 import { OperationComponent } from './operation/operation.component';
-import { MapComponent } from '../../../../map/map.component';
+// import { MapComponent } from '../../../../map/map.component';
 
 // import { Projection } from 'leaflet';
 // NE PAS oublier de décommenter la
@@ -84,12 +88,13 @@ export const MY_DATE_FORMATS = {
     ],
   imports: [
     FormButtonsComponent,
-    DetailGestionComponent,
+    // DetailGestionComponent,
     CommonModule,
     // MapComponent,
     MatSlideToggleModule,
     MatDialogModule,
     // MatDialogTitle,
+    MatTooltipModule,
     MatDialogContent,
     MatIconModule,
     MatStepperModule,
@@ -120,7 +125,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 400;
 
-  objectifProjet: string = ''; // Objectif du projet provenant du composant objectif
+  objectif_ope: string = ''; // Objectif du projet provenant du composant objectif
   
   newProjet: boolean = false;
   isEditProjet: boolean = false;
@@ -507,11 +512,11 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   }
 
   /**
-   * Pour remplir la variable objectifProjet provenant du composant objectif
+   * Pour remplir la variable objectif_ope provenant du composant objectif
    * @param obj_ope : Objectif opérationnel
    */
-  onObjectifProjetChange(obj_ope: string) {
-    this.objectifProjet = obj_ope;
+  onObjectifOperationnelChange(obj_ope: string) {
+    this.objectif_ope = obj_ope;
     // console.log('Objectif operationnel reçu du composant objectif :', obj_ope);
   }
 

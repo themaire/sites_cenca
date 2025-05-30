@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 // import { ProjetVComponent } from './projetV/projetV.component';
 import { ProjetComponent } from './projet/projet.component';
 
-import { DetailSite } from '../../site-detail';
+import { DetailSiteProjet } from '../../site-detail';
 import { ProjetLite } from './projets';
 import { SitesService } from '../../sites.service'; // service de données
 
@@ -36,7 +36,7 @@ import { Overlay } from '@angular/cdk/overlay';
   styleUrls: ['./detail-projets.component.scss', '../../../shared/form-buttons/form-buttons.component.scss']
 })
 export class DetailProjetsComponent {
-  @Input() inputDetail?: DetailSite; // Le site selectionné pour voir son détail
+  @Input() siteDetailProjet?: DetailSiteProjet; // Le site selectionné pour voir son détail
   public projetsLite: ProjetLite[] = [];
   public dataSource!: MatTableDataSource<ProjetLite>;
 
@@ -56,11 +56,10 @@ export class DetailProjetsComponent {
     // Ce component est chargé en meme temps que sitesDetail.
     let subroute: string = "";
     
-    if (this.inputDetail !== undefined) {  // Si le site selectionné n'est pas vide
-      // Cas d'une recherche sur critères
-      console.log(this.inputDetail);
-      subroute = `projets/uuid=${this.inputDetail.uuid_espace}/lite`;
-      console.log("Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" + this.inputDetail["uuid_espace"]);
+    if (this.siteDetailProjet !== undefined) {  // Si le site selectionné n'est pas vide
+      console.log(this.siteDetailProjet);
+      subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite`;
+      console.log("Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" + this.siteDetailProjet["uuid_espace"]);
       
       // ChatGPT 19/07/2024
       try {
@@ -69,13 +68,13 @@ export class DetailProjetsComponent {
 
         // On ajoute le geojson du site à chaque projet
         // Car l'étape précedente ne replit pas cette information
-        this.projetsLite.forEach(projet => {
-          if (this.inputDetail !== undefined) {
-            projet.geojson_site = this.inputDetail.geojson;
-          }
-        });
+        // this.projetsLite.forEach(projet => {
+        //   if (this.inputDetail !== undefined) {
+        //     projet.geojson_site = this.inputDetail.geojson;
+        //   }
+        // });
 
-        console.log('Données de projetsLite :', this.projetsLite);
+        // console.log('Données de projetsLite :', this.projetsLite);
         
         this.dataSource = new MatTableDataSource(this.projetsLite);
 
@@ -96,13 +95,15 @@ export class DetailProjetsComponent {
     if(projetlite !== undefined){
       // Ca se passe dans la vue du component dialog-operation
       if(projetlite.uuid_proj !== undefined && projetlite.generation == "1_TVX"){
+        projetlite.localisation_site = this.siteDetailProjet?.localisation; // On donne la localisation du site au projetLite
         // OUVRIR LA FENETRE DE DIALOGUE
-        projetlite.nom = this.inputDetail?.nom;
         this.openDialog(projetlite);
       }else{
         console.log("Pas un projet TRAVAUX ( " + projetlite.generation + " ) ou pas un vrai projet passé en parametre. uuid_proj : " + projetlite.uuid_proj);
       }
     }else{
+      // Si on ne fournit pas de projetLite en paramètre
+      // On ouvre une fenetre de dialogue avec un formulaire vide
       this.openDialog();
     }
   }
@@ -113,7 +114,7 @@ export class DetailProjetsComponent {
     // Le but est de donner un projetLite à la fenetre de dialogue
     // Si le projetLite est vide alors on ouvre une fenetre de dialogue vide
     // Ce qui veut dire que l'on doit créé un projetLite vide mais qui
-    // contient l'uuid du site selectionné
+    // contient toutefois l'uuid du site selectionné
 
     // console.log("Ouverture de la fenetre de dialogue pour le projetLite : ", projetlite);
     // console.log("heure minute seconde milliseconde de l'ouverture du dialogue : ", new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
@@ -130,7 +131,7 @@ export class DetailProjetsComponent {
       // Sinon on charge un projet vide
       console.log("Charge un projet vide");
       projetlite = {
-        uuid_site: this.inputDetail?.uuid_site
+        uuid_site: this.siteDetailProjet?.uuid_site
       } as ProjetLite;
       
       console.log("--------------ProjetLite : ");
@@ -140,7 +141,7 @@ export class DetailProjetsComponent {
     // Ouverture de la fenetre de dialogue
     // tout en créant la constante dialogRef
     const dialogRef = this.dialog.open(ProjetComponent, {
-      data: projetlite,
+      data: projetlite, // <---------------- données injectée au composant ProjetComponent dont l'uuid du porjet selectionné
       minWidth: '50vw',
       maxWidth: '95vw',
       height: '60vh',

@@ -29,6 +29,7 @@
     <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
   </div>
   
+  <!-- Boutons de controle, titre et bouton de suppression -->
   <div class="button-title" [class.center-title]="projet === undefined || projet === null || isEditOperation || isAddOperation">
     <!-- 1er element -->
     <div class="form-buttons">
@@ -51,8 +52,8 @@
     <ng-template #title>
 
       <div class="title-wrapper">
-        <h2 *ngIf="!isEditProjet">Consultation du projet {{ objectifProjet }}</h2>
-        <h2 *ngIf="isEditProjet" >Modification du projet - {{ objectifProjet }}</h2>
+        <h2 *ngIf="!isEditProjet">Consultation du projet {{ objectif_ope }}</h2>
+        <h2 *ngIf="isEditProjet" >Modification du projet - {{ objectif_ope }}</h2>
         <h2>{{ projetLite.nom }}</h2>
       </div>
 
@@ -76,17 +77,12 @@
 
     <!-- state="info" est l'icone a utiliser pour le step -->
 
-    <mat-step [stepControl]="step1Form">
+    <mat-step state="info" [stepControl]="step1Form">
 
       <ng-template matStepLabel>Description</ng-template>
       <!-- Affichage en mode consultation (editMode == false) -->
       <ng-container *ngIf="!isEditProjet">
         <div>
-
-          <!-- <mat-form-field class="custom-mat-form-field">
-            <mat-label>Nom</mat-label>
-            <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
-          </mat-form-field> -->
 
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Type de projet</mat-label>
@@ -98,143 +94,145 @@
             <input matInput [value]="this.getLibelle(step1Form.get('statut')?.value, statusTypes) || 'Non renseigné'" readonly>
           </mat-form-field>
 
-          <mat-slide-toggle
-            class="toggle"
-            [checked]="step1Form.get('validite')?.value || false"
-            [disabled]="true">
-
-            Validité*
-
-          </mat-slide-toggle>
-        </div>
-
-        <div>
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Année d'execution</mat-label>
             <input matInput [value]="step1Form.get('annee')?.value || 'Non renseigné'" readonly>
-
           </mat-form-field>
-          <!-- <mat-form-field>
-            <mat-label>Période de travaux</mat-label>
-            <mat-date-range-input [rangePicker]="picker">
-              <input matStartDate placeholder="Date début" [value]="step1Form.get('pro_debut')?.value" readonly>
-              <input matEndDate placeholder="Date fin" [value]="step1Form.get('pro_fin')?.value" readonly>
-            </mat-date-range-input>
-            <mat-date-range-picker #picker></mat-date-range-picker>
-          </mat-form-field> -->
+          
+          <mat-form-field class="custom-mat-form-field">
+            <mat-label>Responsable</mat-label>
+            <input matInput [value]="step1Form.get('responsable')?.value || 'Non renseigné'" readonly>
+          </mat-form-field>
+
+          <mat-form-field class="custom-mat-form-field">
+            <mat-label>Maitre d'ouvrage</mat-label>
+            <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
+          </mat-form-field>
+
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Date création projet</mat-label>
             <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
         </div>
 
-        <div>
+        <!-- Dans le cas d'un opération ancienne methode -->
+        <div *ngIf="!projetForm.get('pro_webapp')?.value">
+          <mat-slide-toggle
+            class="toggle"
+            [checked]="step1Form.get('validite')?.value || false"
+            [disabled]="true">
+            Validité
+          </mat-slide-toggle>
+
           <mat-form-field class="custom-mat-form-field">
-            <mat-label>Code</mat-label>
+            <mat-label>Nom du projet</mat-label>
+            <input matInput [value]="step1Form.get('nom')?.value || 'Non renseigné'" readonly>
+          </mat-form-field>
+
+          <mat-form-field class="custom-mat-form-field">
+            <mat-label>Code projet</mat-label>
             <input matInput [value]="step1Form.get('code')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
+
           <mat-form-field class="custom-mat-form-field">
-            <mat-label>Responsable</mat-label>
-            <input matInput [value]="step1Form.get('responsable')?.value || 'Non renseigné'" readonly>
+            <mat-label>Code programme</mat-label>
+            <input matInput [value]="step1Form.get('programme')?.value || 'Non renseignée'" readonly>
           </mat-form-field>
+
           <mat-form-field class="custom-mat-form-field">
-            <mat-label>Maitre d'ouvrage</mat-label>
-            <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
+            <mat-label>Itinéraire technique</mat-label>
+            <input matInput [value]="step1Form.get('itin_tech')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
+
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Perspectives</mat-label>
             <input matInput [value]="step1Form.get('perspectives')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
+          
         </div>
 
-        <div>
-          <mat-form-field class="custom-mat-form-field">
-            <mat-label>Programme</mat-label>
-            <input matInput [value]="step1Form.get('programme')?.value || 'Non renseignée'" readonly>
-          </mat-form-field>
-          <mat-form-field class="custom-mat-form-field">
-            <mat-label>Itinéraire technique</mat-label>
-            <input matInput [value]="step1Form.get('itin_tech')?.value || 'Non renseigné'" readonly>
-
-          </mat-form-field>
-        </div>
       </ng-container>
 
       <!-- Affichage en mode édition (editMode == true) -->
       <ng-container *ngIf="isEditProjet">
         <form [formGroup]="step1Form">
-          <ng-container>
-            <div>
-              <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
-            </div>
-            <div>
-              <!-- <mat-form-field>
-                <mat-label>Nom</mat-label>
-                <textarea matInput formControlName="nom"></textarea>
-              </mat-form-field> -->
-              
-              <mat-form-field>
-                <mat-label>Type de projet</mat-label>
-                <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
-                <mat-option *ngFor="let status of projectTypes" [value]="status.cd_type">
-                    {{status.libelle}}
-                  </mat-option>
-                </mat-select>
 
-              </mat-form-field>
+          <div>
+            <mat-form-field>
+              <mat-label>Type de projet</mat-label>
+              <mat-select [(ngModel)]="selectedProjetType" formControlName="typ_projet">
+              <mat-option *ngFor="let status of projectTypes" [value]="status.cd_type">
+                  {{status.libelle}}
+                </mat-option>
+              </mat-select>
 
-              <mat-form-field>
-                <mat-label>Statut</mat-label>
-                <mat-select formControlName="statut">
-                  <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">
-                    {{status.libelle}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+            </mat-form-field>
 
-            </div>
+            <mat-form-field>
+              <mat-label>Statut</mat-label>
+              <mat-select formControlName="statut">
+                <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">
+                  {{status.libelle}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Année d'execution</mat-label>
+              <textarea matInput type="number" formControlName="annee"></textarea>
+            </mat-form-field>
+           
+            <mat-form-field>
+              <mat-label>Résponsable</mat-label>
+              <textarea matInput formControlName="responsable"></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Maitre d'ouvrage</mat-label>
+              <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>
+            </mat-form-field>
+          </div>
+
+          <!-- Dans le cas d'un opération ancienne methode -->
+          <div *ngIf="!projetForm.get('pro_webapp')?.value">
+            <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
+
+            <mat-form-field>
+              <mat-label>Nom du projet</mat-label>
+              <textarea matInput formControlName="nom"></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Code projet</mat-label>
+              <textarea matInput formControlName="code"></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Code programme</mat-label>
+              <textarea matInput formControlName="programme"></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Itinéraire technique</mat-label>
+              <textarea matInput formControlName="itin_tech"></textarea>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Perspectives</mat-label>
+              <textarea matInput formControlName="perspectives" ></textarea>
+            </mat-form-field>
+
+          </div>
             
-            <div>
-              <mat-form-field>
-                <mat-label>Année d'execution</mat-label>
-                <textarea matInput type="number" formControlName="annee"></textarea>
-              </mat-form-field>
-              <!-- <mat-form-field>
-                <mat-label>Date de début</mat-label>
-                <input matInput [matDatepicker]="startDatePicker" formControlName="pro_debut" >
-                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-                <mat-datepicker #startDatePicker></mat-datepicker>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Date de fin</mat-label>
-                <input matInput [matDatepicker]="endDatePicker" formControlName="pro_fin" required>
-                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                <mat-datepicker #endDatePicker></mat-datepicker>
-              </mat-form-field> -->
-            </div>
-
-            <div>
-              <mat-form-field>
-                <mat-label>Code</mat-label>
-                <textarea matInput formControlName="code"></textarea>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Résponsable</mat-label>
-                <textarea matInput formControlName="responsable"></textarea>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Maitre d'ouvrage</mat-label>
-                <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>
-              </mat-form-field>
-              <mat-form-field>
-
-                <mat-label>Perspectives</mat-label>
-                <textarea matInput formControlName="perspectives" ></textarea>
-              </mat-form-field>
-            </div>
-            </ng-container>
         </form>
       </ng-container>
+
+      <!-- <div class="container-carte">
+            <div class="map">
+              <h2>Carte provisoire :</h2>
+              <app-map></app-map>
+            </div>
+      </div> -->
 
       <div class="nav-buttons">
         <button mat-button matStepperNext>Suivant</button>
@@ -253,65 +251,6 @@
         <button mat-button matStepperPrevious>Précédent</button>
         <button mat-button matStepperNext>Suivant</button>
       </div>
-    </mat-step>
-
-    <mat-step state="pin" *ngIf="projet && newProjet === false">
-      <!-- <mat-step [stepControl]="UGFormGroup"> -->
-      <ng-template matStepLabel>Unités de gestion</ng-template>
-      
-      <!-- Affichage en mode consultation (editMode == false) -->
-      <ng-container *ngIf="!isEditProjet">
-        <div>
-          
-            <mat-form-field >
-              <mat-label>Pression ciblée</mat-label>
-              <input matInput 
-                [value]="projetForm.get('pro_pression_ciblee')?.value || 'Non renseignée'"
-                disabled="true">
-            </mat-form-field>
-
-            <mat-form-field >
-              <mat-label>Résultats attendus</mat-label>
-              <input matInput 
-                [value]="projetForm.get('pro_results_attendus')?.value || 'Non renseigné'"
-                disabled="true">
-            </mat-form-field>
-          </div>
-          <div>
-            <div class="container-carte">
-              <!-- <div class="map">---------------------------------------------------------------------------------------------------
-                <h2>Carte provisoire :</h2>
-                <app-map></app-map>
-              </div> -->
-            </div>
-
-        </div>
-      </ng-container>
-
-      <!-- Affichage en mode édition (editMode == true) -->
-      <ng-container *ngIf="isEditProjet">
-        <form [formGroup]="step2Form">
-          <ng-container>
-            <mat-form-field>
-              <mat-label>Pression ciblée</mat-label>
-              <textarea matInput formControlName="pro_pression_ciblee" ></textarea>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Résultats attendus</mat-label>
-              <textarea matInput formControlName="pro_results_attendus" ></textarea>
-            </mat-form-field>
-          </ng-container>
-
-          <!-- Bouton visible uniquement avec un projet existant -->
-          <button *ngIf="!newProjet" mat-button matStepperNext>SUIVANT</button>
-        </form>
-      </ng-container>
-
-      <div class="nav-buttons">
-        <button mat-button matStepperPrevious>Précédent</button>
-        <button mat-button matStepperNext>Suivant</button>
-      </div>
-
     </mat-step>
 
     <!-- <mat-step state="landscape">
@@ -403,26 +342,28 @@
   <!-- isEditFromOperation vient de app-operation et app-projet -->
   <!-- geojson_site est donné que quand projet.pro_webapp est VRAI -->
   <app-operation 
-  (isEditFromOperation)="handleEditOperationChange($event)"
-  (isAddFromOperation)="handleAddOperationChange($event)"
-  [isEditOperation]="isEditOperation"
-  [isAddOperation]="isAddOperation"
-  [projetEditMode]="isEditProjet"
-  [ref_uuid_proj]="projet.uuid_proj"
-  [geojson_site]="projet.pro_webapp ? projetLite.geojson_site : undefined">
-  >
-</app-operation>
+    (isEditFromOperation)="handleEditOperationChange($event)"
+    (isAddFromOperation)="handleAddOperationChange($event)"
+    [isEditOperation]="isEditOperation"
+    [isAddOperation]="isAddOperation"
+    [projetEditMode]="isEditProjet"
+    [ref_uuid_proj]="projet.uuid_proj"
+    [objectif_ope]="objectif_ope"
+    [pro_webapp]="projet.pro_webapp"
+    [localisation_site]="projetLite.localisation_site"
+    >
+  </app-operation>
 
-</ng-template>
+  </ng-template>
 
-<!-- Composant objectif -->
-<ng-template #objectif>
+  <!-- Composant objectif -->
+  <ng-template #objectif>
 
-  <!-- isEditFromObjectif vient de app-objectif et app-projet -->
-  <!-- geojson_site est donné que quand projet.pro_webapp est N'EST PAS VRAI -->
-  <app-objectif 
+    <!-- isEditFromObjectif vient de app-objectif et app-projet -->
+    <!-- geojson_site est donné que quand projet.pro_webapp est N'EST PAS VRAI -->
+    <app-objectif 
                 rattachementOperation="projet"
-                (objectifProjet)="onObjectifProjetChange($event)"
+                (objectif_ope)="onObjectifOperationnelChange($event)"
                 (isEditFromObjectif)="handleEditObjectifChange($event)"
                 (isAddFromObjectif)="handleAddObjectifChange($event)"
                 [isEditObjectif]="isEditObjectif"

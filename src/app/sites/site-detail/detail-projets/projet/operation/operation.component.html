@@ -122,14 +122,18 @@ Variable (operation) form: {{ form }}<br>
             <input matInput formControlName="ref_uuid_proj" readonly>
           </mat-form-field> -->
 
-          <mat-form-field class="small-width">
+          <div *ngIf="pro_webapp" matTooltip="Enregistré dans l'objectif du projet">
+            Objectif opérationnel {{ objectif_ope ? objectif_ope : 'inconnu' }}
+          </div>
+
+          <!-- <mat-form-field class="small-width">
             <mat-label>Objectif opérationnel</mat-label>
             <mat-select formControlName="obj_ope">
               @for (type of typeObjectifOpe; track type) {
                 <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
               }
             </mat-select>
-          </mat-form-field>
+          </mat-form-field> -->
 
           <mat-form-field class="medium-width">
             <mat-label>Type d'opération 1</mat-label>
@@ -266,36 +270,29 @@ Variable (operation) form: {{ form }}<br>
       <form [formGroup]="step3Form">
         <ng-template matStepLabel>Financement</ng-template>
 
-        <mat-error *ngIf="!listeOpeProgrammes.valid">
+        <mat-error *ngIf="!listeOpeFinanceurs.valid">
           Vous ne pouvez pas sélectionner plus de 3 programmes.
         </mat-error>
         
-        <div formArrayName="liste_ope_programmes" *ngIf="listeOpeProgrammes && listeOpeProgrammes.length > 0" class="form-fields">
-          <ng-container *ngFor="let programme of listeOpeProgrammes.controls; let i = index">
-            <!-- Ouvre une nouvelle div toutes les 4 cases -->
-            <div *ngIf="i % 4 === 0" class="row-programmes">
-              <!-- Affiche les 4 cases suivantes -->
-              <ng-container *ngFor="let j of [0,1,2,3]">
-                <ng-container *ngIf="listeOpeProgrammes.controls[i + j]">
-                  <div [formGroupName]="i + j">
-                    <mat-checkbox formControlName="checked">
-                      {{ listeOpeProgrammes.controls[i + j].get('lib_libelle')?.value }}
-                    </mat-checkbox>
-                  </div>
-                </ng-container>
-              </ng-container>
-            </div>
-          </ng-container>
+        <div formArrayName="liste_ope_financeurs"
+            *ngIf="listeOpeFinanceurs && listeOpeFinanceurs.length > 0"
+            class="checkbox-grid">
+          <div *ngFor="let programme of listeOpeFinanceurs.controls; let i = index"
+              [formGroupName]="i">
+            <mat-checkbox formControlName="checked">
+              {{ programme.get('lib_libelle')?.value }}
+            </mat-checkbox>
+          </div>
         </div>
 
-        <mat-error *ngIf="!listeOpeProgrammes.valid">
-          Vous ne pouvez pas sélectionner plus de 3 programmes.
+        <mat-error *ngIf="!listeOpeFinanceurs.valid">
+          Vous ne pouvez pas sélectionner plus de 3 financeurs.
         </mat-error>
 
         <div>
           <mat-form-field>
             <mat-label>Description si autre</mat-label>
-            <input matInput formControlName="description_programme">
+            <input matInput formControlName="financeur_description">
           </mat-form-field>
         </div>
 
@@ -310,6 +307,17 @@ Variable (operation) form: {{ form }}<br>
       <form [formGroup]="step4Form">
         <ng-template matStepLabel>Informations sur l'opération</ng-template>
         <div class="form-fields">
+
+          <!-- plage de dates en un seul champ en lecture -->
+           <!-- <mat-form-field>
+            <mat-label>Période de travaux</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate placeholder="Date début" [value]="step1Form.get('pro_debut')?.value" readonly>
+              <input matEndDate placeholder="Date fin" [value]="step1Form.get('pro_fin')?.value" readonly>
+            </mat-date-range-input>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field> -->
+          
           <mat-form-field>
             <mat-label>Date de début</mat-label>
             <input matInput [matDatepicker]="picker1" formControlName="date_debut">
@@ -365,16 +373,27 @@ Variable (operation) form: {{ form }}<br>
       <ng-template matStepLabel>Données spatiales</ng-template>
 
       <!-- Quand une localisation existe -->
-      <div *ngIf="localisations !== undefined && localisations.length > 0">
+      <div *ngIf="operation.localisations !== undefined && operation.localisations.length > 0">
+
+        <!-- <div *ngFor="let localisation of operation.localisations">
+          <div>
+            {{ localisation.geojson.geometry }} elements de type {{ localisation.geojson.type }}
+          </div>
+          <div>
+            <span>Type : {{ localisation.type }}</span>
+            <span>UUID : {{ localisation.loc_date }}</span>
+          </div>
+        </div> -->
+
         <div>
-          <app-map mapName='Opération' [geojson_primary]="geojson_site" [geojson_secondary]="localisations[0].geojson"></app-map>
+          <app-map mapName='Opération' [localisation_site]="localisation_site" [localisations_operations]="operation.localisations"></app-map>
         </div>
         <div class="suppression">
           <button mat-button (click)="deleteItemConfirm('localisation')">Supprimer la localisation</button>
         </div>
       </div>
 
-      <div *ngIf="localisations === undefined || localisations.length === 0">
+      <div *ngIf="!operation.localisations || operation.localisations.length === 0">
         Il n'y a pas encore de localisation enregistrée pour cette opération. 
       </div>
       
@@ -384,18 +403,24 @@ Variable (operation) form: {{ form }}<br>
       </div>
 
       <!-- Pour uploader une localisation -->
-      <div *ngIf="isEditOperation && localisations === undefined || localisations !== undefined && localisations.length === 0">
-        <button mat-button (click)="downloadShapefileExample()">Télécharger le modèle de fichier shapefile si necessaire</button>
+      <div *ngIf="isEditOperation && operation.localisations === undefined || operation.localisations !== undefined && operation.localisations.length == 0">
+        <button mat-button (click)="downloadShapefileExample('polygone')">Télécharger le modèle de fichier shapefile de type POLYGONE si necessaire</button>
+        <button mat-button (click)="downloadShapefileExample('ligne')">Télécharger le modèle de fichier shapefile de type LIGNE si necessaire</button>
+        <button mat-button (click)="downloadShapefileExample('point')">Télécharger le modèle de fichier shapefile de type POINT si necessaire</button>
         <form [formGroup]="shapeForm!">
           <div class="file-upload-container">
-          <label for="shapefile">Fichier Shapefile (ZIP)</label>
-          <input type="file" 
-              id="shapefile"
-              (change)="onFileSelected($event)" 
-              accept=".zip"
-              #fileInput>
+            <label for="shapefile">Fichier Shapefile (ZIP)</label>
+            <input type="file"
+                id="shapefile"
+                (change)="onFileSelected($event)"
+                accept=".zip"
+                #fileInput>
+            <!-- <select formControlName="type_geometry" class="geometry-select">
+              <option value="Point">Point</option>
+              <option value="LineString">Ligne</option>
+              <option value="Polygon" selected>Polygone</option>
+            </select> -->
           </div>
-          <input type="hidden" formControlName="type_geometry">
           <input type="hidden" formControlName="uuid_ope">
           <button mat-button 
             (click)="handleShapefileSubmission()"
@@ -584,7 +609,9 @@ Variable (operation) form: {{ form }}<br>
           type.cd_type === step1Form.get('action_2')?.value && 
             getFamilleLibelle(step1Form.get('action_2')?.value, operationTypesPat) === 'Pâturage'">
           <!-- On montre les cases à cocher des animaux -->
-          <div formArrayName="liste_ope_animaux_paturage" *ngIf="(listeOpeAnimaux?.controls?.length ?? 0) > 0">
+          <div formArrayName="liste_ope_animaux_paturage"
+              *ngIf="(listeOpeAnimaux?.controls?.length ?? 0) > 0"
+              class="checkbox-grid-animaux">
             <div *ngFor="let animal of listeOpeAnimaux.controls; let i = index" [formGroupName]="i">
               <mat-checkbox formControlName="checked">
                 {{ animal.get('lib_libelle')?.value }}

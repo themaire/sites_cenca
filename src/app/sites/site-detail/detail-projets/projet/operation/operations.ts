@@ -1,3 +1,5 @@
+import { Localisation } from '../../../../../shared/interfaces/localisation';
+
 export interface OperationLite {
     uuid_ope: string;
     ref_uuid_proj: string;
@@ -41,7 +43,7 @@ export interface Operation {
   date_ajout?: Date;
   ref_loc_id?: Number;
   nom_mo?: string;
-  description_programme?: string;
+  financeur_description?: string;
   cadre_intervention?: number;
   cadre_intervention_detail?: number;
   quantite?: number;
@@ -61,9 +63,11 @@ export interface Operation {
 
   type_intervention_hydro?: number;
 
+  localisations?: Localisation[]; // Localisation de l'opération
+
   // Nouvelles propriétés pour les cases à cocher des programmes
-  ope_programmes?: OperationCheckbox[]; // Liste des programmes associés
-  liste_ope_programmes?: OperationCheckbox[]; // Liste complète des programmes disponibles
+  ope_financeurs?: OperationCheckbox[]; // Liste des programmes associés
+  liste_ope_financeurs?: OperationCheckbox[]; // Liste complète des programmes disponibles
 
   // Nouvelles propriétés pour les cases à cocher des types d'animaux
   ope_animal_paturage?: OperationCheckbox[]; // Liste des programmes associés

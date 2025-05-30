@@ -10,4 +10,5 @@ export interface Objectif {
   validite?: boolean;
   projet?: string;
   surf_prevue?: string;
+  pression_maitrise?: number;
 }

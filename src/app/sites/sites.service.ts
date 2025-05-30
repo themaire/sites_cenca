@@ -3,7 +3,7 @@ import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { from, Observable } from 'rxjs';
+import { of, from, Observable } from 'rxjs';
 
 // interfaces utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
@@ -14,6 +14,7 @@ import { Acte } from './site-detail/detail-mfu/acte';
 import { ProjetLite } from './site-detail/detail-projets/projets';
 import { Operation, OperationLite } from './site-detail/detail-projets/projet/operation/operations';
 import { DetailSite } from './site-detail';
+import { Localisation } from '../shared/interfaces/localisation';
 
 import { ApiResponse } from '../shared/interfaces/api';
 
@@ -41,7 +42,21 @@ export class SitesService {
     console.log('Dans la fonction getSiteUUID du service avec ' + paramUUID);
 
     const data = await fetch(this.activeUrl + paramUUID);
-    return (await data.json()) ?? [];
+    const site = await data.json();
+
+    // Création de l'objet Localisation à partir des champs de la réponse
+    const localisation: Localisation = {
+      // Transformation de la chaîne GeoJSON en VRAI DE VRAI objet JSON (GeoJSON dans notre cas)
+      geojson: typeof site.geojson === 'string' ? JSON.parse(site.geojson) : site.geojson,
+      loc_date: site.date_crea_geom ? new Date(site.date_crea_geom) : null,
+      type: site.type_geom,
+      surface: site.surface_geom
+    };
+
+    // Ajout de l'attribut localisation à l'objet site
+    site.localisation = localisation;
+
+    return site as DetailSite;
   }
 
   async getCommune(subroute: string): Promise<Commune[]> {
@@ -58,6 +73,43 @@ export class SitesService {
 
   async getMfu(subroute: string): Promise<Acte[]> {
     return this.getData<Acte[]>(subroute);
+  }
+
+    // Utilisé dans operation.component.ts
+  async getLocalisations_orig(subroute: string): Promise<Localisation[]> {
+    const data = await fetch(this.activeUrl + subroute);
+    return await data.json() ?? [];
+  }
+
+  // Utilisé dans operation.component.ts
+  async getLocalisations(subroute: string): Promise<Localisation[]> {
+    const data = await fetch(this.activeUrl + subroute);
+    const localisations = await data.json(); // <-- tableau d'objets
+
+    console.log('Localisation obtenue depuis siteService.getLocalisations():', localisations);
+
+    const locali_objects: Localisation[] = localisations.map((loc: any) => ({
+      geojson: typeof loc.geojson === 'string' ? JSON.parse(loc.geojson) : loc.geojson,
+      loc_date: loc.date_crea_geom ? new Date(loc.date_crea_geom) : null,
+      type: loc.type_geom,
+      surface: loc.surface_geom,
+      loc_id: loc.loc_id,
+      ref_uuid_ope: loc.ref_uuid_ope,
+      ref_uuid_proj: loc.ref_uuid_proj,
+    }));
+
+    console.log('Localisation transformée en objet Localisation :', locali_objects);
+
+    return locali_objects;
+  }
+
+  deleteLocalisation(loc_id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.localisations/loc_id=${loc_id}`).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression de la localisation:', error);
+        return of({ success: false, message: 'Erreur lors de la suppression de la localisation' } as ApiResponse);
+      })
+    );
   }
 
   async getProjets(subroute: string): Promise<ProjetLite[]> {

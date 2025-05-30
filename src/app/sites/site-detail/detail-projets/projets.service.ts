@@ -6,7 +6,9 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { SnackbarService } from '../../../shared/services/snackbar.service';
+import { SitesService } from '../../sites.service';
 
+import { forkJoin } from 'rxjs';
 
 // prototypes utilisés dans la promise de la fonction
 import { Projet } from './projets';
@@ -33,6 +35,7 @@ export class ProjetService {
   constructor(
     private http: HttpClient,
     private snackbarService: SnackbarService,
+    private sitesService : SitesService
   ) {}
 
   // PROJETS
@@ -125,7 +128,7 @@ export class ProjetService {
       })
     );
   }
-    
+
   // Utilisé dans objectifs.component.ts
   async getObjectif(subroute: string): Promise<Objectif> {
     const data = await fetch(this.activeUrl + subroute);
@@ -143,7 +146,7 @@ export class ProjetService {
     const url = `${this.activeUrl}put/table=objectifs/insert`;
     return this.http.put<ApiResponse>(url, objectif);
   }
-  
+
   // Envoyer le fichier shapefile et le type de géométrie
   // Utilisé dans objectifs.component.ts
   uploadShapefile(formData: FormData): Observable<ApiResponse> {
@@ -162,45 +165,36 @@ export class ProjetService {
       })
     );
   }
-  
-  // Utilisé dans operation.component.ts
-  async getLocalisations(subroute: string): Promise<Localisation[]> {
-    const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
-  }
 
-  deleteLocalisation(loc_id: number): Observable<ApiResponse> {
-    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.localisations/loc_id=${loc_id}`).pipe(
-      catchError(error => {
-        console.error('Erreur lors de la suppression de la localisation:', error);
-        return of({ success: false, message: 'Erreur lors de la suppression de la localisation' } as ApiResponse);
-      })
-    );
-  }
+  deleteItem(type: DeleteItemTypeEnum, operation?: void | Operation, localisations?: void | Localisation[], projet?: void | Projet, objectif?: void | Objectif): Observable<boolean> {
+    
+    // console.log(`Tentative de suppression d'un ${type}`);
+    // console.log(`Contenu de localisation : ${localisations ? localisations : 'Aucune localisation fournie'}`);
 
-  deleteItem(type: DeleteItemTypeEnum, operation?: void | Operation, localisation?: void | Localisation, projet?: void | Projet, objectif?: void | Objectif): Observable<boolean> {
-    if (type === 'localisation' && localisation) {
-      const localisationId = localisation.loc_id;
-      return new Observable<boolean>(observer => {
-        this.deleteLocalisation(localisationId).subscribe(
-          (response: ApiResponse) => {
-            if (response.success) {
-              this.snackbarService.delete(type);
-              observer.next(true);
-            } else {
-              const message = response.message || 'Erreur lors de la suppression de la localisation';
-              this.snackbarService.error(message);
-              console.error(message);
-              observer.next(false);
-            }
-            observer.complete();
-          },
-          error => {
+    if (type === 'localisation' && localisations && localisations.length > 0) {
+      // Création d'un tableau d'observables pour chaque suppression
+      const deleteObservables = localisations.map(localisation =>
+        this.sitesService.deleteLocalisation(localisation.loc_id!).pipe(
+          catchError(error => {
             this.snackbarService.error('Erreur lors de la suppression de la localisation');
+            return of({ success: false });
+          })
+        )
+      );
+
+      return new Observable<boolean>(observer => {
+        forkJoin(deleteObservables).subscribe(results => {
+          // Vérifie que toutes les suppressions ont réussi
+          const allSuccess = results.every(res => res.success);
+          if (allSuccess) {
+            this.snackbarService.delete(type);
+            observer.next(true);
+          } else {
+            this.snackbarService.error('Une ou plusieurs suppressions ont échoué');
             observer.next(false);
-            observer.complete();
           }
-        );
+          observer.complete();
+        });
       });
     } else if (type === 'operation' && operation) {
       const operationId = operation.uuid_ope;

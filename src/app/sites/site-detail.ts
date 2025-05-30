@@ -1,4 +1,5 @@
 import { GeoJsonObject } from 'geojson';
+import { Localisation } from '../shared/interfaces/localisation';
 
 export interface DetailSite {
     message: string;
@@ -41,13 +42,16 @@ export interface DetailSite {
     url: string;
     maj_admin: Date;
 
-    geojson: string;
+    localisation: Localisation;
+}
 
-    // : string;
-    // : string;
-    // : string;
-    // : string;
-    // : string;
-    // : string;
-    // : string;
+export interface DetailSiteProjet {
+
+    uuid_site: string;
+    uuid_espace: string;
+
+    nom: string;
+    surface: number;
+
+    localisation: Localisation;
 }

@@ -2,6 +2,7 @@ import { Injectable, ElementRef } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiResponse } from '../interfaces/api';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
+import { SitesService } from '../../sites/sites.service';
 import { Localisation } from '../../shared/interfaces/localisation';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,7 +11,10 @@ import { FormGroup } from '@angular/forms';
 
 @Injectable({ providedIn: 'root' })
 export class ShapefileService {
-  constructor(private projetService: ProjetService, private snackBar: MatSnackBar) {}
+  constructor(private projetService: ProjetService, 
+              private sitesService: SitesService,
+              private snackBar: MatSnackBar,
+            ) {}
 
   /** Lance le téléchargement d'un exemple de fichier shapefile en créant un élément
    * d'ancrage temporaire, en définissant son `href` sur le chemin du shapefile,
@@ -23,10 +27,10 @@ export class ShapefileService {
    * que le chemin du fichier `'assets/shapefile_polygone_modele.zip'` est correct
    * et accessible dans votre projet.
   */
-  downloadShapefileExample() {
+  downloadShapefileExample(type: 'polygone' | 'ligne' | 'point'): void {
     const link = document.createElement('a');
-    link.href = 'assets/shapefile_polygone_modele.zip';
-    link.download = 'shapefile_polygone_modele.zip';
+    link.href = `assets/shapefile_${type}_modele.zip`;
+    link.download = `shapefile_${type}_modele.zip`;
     link.click();
   }
 
@@ -112,7 +116,7 @@ export class ShapefileService {
   async getLocalisation(uuid_ope: string): Promise<Localisation[]> {
     const subrouteLocalisation = `localisations/uuid=${uuid_ope}/operation`;
     try {
-      return await this.projetService.getLocalisations(subrouteLocalisation);
+      return await this.sitesService.getLocalisations(subrouteLocalisation);
     } catch (error) {
       console.error("Erreur lors de la récupération de la localisation de l'opération : ", error);
       return [];

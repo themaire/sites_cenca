@@ -1,7 +1,10 @@
 import { Component, Input, ElementRef, AfterViewInit, OnDestroy, Renderer2 } from '@angular/core';
 import * as L from 'leaflet'; // Import de Leaflet
+import * as turf from '@turf/turf'; // Import de Turf.js pour les opérations géospatiales comme calcule de surfaces
 import 'leaflet.fullscreen'; // Import du plugin Fullscreen
 import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de GeoJsonObject et Feature
+
+import { Localisation } from '../shared/interfaces/localisation'; // Import de l'interface Localisation
 
 // Étendre l'interface MapOptions pour inclure fullscreenControl
 declare module 'leaflet' {
@@ -22,8 +25,13 @@ declare module 'leaflet' {
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   @Input() mapName?: string;
-  @Input() geojson_primary?: string;
-  @Input() geojson_secondary?: string;
+  @Input() localisation_site?: Localisation;
+  @Input() localisation_projet?: Localisation;
+  @Input() localisations_operations?: Localisation[];
+
+  lastColorIndex = -1;
+  usedColors: number[] = [];
+  
   private map!: L.Map;
 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
@@ -175,40 +183,23 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       console.log('Carte sortie du mode plein écran');
     });
 
-    // Ajout d'un bouton pour zoomer sur l'étendue du GeoJSON primaire
-    if (this.geojson_primary) {
-      const ZoomToGeoJsonControl = L.Control.extend({
-        options: {
-          position: 'topright', // Position du bouton
-        },
-        onAdd: () => {
-          const button = this.renderer.createElement('button');
-          this.renderer.setAttribute(button, 'type', 'button');
-          this.renderer.addClass(button, 'leaflet-bar');
-          this.renderer.addClass(button, 'leaflet-control');
-          this.renderer.addClass(button, 'zoom-to-geojson');
-          this.renderer.setStyle(button, 'background-color', 'white');
-          this.renderer.setStyle(button, 'cursor', 'pointer');
-          this.renderer.setProperty(button, 'innerHTML', '🔍'); // Icône du bouton
+    this.resetMapView();
 
-          // Ajout du texte au survol (tooltip)
-          this.renderer.setAttribute(button, 'title', 'Recentrer la carte sur l\'emprise du site.');
-
-          this.renderer.listen(button, 'click', () => this.zoomToGeoJson());
-          return button;
-        },
-      });
-
-      // Ajout du contrôle personnalisé à la carte
-      this.map.addControl(new ZoomToGeoJsonControl());
-    }
-
-    // GéoJSON principal (souvent le site)
-    if (this.geojson_primary !== undefined || this.geojson_secondary !== undefined) {
-      if (this.geojson_primary !== '') {
-        // Transformation de la chaîne GeoJSON en VRAI DE VRAI objet GeoJSON
-        const trueGeoJson: GeoJsonObject = JSON.parse(this.geojson_primary!);
-        const geojsonLayer = L.geoJSON(trueGeoJson);
+    // Traitements sur le GeoJSON principal
+    if (this.localisation_site !== undefined || this.localisations_operations !== undefined) {
+      // S'assure que le GeoJSON primaire est un objet valide
+      if (
+        this.localisation_site?.geojson &&
+        typeof this.localisation_site.geojson === 'object' &&
+        'type' in this.localisation_site.geojson &&
+        (
+          (this.localisation_site.geojson as any).geometry?.coordinates ||
+          (this.localisation_site.geojson as any).coordinates // selon le type
+        )
+      ) {
+        console.log('Localisation du site trouvée :', this.localisation_site);
+        // Transformation de l'objet GeoJSON en couche Leaflet      
+        const geojsonLayer = L.geoJSON(this.localisation_site.geojson);
         geojsonLayer.setStyle({
           color: 'green',
           weight: 2,
@@ -216,44 +207,146 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           fillOpacity: 0.5,
           fillColor: 'green',
         }).addTo(this.map);
-
+        
         // Obtenir les limites et ajuster la vue
         const bounds = geojsonLayer.getBounds();
-        // Si le GeoJSON secondaire est vide, on ajuste la vue sur le GeoJSON primaire
-        if (this.geojson_secondary == undefined) {
-          this.map.fitBounds(bounds);
+        // Ajoute un petit délai pour laisser la carte s'afficher avant d'animer le zoom
+        setTimeout(() => {
+          this.map.flyToBounds(bounds, { duration: 3.5 }); // durée en secondes
+        }, 800); // délai en ms
+
+        // Bouton (contrôle) personnalisé pour recentrer la carte sur l'emprise du site
+        const ZoomToGeoJsonControl = L.Control.extend({
+          options: {
+            position: 'topright', // Position du bouton
+          },
+          onAdd: () => {
+            const button = this.renderer.createElement('button');
+            this.renderer.setAttribute(button, 'type', 'button');
+            this.renderer.addClass(button, 'leaflet-bar');
+            this.renderer.addClass(button, 'leaflet-control');
+            this.renderer.addClass(button, 'zoom-to-geojson');
+            this.renderer.setStyle(button, 'background-color', 'white');
+            this.renderer.setStyle(button, 'cursor', 'pointer');
+            this.renderer.setProperty(button, 'innerHTML', '🔍'); // Icône du bouton
+
+            // Ajout du texte au survol (tooltip)
+            this.renderer.setAttribute(button, 'title', 'Recentrer la carte sur l\'emprise du site.');
+
+            this.renderer.listen(button, 'click', () => this.zoomToBounds(bounds));
+            return button;
+          },
+        });
+
+        // Ajout du contrôle personnalisé à la carte
+        this.map.addControl(new ZoomToGeoJsonControl());
+      } else {
+        // Sinon on zoom sur la Champagne-Ardenne
+        console.log('Aucun GeoJSON de site trouvé');
+      }
+
+      // On regarde maintenant si on a des localisations_operations
+      if (this.localisations_operations && this.localisations_operations?.length > 0) {
+        console.log('Localisations d\'opérations trouvées :', this.localisations_operations.length);
+        for (const loc_ope of this.localisations_operations) {
+          console.log('Traitement de la localisation d\'opération :', loc_ope);
+          const geojson = loc_ope.geojson;
+          const geometryType = (loc_ope.geojson as any).geometry?.type || loc_ope.geojson.type;
+
+          console.log('Type de localisation d\'opération :', geometryType);
+
+          // Test de validité du GeoJSON
+          if (
+            geojson &&
+            typeof geojson === 'object' &&
+            'type' in geojson &&
+            (
+              (geojson as any).geometry?.coordinates ||
+              (geojson as any).coordinates
+            )
+          ) {
+            if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
+              const geojsonLayer = L.geoJSON(geojson, {
+                onEachFeature: (feature, layer) => {
+                  let surface = 'N/A';
+                  surface = (turf.area(feature) / 10000).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' ha';
+                  console.log(`Surface calculée pour l'opération : ${surface}`);
+
+                  const bounds = L.geoJSON(feature).getBounds() || null;
+
+                  // console.log(`Bounds de la feature actuelle : ${bounds}`);
+                  if (bounds) {
+                    // console.log('SouthWest :', bounds.getSouthWest());
+                    // console.log('NorthEast :', bounds.getNorthEast());
+                    // console.log('Center :', bounds.getCenter());
+                    // console.log('toBBoxString :', bounds.toBBoxString());
+                    
+                    const northLat = bounds.getNorthEast().lat;
+                    const southLat = bounds.getSouthWest().lat;
+                    const westLng = bounds.getSouthWest().lng;
+                    const eastLng = bounds.getNorthEast().lng;
+                    const middleLng = (westLng + eastLng) / 2;
+                    const targetLat = southLat + 0.9 * (northLat - southLat);
+                    
+                    // Crée un marker invisible
+                    const marker = L.marker([targetLat, middleLng], { opacity: 0 });
+                    marker.bindTooltip(
+                      `Surface : ${surface}`,
+                      { permanent: true, direction: 'top' }
+                    ).addTo(this.map);
+                  }
+                  }
+                }); // Fin de la création de geojsonLayer
+                const color = this.getRandomColorName();
+                geojsonLayer.setStyle({
+                  color: color,
+                  weight: 2,
+                  opacity: 1,
+                  fillOpacity: 0.5,
+                  fillColor: color,
+                }).addTo(this.map);
+            } else if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
+              const geojsonLayer = L.geoJSON(geojson, {
+                onEachFeature: (feature, layer) => {
+                  let length = 'N/A';
+                  length = (turf.length(feature)).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' m';
+                  console.log(`Longueur calculée pour l'opération : ${length}`);
+
+                  // Affiche le label sur la ligne
+                  layer.bindTooltip(
+                    `Longueur : ${length}`,
+                    { permanent: true, direction: 'center' }
+                  );
+                  
+                }
+              }); // Fin de la création de geojsonLayer
+              const color = this.getRandomColorName();
+              geojsonLayer.setStyle({
+                color: color,
+                weight: 5,
+                opacity: 1,
+              }).addTo(this.map);
+            } else if (geometryType === 'Point' || geometryType === 'MultiPoint') {
+              const geojsonLayer = L.geoJSON(geojson, {
+                pointToLayer: (feature, latlng) => {
+                  // Pour les points, on utilise un marqueur personnalisé
+                  const marker = L.marker(latlng, { icon: customIconMarkers });
+                  marker.bindPopup(`Point : ${feature.properties?.name || 'N/A'}`);
+                  return marker;
+                }
+              }).addTo(this.map);
+            } else {
+              console.warn('Localisation d\'opération invalide ou sans GeoJSON :', loc_ope);
+            }
+          }
         }
       } else {
         // Sinon on zoom sur la Champagne-Ardenne
-        console.log('Aucun GeoJSON primaire trouvé');
-        this.map.setView([48.9681497, 4.4], 7);
-      }
-
-      // GeoJSON secondaire (souvent l'opération)
-      if (this.geojson_secondary !== '') {
-        // Transformation de la chaîne GeoJSON en VRAI DE VRAI objet GeoJSON
-        const trueGeoJson: GeoJsonObject = JSON.parse(this.geojson_secondary!);
-        const geojsonLayer = L.geoJSON(trueGeoJson);
-        geojsonLayer.setStyle({
-          color: 'orange',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.5,
-          fillColor: 'orange',
-        }).addTo(this.map);
-
-        // Obtenir les limites et ajuster la vue
-        const bounds = geojsonLayer.getBounds();
-        this.map.fitBounds(bounds);
-      } else {
-        // Sinon on zoom sur la Champagne-Ardenne
-        console.log('Aucun GeoJSON secondaire trouvé');
-        this.map.setView([48.9681497, 4.4], 7);
+        console.log('Aucun GeoJSON d\'opération trouvé');
       }
     } else {
-      // Sinon on zoom aussi sur la Champagne-Ardenne
-      this.map.setView([48.9681497, 4.4], 7);
-    }
+        console.log('Ni d\'emplacement du site ni d\'opérations n\'ont été fournis.');
+      }
 
     // Ajout d'un marqueur pour illustrer
     L.marker([48.9623054, 4.3562082], { icon: customIconMarkers })
@@ -276,12 +369,87 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .bindPopup('Chaumont');
   }
 
+  /**
+   * Générateur de couleurs CSS variées et contrastées pour couches Leaflet.
+   * Retourne un nom de couleur CSS différent à chaque appel, sans répétition immédiate.
+   */
+  getRandomColorName(): string {
+    const COLOR_PALETTE: string[] = [
+      'red', 'blue', 'orange', 'purple', 'teal', 'brown', 'magenta',
+      'gold', 'navy', 'lime', 'maroon', 'olive', 'aqua', 'fuchsia', 'coral',
+      'indigo', 'crimson', 'darkcyan', 'darkorange', 'darkviolet', 'deepskyblue'
+    ];
+  
+    // Si toutes les couleurs ont été utilisées, on recommence
+    if (this.usedColors.length === COLOR_PALETTE.length) {
+      this.usedColors = [];
+    }
+    let idx: number;
+    do {
+      idx = Math.floor(Math.random() * COLOR_PALETTE.length);
+    } while (this.usedColors.includes(idx) || idx === this.lastColorIndex);
+    this.usedColors.push(idx);
+    this.lastColorIndex = idx;
+    return COLOR_PALETTE[idx];
+  }
+
+  private resetMapView(): void {
+    // Réinitialise la vue de la carte sur la Champagne-Ardenne
+    this.map.setView([48.9681497, 4.4], 7);
+    this.map.eachLayer((layer) => {
+      if (layer instanceof L.TileLayer) {
+        layer.addTo(this.map);
+      }
+    });
+  }
+
   private zoomToGeoJson(): void {
-    if (this.geojson_primary) {
-      const geoJsonObject: GeoJsonObject = JSON.parse(this.geojson_primary);
-      const geojsonLayer = L.geoJSON(geoJsonObject);
+    if (this.localisation_site && this.localisation_site.geojson) {
+      const geojsonLayer = L.geoJSON(this.localisation_site.geojson);
       const bounds = geojsonLayer.getBounds();
       this.map.fitBounds(bounds);
+    }
+  }
+
+  private zoomToBounds(bounds : any): void {
+    if(bounds && bounds.isValid()) {
+      this.map.fitBounds(bounds);
+    }
+  }
+
+  addPolygonToMap(geometryType: string, polygon: Feature<MultiPolygon>): void {
+    let surface = 'N/A';
+    if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
+      // turf.area accepte aussi bien Feature que Geometry
+      surface = (turf.area(polygon) / 10000).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' ha';
+      console.log(`Surface calculée pour l'opération : ${surface}`);
+    } else {
+      console.warn('Géométrie non supportée pour le calcul de surface :', geometryType);
+    }
+    const bounds = geometryType === 'Polygon' || geometryType === 'MultiPolygon'
+      ? L.geoJSON(polygon).getBounds()
+      : null;
+    
+    // console.log(`Bounds de la feature actuelle : ${bounds}`);
+    if (bounds) {
+      // console.log('SouthWest :', bounds.getSouthWest());
+      // console.log('NorthEast :', bounds.getNorthEast());
+      // console.log('Center :', bounds.getCenter());
+      // console.log('toBBoxString :', bounds.toBBoxString());
+
+      const northLat = bounds.getNorthEast().lat;
+      const southLat = bounds.getSouthWest().lat;
+      const westLng = bounds.getSouthWest().lng;
+      const eastLng = bounds.getNorthEast().lng;
+      const middleLng = (westLng + eastLng) / 2;
+      const targetLat = southLat + 0.9 * (northLat - southLat);
+
+      // Crée un marker invisible
+      const marker = L.marker([targetLat, middleLng], { opacity: 0 });
+      marker.bindTooltip(
+        `Surface : ${surface}`,
+        { permanent: true, direction: 'top' }
+      ).addTo(this.map);
     }
   }
 }

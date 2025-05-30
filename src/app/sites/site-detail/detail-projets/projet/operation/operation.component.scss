@@ -22,6 +22,27 @@
   color: rgb(78, 78, 78);
 }
 
+.row-programmes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); // 4 colonnes, adapte à ton besoin
+  gap: 16px 32px; // espace vertical/horizontal entre cases
+  align-items: center;
+}
+
+.checkbox-grid-animaux {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); // 4 colonnes, adapte selon le nombre d’animaux
+  gap: 16px 32px;
+  align-items: center;
+}
+
 .file-upload-container {
     margin: 20px 0;
     

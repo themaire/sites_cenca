@@ -1,3 +1,5 @@
+import { Localisation } from "../../../shared/interfaces/localisation";
+
 // Sont en fait des champs de la vue ope.synthesesites
 export interface ProjetLite {
     uuid_proj: string;
@@ -12,6 +14,7 @@ export interface ProjetLite {
     uuid_site: string;
     geojson_site: string;
     nom?: string;
+    localisation_site?: Localisation;
 }
 
 // A EFFACTER DES QUE POSSIBLE
@@ -49,14 +52,9 @@ export interface Projet {
     createur?: string;
     date_crea?: Date;
     site?: string;
-    // pro_debut?: Date;
-    // pro_fin?: Date;
-    pro_pression_ciblee?: string;
     pro_webapp?: boolean;
-    pro_results_attendus?: number;
     pro_maitre_ouvrage?: number;
-    pro_surf_totale?: number;
     ref_loc_id?: number;
-    geojson_site?: string;
+    localisation_projet?: Localisation | null;
     geom?: string;
 }

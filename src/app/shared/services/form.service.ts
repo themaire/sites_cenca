@@ -137,21 +137,18 @@ export class FormService {
       site: [site || projet?.site],
       
       pro_webapp: [projet?.pro_webapp !== undefined ? projet.pro_webapp : isWebApp],
-      pro_surf_totale: [projet?.pro_surf_totale || true],
       
       // Peut etre pas nécessaire
       document: [projet?.document || ''],
       createur: [projet?.createur || null], // Valeur par défaut définie dans le composant
 
       step1: this.fb.group({
-        // nom: [projet?.nom || ''],
+        nom: [projet?.nom || ''],
         typ_projet: [projet?.typ_projet || null, Validators.required],
         statut: [projet?.statut || null, Validators.required],
-        validite: [projet !== undefined && projet?.validite !== null ? projet.validite : true],
+        validite: [projet?.validite || null],
         
         annee: [projet?.annee || new Date().getFullYear(), Validators.required],
-        // pro_debut: [projet?.pro_debut || null],
-        // pro_fin: [projet?.pro_fin || ''],
         date_crea: [projet?.date_crea || null],
         
         code: [projet?.code || ''],
@@ -161,10 +158,6 @@ export class FormService {
 
         programme: [projet?.programme || ''],
         itin_tech: [projet?.itin_tech || ''],
-      }),
-      step2: this.fb.group({
-        pro_pression_ciblee: [projet?.pro_pression_ciblee || null],
-        pro_results_attendus: [projet?.pro_results_attendus || null],
       }),
     });
   }
@@ -176,7 +169,7 @@ export class FormService {
     return this.fb.group({
       uuid_objectif: [objectif?.uuid_objectif || uuidv4()],
       typ_objectif: [objectif?.typ_objectif || '', Validators.required],
-      enjeux_eco: [objectif?.enjeux_eco || '', Validators.required],
+      enjeux_eco: [objectif?.enjeux_eco || '', [Validators.required, this.minWordsValidator(2)]],
       nv_enjeux: [objectif?.nv_enjeux || '', Validators.required],
       obj_ope: [objectif?.obj_ope || '', Validators.required],
       attentes: [objectif?.attentes || ''],
@@ -185,6 +178,7 @@ export class FormService {
       validite: [objectif?.validite || true],
       projet: [projet || objectif?.projet],
       surf_prevue: [objectif?.surf_prevue || null],
+      pression_maitrise: [objectif?.pression_maitrise || null],
     });
   }
   
@@ -217,8 +211,8 @@ export class FormService {
         // Ajouter un FormArray pour gérer les programmes. 
         // this.putBdd() le supprimera avant de l'envoyer au backend
         // car liste_ope_programmes n'est pas un champ de la table opération
-        liste_ope_programmes: this.fb.array(
-          operation?.liste_ope_programmes?.map(programme =>
+        liste_ope_financeurs: this.fb.array(
+          operation?.liste_ope_financeurs?.map(programme =>
             this.fb.group({
               lib_id: [programme.lib_id],
               lib_libelle: [programme.lib_libelle],
@@ -227,7 +221,7 @@ export class FormService {
           ) || [],
           [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
         ),
-        description_programme: [operation?.description_programme || null],
+        financeur_description: [operation?.financeur_description || null],
       }),
       
       step4: this.fb.group({
@@ -368,10 +362,6 @@ export class FormService {
   private prepareProjetDataForSubmission(form: FormGroup): Projet {
     const fieldsToClean = [
       'document',
-      'pro_debut',
-      'pro_fin',
-      'pro_pression_ciblee',
-      'pro_results_attendus',
     ];
     const formValue = this.cleanFormValues(form.value, fieldsToClean);
     const dataToSubmit: Projet = {
@@ -387,22 +377,15 @@ export class FormService {
       validite: formValue.step1.validite,
 
       annee: formValue.step1.annee,
-      // pro_debut: formValue.step1.pro_debut,
-      // pro_fin: formValue.step1.pro_fin,
       date_crea: formValue.step1.date_crea,
 
       nom: formValue.step1.nom,
       code: formValue.step1.code,
       responsable: formValue.step1.responsable,
       pro_maitre_ouvrage: formValue.step1.pro_maitre_ouvrage,
-      perspectives: formValue.step1.pro_pression_ciblee,
 
       programme: formValue.step1.programme,
       itin_tech: formValue.step1.itin_tech,
-
-      // Step 2
-      pro_pression_ciblee: formValue.step2.pro_pression_ciblee,
-      pro_results_attendus: formValue.step2.pro_results_attendus,
     };
 
     console.log("Données du formulaire PROJET nettoyé juste avant d'etre envoyé vers le backend pour INSERT /UPDATE :");

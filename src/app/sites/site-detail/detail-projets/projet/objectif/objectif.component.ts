@@ -16,6 +16,10 @@ import { ApiResponse } from '../../../../../shared/interfaces/api';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
+import { 
+        MatTooltipModule,
+          // TooltipPosition 
+        } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -45,6 +49,7 @@ import { Subscription } from 'rxjs';
         ReactiveFormsModule,
         MatTabsModule,
         MatSnackBarModule,
+        MatTooltipModule,
         MatSelectModule,
         MatIconModule,
         MatFormFieldModule,
@@ -67,7 +72,7 @@ export class ObjectifComponent {
   @Input() uuid_projet?: string; // L'identifiant du projet selectionné pour voir son/ses objectif(s)
   @Input() pro_webapp?: boolean; // Si projet nouvelle generation (avec webapp)
   
-  @Output() objectifProjet = new EventEmitter<string>(); // Pour envoyer l'objectif au parent
+  @Output() objectif_ope = new EventEmitter<string>(); // Pour envoyer l'objectif au parent
   
   // @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
   // @ViewChild('listOperations', { static: false }) listOperationsTemplate: any;
@@ -98,6 +103,7 @@ export class ObjectifComponent {
   selectedtypeObjectifOpe: string = '';
   typeObjectif!: SelectValue[];
   selectedtypeObjectif: string = '';
+  PressionsDeMaitrise!: SelectValue[];
 
   // Booleens d'états pour le mode d'affichage
   @Input() isEditObjectif: boolean = false;
@@ -170,6 +176,17 @@ export class ObjectifComponent {
       },
       (error) => {
         console.error('Erreur lors de la récupération de la liste de choix', error);
+      }
+    );
+    const subroutePressionMaitrise = `sites/selectvalues=${'opegerer.libelles'}/pression_maitrise`;
+    this.formService.getSelectValues$(subroutePressionMaitrise).subscribe(
+      (selectValues: SelectValue[] | undefined) => {
+        console.log('Liste de choix pression_maitrise récupérée avec succès :');
+        console.log(selectValues);
+        this.PressionsDeMaitrise = selectValues || [];
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération de la liste de choix de pression de maitrise (this.PressionsDeMaitrise)', error);
       }
     );
 
@@ -308,7 +325,7 @@ export class ObjectifComponent {
             } else {
               obj_ope = "(aucun objectif)";
             }
-            this.objectifProjet.emit(this.projetService.getLibelleByCdType(obj_ope ?? null, this.typeObjectifOpe));
+            this.objectif_ope.emit(this.projetService.getLibelleByCdType(obj_ope ?? null, this.typeObjectifOpe));
 
             this.cdr.detectChanges();
             console.log('Liste des objectifs bien mises à jour.');
@@ -533,7 +550,7 @@ export class ObjectifComponent {
     // }
 
     // const message = `Voulez-vous vraiment supprimer cette ${libelle}?\n<strong>Cette action est irréversible.</strong>`
-    const message = `Voulez-vous vraiment supprimer ce projet?\n<strong>Cette action est irréversible.</strong>`
+    const message = `Voulez-vous vraiment supprimer cet objectif?\n<strong>Cette action est irréversible.</strong>`
     
     // Appel de la boîte de dialogue de confirmation
     this.confirmationService.confirm('Confirmation de suppression', message).subscribe(result => {

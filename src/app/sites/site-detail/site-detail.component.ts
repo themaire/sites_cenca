@@ -16,7 +16,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { MatTabsModule } from '@angular/material/tabs';
 import { ListSite } from '../site'; // prototype d'un site
-import { DetailSite } from '../site-detail';
+import { DetailSite, DetailSiteProjet } from '../site-detail';
 import { SitesService } from '../sites.service'; // service de données
 
 import { DetailInfosComponent } from './detail-infos/detail-infos.component';
@@ -32,8 +32,8 @@ import { DetailProjetsComponent } from './detail-projets/detail-projets.componen
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    RouterOutlet,
+    // RouterLink,
+    // RouterOutlet,
 
     MatTabsModule,
 
@@ -55,6 +55,8 @@ export class SiteDetailComponent {
   isMobile: boolean = false;
 
   public siteDetail!: DetailSite;
+  public siteDetailProjet!: DetailSiteProjet;
+
   resetSelectedd(): void {
     // Assigne la valeur "undefined" à la variable selectedSite
     // qui se trouve dans le component frere "site-display" :-)
@@ -63,9 +65,10 @@ export class SiteDetailComponent {
     this.selectedSite.emit(undefined);
   }
 
-  research: SitesService = inject(SitesService);
+  // research: SitesService = inject(SitesService);
 
   constructor(
+    private sitesService: SitesService,
     private route: ActivatedRoute,
     private router: Router,
     private breakpointObserver: BreakpointObserver
@@ -86,8 +89,17 @@ export class SiteDetailComponent {
       );
       // console.log(this.site);
 
-      this.research.getSiteUUID(subroute).then((siteGuetted) => {
+      this.sitesService.getSiteUUID(subroute).then((siteGuetted) => {
         this.siteDetail = siteGuetted;
+
+        // Pour donner au composant detail-projets.component.ts <app-detail-projets>
+        this.siteDetailProjet = {
+          uuid_site: siteGuetted.uuid_site,
+          uuid_espace: siteGuetted.uuid_espace,
+          nom: siteGuetted.nom,
+          surface: siteGuetted.surface,
+          localisation: siteGuetted.localisation
+        }
       });
     }
   }

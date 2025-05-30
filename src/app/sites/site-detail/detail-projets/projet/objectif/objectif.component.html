@@ -38,12 +38,16 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
   <div>
     <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->
 
-    Tableau des objectif(s). Depuis le 01/01/2025 : <b>un objectif par projet</b>.
+    <ng-container *ngIf="pro_webapp">
+      Depuis le 01/01/2025 : <b>un objectif par projet</b>.
+    </ng-container>
     <ng-container *ngIf="objectifs.length > 0; then table else noObjectifs"></ng-container>
 
     <ng-template #table>
       <div>
-        Nb objectifs : {{ objectifs.length }}<br>
+        <ng-container *ngIf="!pro_webapp">
+          Nb objectifs : {{ objectifs.length }}.
+        </ng-container>
         <mat-table [dataSource]="dataSource" class="mat-elevation-z8" #matTable>
           <ng-container matColumnDef="typ_objectif">
             <mat-header-cell *matHeaderCellDef> Type d'objectif </mat-header-cell>
@@ -93,21 +97,9 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
 
       <mat-tab label="Informations de l'objectif">
         <form *ngIf="form" [formGroup]="form">
+
+          <!-- Première ligne -->
           <div>
-            <!-- <mat-form-field>
-              <mat-label>Ref UUID Objectif</mat-label>
-              <input matInput formControlName="uuid_objectif" readonly>
-            </mat-form-field> -->
-
-            <mat-form-field>
-              <mat-label>Type d'objectif</mat-label>
-              <mat-select [(ngModel)]="selectedtypeObjectif" formControlName="typ_objectif">
-                @for (type of typeObjectif; track type) {
-                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
             <mat-form-field>
               <mat-label>Objectif opérationnel</mat-label>
               <mat-select [(ngModel)]="selectedtypeObjectifOpe" formControlName="obj_ope">
@@ -115,6 +107,9 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
               </mat-select>
+              <mat-error *ngIf="form.get('obj_ope')?.hasError('required')">
+                Ce champ est obligatoire.
+              </mat-error>
             </mat-form-field>
             
             <mat-form-field>
@@ -124,35 +119,75 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
                   <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
                 }
               </mat-select>
+              <mat-error *ngIf="form.get('nv_enjeux')?.hasError('required')">
+                Ce champ est obligatoire.
+              </mat-error>
             </mat-form-field>
           </div>
 
+          <!-- Deuxième ligne -->
           <div>
             <mat-form-field>
               <mat-label>Enjeux écologique</mat-label>
               <input matInput formControlName="enjeux_eco">
+              <mat-error *ngIf="form.get('enjeux_eco')?.hasError('required')">
+                Ce champ est obligatoire.
+              </mat-error>
+              <mat-error *ngIf="form.get('enjeux_eco')?.hasError('minWords')">
+                La description doit contenir au moins 2 mots.
+              </mat-error>
             </mat-form-field>
 
+            <mat-form-field *ngIf="pro_webapp">
+              <mat-label>Pressions à maîtriser</mat-label>
+              <mat-select formControlName="pression_maitrise">
+                @for (type of PressionsDeMaitrise; track type) {
+                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Affichage des surface en fonction du type d'application -->
+            <ng-container *ngIf="pro_webapp">
+              <mat-form-field matTooltip="Fusion des surfaces des opérations">
+                <mat-label>Surface d'intervention (ha)</mat-label>
+                <input matInput  type="number" formControlName="surf_totale">
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="!pro_webapp">
+              <mat-form-field matTooltip="Fusion des surfaces des opérations">
+                <mat-label>Surface totale (ha)</mat-label>
+                <input matInput formControlName="surf_totale">
+              </mat-form-field>
+
+              <mat-form-field>
+              <mat-label>Surface prévue (ha)</mat-label>
+              <input matInput formControlName="surf_prevue">
+            </mat-form-field>
+            </ng-container>
+          </div>
+          
+          <!-- Cas d'un ancien type d'opération avec operations imbriqués -->
+          <div *ngIf="!pro_webapp">
             <mat-form-field>
-              <mat-label>Surface totale</mat-label>
-              <input matInput formControlName="surf_totale">
+              <mat-label>Type d'objectif</mat-label>
+              <mat-select [(ngModel)]="selectedtypeObjectif" formControlName="typ_objectif">
+                @for (type of typeObjectif; track type) {
+                  <mat-option [value]="type.cd_type">{{type.libelle}}</mat-option>
+                }
+              </mat-select>
             </mat-form-field>
             
             <mat-form-field>
-              <mat-label>Surface prévue</mat-label>
-              <input matInput formControlName="surf_prevue">
+              <mat-label>Validité</mat-label>
+              <input matInput formControlName="validite">
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Unité de gestion</mat-label>
               <input matInput formControlName="unite_gestion">
             </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Validité</mat-label>
-              <input matInput formControlName="validite">
-            </mat-form-field>
-
+            
             <mat-form-field>
               <mat-label>Attentes</mat-label>
               <input matInput formControlName="attentes">
@@ -161,7 +196,7 @@ Variable (objectif) isAddObjectif: {{ isAddObjectif }}<br> -->
         </form>
       </mat-tab>
       
-      <!-- <mat-tab label="Opérations associées" *ngIf="!pro_webapp && form">
+      <!-- <mat-tab label="Opérations associées" *ngIf="!pro_webapp">
       <ng-template matTabContent>
         <app-operation 
           rattachementOperation="objectif"

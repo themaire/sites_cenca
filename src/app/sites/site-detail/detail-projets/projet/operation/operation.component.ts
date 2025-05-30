@@ -114,8 +114,9 @@ export const MY_DATE_FORMATS = {
   styleUrls: ['./operation.component.scss']
 })
 export class OperationComponent implements OnInit, OnDestroy {
-  @Input() rattachementOperation?: string;
-  @Input() geojson_site?: string;
+  @Input() pro_webapp?: boolean;
+  @Input() objectif_ope?: string;
+  @Input() localisation_site?: Localisation;
 
   // @ViewChild('addEditOperation', { static: false }) addEditOperationTemplate: any;
   // @ViewChild('listOperations', { static: false }) listOperationsTemplate: any;
@@ -197,7 +198,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   unitesTypes!: SelectValue[];
 
   // Pour les cases à cocher (multiple choix) dans le step Information de l'opération du formulaire d'édition d'une opération
-  liste_ope_programmes!: OperationCheckbox[];
+  liste_ope_financeurs!: OperationCheckbox[];
   liste_ope_animaux_paturage!: OperationCheckbox[];
 
   // Encore utilisé?
@@ -249,7 +250,8 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   stepperOrientation: Observable<StepperOrientation>;
   shapefileId: any; // Pour le formulaire de shapefile
-  localisations?: Localisation[]; // Pour le formulaire de shapefile
+  localisations_shapefile_form?: Localisation[]; // Pour le formulaire de shapefile
+  localisation_operation?: Localisation; // Pour le formulaire de shapefile
   isComponentInitialized: boolean = false; // Indicateur pour savoir si le composant est complètement initialisé
   
   constructor(
@@ -389,11 +391,11 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     // On récupère les listes pour les toutes cases à cocher (programmes et animaux) possibles d'un thème
     // Ces variables sont utilisées dans this.fetch()
-    const subrouteOperationProgrammeListe = `ope-programmes/uuid=`;
-    this.liste_ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
+    const subrouteOperationProgrammeListe = `ope-financeurs/uuid=`;
+    this.liste_ope_financeurs = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
     const subrouteOperationAnimauxListe = `ope-animaux/uuid=`; // Pas de UUID donc on recuperer tous les animaux
     this.liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
-    console.log('Liste des programmes possibles :', this.liste_ope_programmes);
+    console.log('Liste des programmes possibles :', this.liste_ope_financeurs);
     console.log('Liste des animaux possibles :', this.liste_ope_animaux_paturage);
 
 
@@ -453,7 +455,7 @@ export class OperationComponent implements OnInit, OnDestroy {
       console.log("----------!!!!!!!!!!!!--------fetch(" + uuid_ope + ") dans le composant operation");
       const subroute = `operations/uuid=${uuid_ope}/full`;
       
-      const subrouteOperationProgramme = `ope-programmes/uuid=${uuid_ope}`;
+      const subrouteOperationProgramme = `ope-financeurs/uuid=${uuid_ope}`;
       const subrouteOperationAnimaux = `ope-animaux/uuid=${uuid_ope}`;
 
       try {
@@ -473,21 +475,27 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Ajouter les programmes et les animaux à l'objet operation
         operation = {
           ...operation,
-          ope_programmes: ope_programmes,
-          liste_ope_programmes: this.liste_ope_programmes,
+          ope_financeurs: ope_programmes,
+          liste_ope_financeurs: this.liste_ope_financeurs,
         };
         operation = {
           ...operation,
           ope_animal_paturage: ope_animal_paturage,
           liste_ope_animaux_paturage: this.liste_ope_animaux_paturage,
         };
+        const freshloca = await this.shapefileService.getLocalisation(operation.uuid_ope);
+        console.log('Localisations récupérées pour l\'opération :', freshloca);
+        operation = {
+          ...operation,
+          localisations: freshloca,
+        };
 
-        if (operation.liste_ope_programmes && operation.ope_programmes) {
+        if (operation.liste_ope_financeurs && operation.ope_financeurs) {
           // console.log('Avant mise à jour des cases :', operation.liste_ope_programmes);
         
-          operation.liste_ope_programmes = operation.liste_ope_programmes.map(programme => ({
+          operation.liste_ope_financeurs = operation.liste_ope_financeurs.map(programme => ({
             ...programme,
-            checked: operation.ope_programmes?.some(ope => ope.lib_id === programme.lib_id) || false,
+            checked: operation.ope_financeurs?.some(ope => ope.lib_id === programme.lib_id) || false,
           }));
         
           // console.log('Après mise à jour des cases :', operation.liste_ope_programmes);
@@ -507,13 +515,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Pré remplir le sous formulaire d'envoi du shapefile
         this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
 
-        // Récupérer les localisations de l'opération
-        this.localisations = await this.shapefileService.getLocalisation(uuid_ope);
-
-        // Attention il s'agit d'une liste de localisations !
-        console.log('Localisation de l\'opération :');
-        console.log(this.localisations);
-
+        console.log('Opération après le fetch() :', operation);
         return operation;
       } catch (error) {
         console.error("Erreur lors de la récupération de l'opération : ", error);
@@ -602,8 +604,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     
   }
 
-  /**
-   * Est appelée pour créer un formulaire d'opération
+  /** Appelée pour créer un formulaire d'opération
    * C'est a dire dans la methode toggleEditOperation()
    * @param operation - L'opération à ouvrir (si elle existe) (optionnel)
    * @param empty - Si true, crée un formulaire vide (optionnel)
@@ -635,7 +636,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         const newOperation: Operation = {
           uuid_ope: uuidv4(), // remplir avec un UUID aléatoire car cette propriété est obligatoire dans la definition de l'objet Operation
           ref_uuid_proj: this.ref_uuid_proj as string,
-          liste_ope_programmes: this.liste_ope_programmes,
+          liste_ope_programmes: this.liste_ope_financeurs,
           liste_ope_animaux_paturage: this.liste_ope_animaux_paturage,
           // Ajoutez ici les autres propriétés requises de Operation avec des valeurs par défaut si besoin
         } as Operation;
@@ -726,8 +727,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Gère la soumission du formulaire pour une opération.
+  /** Gère la soumission du formulaire pour une opération.
    *
    * @param mode - (Optionnel) Mode de soumission, peut être utilisé pour spécifier une action particulière comme 'delete'.
    *
@@ -880,15 +880,21 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.shapeForm!,
       this.fileInput,
       async (uuid: string) => {
-        this.localisations = await this.shapefileService.getLocalisation(uuid);
+        // Verifie que this.operation existe et que localisations est un tableau
+        if (this.operation && Array.isArray(this.operation.localisations)) {
+          this.operation.localisations = await this.shapefileService.getLocalisation(uuid);
+        } else if (this.operation) {
+          // Si localisations est undefined, on l'initialise
+          this.operation.localisations = await this.shapefileService.getLocalisation(uuid);
+        }
       }
     );
   }
   //
   /** Méthode pour télécharger le fichier shapefile d'exemple
    */
-  downloadShapefileExample(): void {
-    this.shapefileService.downloadShapefileExample();
+  downloadShapefileExample(type: 'polygone' | 'ligne' | 'point'): void {
+    this.shapefileService.downloadShapefileExample(type);
   }
 
 /**
@@ -902,9 +908,17 @@ export class OperationComponent implements OnInit, OnDestroy {
  * et des animations d'entrée/sortie.
  */
   deleteItemConfirm(type: 'localisation' | 'operation'): void {
-    const ope2delete = this.operation;
-    const loca2delete = this.localisations?.[0];
-    
+    let ope2delete: Operation | undefined = undefined;
+    let loca2delete: Localisation[] | undefined = undefined;
+    if (this.operation) {
+      ope2delete = this.operation;
+
+      // this.operation.localisations n'est pas undefinec on peut acceser a length et on verifiera si > 0
+      if ( (this.operation.localisations?.length ?? 0) > 0 ) {
+        loca2delete = this.operation.localisations; // Toutes deux des listes de localisations
+      }
+    }
+
     // Fabriquer le libellé de l'opération
     let libelle = '';
     if (type == 'operation') {
@@ -920,7 +934,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         ) || "";
       }
     } else if (type == 'localisation') {
-      if (this.localisations && this.localisations.length > 0) {
+      if (this.localisations_shapefile_form && this.localisations_shapefile_form.length > 0) {
         libelle = type;
       }
     }
@@ -936,6 +950,7 @@ export class OperationComponent implements OnInit, OnDestroy {
     const message = `Voulez-vous vraiment supprimer cette ${libelle}?\n<strong>Cette action est irréversible.</strong>`
     
     // Appel de la boîte de dialogue de confirmation
+    // Le bouton supprimer de la boite de dialogue ( result ) va appeler le service projetService.deleteItem()
     this.confirmationService.confirm('Confirmation de suppression', message,).subscribe(result => {
     if (result) {
       // L'utilisateur a confirmé la suppression
@@ -955,13 +970,15 @@ export class OperationComponent implements OnInit, OnDestroy {
               this.fetch(); // Rafraîchir la liste des opérations
           }
           if (type == 'localisation') {
-            this.localisations = undefined; // Réinitialiser les localisations après suppression
+            if (this.operation) {
+              this.operation.localisations = undefined; // Réinitialiser le tableau des localisations
+            }
           }
         } else {
           // success === false ici si la suppression a échoué
           // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
         }
-      });;
+      });
     }
   });
 
@@ -1074,11 +1091,11 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Getter pour accéder à la liste des differents programmes d'opération disponibles
-   * @returns {FormArray} La liste des programmes d'opération
+   * Getter pour accéder à la liste des differents financeurs d'opération disponibles
+   * @returns {FormArray} La liste des financeurs d'opération
    */
-  get listeOpeProgrammes(): FormArray {
-    return this.step3Form.get('liste_ope_programmes') as FormArray;
+  get listeOpeFinanceurs(): FormArray {
+    return this.step3Form.get('liste_ope_financeurs') as FormArray;
   }
 
   /**
@@ -1090,10 +1107,10 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-  * Méthode pour mettre à jour this.operation en fonction des programmes sélectionnés par l'utilisateur
+  * Méthode pour mettre à jour this.operation en fonction des financeurs sélectionnés par l'utilisateur
   */
-  getSelectedProgrammes(): { lib_id: number; lib_libelle: string }[] {
-    return this.listeOpeProgrammes.controls
+  getSelectedFinanceurs(): { lib_id: number; lib_libelle: string }[] {
+    return this.listeOpeFinanceurs.controls
       .filter(control => control.get('checked')?.value)
       .map(control => ({
         lib_id: control.get('lib_id')?.value,
@@ -1151,10 +1168,10 @@ export class OperationComponent implements OnInit, OnDestroy {
         if (animal.checked) {
           this.projetService.deleteCheckbox('uuid_ope', this.operation!.uuid_ope, animal.lib_id, 'operation_animaux').subscribe({
             next: () => {
-              console.log(`Programme supprimé : ${animal.lib_libelle}`);
+              console.log(`Animal supprimé : ${animal.lib_libelle}`);
             },
             error: (error) => {
-              console.error(`Erreur lors de la suppression du programme : ${animal.lib_libelle}`, error);
+              console.error(`Erreur lors de la suppression de l'animal : ${animal.lib_libelle}`, error);
           }
         });
       }
@@ -1163,10 +1180,10 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Synchronise les cases à cocher sélectionnées (programmes ou animaux...) avec la base de données.
+   * Synchronise les cases à cocher sélectionnées (financeurs ou animaux...) avec la base de données.
    * @param type 'programmes' ou 'animaux'
    */
-  private syncOperationCheckboxes(type: 'programmes' | 'animaux'): void {
+  private syncOperationCheckboxes(type: 'financeurs' | 'animaux'): void {
     let selected: { lib_id: number; lib_libelle: string }[] = [];
     let existing: OperationCheckbox[] = [];
     let liste: OperationCheckbox[] | undefined;
@@ -1178,11 +1195,11 @@ export class OperationComponent implements OnInit, OnDestroy {
       return;
     }
   
-    if (type === 'programmes') {
-      selected = this.getSelectedProgrammes();
-      liste = this.operation.liste_ope_programmes;
-      ope = this.operation.ope_programmes;
-      table = 'operation_programmes';
+    if (type === 'financeurs') {
+      selected = this.getSelectedFinanceurs();
+      liste = this.operation.liste_ope_financeurs;
+      ope = this.operation.ope_financeurs;
+      table = 'operation_financeurs';
     } else {
       selected = this.getSelectedAnimaux();
       liste = this.operation.liste_ope_animaux_paturage;
@@ -1238,9 +1255,31 @@ export class OperationComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Synchronise l'état des cases à cocher pour les opérations spécifiées.
+   * 
+   * Cette méthode appelle la fonction `syncOperationCheckboxes` pour les catégories
+   * 'programmes' et 'animaux', afin de mettre à jour l'état des cases à cocher
+   * correspondantes en une seule opération.
+   */
   syncCheckboxs(): void {
     // Faire tout d'un coup
-    this.syncOperationCheckboxes('programmes');
+    this.syncOperationCheckboxes('financeurs');
     this.syncOperationCheckboxes('animaux');
+  }
+
+  /**
+   * Génère un tableau de lignes, chaque ligne contenant jusqu'à 4 contrôles issus de la liste `listeOpeFinanceurs`.
+   * Cette méthode divise la liste des contrôles en sous-tableaux de taille maximale 4, afin de faciliter l'affichage en lignes.
+   *
+   * @returns {any[][]} Un tableau de lignes, chaque ligne étant un tableau de contrôles (maximum 4 par ligne).
+   */
+  getProgrammeRows(): any[][] {
+    const rows = [];
+    const controls = this.listeOpeFinanceurs?.controls || [];
+    for (let i = 0; i < controls.length; i += 4) {
+      rows.push(controls.slice(i, i + 4));
+    }
+    return rows;
   }
 }
