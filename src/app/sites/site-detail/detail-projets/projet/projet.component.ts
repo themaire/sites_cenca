@@ -5,6 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 
 // import { ApiResponse } from '../../../../shared/interfaces/api';
 import { ProjetLite, Projet } from '../projets';
+import { OperationLite } from './operation/operations';
+import { Objectif } from './objectif/objectifs';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { ProjetService, DeleteItemTypeEnum } from '../projets.service';
 import { FormService } from '../../../../shared/services/form.service';
@@ -122,6 +124,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   projetLite: ProjetLite;
   projet!: Projet;
+  objectifs_bilan: Objectif[] = []; // Liste des objectifs associés au projet
+  operations_bilan: OperationLite[] = []; // Liste des opérations associées au projet
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 400;
 
@@ -174,6 +178,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
       this.projetLite = data;
+      console.log("ProjetLite reçu dans le composant projet :", this.projetLite);
 
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
@@ -194,16 +199,52 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     return type;
   }
 
-  async fetch(uuid_proj: String, type: String): Promise<Projet> {
+  async fetch(table: 'projets' | 'operations' | 'objectifs', uuid_proj: String, type?: String): Promise<Projet | OperationLite[] | Objectif[] | undefined> {
     // Récupérer les données d'un projet à partir de son UUID
     // @param : gestion ou autre pour que le back sache quelle table interroger
     // !! Le backend ne fera pas la meme requete SQL si on est en gestion ou autre
     // Il s'agira de deux schémas different où les données sont stockées
-    const subroute = `projets/uuid=${uuid_proj}/full/${type}`; // Full puisque UN SEUL projet
-    console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
-    const projet = await this.projetService.getProjet(subroute);
-    if (projet.typ_projet) this.selectedProjetType = projet.typ_projet; // Assigner le type de projet sélectionné à la variable
-    return projet;
+    if (table === 'projets') {
+      const subroute = `projets/uuid=${uuid_proj}/full?type=${type}&webapp=1`; // Full puisque UN SEUL projet
+      console.log("subroute dans fetch : " + subroute);
+      console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
+      const projet = await this.projetService.getProjet(subroute);
+      if (projet.typ_projet) this.selectedProjetType = projet.typ_projet; // Assigner le type de projet sélectionné à la variable
+      return projet as Projet; // Retourner l'objet Projet complet
+    } else if (table === 'operations') {
+      const subroute = `operations/uuid=${uuid_proj}/lite`;
+      return this.projetService.getOperations(subroute).then(
+        (operations) => {
+          this.operations_bilan = operations; // Les operations lite sont de type OperationLite[]
+          if (this.operations_bilan.length > 0) {
+            return this.operations_bilan; // Retourner les opérations récupérées
+          }
+          return [] as OperationLite[]; // Retourner un tableau vide si aucune opération n'est trouvée
+        }
+      ).catch(
+        (error) => {
+          console.error('Erreur lors de la récupération des opérations', error);
+          return [] as OperationLite[]; // Retourner un tableau vide en cas d'erreur
+        }
+      );
+    }else if (table === 'objectifs') {
+      const subroute = `objectifs/uuid=${uuid_proj}/lite`;
+      return this.projetService.getObjectifs(subroute).then(
+        (objectifs) => {
+          if (objectifs.length > 0) {
+            return objectifs; // Retourner les objectifs récupérés
+          }
+          return [] as Objectif[]; // Retourner un tableau vide si aucun objectif n'est trouvé
+        }
+      ).catch(
+        (error) => {
+          console.error('Erreur lors de la récupération des objectifs', error);
+          return [] as Objectif[]; // Retourner un tableau vide en cas d'erreur
+        }
+      );
+    }
+    // Ajout d'un return par défaut pour satisfaire le compilateur TypeScript
+    return undefined; // Si le paramètre 'table' ne correspond pas à 'projets' ou 'operations', retourner undefined
   }
 
   get step1Form(): FormGroup {
@@ -227,30 +268,34 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         // Simuler un délai artificiel
         setTimeout(async () => {
           // Accéder aux données du projet (va prendre dans le schema opegerer ou opeautre)
-          const projetObject = await this.fetch(this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation));
 
           // Accéder données du projet
-          if (projetObject.uuid_proj) {
-            this.projet = projetObject; // Assigner l'objet projet directement
+          // Assigner l'objet projet directement et forcer le type Projet
+          this.projet = await this.fetch('projets', this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation)) as Projet;
+          this.operations_bilan = await this.fetch('operations', this.projetLite.uuid_proj) as OperationLite[];
+          console.log('Operations_bilan après extraction :', this.operations_bilan);
 
-            console.log('Projet après extraction :', this.projet);
+          this.objectifs_bilan = await this.fetch('objectifs', this.projetLite.uuid_proj) as Objectif[];
+          console.log('Objectifs_bilan après extraction :', this.objectifs_bilan);
 
-            // Défini un formulaire pour le projet
-            this.projetForm = this.formService.newProjetForm(this.projet, undefined, this.projet.pro_webapp);
+          console.log('Projet après extraction :', this.projet);
 
-            // Souscrire aux changements du statut du formulaire principal (projetForm)
-            this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
-              this.isFormValid = this.projetForm.valid;  // Mettre à jour isFormValid en temps réel
-              // console.log('Statut du formulaire principal :', status);
-              // console.log("this.isFormValid = this.projetForm.valid :");
-              // console.log(this.isFormValid + " = " + this.projetForm.valid);
-              // console.log("isFormValid passé à l'enfant:", this.isFormValid);
-              this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
-            });
+          // Défini un formulaire pour le projet
+          this.projetForm = this.formService.newProjetForm(this.projet, undefined, this.projet.pro_webapp);
 
-            this.isLoading = false;  // Le chargement est terminé
+          // Souscrire aux changements du statut du formulaire principal (projetForm)
+          this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
+            this.isFormValid = this.projetForm.valid;  // Mettre à jour isFormValid en temps réel
+            // console.log('Statut du formulaire principal :', status);
+            // console.log("this.isFormValid = this.projetForm.valid :");
+            // console.log(this.isFormValid + " = " + this.projetForm.valid);
+            // console.log("isFormValid passé à l'enfant:", this.isFormValid);
+            this.cdr.detectChanges();  // Forcer la détection des changements dans le parent
+          });
+
+          this.isLoading = false;  // Le chargement est terminé
             
-          }
+          
         }, this.loadingDelay);
       } catch (error) {
         console.error('Erreur lors de la récupération des données du projet', error);
@@ -342,12 +387,12 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   handleEditObjectifChange(isEdit: boolean): void {
     // console.log('État de l\'édition reçu du composant enfant:', isEdit);
-    this.isEditOperation = isEdit;
+    this.isEditObjectif = isEdit;
   }
 
   handleAddObjectifChange(isAdd: boolean): void {
     // console.log('État de l\'ajout reçu du composant enfant:', isAdd);
-    this.isAddOperation = isAdd;
+    this.isAddObjectif = isAdd;
   }
 
   handleEditOperationChange(isEdit: boolean): void {
@@ -430,7 +475,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
             this.isEditProjet = result.isEditMode;
             this.initialFormValues = result.formValue;
             this.newProjet = false; // On n'est plus en mode création, donc maintenant le formulaire s'affiche normalement
+            // Les steps du stepper sont affichés et apparaissent comme en mode consultation (edition)
             this.projet = result.formValue;
+            // La liste des projets dans le composant parent sera mise à jour au moment de fermer la fenêtre de dialogue
             console.log('Nouveau projet enregistré avec succès:', result.formValue);
           },
           (error) => {

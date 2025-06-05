@@ -33,47 +33,74 @@ Variable (operation) form: {{ form }}<br>
   <div>
     <!-- Si le booleen !isEditOperation && !isAddOperation sont false, on montre la liste des opérations  -->
 
-    Tableau des opérations. Si pâturé (1 opération par parc).
     <ng-container *ngIf="operations !== undefined && operations.length > 0; then table else noOperations"></ng-container>
 
     <ng-template #table>
       <div>
         Nb opérations : {{ operations.length }}<br>
-        <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8" #matTable>
-          <ng-container matColumnDef="code">
-            <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.code }} </mat-cell>
-          </ng-container>
-          
-          <ng-container matColumnDef="titre">
-            <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.titre }} </mat-cell>
-          </ng-container>
-          
-          <ng-container matColumnDef="description">
-            <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.description }} </mat-cell>
-          </ng-container>
-          
-          <ng-container matColumnDef="surf">
-            <mat-header-cell *matHeaderCellDef> Surface </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.surf }} </mat-cell>
-          </ng-container>
-          
-          <ng-container matColumnDef="date_debut">
-            <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.date_debut }} </mat-cell>
-          </ng-container>
+        <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8" #matTable *ngIf="!pro_webapp">
+
+            <ng-container matColumnDef="code">
+              <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.code }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="titre">
+              <mat-header-cell *matHeaderCellDef> Titre </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.titre }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="description">
+              <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.description }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="surf">
+              <mat-header-cell *matHeaderCellDef> Surface </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.surf }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="date_debut">
+              <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.date_debut }} </mat-cell>
+            </ng-container>        
           
           <mat-header-row *matHeaderRowDef="displayedColumnsOperations"></mat-header-row>
           <!-- Ouvrir la fenetre de dialogue d'une opération -->
           <mat-row *matRowDef="let operation; columns: displayedColumnsOperations;" (click)="this.makeForm({ operation })"></mat-row>
         </mat-table>
+        
+        <mat-table [dataSource]="dataSourceOperations" class="mat-elevation-z8" #matTable *ngIf="pro_webapp">
+
+            <ng-container matColumnDef="type">
+              <mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.type }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="nom_mo">
+              <mat-header-cell *matHeaderCellDef> Nom maître d'oeuvre </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.nom_mo }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="quantite">
+              <mat-header-cell *matHeaderCellDef> Quantité </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.quantite }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="unite_str">
+              <mat-header-cell *matHeaderCellDef> Unité </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.unite_str }} </mat-cell>
+            </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumnsOperationsWebapp"></mat-header-row>
+          <!-- Ouvrir la fenetre de dialogue d'une opération -->
+          <mat-row *matRowDef="let operation; columns: displayedColumnsOperationsWebapp;" (click)="this.makeForm({ operation })"></mat-row>
+        </mat-table>
       </div>
     </ng-template>
 
     <ng-template #noOperations>
-        Il n'y a pas d'opérations sur ce site.
+        Il n'y a pas encore d'opération(s) sur ce projet.
     </ng-template>
 
   </div>
@@ -102,14 +129,14 @@ Variable (operation) form: {{ form }}<br>
         <ng-template matStepLabel>Type de l'opération</ng-template>
         <div class="form-fields">
           <div>  
-            <mat-slide-toggle
+            <!-- <mat-slide-toggle
                   formControlName="validite"
                   class="toggle"
                   [checked]="step1Form.get('validite')?.value || false">
 
                   Validité de l'opération
 
-            </mat-slide-toggle>
+            </mat-slide-toggle> -->
           </div>
 
 
@@ -642,9 +669,13 @@ Variable (operation) form: {{ form }}<br>
             <mat-label>Taux d'abroutissement moyen</mat-label>
             <mat-select formControlName="abroutissement_paturage">
               <mat-option *ngFor="let type of 
-                [{cd_type: 1, libelle: 'Faible'}, 
-                {cd_type: 2, libelle: 'Moyen'},
-                {cd_type: 3, libelle: 'Bon'}]" 
+                [{cd_type: 1, libelle: '1'}, 
+                {cd_type: 2, libelle: '2'},
+                {cd_type: 3, libelle: '3'},
+                {cd_type: 4, libelle: '4'},
+                {cd_type: 5, libelle: '5'},
+                {cd_type: 6, libelle: '6'},
+                {cd_type: 7, libelle: '7'}]" 
                 [value]="type.cd_type">
                 {{ type.libelle }}
               </mat-option>

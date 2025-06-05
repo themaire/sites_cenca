@@ -72,8 +72,10 @@ export class ShapefileService {
           this.snackBar.open(response.message || 'Erreur lors de l\'import', 'Fermer', { duration: 3000, panelClass: ['error-snackbar'] });
         }
       },
-      error: () => {
-        this.snackBar.open('Erreur lors de l\'import du shapefile', 'Fermer', { duration: 3000, panelClass: ['error-snackbar'] });
+      error: (error) => {
+        console.error('Erreur de shapefile:', error.error?.message);
+        const errorMessage = error.error?.message || 'Erreur lors de l\'import du shapefile';
+        this.snackBar.open(errorMessage, 'Fermer', { duration: 3000, panelClass: ['error-snackbar'] });
       }
     });
   }

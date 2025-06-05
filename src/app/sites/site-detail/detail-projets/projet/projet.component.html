@@ -3,12 +3,14 @@
     <div class="gerer">Gérer</div>
     <div class="projet">
 
-      <!-- -- Variable isEditOperation : {{ isEditOperation }}<br>
+      <!-- -- Variable isEditProjet : {{ isEditProjet }}<br>
+      -- Variable isEditProjet : {{ isEditProjet }}<br>
+      -- Variable isEditObjectif : {{ isEditObjectif }}<br>
+      -- Variable isAddObjectif : {{ isAddObjectif }}<br>
+      -- Variable isEditOperation : {{ isEditOperation }}<br>
       -- Variable isAddOperation : {{ isAddOperation }}<br>
-      -- Variable isEditProjet : {{ isEditProjet }}<br>
-      -- Variable isEditProjet : {{ isEditProjet }}<br>
       -- Variable newProjet : {{ newProjet }}<br>
-      -- pro_webapp : {{ projet?.pro_webapp }}<br> -->
+      <ng-container *ngIf="projet?.pro_webapp">-- pro_webapp : {{ projet?.pro_webapp }}<br></ng-container> -->
 
 
       <ng-container *ngTemplateOutlet="stepper"></ng-container>
@@ -52,7 +54,7 @@
     <ng-template #title>
 
       <div class="title-wrapper">
-        <h2 *ngIf="!isEditProjet">Consultation du projet {{ objectif_ope }}</h2>
+        <h2 *ngIf="!isEditProjet">Consultation du projet {{ objectif_ope }} </h2>
         <h2 *ngIf="isEditProjet" >Modification du projet - {{ objectif_ope }}</h2>
         <h2>{{ projetLite.nom }}</h2>
       </div>
@@ -88,12 +90,7 @@
             <mat-label>Type de projet</mat-label>
             <input matInput [value]="this.getLibelle(step1Form.get('typ_projet')?.value, projectTypes) || 'Non renseigné'" readonly>
           </mat-form-field>
-
-          <mat-form-field class="custom-mat-form-field">
-            <mat-label>Statut</mat-label>
-            <input matInput [value]="this.getLibelle(step1Form.get('statut')?.value, statusTypes) || 'Non renseigné'" readonly>
-          </mat-form-field>
-
+          
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Année d'execution</mat-label>
             <input matInput [value]="step1Form.get('annee')?.value || 'Non renseigné'" readonly>
@@ -103,20 +100,26 @@
             <mat-label>Responsable</mat-label>
             <input matInput [value]="step1Form.get('responsable')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
-
+          
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Maitre d'ouvrage</mat-label>
             <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
-
+          
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Date création projet</mat-label>
             <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
         </div>
-
+        
         <!-- Dans le cas d'un opération ancienne methode -->
         <div *ngIf="!projetForm.get('pro_webapp')?.value">
+
+          <mat-form-field class="custom-mat-form-field">
+            <mat-label>Statut</mat-label>
+            <input matInput [value]="this.getLibelle(step1Form.get('statut')?.value, statusTypes) || 'Non renseigné'" readonly>
+          </mat-form-field>
+
           <mat-slide-toggle
             class="toggle"
             [checked]="step1Form.get('validite')?.value || false"
@@ -169,15 +172,6 @@
             </mat-form-field>
 
             <mat-form-field>
-              <mat-label>Statut</mat-label>
-              <mat-select formControlName="statut">
-                <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">
-                  {{status.libelle}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field>
               <mat-label>Année d'execution</mat-label>
               <textarea matInput type="number" formControlName="annee"></textarea>
             </mat-form-field>
@@ -196,6 +190,15 @@
           <!-- Dans le cas d'un opération ancienne methode -->
           <div *ngIf="!projetForm.get('pro_webapp')?.value">
             <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
+
+            <mat-form-field>
+              <mat-label>Statut</mat-label>
+              <mat-select formControlName="statut">
+                <mat-option *ngFor="let status of statusTypes" [value]="status.cd_type">
+                  {{status.libelle}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
 
             <mat-form-field>
               <mat-label>Nom du projet</mat-label>
@@ -240,7 +243,7 @@
     </mat-step>
 
     <mat-step state="flag" *ngIf="projet && newProjet === false">
-      <ng-template matStepLabel>Objectifs</ng-template>
+      <ng-template matStepLabel>Objectif(s)</ng-template>
 
       <!-- Si dans aucun mode d'edition ou d'ajout -->
       <ng-container *ngIf="!isEditObjectif || !isAddObjectif; then objectif;">
@@ -291,12 +294,60 @@
 
     <mat-step state="flag" *ngIf="projet && newProjet === false">
       <ng-template matStepLabel>Bilan d'execution</ng-template>
-      A definir ...
 
       <ng-container *ngIf="isEditProjet"></ng-container>
       <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
         <ng-container>
-          <!-- Ajoutez d'autres champs si nécessaire -->
+          <div class="bilan-titre">
+            <span class="bilan-titre-principal">
+              {{ objectif_ope | uppercase }} – {{ projetLite.nom | uppercase }}
+            </span>
+          </div>
+
+          <div class="bilan-section">
+            <div class="bilan-section-titre">LOCALISATION DU SITE</div>
+            <div>
+              <b>Site / Code site CENCA :</b> {{ projetLite.nom }} / {{ projetLite.code }}
+            </div>
+            <div>
+              <b>Commune / Département : </b> <ng-container *ngFor="let commune of projetLite.communes">{{ commune.nom }} </ng-container>/ {{ projetLite.departement }}
+            </div>
+          </div>
+
+          <div class="bilan-section">
+            <div class="bilan-section-titre">OBJECTIFS OPÉRATIONNELS</div>
+            <div *ngIf="objectifs_bilan && objectifs_bilan.length > 0">
+              <div><b>Objectif opérationnel :</b> {{ objectifs_bilan[0].obj_ope_str }}</div>
+              <div><b>Niveau d'enjeux :</b> {{ objectifs_bilan[0].nv_enjeux_str }}</div>
+              <div><b>Enjeux écologiques :</b> {{ objectifs_bilan[0].enjeux_eco }}</div>
+              <div><b>Pressions à maîtriser :</b> {{ objectifs_bilan[0].pression_maitrise }}</div>
+            </div>
+            <div *ngIf="objectifs_bilan && objectifs_bilan.length === 0">
+              Il n'y a pas d'objectif renseignés à ce projet.
+            </div>
+          </div>
+
+          <div class="bilan-section">
+            <div class="bilan-section-titre">OPERATIONS</div>
+            <table class="bilan-table">
+              <thead>
+                <tr>
+                  <th>Type d'opération 1 / Type d'opération 2</th>
+                  <th>Nom du maître d'œuvre</th>
+                  <th>Quantité - Unité</th>
+                  <th>Type Programme Finance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let op of operations_bilan">
+                  <td>{{ op.type }}</td>
+                  <td>{{ op.nom_mo }}</td>
+                  <td>{{ op.quantite }} - {{ op.unite_str?.toLowerCase() }}</td>
+                  <td>{{ op.financeurs?.join(' / ') }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </ng-container>
         <!-- <button mat-button type="submit">SOUMETTRE</button> -->
       </form>
@@ -362,16 +413,16 @@
     <!-- isEditFromObjectif vient de app-objectif et app-projet -->
     <!-- geojson_site est donné que quand projet.pro_webapp est N'EST PAS VRAI -->
     <app-objectif 
-                rattachementOperation="projet"
-                (objectif_ope)="onObjectifOperationnelChange($event)"
-                (isEditFromObjectif)="handleEditObjectifChange($event)"
-                (isAddFromObjectif)="handleAddObjectifChange($event)"
-                [isEditObjectif]="isEditObjectif"
-                [isAddObjectif]="isAddObjectif"
-                [projetEditMode]="isEditProjet"
-                [ref_uuid_proj]="projet.uuid_proj"
-                [isEditProjet]="isEditProjet"
-                [pro_webapp] = "projet.pro_webapp"
+      rattachementOperation="projet"
+      (objectif_ope)="onObjectifOperationnelChange($event)"
+      (isEditFromObjectif)="handleEditObjectifChange($event)"
+      (isAddFromObjectif)="handleAddObjectifChange($event)"
+      [isEditOperation]="isEditOperation"
+      [isAddOperation]="isAddOperation"
+      [projetEditMode]="isEditProjet"
+      [ref_uuid_proj]="projet.uuid_proj"
+      [isEditProjet]="isEditProjet"
+      [pro_webapp] = "projet.pro_webapp"
                 >
   </app-objectif>
 

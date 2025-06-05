@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, Valid
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
-import { Operation } from '../../sites/site-detail/detail-projets/projet/operation/operations';
+import { Operation, OperationCheckbox } from '../../sites/site-detail/detail-projets/projet/operation/operations';
 import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { SelectValue } from '../interfaces/formValues';
 
@@ -145,14 +145,14 @@ export class FormService {
       step1: this.fb.group({
         nom: [projet?.nom || ''],
         typ_projet: [projet?.typ_projet || null, Validators.required],
-        statut: [projet?.statut || null, Validators.required],
+        statut: [projet?.statut || null],
         validite: [projet?.validite || null],
         
         annee: [projet?.annee || new Date().getFullYear(), Validators.required],
         date_crea: [projet?.date_crea || null],
         
         code: [projet?.code || ''],
-        responsable: [projet?.responsable || null],
+        responsable: [projet?.responsable || null, Validators.required],
         pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
         perspectives: [projet?.perspectives || ''],
 
@@ -168,9 +168,10 @@ export class FormService {
   newObjectifForm(objectif?: Objectif, projet?: String): FormGroup {
     return this.fb.group({
       uuid_objectif: [objectif?.uuid_objectif || uuidv4()],
-      typ_objectif: [objectif?.typ_objectif || '', Validators.required],
+      typ_objectif: [objectif?.typ_objectif || ''],
       enjeux_eco: [objectif?.enjeux_eco || '', [Validators.required, this.minWordsValidator(2)]],
       nv_enjeux: [objectif?.nv_enjeux || '', Validators.required],
+      pression_maitrise: [objectif?.pression_maitrise || null, [Validators.required, this.minWordsValidator(2)]],
       obj_ope: [objectif?.obj_ope || '', Validators.required],
       attentes: [objectif?.attentes || ''],
       surf_totale: [objectif?.surf_totale || ''],
@@ -178,14 +179,13 @@ export class FormService {
       validite: [objectif?.validite || true],
       projet: [projet || objectif?.projet],
       surf_prevue: [objectif?.surf_prevue || null],
-      pression_maitrise: [objectif?.pression_maitrise || null],
     });
   }
   
   
   // Créer un nouveau formulaire d'opération
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
-  newOperationForm(operation?: Operation, uuid_proj?: String): FormGroup {
+  newOperationForm(operation?: Operation, uuid_proj?: String, allFinanceurs?: OperationCheckbox[]): FormGroup {
     const form = this.fb.group({
       uuid_ope: [operation?.uuid_ope || uuidv4()],
       ref_uuid_proj: [uuid_proj || operation?.ref_uuid_proj],
@@ -193,7 +193,7 @@ export class FormService {
       
       step1: this.fb.group({
         validite: [operation?.validite],
-        obj_ope: [operation?.obj_ope || '', Validators.required],
+        obj_ope: [operation?.obj_ope || ''],
         action: [operation?.action || '', Validators.required],
         action_2: [operation?.action_2 || '', Validators.required],
         description: [operation?.description || '', [this.minWordsValidator(2)]],
@@ -212,14 +212,17 @@ export class FormService {
         // this.putBdd() le supprimera avant de l'envoyer au backend
         // car liste_ope_programmes n'est pas un champ de la table opération
         liste_ope_financeurs: this.fb.array(
-          operation?.liste_ope_financeurs?.map(programme =>
+          (allFinanceurs || []).map(financeur =>
             this.fb.group({
-              lib_id: [programme.lib_id],
-              lib_libelle: [programme.lib_libelle],
-              checked: [programme.checked || false], // Initialise avec la valeur actuelle
+              lib_id: [financeur.lib_id],
+              lib_libelle: [financeur.lib_libelle],
+              checked: [
+                // On coche si ce financeur est dans operation.ope_financeurs
+                operation?.ope_financeurs?.some(f => f.lib_id === financeur.lib_id) || false
+              ],
             })
-          ) || [],
-          [this.maxSelectedCheckboxes(3)] // Validateur pour limiter le nombre de cases cochées
+          ),
+          [this.maxSelectedCheckboxes(3)]
         ),
         financeur_description: [operation?.financeur_description || null],
       }),

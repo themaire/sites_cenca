@@ -89,12 +89,15 @@ export class ObjectifComponent {
   objectifs!: Objectif[]; // Pour la liste des objectifs : tableau material
   dataSource!: MatTableDataSource<Objectif>;
   // Pour la liste des opérations : le tableau Material
-  displayedColumns: string[] = ['typ_objectif', 'attentes', 'surf_totale', 'surf_prevue'];
+  // displayedColumns: string[] = ['typ_objectif', 'attentes', 'surf_totale', 'surf_prevue'];
+  displayedColumns: string[] = ['obj_ope', 'typ_objectif', 'surf_totale'];
   objectif: Objectif = {} as Objectif; // Pour les détails d'un objectif
   nbObjectifs: number = 0; // Pour le nombre d'objectifs
 
-  isEditOperation: boolean = false;
-  isAddOperation: boolean = false;
+  // isEditOperation: boolean = false;
+  // isAddOperation: boolean = false;
+  isEditObjectif : boolean = false; // Pour savoir si on est en mode édition d'un objectif
+  isAddObjectif: boolean = false; // Pour savoir si on est en mode ajout d'un objectif
 
   // Listes de choix du formulaire
   NvEnjeux!: SelectValue[];
@@ -106,8 +109,8 @@ export class ObjectifComponent {
   PressionsDeMaitrise!: SelectValue[];
 
   // Booleens d'états pour le mode d'affichage
-  @Input() isEditObjectif: boolean = false;
-  @Input() isAddObjectif:boolean = false;
+  @Input() isEditOperation: boolean = false;
+  @Input() isAddOperation:boolean = false;
   @Output() isEditFromObjectif = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
   @Output() isAddFromObjectif = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
   @Input() projetEditMode: boolean = false; // Savoir si le projet est en edition pour masquer les boutons  
@@ -357,13 +360,20 @@ export class ObjectifComponent {
     // 1. Créer un nouveau formulaire vide si ne donne pas le parametre objectif
     // 2. Créer un formulaire avec les données
 
-    if (this.projetEditMode){
-      this.snackBar.open("Veuillez terminer l'édition du projet avant d''ouvrir un objectif", 'Fermer', { 
-        duration: 3000,});
-        return;
-    } else {
-      this.snackBar.open("Nous rentrons dans la methode makeOperationForm().", 'Fermer', { 
-      duration: 3000,});
+    if (this.projetEditMode || this.isEditOperation || this.isAddOperation) {
+      let type = '';
+      if (this.projetEditMode) {
+        type = 'projet';
+      } else if (this.isEditOperation || this.isAddOperation) {
+        type = 'operation';
+      } else {
+        type = 'inconnu';
+      }
+      const message = `Veuillez sortir du mode édition (${type}) avant d'ouvrir un objectif.`;
+      this.snackBar.open(message, 'Fermer', {
+        duration: 3000,
+      });
+      return;
     }
 
     this.unsubForm(); // Se désabonner des changements du formulaire
@@ -491,17 +501,6 @@ export class ObjectifComponent {
     }
   }
 
-  handleEditOperationChange(isEdit: boolean): void {
-    // console.log('État de l\'édition reçu du composant enfant:', isEdit);
-    this.isEditOperation = isEdit;
-  }
-
-  handleAddOperationChange(isAdd: boolean): void {
-    // console.log('État de l\'ajout reçu du composant enfant:', isAdd);
-    this.isAddOperation = isAdd;
-  }
-
-
   /**
   * Configuration de la boîte de dialogue de confirmation pour la suppression
   * d'une opération ou d'une localisation.
@@ -560,13 +559,15 @@ export class ObjectifComponent {
         this.projetService.deleteItem(DeleteItemTypeEnum.objectif, undefined, undefined, undefined, this.objectif).subscribe(success => {
           if (success) {
             // success === true ici si la suppression a réussi on ferme la fenetre de dialogue
-            this.isEditProjet = false;
-            this.dialogRef.close(); // Ferme la boîte de dialogue
+            this.fetch(); // Recharger la liste des objectifs
+            this.isEditObjectif = false;
+            this.isEditFromObjectif.emit(this.isEditObjectif); // Envoyer l'état de l'édition de l'objectif au parent
+            // this.dialogRef.close(); // Ferme la boîte de dialogue
           } else {
             // success === false ici si la suppression a échoué
             // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
           }
-        });;
+        });
       }
     });
 

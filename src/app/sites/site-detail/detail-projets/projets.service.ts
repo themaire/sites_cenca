@@ -56,7 +56,20 @@ export class ProjetService {
   // Utilisé dans operation.component.ts
   async getOperations(subroute: string): Promise<OperationLite[]> {
     const data = await fetch(this.activeUrl + subroute);
-    return await data.json() ?? [];
+    const operations = await data.json() ?? [];
+    // Si le champ financeurs existe, le parser en JSON
+    if (Array.isArray(operations)) {
+      operations.forEach(op => {
+      if (typeof op.financeurs === 'string') {
+        try {
+        op.financeurs = JSON.parse(op.financeurs);
+        } catch (e) {
+        op.financeurs = [];
+        }
+      }
+      });
+    }
+    return operations;
   }
   
   // Utilisé dans operation.component.ts
@@ -66,7 +79,7 @@ export class ProjetService {
   }
   
   // Utilisé aussi dans operation.component.ts
-  async getOperationProgrammes(subroute: string): Promise<OperationCheckbox[]> {
+  async getOperationFinanceurs(subroute: string): Promise<OperationCheckbox[]> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
   }
@@ -160,8 +173,9 @@ export class ProjetService {
     
     return this.http.post<ApiResponse>(url, formData).pipe(
       catchError(error => {
-        console.error('Error uploading shapefile:', error);
-        return of({ success: false, message: 'Error uploading shapefile' } as ApiResponse);
+        const errorMessage = error.error?.message || 'Erreur lors de l\'import du shapefile';
+        // console.error('Error uploading shapefile:', error);
+        return of({ success: false, message: errorMessage } as ApiResponse);
       })
     );
   }
@@ -239,6 +253,30 @@ export class ProjetService {
           },
           error => {
             this.snackbarService.error('Erreur lors de la suppression du projet');
+            observer.next(false);
+            observer.complete();
+          }
+        );
+      });
+    } else if (type === 'objectif' && objectif) {
+      const objectifId = objectif.uuid_objectif;
+      return new Observable<boolean>(observer => {
+        this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.objectifs/uuid_objectif=${objectifId}`).subscribe(
+          (response: ApiResponse) => {
+            if (response.success) {
+              console.log('Objectif supprimé avec succès');
+              this.snackbarService.delete(type);
+              observer.next(true);
+            } else {
+              const message = response.message || 'Erreur lors de la suppression de l\'objectif';
+              this.snackbarService.error(message);
+              console.error(message);
+              observer.next(false);
+            }
+            observer.complete();
+          },
+          error => {
+            this.snackbarService.error('Erreur lors de la suppression de l\'objectif');
             observer.next(false);
             observer.complete();
           }

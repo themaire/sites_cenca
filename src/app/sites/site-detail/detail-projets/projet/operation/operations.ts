@@ -9,6 +9,13 @@ export interface OperationLite {
     description?: string;
     surf?: number;
     date_debut?: Date;
+    action?: string;
+    action_2?: string;
+    nom_mo?: string;
+    quantite?: number;
+    unite_str?: string;
+    type?: string; // Concat des libelles de action et action_2
+    financeurs?: string[]; // Liste des financeurs associés
 }
 
 export interface Operation {
@@ -48,6 +55,7 @@ export interface Operation {
   cadre_intervention_detail?: number;
   quantite?: number;
   unite?: number;
+  unite_str?: string;
 
   exportation_fauche?: boolean;
   total_exporte_fauche?: number;

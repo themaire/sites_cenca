@@ -244,3 +244,83 @@ mat-dialog-content.dialogue {
 .spinner-vert {
   --mdc-circular-progress-active-indicator-color: #{$couleur-territoire};
 }
+
+// Pour le bilan d'exécution du projet
+
+.bilan-titre {
+  margin: 20px 0 10px 0;
+  text-align: center;
+
+  .bilan-titre-principal {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ff6600; // Orange vif
+    letter-spacing: 1px;
+    background: none;
+  }
+}
+
+.bilan-section {
+  margin: 25px 0 15px 0;
+  padding: 0;
+}
+
+.bilan-section-titre {
+  background: #1a397b; // Bleu foncé
+  color: #fff;
+  font-weight: bold;
+  padding: 6px 16px;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  border-radius: 3px 3px 0 0;
+}
+
+.bilan-section > div {
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.bilan-section b {
+  font-weight: bold;
+}
+
+.bilan-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #eaf1fa;
+  font-size: 0.98rem;
+}
+
+.bilan-table th,
+.bilan-table td {
+  border: 1px solid #1a397b;
+  padding: 7px 10px;
+  text-align: left;
+}
+
+.bilan-table th {
+  background: #b6d0f7;
+  color: #1a397b;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.bilan-table tr:nth-child(even) {
+  background: #f5faff;
+}
+
+.bilan-table tr:hover {
+  background: #e0eaff;
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+
+  button {
+    margin-left: 10px;
+  }
+}

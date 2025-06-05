@@ -1,5 +1,6 @@
 import { GeoJsonObject } from 'geojson';
 import { Localisation } from '../shared/interfaces/localisation';
+import { Commune } from './site-detail/detail-infos/commune';
 
 export interface DetailSite {
     message: string;
@@ -42,6 +43,7 @@ export interface DetailSite {
     url: string;
     maj_admin: Date;
 
+    communes?: Commune[];
     localisation: Localisation;
 }
 
@@ -52,6 +54,8 @@ export interface DetailSiteProjet {
 
     nom: string;
     surface: number;
+    code: string;
+    communes?: Commune[];
 
     localisation: Localisation;
 }

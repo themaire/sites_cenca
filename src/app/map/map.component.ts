@@ -309,7 +309,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
               const geojsonLayer = L.geoJSON(geojson, {
                 onEachFeature: (feature, layer) => {
                   let length = 'N/A';
-                  length = (turf.length(feature)).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' m';
+                  const lengthMeters = turf.length(feature) * 1000;
+                  length = lengthMeters.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' m';
                   console.log(`Longueur calculée pour l'opération : ${length}`);
 
                   // Affiche le label sur la ligne

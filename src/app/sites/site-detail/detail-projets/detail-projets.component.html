@@ -35,16 +35,7 @@
             {{ element.annee }}
           </mat-cell>
         </ng-container>
-
-        <ng-container matColumnDef="date_deb" class="date_deb">
-          <mat-header-cell *matHeaderCellDef class="date_deb">
-            Date début
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="date_deb" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
-            {{ element.date_deb }}
-          </mat-cell>
-        </ng-container>
-
+        
         <ng-container matColumnDef="projet" class="projet">
           <mat-header-cell *matHeaderCellDef class="projet">
             Nom (Projet)
@@ -53,7 +44,7 @@
             {{ element.projet }}
           </mat-cell>
         </ng-container>
-
+        
         <ng-container matColumnDef="action" class="action">
           <mat-header-cell *matHeaderCellDef class="action">
             Type (Action)
@@ -63,12 +54,12 @@
           </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="typ_interv" class="typ_inter">
-          <mat-header-cell *matHeaderCellDef class="typ_inter">
-            Type d'intervention
+        <ng-container matColumnDef="date_deb" class="date_deb">
+          <mat-header-cell *matHeaderCellDef class="date_deb">
+            Date début
           </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="typ_inter" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
-            {{ element.typ_inter }}
+          <mat-cell *matCellDef="let element; let i = index" class="date_deb" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
           </mat-cell>
         </ng-container>
 

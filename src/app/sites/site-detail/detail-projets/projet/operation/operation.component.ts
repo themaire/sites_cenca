@@ -135,6 +135,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   dataSourceOperations!: MatTableDataSource<Operation>;
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
+  displayedColumnsOperationsWebapp: string[] = ['type', 'nom_mo', 'quantite', 'unite_str'];
   operation!: Operation | void; // Pour les détails d'une opération
 
   // Pour le formulaire d'édition d'une opération
@@ -209,6 +210,8 @@ export class OperationComponent implements OnInit, OnDestroy {
   
   // Booleens d'états pour le mode d'affichage
   @Input() typeParent?: string; // Pour savoir si le parent est un projet ou un objectif
+  @Input() isEditObjectif: boolean = false;
+  @Input() isAddObjectif:boolean = false;
   @Input() isEditOperation: boolean = false;
   @Input() isAddOperation:boolean = false;
   @Output() isEditFromOperation = new EventEmitter<boolean>(); // Pour envoyer l'état de l'édition au parent
@@ -391,8 +394,8 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     // On récupère les listes pour les toutes cases à cocher (programmes et animaux) possibles d'un thème
     // Ces variables sont utilisées dans this.fetch()
-    const subrouteOperationProgrammeListe = `ope-financeurs/uuid=`;
-    this.liste_ope_financeurs = await this.projetService.getOperationProgrammes(subrouteOperationProgrammeListe);
+    const subrouteOperationFinanceurListe = `ope-financeurs/uuid=`;
+    this.liste_ope_financeurs = await this.projetService.getOperationFinanceurs(subrouteOperationFinanceurListe);
     const subrouteOperationAnimauxListe = `ope-animaux/uuid=`; // Pas de UUID donc on recuperer tous les animaux
     this.liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
     console.log('Liste des programmes possibles :', this.liste_ope_financeurs);
@@ -462,10 +465,10 @@ export class OperationComponent implements OnInit, OnDestroy {
         let operation = await this.projetService.getOperation(subroute);
         // console.log('Opération avant le return de fetch() :', operation);
 
-        // CASES A COCHER (MULTIPLE CHOIX) POUR LES PROGRAMMES
-        // On récupère les eventuels programmes associés à l'opération
-        const ope_programmes = await this.projetService.getOperationProgrammes(subrouteOperationProgramme);
-        // console.log('Programmes associés à l\'opération :', ope_programmes);
+        // CASES A COCHER (MULTIPLE CHOIX) POUR LES FINANCEURS
+        // On récupère les eventuels financeurs associés à l'opération
+        const ope_financeurs = await this.projetService.getOperationFinanceurs(subrouteOperationProgramme);
+        // console.log('Financeurs associés à l\'opération :', ope_financeurs);
 
         // CASES A COCHER (MULTIPLE CHOIX) POUR LES ANIMAUX
         // On récupère les eventuels animaux associés à l'opération depuis la base de données
@@ -475,7 +478,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         // Ajouter les programmes et les animaux à l'objet operation
         operation = {
           ...operation,
-          ope_financeurs: ope_programmes,
+          ope_financeurs: ope_financeurs,
           liste_ope_financeurs: this.liste_ope_financeurs,
         };
         operation = {
@@ -617,16 +620,20 @@ export class OperationComponent implements OnInit, OnDestroy {
     
     this.unsubForm(); // Se désabonner des changements du formulaire précédent
 
-    if (this.projetEditMode) {
-      this.snackBar.open(
-        "Veuillez terminer l'édition du projet avant d''ouvrir une opération", 
-        'Fermer',
-        { duration: 3000,}
-      );
+    if (this.projetEditMode || this.isEditObjectif || this.isAddObjectif) {
+      let type = '';
+      if (this.projetEditMode) {
+        type = 'projet';
+      } else if (this.isEditObjectif || this.isAddObjectif) {
+        type = 'objectif';
+      } else {
+        type = 'inconnu';
+      }
+      const message = `Veuillez sortir du mode édition (${type}) avant d'ouvrir un objectif.`;
+      this.snackBar.open(message, 'Fermer', {
+        duration: 3000,
+      });
       return;
-    } else {
-      this.snackBar.open("Nous rentrons dans la methode makeForm().", 'Fermer', { 
-      duration: 3000,});
     }
 
     if (empty) {
@@ -640,7 +647,7 @@ export class OperationComponent implements OnInit, OnDestroy {
           liste_ope_animaux_paturage: this.liste_ope_animaux_paturage,
           // Ajoutez ici les autres propriétés requises de Operation avec des valeurs par défaut si besoin
         } as Operation;
-        this.form = this.formService.newOperationForm(newOperation, this.ref_uuid_proj) as FormGroup;
+        this.form = this.formService.newOperationForm(newOperation, this.ref_uuid_proj, this.liste_ope_financeurs) as FormGroup;
         this.selectedtypeObjectifOpe = '';
         this.selectedOperationFamille = '';
         this.selectedOperationType = '';
@@ -677,7 +684,7 @@ export class OperationComponent implements OnInit, OnDestroy {
 
         // Création du formulaire avec les données de l'opération
         if (this.operation !== undefined) {
-          this.form = this.formService.newOperationForm(this.operation); // Remplir this.form avec notre this.operation
+          this.form = this.formService.newOperationForm(this.operation, this.ref_uuid_proj, this.liste_ope_financeurs) as FormGroup;
 
           this.subscribeToForm(); // S'abonner aux changements du formulaire créé juste avant
           
@@ -741,7 +748,7 @@ export class OperationComponent implements OnInit, OnDestroy {
    *     - Met à jour la liste des opérations.
    *   - Si une opération existante est modifiée :
    *     - Met à jour l'opération via le service `formService`.
-   *     - Synchronise les programmes associés.
+   *     - Synchronise les financeurs associés.
    *     - Met à jour la liste des opérations.
    *   - Si le mode est 'delete', affiche les valeurs du formulaire dans la console.
    * - Si le formulaire est invalide ou introuvable, affiche un message d'erreur dans la console.
@@ -783,6 +790,12 @@ export class OperationComponent implements OnInit, OnDestroy {
                 this.isEditFromOperation.emit(this.isEditOperation);
                 
                 console.log('Opération ajoutés avec succès:', result.formValue);
+
+                // Mettre à jour this.operation avec l'UUID de la nouvelle opération
+                this.operation = {
+                  uuid_ope: result.formValue.uuid_ope,
+                  // Ajoute d'autres propriétés si besoin, ou laisse undefined
+                } as Operation;
 
                 // Synchroniser les cases à cocher après l'ajout
                 this.syncCheckboxs();
@@ -1135,18 +1148,18 @@ export class OperationComponent implements OnInit, OnDestroy {
    */
   insertCheckbox(insertList: OperationCheckbox[], table: string): void {
     insertList.forEach(item => {
-      // Créer un objet OperationProgramme à partir du programme sélectionné
+      // Créer un objet OperationFinanceur à partir du financeur sélectionné
       const itemToInsert: OperationCheckbox = {
         uuid_ope: this.operation!.uuid_ope,
-        checkbox_id: item.lib_id, // Remplir l'identifiant du programme
+        checkbox_id: item.lib_id, // Remplir l'identifiant du financeur
       };
 
       this.projetService.insertCheckbox(item, table).subscribe({
         next: () => {
-          console.log(`Programme ajouté : ${item.lib_libelle}`);
+          console.log(`Financeur ajouté : ${item.lib_libelle}`);
         },
         error: (error) => {
-          console.error(`Erreur lors de l'ajout du programme : ${item.lib_libelle}`, error);
+          console.error(`Erreur lors de l'ajout du financeur : ${item.lib_libelle}`, error);
         }
       });
 
@@ -1181,7 +1194,7 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   /**
    * Synchronise les cases à cocher sélectionnées (financeurs ou animaux...) avec la base de données.
-   * @param type 'programmes' ou 'animaux'
+   * @param type 'financeurs' ou 'animaux'
    */
   private syncOperationCheckboxes(type: 'financeurs' | 'animaux'): void {
     let selected: { lib_id: number; lib_libelle: string }[] = [];
@@ -1197,13 +1210,13 @@ export class OperationComponent implements OnInit, OnDestroy {
   
     if (type === 'financeurs') {
       selected = this.getSelectedFinanceurs();
-      liste = this.operation.liste_ope_financeurs;
-      ope = this.operation.ope_financeurs;
+      liste = this.operation.liste_ope_financeurs ?? [];
+      ope = this.operation.ope_financeurs ?? [];
       table = 'operation_financeurs';
     } else {
       selected = this.getSelectedAnimaux();
-      liste = this.operation.liste_ope_animaux_paturage;
-      ope = this.operation.ope_animal_paturage;
+      liste = this.operation.liste_ope_animaux_paturage ?? [];
+      ope = this.operation.ope_animal_paturage ?? [];
       table = 'operation_animaux';
     }
   
@@ -1259,7 +1272,7 @@ export class OperationComponent implements OnInit, OnDestroy {
    * Synchronise l'état des cases à cocher pour les opérations spécifiées.
    * 
    * Cette méthode appelle la fonction `syncOperationCheckboxes` pour les catégories
-   * 'programmes' et 'animaux', afin de mettre à jour l'état des cases à cocher
+   * 'financeurs' et 'animaux', afin de mettre à jour l'état des cases à cocher
    * correspondantes en une seule opération.
    */
   syncCheckboxs(): void {
@@ -1274,7 +1287,7 @@ export class OperationComponent implements OnInit, OnDestroy {
    *
    * @returns {any[][]} Un tableau de lignes, chaque ligne étant un tableau de contrôles (maximum 4 par ligne).
    */
-  getProgrammeRows(): any[][] {
+  getFinanceurRows(): any[][] {
     const rows = [];
     const controls = this.listeOpeFinanceurs?.controls || [];
     for (let i = 0; i < controls.length; i += 4) {

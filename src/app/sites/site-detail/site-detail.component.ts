@@ -16,6 +16,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { MatTabsModule } from '@angular/material/tabs';
 import { ListSite } from '../site'; // prototype d'un site
+import { Commune } from '../site-detail/detail-infos/commune';
 import { DetailSite, DetailSiteProjet } from '../site-detail';
 import { SitesService } from '../sites.service'; // service de données
 
@@ -89,14 +90,17 @@ export class SiteDetailComponent {
       );
       // console.log(this.site);
 
-      this.sitesService.getSiteUUID(subroute).then((siteGuetted) => {
+      this.sitesService.getSiteUUID(subroute).then(async (siteGuetted) => {
         this.siteDetail = siteGuetted;
 
+        const subrouteCommunes = `commune/uuid=${siteGuetted.uuid_site}`;
         // Pour donner au composant detail-projets.component.ts <app-detail-projets>
         this.siteDetailProjet = {
           uuid_site: siteGuetted.uuid_site,
           uuid_espace: siteGuetted.uuid_espace,
+          code: siteGuetted.code,
           nom: siteGuetted.nom,
+          communes: await this.sitesService.getCommune(subrouteCommunes),
           surface: siteGuetted.surface,
           localisation: siteGuetted.localisation
         }

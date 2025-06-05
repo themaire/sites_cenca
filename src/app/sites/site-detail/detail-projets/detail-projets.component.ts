@@ -41,7 +41,7 @@ export class DetailProjetsComponent {
   public dataSource!: MatTableDataSource<ProjetLite>;
 
   // Pour la liste des opérations : le tableau Material
-  public displayedColumns: string[] = ['responsable', 'annee', 'date_deb', 'projet', 'action', 'typ_interv', 'statut',];
+  public displayedColumns: string[] = ['annee', 'responsable', 'projet', 'action', 'date_deb', 'statut',];
 
   research: SitesService = inject(SitesService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -58,13 +58,36 @@ export class DetailProjetsComponent {
     
     if (this.siteDetailProjet !== undefined) {  // Si le site selectionné n'est pas vide
       console.log(this.siteDetailProjet);
-      subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite`;
+      subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite?`; // On récupère les projets du site selectionné
       console.log("Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" + this.siteDetailProjet["uuid_espace"]);
       
       // ChatGPT 19/07/2024
       try {
         // On récupère la liste des projets du site
         this.projetsLite = await this.research.getProjets(subroute);
+        // Assure que chaque projet a un tableau 'communes'
+        this.projetsLite.forEach(projet => {
+          if (!Array.isArray(projet.communes)) {
+            projet.communes = this.siteDetailProjet?.communes ?? [];
+          }
+          if (!projet.departement && this.siteDetailProjet?.code) {
+            if (this.siteDetailProjet?.code.substring(0, 2) == '08') {
+              projet.departement = 'Ardennes';
+            } else if (this.siteDetailProjet?.code.substring(0, 2) == '10') {
+              projet.departement = 'Aube';
+            } else if (this.siteDetailProjet?.code.substring(0, 2) == '51') {
+              projet.departement = 'Marne';
+            } else if (this.siteDetailProjet?.code.substring(0, 2) == '52') {
+              projet.departement = 'Haute-Marne';
+            }
+          }
+          if (!projet.code && this.siteDetailProjet?.code) {
+            projet.code = this.siteDetailProjet.code;
+          }
+          if (!projet.nom && this.siteDetailProjet?.nom) {
+            projet.nom = this.siteDetailProjet.nom;
+          }
+        });
 
         // On ajoute le geojson du site à chaque projet
         // Car l'étape précedente ne replit pas cette information
@@ -144,7 +167,7 @@ export class DetailProjetsComponent {
       data: projetlite, // <---------------- données injectée au composant ProjetComponent dont l'uuid du porjet selectionné
       minWidth: '50vw',
       maxWidth: '95vw',
-      height: '60vh',
+      height: '70vh',
       maxHeight: '90vh',
       hasBackdrop: true, // Avec fond
       backdropClass: 'custom-backdrop-gerer', // Personnalisé

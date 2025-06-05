@@ -1,4 +1,5 @@
 import { Localisation } from "../../../shared/interfaces/localisation";
+import { Commune } from '../../site-detail/detail-infos/commune';
 
 // Sont en fait des champs de la vue ope.synthesesites
 export interface ProjetLite {
@@ -14,6 +15,9 @@ export interface ProjetLite {
     uuid_site: string;
     geojson_site: string;
     nom?: string;
+    communes?: Commune[];
+    code?: string;
+    departement?: string;
     localisation_site?: Localisation;
 }
 
@@ -56,5 +60,6 @@ export interface Projet {
     pro_maitre_ouvrage?: number;
     ref_loc_id?: number;
     localisation_projet?: Localisation | null;
+    communes?: Commune[];
     geom?: string;
 }

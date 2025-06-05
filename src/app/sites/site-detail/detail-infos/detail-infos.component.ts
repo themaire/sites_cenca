@@ -102,23 +102,24 @@ export class DetailInfosComponent implements OnChanges, OnInit {
         zh: this.inputDetail.zh,
         id_mnhn: this.inputDetail.id_mnhn,
         ref_fcen: this.inputDetail.ref_fcen,
-        rgpt: this.inputDetail.rgpt
+        rgpt: this.inputDetail.rgpt,
+        communes: this.inputDetail.communes || [] // Assurez-vous que communes est un tableau
       });
 
       // Stocker les valeurs initiales du formulaire
       this.initialFormValues = this.form.value;
 
-      let subroute: string = '';
-      if (this.inputDetail !== undefined) {
-        subroute = `commune/uuid=${this.inputDetail.uuid_site}`;
-        try {
-          const commGuetted = await this.sitesService.getCommune(subroute);
-          this.communes = commGuetted;
-          this.cdr.detectChanges();
-        } catch (error) {
-          console.error('Error fetching documents', error);
-        }
-      }
+      // let subroute: string = '';
+      // if (this.inputDetail !== undefined) {
+      //   subroute = `commune/uuid=${this.inputDetail.uuid_site}`;
+      //   try {
+      //     const commGuetted = await this.sitesService.getCommune(subroute);
+      //     this.communes = commGuetted;
+      //     this.cdr.detectChanges();
+      //   } catch (error) {
+      //     console.error('Error fetching documents', error);
+      //   }
+      // }
     }
   }
 
