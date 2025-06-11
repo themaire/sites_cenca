@@ -500,7 +500,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // maxHeight: '90vh',
     hasBackdrop: true, // Activer le fond
     backdropClass: 'custom-backdrop-delete', // Classe personnalisé
-    enterAnimationDuration: '300ms',
+    enterAnimationDuration: '3000ms',
     exitAnimationDuration: '300ms'
   };
 
@@ -565,6 +565,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   onObjectifOperationnelChange(obj_ope: string) {
     this.objectif_ope = obj_ope;
     // console.log('Objectif operationnel reçu du composant objectif :', obj_ope);
+  }
+
+  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string) {
+    this.projetService.downloadFicheTravaux(uuid, obj_ope, nom_site);
   }
 
 }

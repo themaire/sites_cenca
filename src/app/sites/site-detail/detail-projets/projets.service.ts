@@ -310,4 +310,42 @@ export class ProjetService {
       }
       return undefined;
     }
+  
+  /** Lance le téléchargement d'une fiche travaux au format DOCX
+  */
+  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string): void {
+    const url = `${environment.apiUrl}sites/gen_fiche_travaux/uuid_proj=${uuid}`;
+    this.http.get(url, { responseType: 'blob' }).pipe(
+      catchError(error => {
+        const errorMessage = 'Erreur lors du téléchargement de la fiche travaux : ';
+        // Si le backend a renvoyé un JSON d'erreur, il arrive sous forme de blob
+        if (error.error instanceof Blob && error.error.type === 'application/json') {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const json = JSON.parse(reader.result as string);
+              // Affiche le message d'erreur précis du backend
+              this.snackbarService.error(errorMessage +json.error || json.stack || 'Erreur inconnue');
+            } catch {
+              this.snackbarService.error('Erreur lors de la génération du document');
+            }
+          };
+          reader.readAsText(error.error);
+        } else {
+          // Fallback générique
+          const message = error?.message || `${errorMessage}(code ${error.status}, ${error.message})`;
+          this.snackbarService.error(message);
+        }
+        return of(null); // On retourne un observable "vide" pour stopper la chaîne
+      })
+    ).subscribe(blob => {
+      if (!blob) return;
+      const fileName = `fiche_travaux_${obj_ope}_${nom_site}.docx`;
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+    });
+}
 }

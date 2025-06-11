@@ -161,3 +161,22 @@
     @include align(center, center);
   }
 }
+
+@mixin download-fiche-tvx-btn {
+  display: flex;
+  @include align(center, flex-end);
+  padding: 0 30px 10px 0px;
+  button {
+    @include btn($couleur-territoire, #f1fcf3, white, $couleur-territoire);
+    @include align(center, center);
+  }
+}
+@mixin disabled-download-fiche-tvx-btn {
+  display: flex;
+  @include align(center, flex-end);
+  padding: 0 30px 10px 0px;
+  button {
+    @include btn(#f1fcf3, #798a7c, white, #67946f);
+    @include align(center, center);
+  }
+}

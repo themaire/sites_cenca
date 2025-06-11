@@ -200,6 +200,14 @@ mat-dialog-content.dialogue {
   @include suppression-btn();
 }
 
+// Pour le bouton de téléchargement de la fiche TVX
+.download-fiche-tvx {
+  @include download-fiche-tvx-btn();
+}
+.disabled-download-fiche-tvx {
+  @include disabled-download-fiche-tvx-btn();
+}
+
 // Fond de la boîte de dialogue
 ::ng-deep .mat-mdc-dialog-surface {
   background-color: rgb(230, 230, 230) !important;

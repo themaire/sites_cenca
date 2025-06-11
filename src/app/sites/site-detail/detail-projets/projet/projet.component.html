@@ -298,11 +298,45 @@
       <ng-container *ngIf="isEditProjet"></ng-container>
       <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
         <ng-container>
-          <div class="bilan-titre">
+
+
+          <!-- Boutons de controle, titre et bouton de suppression -->
+          <div class="button-title" [class.center-title]="projet === undefined || projet === null || isEditOperation || isAddOperation">
+            <!-- 1er element -->
+            <div class="bilan-titre">
+              <span class="bilan-titre-principal">
+                {{ objectif_ope | uppercase }} – {{ projetLite.nom | uppercase }}
+              </span>
+            </div>
+
+            <!-- 2eme element -->
+
+            <div class="download-fiche-tvx" *ngIf="operations_bilan.length > 0">
+              <button mat-button
+                    type="button"
+                    (click)="downloadFicheTravaux(projet.uuid_proj || '', objectif_ope || '', projetLite.nom || '')"
+                    matTooltip="Télécharger la fiche travaux">
+                <mat-icon>download</mat-icon>
+                Fiche travaux 🗒️ 👷
+              </button>
+            </div>
+            <!-- Ou -->
+            <div class="disabled-download-fiche-tvx" *ngIf="operations_bilan.length === 0" matTooltip="Il manque des informations pour générer la fiche travaux">
+              <button mat-button disabled=true>
+                <mat-icon>error</mat-icon>
+                Fiche travaux 🪛 📢
+              </button>
+            </div>
+          </div>
+
+
+
+
+          <!-- <div class="bilan-titre">
             <span class="bilan-titre-principal">
               {{ objectif_ope | uppercase }} – {{ projetLite.nom | uppercase }}
             </span>
-          </div>
+          </div> -->
 
           <div class="bilan-section">
             <div class="bilan-section-titre">LOCALISATION DU SITE</div>

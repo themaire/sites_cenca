@@ -27,12 +27,18 @@ export class ShapefileService {
    * que le chemin du fichier `'assets/shapefile_polygone_modele.zip'` est correct
    * et accessible dans votre projet.
   */
-  downloadShapefileExample(type: 'polygone' | 'ligne' | 'point'): void {
-    const link = document.createElement('a');
-    link.href = `assets/shapefile_${type}_modele.zip`;
-    link.download = `shapefile_${type}_modele.zip`;
-    link.click();
-  }
+    downloadShapefileExample(type: 'polygone' | 'ligne' | 'point'): void {
+      const url = `assets/shapefile_${type}_modele.zip`;
+      fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = `shapefile_${type}_modele.zip`;
+          link.click();
+          window.URL.revokeObjectURL(link.href);
+        });
+    }
 
   onFileSelected(event: any, shapeForm: FormGroup) {
     if (event.target.files && event.target.files[0]) {
