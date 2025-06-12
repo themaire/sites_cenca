@@ -24,6 +24,52 @@ form {
       text-transform: uppercase;
       padding: 20px;
     }
+    h4 {
+      @include Typo($p14, $semiGras, white);
+      text-align: center;
+      text-transform: uppercase;
+      padding: 20px;
+    }
+  }
+
+  .password-criteria {
+    list-style: none;
+    padding: 0 0 10px 0;
+    margin: 0;
+    li {
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+      margin-bottom: 2px;
+      &.ok {
+        color: #4caf50;
+      }
+      &.ko {
+        color: #e53935;
+      }
+      mat-icon {
+        font-size: 20px;
+        margin-right: 6px;
+      }
+    }
+    .explications {
+      @include Typo($p14, $normal, white);
+      text-align: center;
+      padding: 10px;
+    }
+  }
+
+  .success {
+    @include Typo($p18, $semiGras, rgb(11, 133, 0));
+    text-align: center;
+    padding: 20px;
+    color: $couleur-territoire;
+  }
+  .erreur {
+    @include Typo($p18, $semiGras, rgb(133, 0, 0));
+    text-align: center;
+    padding: 20px;
+    color: $couleur-territoire;
   }
 
   .connexion {

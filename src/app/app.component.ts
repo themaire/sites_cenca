@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { RouterModule, Router } from '@angular/router';
+import { NavigationEnd, RouterLink, RouterOutlet } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 
@@ -26,10 +26,14 @@ import { User } from './login/user.model';
 export class AppComponent implements OnInit {
   token: string | null = localStorage.getItem('token');
 
-  constructor(private router: Router, private loginService: LoginService) {}
+  constructor(private router: Router, private loginService: LoginService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.checkToken();
+    this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      this.checkToken();
+    }
+  });
   }
 
   /**
@@ -61,7 +65,23 @@ export class AppComponent implements OnInit {
       });
     } else {
       console.log('No token found');
-  
+
+      // Si l'utilisateur est sur la page de réinitialisation du mot de passe
+      if (this.router.url.startsWith('/reset-password')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        if (token) {
+          // On laisse l'accès à la page de réinitialisation
+          return;
+        } else {
+          // Pas de token dans l'URL, on redirige vers /login
+          if (this.router.url !== '/login') {
+            this.navigate('login');
+          }
+          return;
+        }
+      }
+
       // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
       if (this.router.url !== '/login') {
         this.navigate('login');

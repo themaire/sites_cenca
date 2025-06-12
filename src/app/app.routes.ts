@@ -15,10 +15,16 @@ export const routes: Routes = [
     },
     canActivate: [isLoggedInGuard],
   },
+
   {
     path: 'login',
     component: LoginComponent,
   },
+  {
+    path: 'reset-password',
+    component: LoginComponent
+  },
+
   {
     path: 'sites',
     loadChildren: () =>

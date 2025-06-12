@@ -1,5 +1,7 @@
 <div id="container">
-  <form (submit)="login()" [formGroup]="loginFormGroup">
+  <!-- Formulaire de connexion -->
+  <!-- Visible uniquement en mode connexion (par defaut) -->
+  <form *ngIf="!isForgotPasswordMode && !isResetPasswordMode" (submit)="login()" [formGroup]="loginFormGroup">
     <div class="titre">
       <h3>Connectez-vous</h3>
     </div>
@@ -24,7 +26,92 @@
       >
     </div>
     <div class="mdp">
-      <a href="#">Mot de passe oublié ?</a>
+      <a href="#" (click)="isForgotPasswordMode = true; $event.preventDefault()">J'ai oublié mon mot de passe.</a>
+    </div>
+  </form>
+
+  <!-- Formulaire de J'ai oublié mon mot de passe -->
+  <form *ngIf="isForgotPasswordMode" (submit)="forgotPassword()" [formGroup]="forgotPasswordForm">
+    <div class="titre">
+      <h3>Réinitialisation du mot de passe</h3>
+    </div>
+    <mat-form-field>
+      <mat-label>Adresse email</mat-label>
+      <input matInput formControlName="email" />
+    </mat-form-field>
+    <div class="titre">
+      <h4>Si votre adresse email CENCA est connue vous recevrez un lien de réinitialisation par email.</h4>
+    </div>
+    <div class="btn">
+      <button mat-flat-button [disabled]="forgotPasswordForm.invalid">Envoyer</button>
+      <button mat-flat-button type="button" (click)="isForgotPasswordMode = false">Annuler</button>
+    </div>
+    <div class="success" *ngIf="!erreur && message">
+      <mat-icon>check_circle</mat-icon>
+        {{ message }}
+    </div>
+    <div class="erreur" *ngIf="erreur">
+      <mat-error>
+        {{ message }}
+      </mat-error>
+    </div>
+  </form>
+
+  <!-- Formulaire de réinitialisation du mot de passe -->
+  <form *ngIf="isResetPasswordMode" (ngSubmit)="resetPassword()" [formGroup]="resetPasswordForm">
+    <div class="titre">
+      <h3>Définissez votre nouveau mot de passe</h3>
+    </div>
+    <mat-form-field>
+      <mat-label>Nouveau mot de passe</mat-label>
+      <input matInput
+             [type]="showPassword ? 'text' : 'password'"
+             formControlName="newPassword" />
+      <button mat-icon-button
+              matSuffix
+              type="button"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="'Afficher le mot de passe'"
+              [attr.aria-pressed]="showPassword">
+        <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+    </mat-form-field>
+    <ul class="password-criteria">
+      <div class="explications">
+        <h4>Votre mot de passe doit respecter les critères suivants :</h4>
+      </div>
+      <li [ngClass]="{'ok': hasMinLength, 'ko': !hasMinLength}">
+        <mat-icon>{{ hasMinLength ? 'check_circle' : 'cancel' }}</mat-icon>
+        Au moins 8 caractères
+      </li>
+      <li [ngClass]="{'ok': hasUppercase, 'ko': !hasUppercase}">
+        <mat-icon>{{ hasUppercase ? 'check_circle' : 'cancel' }}</mat-icon>
+        Une majuscule
+      </li>
+      <li [ngClass]="{'ok': hasLowercase, 'ko': !hasLowercase}">
+        <mat-icon>{{ hasLowercase ? 'check_circle' : 'cancel' }}</mat-icon>
+        Une minuscule
+      </li>
+      <li [ngClass]="{'ok': hasDigit, 'ko': !hasDigit}">
+        <mat-icon>{{ hasDigit ? 'check_circle' : 'cancel' }}</mat-icon>
+        Un chiffre
+      </li>
+      <li [ngClass]="{'ok': hasSpecial, 'ko': !hasSpecial}">
+        <mat-icon>{{ hasSpecial ? 'check_circle' : 'cancel' }}</mat-icon>
+        Un caractère spécial de cette liste : (&#64; $ ! % * ? &)
+      </li>
+    </ul>
+    <div class="btn">
+      <button mat-flat-button [disabled]="resetPasswordForm.invalid">Réinitialiser</button>
+    </div>
+    <div class="success" *ngIf="!erreur && message">
+      <mat-icon>check_circle</mat-icon>
+        {{ message }}
+    </div>
+    <div class="erreur" *ngIf="erreur">
+      <mat-error>
+        {{ message }}
+      </mat-error>
     </div>
   </form>
 </div>

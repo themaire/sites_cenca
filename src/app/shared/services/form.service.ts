@@ -685,4 +685,40 @@ private prepareOperationDataForSubmission(form: FormGroup): Operation {
           return (form.get(fieldName)?.value ?? null) != (operationDate ?? null);
   }
 
+  login(): FormGroup {
+    return this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+    });
+  }
+
+  forgotPassword(): FormGroup {
+    return this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
+  }
+
+  passwordStrengthValidator(): Validators {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      return passwordRegex.test(control.value)
+        ? null
+        : { passwordStrength: true };
+    };
+  }
+
+  resetPasswordForm(): FormGroup {
+    return this.fb.group({
+      newPassword: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          this.passwordStrengthValidator()
+        ]
+      ]
+    });
+  }
+
 }
