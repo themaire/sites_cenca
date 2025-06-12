@@ -40,7 +40,7 @@
       <input matInput formControlName="email" />
     </mat-form-field>
     <div class="titre">
-      <h4>Si votre adresse email CENCA est connue vous recevrez un lien de réinitialisation par email.</h4>
+      <h4>Si votre adresse email CENCA est connue vous recevrez un lien de réinitialisation sur celle-ci.</h4>
     </div>
     <div class="btn">
       <button mat-flat-button [disabled]="forgotPasswordForm.invalid">Envoyer</button>
@@ -107,6 +107,11 @@
     <div class="success" *ngIf="!erreur && message">
       <mat-icon>check_circle</mat-icon>
         {{ message }}
+      <div class="btn">
+        <button mat-flat-button color="primary" (click)="navigateLogin()">
+          Retour à la connexion
+        </button>
+      </div>
     </div>
     <div class="erreur" *ngIf="erreur">
       <mat-error>
