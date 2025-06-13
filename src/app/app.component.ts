@@ -42,6 +42,10 @@ export class AppComponent implements OnInit {
    * Si le token n'est pas valide ou inexistant, l'utilisateur est redirigé vers la page de connexion.
    */
   checkToken() {
+    // Toujours relire le token depuis le localStorage
+    this.token = localStorage.getItem('token');
+    console.log('Checking token:', this.token);
+
     if (this.token) {
       console.log('Token exists:', this.token);
   
@@ -51,6 +55,7 @@ export class AppComponent implements OnInit {
   
           // Ne redirige que si l'utilisateur est sur la page de login
           if (this.router.url === '/login') {
+            console.log('Redirecting to home');
             this.navigate(); // Redirige vers la page d'accueil
           }
         },

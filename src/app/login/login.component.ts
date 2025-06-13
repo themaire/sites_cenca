@@ -168,6 +168,11 @@ export class LoginComponent implements OnDestroy {
   }
 
   navigateLogin() {
+    this.isForgotPasswordMode = false;
+    this.isResetPasswordMode = false;
+    this.message = null;
+    this.erreur = false;
+    this.loginFormGroup.reset();
     this.router.navigate(['/login']);
-  }
+}
 }
