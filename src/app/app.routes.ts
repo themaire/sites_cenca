@@ -31,6 +31,15 @@ export const routes: Routes = [
       import('./sites/sites.routes').then((mod) => mod.SITES_ROUTES),
     // canActivate: [isLoggedInGuard], // Désactivé temporairement
   },
+
+  // Lazy-load
+  {
+    path: 'foncier',
+    loadChildren: () =>
+      import('./sites/foncier/foncier.routes').then((mod) => mod.FONCIER_ROUTES),
+  },
+
+  // Lazy-load
   {
     path: 'admin',
     loadChildren: () =>
