@@ -67,7 +67,7 @@ export class SitesDisplayComponent {
   ngOnInit() {
     // Rechercher et obtenir une liste de sites selon des critères passés en paramètre via la route.
     this.route.params.subscribe((params: Params) => {
-      console.log('Route param type :' + params['type']);
+      console.log('Route param type : ' + params['type']);
       // console.log(this.route.params);
       let subroute: string = '';
 
@@ -94,7 +94,9 @@ export class SitesDisplayComponent {
           // console.log(sitesGuetted);
 
           this.dataSource = new MatTableDataSource(this.sites);
-          const fakeEvent = { target: { value: '@' } } as unknown as Event;
+
+          // Pour le filtre du tableau mat-table. Mettre une valeur dans value et dans le filtre du mat input SELECTION DES SITES
+          const fakeEvent = { target: { value: '' } } as unknown as Event;
           this.applyFilter(fakeEvent);
           this.dataSource.paginator = this.paginator;
         });
@@ -112,7 +114,7 @@ export class SitesDisplayComponent {
 
     console.log(filterValue.trim().toLowerCase());
     this.dataSource.filter = filterValue.trim().toLowerCase();
-    console.log('datasource filtrée : ' + this.dataSource);
+    // console.log('datasource filtrée : ' + this.dataSource);
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
