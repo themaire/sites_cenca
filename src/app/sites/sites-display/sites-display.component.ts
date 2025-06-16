@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { RouterLink, RouterOutlet } from '@angular/router';
@@ -8,7 +8,9 @@ import { SitesService } from '../sites.service'; // service de données
 import { SiteDetailComponent } from '../site-detail/site-detail.component'; // service de données
 import { BackToTopComponent } from '../../back-to-top/back-to-top.component';
 
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
+import { CustomMatPaginatorIntl } from '../../shared/costomMaterial/custom-matpaginator-intl';
+
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
@@ -19,24 +21,21 @@ import { MatFormFieldModule } from '@angular/material/form-field';
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    RouterOutlet,
     SiteDetailComponent,
-
     MatTableModule,
-
     MatFormFieldModule,
     MatInputModule,
-
-    // MatSortModule,
+    MatSortModule,
     MatPaginatorModule,
-
     BackToTopComponent,
   ],
   templateUrl: './sites-display.component.html',
   styleUrl: './sites-display.component.scss',
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
+  ]
 })
-export class SitesDisplayComponent {
+export class SitesDisplayComponent implements AfterViewInit {
   public sites: ListSite[] = []; // La liste des sites à afficher
   public selectedSite?: ListSite;
 
@@ -51,18 +50,36 @@ export class SitesDisplayComponent {
     'bassin_agence',
     'responsable',
   ];
-  // listTheaders: Array<string> = ["--", "Codes", "Nom", "Status", "Communes(s)", "Milieux naturels", "Bassin agence", "Responsable",]
 
-  @ViewChild(MatPaginator, { static: false })
-  set paginator(value: MatPaginator) {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  ngAfterViewInit() {
     if (this.dataSource) {
-      this.dataSource.paginator = value;
+      this.dataSource.paginator = this.paginator;
+      // this.paginator.pageSize = 20; // Définir le nombre d'éléments par page par défaut
+      this.dataSource.sort = this.sort;
     }
   }
 
   research: SitesService = inject(SitesService);
 
   constructor(private route: ActivatedRoute, private router: Router) {}
+
+  private loadSites(params: Params): void {
+    if (params['type'] !== undefined) {
+      const subroute = 'criteria/' + params['type'] + '/' + params['code'] + '/' + 
+        params['nom'] + '/' + params['commune'] + '/' + 
+        params['milieux_naturels'] + '/' + params['responsable'];
+  
+      this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
+        this.sites = sitesGuetted;
+        this.dataSource = new MatTableDataSource(this.sites);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    }
+  }
 
   ngOnInit() {
     // Rechercher et obtenir une liste de sites selon des critères passés en paramètre via la route.
@@ -137,11 +154,9 @@ export class SitesDisplayComponent {
   }
 
   resetSelected(): void {
-    // Remettre à zéro pour justement vider la variable pour ré afficher la liste
-    // des sites.
-
-    // !!! Cette fonction est utilisé (un bouton retour) dans le sous component site-detail
-    // pour quitter la vue "detail".
     this.selectedSite = undefined;
+    this.route.params.subscribe((params: Params) => {
+      this.loadSites(params);
+    });
   }
 }

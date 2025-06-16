@@ -539,7 +539,6 @@ export class OperationComponent implements OnInit, OnDestroy {
       this.formOpeSubscription.unsubscribe();
       console.log('On se désabonne.');
     }
-    
   }
 
   subscribeToForm(): void {
