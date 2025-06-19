@@ -3,8 +3,9 @@
 <div class="detail-projets">
   <ng-template #thenBlock>
     <div>
-      <h2 *ngIf="projetsLite.length == 1">{{ projetsLite.length }} projet.</h2>
-      <h2 *ngIf="projetsLite.length > 1">{{ projetsLite.length }} projets.</h2>
+      <!-- <h2 *ngIf="projetsLite.length == 1">{{ projetsLite.length }} projet.</h2>
+      <h2 *ngIf="projetsLite.length > 1">{{ projetsLite.length }} projets.</h2> -->
+      <h2>Listes des projets de type intervention sur site (travaux) au nombre de : {{ projetsLite.length }}.</h2>
       
       <section class="edition">
         Ajouter un nouveau projet (travaux) : 

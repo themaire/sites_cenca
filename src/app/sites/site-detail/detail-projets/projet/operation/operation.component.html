@@ -465,7 +465,7 @@ Variable (operation) form: {{ form }}<br>
       </div>
     </mat-step>
 
-    <mat-step [stepControl]="step5Form">
+    <!-- <mat-step [stepControl]="step5Form">
       <form [formGroup]="step5Form">
         <ng-template matStepLabel>Champs non utilisés</ng-template>
         <div class="form-fields">
@@ -550,13 +550,12 @@ Variable (operation) form: {{ form }}<br>
         
         <div class="nav-buttons">
               <button mat-button matStepperPrevious>Précédent</button>
-              <!-- <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button> -->
               <button mat-button (click)="stepper.selectedIndex = 0">Retour au début (étape 1)</button>
         </div>
       </form>
-    </mat-step>
+    </mat-step> -->
 
-  </mat-stepper>
+  </mat-stepper> 
   
   <div *ngIf="operation !== undefined && operation !== null">
     <div class="suppression">
