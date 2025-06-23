@@ -29,6 +29,9 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private loginService: LoginService, private route: ActivatedRoute) {}
 
   ngOnInit() {
+    // Appel explicite au chargement initial
+    this.checkToken();
+
     this.router.events.subscribe(event => {
     if (event instanceof NavigationEnd) {
       this.checkToken();
