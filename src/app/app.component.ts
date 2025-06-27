@@ -25,6 +25,7 @@ import { User } from './login/user.model';
 })
 export class AppComponent implements OnInit {
   token: string | null = localStorage.getItem('token');
+  isResetPasswordMode = false;
 
   constructor(private router: Router, private loginService: LoginService, private route: ActivatedRoute) {}
 
@@ -51,6 +52,7 @@ export class AppComponent implements OnInit {
 
     if (this.token) {
       console.log('Token exists:', this.token);
+      this.isResetPasswordMode = false;
   
       this.loginService.getUsers().subscribe({
         next: (result: User | undefined | null) => {
@@ -79,7 +81,8 @@ export class AppComponent implements OnInit {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         if (token) {
-          // On laisse l'accès à la page de réinitialisation
+          // Se rappeller que l'on est en mode reset-password
+          this.isResetPasswordMode = true;
           return;
         } else {
           // Pas de token dans l'URL, on redirige vers /login
@@ -88,6 +91,11 @@ export class AppComponent implements OnInit {
           }
           return;
         }
+      }
+
+      // Si on est en mode reset-password, ne pas rediriger
+      if (this.isResetPasswordMode) {
+        return;
       }
 
       // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
