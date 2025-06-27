@@ -95,12 +95,11 @@ export class AppComponent implements OnInit {
 
       // Si on est en mode reset-password, ne pas rediriger
       if (this.isResetPasswordMode) {
+        console.log('In reset password mode, not redirecting');
         return;
-      }
-
-      // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
-      if (this.router.url !== '/login') {
-        this.navigate('login');
+      } else if (this.router.url !== '/login') {
+        // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
+        console.log('Redirecting to login');
       }
     }
   }
