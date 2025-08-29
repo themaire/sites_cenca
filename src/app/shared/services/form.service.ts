@@ -16,6 +16,7 @@ import { SitesService } from '../../sites/sites.service';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
 
 import { v4 as uuidv4 } from 'uuid';
+import { now } from 'moment';
 
 // Des fonctions generalistes sont définies pour gérer les formulaires
 
@@ -79,7 +80,7 @@ export class FormService {
   }
   
   // Vérifier si le formulaire est valide
-  // Retourne un booléen
+  // Retourne le nom des champs invalides
   getInvalidFields(form: FormGroup): string[] {
     const invalidFields: string[] = [];
     const controls = form.controls;
@@ -143,21 +144,21 @@ export class FormService {
       createur: [projet?.createur || null], // Valeur par défaut définie dans le composant
 
       step1: this.fb.group({
-        nom: [projet?.nom || ''],
-        typ_projet: [projet?.typ_projet || null, Validators.required],
-        statut: [projet?.statut || null],
-        validite: [projet?.validite || null],
-        
-        annee: [projet?.annee || new Date().getFullYear(), Validators.required],
-        date_crea: [projet?.date_crea || null],
-        
-        code: [projet?.code || ''],
-        responsable: [projet?.responsable || null, Validators.required],
-        pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
-        perspectives: [projet?.perspectives || ''],
+      nom: [projet?.nom || ''],
+      typ_projet: [projet?.typ_projet || null, Validators.required],
+      statut: [projet?.statut || null],
+      validite: [projet?.validite || null],
+      
+      annee: [projet?.annee || new Date().getFullYear(), Validators.required],
+      date_crea: [projet?.date_crea || new Date().toISOString().slice(0, 10)],
 
-        programme: [projet?.programme || ''],
-        itin_tech: [projet?.itin_tech || ''],
+      code: [projet?.code || ''],
+      responsable: [projet?.responsable || null, Validators.required],
+      pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
+      perspectives: [projet?.perspectives || ''],
+
+      programme: [projet?.programme || ''],
+      itin_tech: [projet?.itin_tech || ''],
       }),
     });
   }
@@ -178,7 +179,7 @@ export class FormService {
       unite_gestion: [objectif?.unite_gestion || ''],
       validite: [objectif?.validite || true],
       projet: [projet || objectif?.projet],
-      surf_prevue: [objectif?.surf_prevue || null],
+      surf_prevue: [objectif?.surf_prevue || null]
     });
   }
   
@@ -205,6 +206,8 @@ export class FormService {
         nom_mo: [operation?.nom_mo || '', Validators.required],
         cadre_intervention: [operation?.cadre_intervention ?? null, Validators.required], // Utiliser null explicitement
         cadre_intervention_detail: [operation?.cadre_intervention_detail ?? null], // Pas encore requis
+        ben_participants: [operation?.ben_participants || null],
+        ben_heures: [operation?.ben_heures || null],
       }),
       
       step3: this.fb.group({
@@ -432,6 +435,8 @@ private prepareOperationDataForSubmission(form: FormGroup): Operation {
     nom_mo: formValue.step2?.nom_mo,
     cadre_intervention: formValue.step2?.cadre_intervention,
     cadre_intervention_detail: formValue.step2?.cadre_intervention_detail,
+    ben_participants: formValue.step2?.ben_participants,
+    ben_heures: formValue.step2?.ben_heures,
 
     // Step 3
     description_programme: formValue.step3?.description_programme,
@@ -467,9 +472,7 @@ private prepareOperationDataForSubmission(form: FormGroup): Operation {
     surf: formValue.step5?.surf,
     lin: formValue.step5?.lin,
     date_approx: formValue.step5?.date_approx,
-    objectif: formValue.step5?.objectif,
-    ben_participants: formValue.step5?.ben_participants,
-    ben_heures: formValue.step5?.ben_heures,
+    objectif: formValue.step5?.objectif
   } as Operation;
 
   console.log("Données du formulaire OPERATION nettoyé juste avant d'être envoyé vers le backend pour INSERT / UPDATE :");

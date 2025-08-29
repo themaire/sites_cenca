@@ -2,16 +2,16 @@
 <p>Vous retrouvez ici les informations concernant les projets et demandes foncières.</p>
 
 <div class="home">
-  <ng-container *ngFor="let item of menuItems[0].children">
-    <ng-container *ngFor="let subItem of item.children">
-      <app-card
-        [parentItem]="item.name"
-        [parentColor]="item?.class_color ?? 'default-color'"
-        [menuItem]="subItem"
-        [route]="subItem.route ?? ''"
-        *ngIf="subItem.accueil == true && subItem.id == 24"
-      >
-      </app-card>
-    </ng-container>
+
+  <ng-container *ngFor="let item of foncierItems">
+    <app-card
+      [parentItem]="item.name"
+      [parentColor]="item?.class_color ?? 'default-color'"
+      [menuItem]="item"
+      [route]="item.route ?? ''"
+      *ngIf="1"
+    >
+    </app-card>
   </ng-container>
+
 </div>
