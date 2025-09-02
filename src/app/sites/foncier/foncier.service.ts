@@ -9,13 +9,13 @@ import { from, Observable } from 'rxjs';
 import { ApiResponse } from '../../shared/interfaces/api';
 
 // interfaces utilisées dans la promise de la fonction
-import { Extraction } from './foncier';
+import { Extraction, ProjetMfu, ProjetsMfu } from './foncier';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FoncierService {
-  private activeUrl: string = environment.apiUrl + 'sites/foncier/';
+  private activeUrl: string = environment.apiUrl + 'foncier/';
 
   constructor(private http: HttpClient) {}
 
@@ -88,5 +88,18 @@ export class FoncierService {
         throw error;
       })
     );
+  }
+
+  async getProjetMfu(subroute: string): Promise<ProjetMfu> {
+    // Récupère les infos détaillées du projet MFU sélectionné
+    const data = await fetch(this.activeUrl + subroute);
+    const pmfu = await data.json() ?? [];
+    return pmfu;
+  }
+   async getProjetsMfu(subroute: string): Promise<ProjetsMfu[]> {
+    // Récupère les infos détaillées du projet MFU sélectionné
+    const data = await fetch(this.activeUrl + subroute);
+    const pmfu = await data.json() ?? [];
+    return pmfu;
   }
 }
