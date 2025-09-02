@@ -151,13 +151,14 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
               </mat-error>
             </mat-form-field>
 
-            <!-- Affichage des surface en fonction du type d'application -->
-            <ng-container *ngIf="pro_webapp">
+            <!-- Affichage des surface en fonction du type d'application à l'ancienne mode comme jadis sur l'appli MS ACCESS -->
+            <ng-container *ngIf="!pro_webapp">
               <mat-form-field matTooltip="Fusion des surfaces des opérations">
                 <mat-label>Surface d'intervention (ha)</mat-label>
                 <input matInput  type="number" formControlName="surf_totale">
               </mat-form-field>
             </ng-container>
+
             <ng-container *ngIf="!pro_webapp">
               <mat-form-field matTooltip="Fusion des surfaces des opérations">
                 <mat-label>Surface totale (ha)</mat-label>

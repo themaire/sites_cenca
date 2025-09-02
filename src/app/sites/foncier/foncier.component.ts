@@ -17,7 +17,9 @@ import { CardComponent } from '../../home/card/card.component';
   styleUrls: ['./foncier.component.scss', '../../home/home.component.scss']
 })
 export class FoncierComponent implements OnInit {
+
   foncierItems: MenuItem[] = [];
+
 
   constructor(private menuService: MenuService) {
     
