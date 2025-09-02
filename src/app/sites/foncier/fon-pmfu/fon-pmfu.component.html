@@ -1,0 +1,40 @@
+<div class="site-parent">
+  <!-- Sert a afficher le titre dans la bande orange verticale -->
+  <div class="proteger">Protéger</div>
+  <div class="table-container">
+    <div class="table">
+      <div class="add-pmfu">
+        <button
+          mat-icon-button
+          matTooltip="Ajouter un projet MFU"
+          class="btn-edition"
+          (click)="onSelect()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+        <p>Ajouter un Projet MFU</p>
+      </div>
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="pmfu_name">
+          <th mat-header-cell *matHeaderCellDef>Nom du Projet</th>
+          <td mat-cell *matCellDef="let element">{{ element.pmfu_nom }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="pmfu_responsable">
+          <th mat-header-cell *matHeaderCellDef>Nom du responsable</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.pmfu_responsable }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="pmfu_commune">
+          <th mat-header-cell *matHeaderCellDef>Commune(s)</th>
+          <td mat-cell *matCellDef="let element">{{ element.pmfu_commune }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </div>
+</div>

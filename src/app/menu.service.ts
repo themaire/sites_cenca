@@ -57,7 +57,14 @@ export class MenuService {
 
       loadChildren();
     });
+
+  } 
+  async loadSubMenuItem(menu_parent: number): Promise<MenuItem[]> {
+    const subroute: string = `parent=${menu_parent}`;
+    const subMenuItems = await this.getMenu(subroute);
+    return subMenuItems;
   }
+}
 
   async loadSubMenuItem(menu_parent: number): Promise<MenuItem[]> {
     const subroute: string = `parent=${menu_parent}`;

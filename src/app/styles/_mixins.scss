@@ -36,6 +36,7 @@
   align-items: $align;
   justify-content: $justify;
 }
+
 // Boutons menus
 @mixin btn-menu($base-color, $hover-darkness: 10%) {
   // background-color: lighten($base-color, 0%) !important;
