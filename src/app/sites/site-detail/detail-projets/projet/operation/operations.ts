@@ -1,21 +1,21 @@
 import { Localisation } from '../../../../../shared/interfaces/localisation';
 
 export interface OperationLite {
-    uuid_ope: string;
-    ref_uuid_proj: string;
-    obj_oper?: string;
-    code?: string;
-    titre?: string;
-    description?: string;
-    surf?: number;
-    date_debut?: Date;
-    action?: string;
-    action_2?: string;
-    nom_mo?: string;
-    quantite?: number;
-    unite_str?: string;
-    type?: string; // Concat des libelles de action et action_2
-    financeurs?: string[]; // Liste des financeurs associés
+  uuid_ope: string;
+  ref_uuid_proj: string;
+  obj_oper?: string;
+  code?: string;
+  titre?: string;
+  description?: string;
+  surf?: number;
+  date_debut?: Date;
+  action?: string;
+  action_2?: string;
+  nom_mo?: string;
+  quantite?: number;
+  unite_str?: string;
+  type?: string; // Concat des libelles de action et action_2
+  financeurs?: string[]; // Liste des financeurs associés
 }
 
 export interface Operation {
@@ -44,8 +44,8 @@ export interface Operation {
   date_debut?: Date;
   date_fin?: Date;
   date_approx?: string;
-  ben_participants?: number;
-  ben_heures?: number;
+  ben_participants?: number; // Nombre de bénévoles
+  ben_heures?: number; // Nombre d'heures bénévoles
   ref_uuid_proj: string;
   date_ajout?: Date;
   ref_loc_id?: Number;

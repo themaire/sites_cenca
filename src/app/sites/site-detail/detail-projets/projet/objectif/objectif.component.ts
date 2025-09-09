@@ -37,6 +37,7 @@ import { MatDialogRef, MatDialogModule, MatDialogTitle, MatDialogContent, MAT_DI
 // import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { Subscription } from 'rxjs';
+import { Text } from '@angular/compiler';
 
 @Component({
   selector: 'app-objectif',
@@ -124,7 +125,7 @@ export class ObjectifComponent {
   isFormValid: boolean = false;
   private formObjSubscription: Subscription | null = null;
 
-  
+
   constructor(
     private cdr: ChangeDetectorRef,
     private dialogRef: MatDialogRef<ObjectifComponent>,

@@ -15,9 +15,7 @@ import { ProjetLite } from './site-detail/detail-projets/projets';
 import { Operation, OperationLite } from './site-detail/detail-projets/projet/operation/operations';
 import { DetailSite } from './site-detail';
 import { Localisation } from '../shared/interfaces/localisation';
-
 import { ApiResponse } from '../shared/interfaces/api';
-
 import { Selector } from './selector';
 
 @Injectable({
