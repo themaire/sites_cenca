@@ -180,6 +180,25 @@ export class ProjetService {
     );
   }
 
+  uploadDocfile(formData: FormData): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=pmfu_docs`;
+    
+    // Log du contenu du FormData avant envoi
+    console.log('Contenu du FormData avant envoi depuis projetSerice.uploadDocfile():');
+    for (let pair of (formData as any).entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+    console.log('FormData:', formData.get('noteBureau'));
+    
+    return this.http.put<ApiResponse>(url, formData).pipe(
+      catchError(error => {
+        const errorMessage = error.error?.message || 'Erreur lors de l\'import du docfile';
+        // console.error('Error uploading docfile:', error);
+        return of({ success: false, message: errorMessage } as ApiResponse);
+      })
+    );
+  }
+
   deleteItem(type: DeleteItemTypeEnum, operation?: void | Operation, localisations?: void | Localisation[], projet?: void | Projet, objectif?: void | Objectif): Observable<boolean> {
     
     // console.log(`Tentative de suppression d'un ${type}`);

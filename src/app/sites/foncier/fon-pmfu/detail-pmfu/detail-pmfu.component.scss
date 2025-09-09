@@ -1,0 +1,77 @@
+@import "../../../../styles/mixins.scss";
+@import "../../../../styles/variables.scss";
+mat-dialog-content {
+  width: 80vw;
+}
+
+h2 {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  color: $orangeM;
+}
+
+.proteger {
+  padding-bottom: 15px;
+  @include bandeau($proteger);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  @include align(center, center);
+  height: 100%;
+  width: 100%;
+  background: transparent;
+}
+
+.spinner-vert {
+  --mdc-circular-progress-active-indicator-color: #{$couleur-territoire};
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  & mat-form-field {
+    flex: 1;
+  }
+  & :not(:last-child) {
+    margin-right: 20px;
+  }
+}
+
+form {
+  & > div:first-child {
+    margin-top: 20px;
+  }
+  & > div:last-child {
+    display: flex;
+    @include align(center, space-between);
+  }
+}
+.first-step div:last-child {
+  justify-content: flex-end;
+}
+
+.mat-mdc-dialog-content,
+.mdc-dialog__content ng-star-inserted {
+  padding: 0;
+  margin: 0;
+}
+
+.conteneur-projet {
+  display: flex;
+  flex-direction: row;
+  min-height: 100%;
+  & .projet {
+    width: 100%;
+  }
+}
+
+mat-dialog-content.dialogue {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}

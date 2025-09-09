@@ -346,7 +346,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       }
     }
 
-    // Récuperer les listes de choix
+    // Récupérer les listes de choix
     const subrouteTypes = `sites/selectvalues=${'ope.typ_projets'}`;
     this.formService.getSelectValues$(subrouteTypes).subscribe(
       (selectValues: SelectValue[] | undefined) => {

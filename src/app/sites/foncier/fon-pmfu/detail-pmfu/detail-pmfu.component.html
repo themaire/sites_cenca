@@ -1,1 +1,272 @@
-<p>detail-pmfu works!</p>
+<mat-dialog-content class="dialogue" *ngIf="!isLoading; else loading">
+  <div class="conteneur-projet">
+    <div class="proteger">Protéger</div>
+    <div class="projet">
+      <!-- -- Variable isEditProjet : {{ isEditProjet }}<br>
+      -- Variable isEditProjet : {{ isEditProjet }}<br>
+      -- Variable isEditObjectif : {{ isEditObjectif }}<br>
+      -- Variable isAddObjectif : {{ isAddObjectif }}<br>
+      -- Variable isEditOperation : {{ isEditOperation }}<br>
+      -- Variable isAddOperation : {{ isAddOperation }}<br>
+      -- Variable newProjet : {{ newProjet }}<br>
+      <ng-container *ngIf="projet?.pro_webapp">-- pro_webapp : {{ projet?.pro_webapp }}<br></ng-container> -->
+
+      <ng-container *ngTemplateOutlet="stepper"></ng-container>
+    </div>
+  </div>
+</mat-dialog-content>
+<ng-template #stepper>
+  <div class="example-input-wrapper">
+    <!-- <label for="duration">Animation duration:</label> -->
+    <input
+      hidden
+      id="duration"
+      value="300"
+      type="number"
+      min="0"
+      step="100"
+      #duration
+    />
+  </div>
+  <!-- Boutons de controle, titre et bouton de suppression -->
+  <div
+    class="button-title"
+    [class.center-title]="
+      pmfu === undefined || pmfu === null || isEditPmfu || isAddPmfu
+    "
+  >
+    <!-- 1er element -->
+    <div *ngIf="!isEditPmfu" class="form-buttons">
+      <app-form-buttons
+        [isEditActive]="isEditPmfu"
+        icone="edit"
+        [theme]="'gerer'"
+        [isFormValid]="isFormValid"
+        (toggleAction)="toggleEditPmfu()"
+        (onSubmit)="onSubmit()"
+      ></app-form-buttons>
+    </div>
+
+    <!-- 2eme element -->
+    <div class="title-container">
+      <ng-container
+        *ngTemplateOutlet="newPmfu ? newTitle : title"
+      ></ng-container>
+    </div>
+
+    <ng-template #title>
+      <div class="title-wrapper">
+        <h2 *ngIf="!isEditPmfu">Consultation du Projet MFU</h2>
+        <h2 *ngIf="isEditPmfu">Modification du Projet MFU</h2>
+        <h2>{{ projetLite.pmfu_nom }}</h2>
+      </div>
+    </ng-template>
+    <ng-template #newTitle>
+      <h2 *ngIf="newPmfu">Création d'un projet neuf en cours</h2>
+    </ng-template>
+  </div>
+
+  <mat-horizontal-stepper [linear]="true" #mfuStepper>
+    <!-- Étape 1: Informations principales -->
+    <mat-step>
+      <form [formGroup]="pmfuForm" class="first-step">
+        <ng-template matStepLabel>Informations principales</ng-template>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Nom du projet</mat-label>
+            <input matInput formControlName="pmfu_nom" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Responsable</mat-label>
+            <input matInput formControlName="pmfu_responsable" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Collègue associé</mat-label>
+            <input matInput formControlName="pmfu_associe" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Agence</mat-label>
+            <input matInput formControlName="pmfu_agence" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Territoire</mat-label>
+            <input matInput formControlName="pmfu_territoire" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Département</mat-label>
+            <input matInput formControlName="pmfu_departement" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Commune</mat-label>
+            <input matInput formControlName="pmfu_commune" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Superficie</mat-label>
+            <input matInput formControlName="pmfu_superficie" type="number" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Année de début</mat-label>
+            <input matInput formControlName="pmfu_debut" type="number" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <input matInput formControlName="pmfu_type" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Propriétaire</mat-label>
+            <input matInput formControlName="pmfu_proprietaire" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Mesures compensatoires</mat-label>
+            <input matInput formControlName="pmfu_compensatoire" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Coût estimé</mat-label>
+            <input matInput formControlName="pmfu_cout" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Financements envisagés</mat-label>
+            <input matInput formControlName="pmfu_financements" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Validation bureau/CA</mat-label>
+            <input matInput formControlName="pmfu_validation" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Besoin d'appui</mat-label>
+            <input matInput formControlName="pmfu_appui" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Priorité</mat-label>
+            <input matInput formControlName="pmfu_priorite" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Status</mat-label>
+            <input matInput formControlName="pmf_status" />
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Année de signature</mat-label>
+            <input matInput formControlName="pmfu_signature" type="number" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Échéances</mat-label>
+            <input matInput formControlName="pmfu_echeances" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Prochaines étapes</mat-label>
+            <textarea
+              matInput
+              formControlName="pmfu_etapes"
+              rows="3"
+            ></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Détails juridiques</mat-label>
+            <textarea
+              matInput
+              formControlName="pmfu_juridique"
+              rows="3"
+            ></textarea>
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- Étape 2: Pièces jointes -->
+    <mat-step>
+<form [formGroup]="docForm">
+  <div class="form-row">
+    <div class="form-field">
+      <label for="noteBureau">Note de bureau (PDF, DOC ou DOCX)</label>
+      <input
+        type="file"
+        id="noteBureau"
+        (change)="onFileSelected($event, 'noteBureau')"
+        accept=".docx,.doc,.pdf"
+        multiple
+      />
+    </div>
+    <div class="form-field">
+      <label for="decisionBureau">Décision bureau/CA (PDF, DOC ou DOCX)</label>
+      <input
+        type="file"
+        id="decisionBureau"
+        (change)="onFileSelected($event, 'decisionBureau')"
+        accept=".docx,.doc,.pdf"
+        multiple
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="projetActe">Projet d'acte (PDF, DOC ou DOCX)</label>
+      <input
+        type="file"
+        id="projetActe"
+        (change)="onFileSelected($event, 'projetActe')"
+        accept=".docx,.doc,.pdf"
+        multiple
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="photosSite">Photos site (PNG, JPG/JPEG)</label>
+      <input
+        type="file"
+        id="photosSite"
+        (change)="onFileSelected($event, 'photosSite')"
+        accept=".png,.jpeg,.jpg"
+        multiple
+      />
+    </div>
+  </div>
+
+  <input type="hidden" formControlName="pmfu_id" />
+
+  <button
+    mat-button
+    (click)="handleDocfileSubmission(); onSubmit();"
+    [disabled]="!docForm.get('noteBureau')?.value && !docForm.get('decisionBureau')?.value && !docForm.get('projetActe')?.value && !docForm.get('photosSite')?.value"
+  >
+    Envoyer
+  </button>
+</form>
+    </mat-step>
+  </mat-horizontal-stepper>
+</ng-template>
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner class="spinner-vert"></mat-spinner>
+    <p>Chargement ...</p>
+  </div>
+</ng-template>

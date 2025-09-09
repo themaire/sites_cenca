@@ -15,7 +15,7 @@ import { Extraction, ProjetMfu, ProjetsMfu } from './foncier';
   providedIn: 'root',
 })
 export class FoncierService {
-  private activeUrl: string = environment.apiUrl + 'foncier/';
+  private activeUrl: string = environment.apiUrl + 'sites/';
 
   constructor(private http: HttpClient) {}
 

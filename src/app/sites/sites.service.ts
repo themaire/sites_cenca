@@ -174,7 +174,7 @@ export class SitesService {
   insertTable(tableName: String, formData: any): Observable<any> {
     const url = `${this.activeUrl}put/table=${tableName}/insert`; // Construire l'URL avec le UUID du site
     console.log('Dans updateTable() avec ' + url);
-    
+    console.log(formData);
     return this.http.put<ApiResponse>(url, formData).pipe(
       tap(response => {
         console.log('Mise à jour réussie:', response);

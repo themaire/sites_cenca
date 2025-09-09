@@ -302,9 +302,9 @@ export class FormService {
     return form;
   }
   
-  newPmfuForm(projet?: ProjetMfu): FormGroup {
+  newPmfuForm(projet?: ProjetMfu, new_pmfu_id?: number): FormGroup {
     return this.fb.group({
-      pmfu_id: [projet?.pmfu_id || null],
+      pmfu_id: [projet?.pmfu_id || new_pmfu_id],
       pmfu_nom: [projet?.pmfu_nom || '', Validators.required],
       pmfu_responsable: [projet?.pmfu_responsable || ''],
       pmfu_agence: [projet?.pmfu_agence || ''],
@@ -330,8 +330,8 @@ export class FormService {
       pmf_status: [projet?.pmf_status || ''],
       pmfu_signature: [projet?.pmfu_signature || null],
       pmfu_echeances: [projet?.pmfu_echeances || ''],
-      pmfu_creation: [projet?.pmfu_creation || ''],
-      pmfu_derniere_maj: [projet?.pmfu_derniere_maj || ''],
+      pmfu_creation: [projet?.pmfu_creation || new Date()],
+      pmfu_derniere_maj: [new Date()],
       pmfu_photos_site: [projet?.pmfu_photos_site || ''],
       pmfu_date_ajout: [projet?.pmfu_date_ajout || null]
       });
@@ -344,7 +344,15 @@ export class FormService {
       shapefile: [null, Validators.required]
     });
   }
-  
+  newDocForm(pmfu_id?: number): FormGroup {
+    return this.fb.group({
+      pmfu_id: [pmfu_id || null, Validators.required],
+      noteBureau: [null],
+      decisionBureau: [null],
+      projetActe: [null],
+      photosSite: [null]
+    });
+  }
   getFormValidityObservable(): Observable<boolean> {
     return this.formValiditySubject.asObservable();
   }
@@ -597,8 +605,9 @@ private prepareOperationDataForSubmission(form: FormGroup): Operation {
 
         console.log('Données du formulaire nettoyé :', workingForm);
 
-      }
-       else {
+      } else if (table === 'projets_mfu') {
+        value = workingForm.value;
+      } else {
         // Si ce n'est pas un projet
         value = workingForm.value;
       }
@@ -633,7 +642,8 @@ private prepareOperationDataForSubmission(form: FormGroup): Operation {
             throw error;
           })
         );
-      }else if (mode = 'insert') {
+      } else if (mode = 'insert') {
+        console.log('PAR ICI')
         return this.sitesService.insertTable(table, value).pipe(
           map(response => {
             console.log(table + ' insérés avec succès:', response);
