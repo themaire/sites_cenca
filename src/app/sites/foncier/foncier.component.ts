@@ -18,8 +18,7 @@ import { CardComponent } from '../../home/card/card.component';
 })
 export class FoncierComponent implements OnInit {
 
-  foncierItems!: MenuItem[];
-
+  foncierItems: MenuItem[] = [];
 
 
   constructor(private menuService: MenuService) {

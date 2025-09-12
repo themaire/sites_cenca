@@ -118,6 +118,16 @@ export class ProjetService {
     );
   }
 
+  duplicateItem(type: string, id: string): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.activeUrl}put/table=${type}/clone`, {'id': id }).pipe(
+      catchError(error => {
+        const messageTxt = `Erreur lors de la duplication ${type === 'operations' ? 'de l\'opération' : 'du projet'} (id: ${id})`;
+        console.error(messageTxt, error);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
   /** Gestion des cases à cocher dans un formumaire
   *   Utilisé dans operation.component.ts - Ajouter un élément revient à cocher une case dans le formulaire
   *   @param checkBoxList: OperationCheckbox[] : l'objet contenant les informations du programme d'une opération
@@ -228,7 +238,7 @@ export class ProjetService {
             observer.complete();
           },
           error => {
-            this.snackbarService.error('Erreur lors de la suppression de l\'opération');
+            this.snackbarService.error('Erreur lors de la suppression de l\'opération: ' + error.message);
             observer.next(false);
             observer.complete();
           }
@@ -287,6 +297,25 @@ export class ProjetService {
       this.snackbarService.info(`Aucun element "${type}" à supprimer`);
       return of(false); // Aucune action effectuée
     }
+  }
+
+  duplicate(type: 'operations' | 'projet', id: string): Observable<boolean> {
+    return new Observable<boolean>(observer => {
+      this.duplicateItem(type, id).subscribe(
+        response => {
+          observer.next(response.success);
+          this.snackbarService.success(type === 'operations' ? 'Opération dupliquée avec succès' : 'Projet dupliqué avec succès');
+          observer.complete();
+        },
+        error => {
+          const errorMessage = error.message || `Erreur lors de la duplication ${type === 'operations' ? 'de l\'opération' : 'du projet'}`;
+          this.snackbarService.error(errorMessage);
+          console.error("Erreur lors de la duplication de l'élément:", error);
+          observer.next(false);
+          observer.complete();
+        }
+      );
+    });
   }
 
   getLibelleByCdType(

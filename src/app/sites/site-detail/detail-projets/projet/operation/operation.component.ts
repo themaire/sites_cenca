@@ -135,7 +135,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   dataSourceOperations!: MatTableDataSource<Operation>;
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
-  displayedColumnsOperationsWebapp: string[] = ['type', 'nom_mo', 'quantite', 'unite_str'];
+  displayedColumnsOperationsWebapp: string[] = ['type', 'nom_mo', 'quantite', 'unite_str', 'date_debut_str'];
   operation!: Operation | void; // Pour les détails d'une opération
 
   // Pour le formulaire d'édition d'une opération
@@ -278,7 +278,6 @@ export class OperationComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    // Remplir this.form soit vide soit avec les données passées en entrée
     // Attendre un certain temps avant de continuer
     // S'abonner aux changements du statut du formulaire principal (projetForm)
     
@@ -820,7 +819,7 @@ export class OperationComponent implements OnInit, OnDestroy {
           this.isAddFromOperation.emit(this.isAddOperation);
 
         // Modification d'une opération
-        } else if (this.isEditOperation === true) {
+        } else if (this.isEditOperation === true) {  // Edition d'une opération existante
           console.log('Debut de l\'enregistrement de l\'opération... UPDATE');
           console.log('Formulaire juste avant le update :', this.form.value);
           
@@ -851,7 +850,7 @@ export class OperationComponent implements OnInit, OnDestroy {
                 this.form = undefined;
                 this.isEditFromOperation.emit(this.isEditOperation);
 
-                // Mise a jout de la liste des opérations (liste liste - tableau "material table")
+                // Mise à jour de la liste des opérations (liste - tableau "material table")
                 // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
                 this.fetch();
               },
@@ -963,36 +962,75 @@ export class OperationComponent implements OnInit, OnDestroy {
     
     // Appel de la boîte de dialogue de confirmation
     // Le bouton supprimer de la boite de dialogue ( result ) va appeler le service projetService.deleteItem()
-    this.confirmationService.confirm('Confirmation de suppression', message,).subscribe(result => {
-    if (result) {
-      // L'utilisateur a confirmé la suppression
-      // Utiliser le service projetService pour supprimer l'élément
-      this.projetService.deleteItem(deleteItemTypeEnumValue, ope2delete, loca2delete).subscribe(success => {
-        if (success) {
-          // success === true ici si la suppression a réussi
-          if (type == 'operation') {
-            this.operation = undefined; // Réinitialiser l'opération après suppression
+    this.confirmationService.confirm('Confirmation de suppression', message, 'delete').subscribe(result => {
+      if (result) {
+        // L'utilisateur a confirmé la suppression
+        // Utiliser le service projetService pour supprimer l'élément
+        this.projetService.deleteItem(deleteItemTypeEnumValue, ope2delete, loca2delete).subscribe(success => {
+          if (success) {
+            // success === true ici si la suppression a réussi
+            if (type == 'operation') {
+              this.operation = undefined; // Réinitialiser l'opération après suppression
+              if (this.isEditOperation) {
+                console.log("isEditOperation avant la suppression :", this.isEditOperation);
+                this.isEditOperation = false;
+                this.form = undefined;
+                this.isEditFromOperation.emit(this.isEditOperation);
+                console.log("isEditOperation après la suppression :", this.isEditOperation);
+              }
+                this.fetch(); // Rafraîchir la liste des opérations
+            }
+            if (type == 'localisation') {
+              if (this.operation) {
+                this.operation.localisations = undefined; // Réinitialiser le tableau des localisations
+              }
+            }
+          } else {
+            // success === false ici si la suppression a échoué
+            // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
+          }
+        });
+      }
+    });
+
+  }
+
+  duplicateOperationConfirm(): void {
+    if (!this.operation) {
+      console.error('Aucune opération sélectionnée par l\'utilisateur pour la duplication.');
+      return;
+    }
+    const ope2duplicate: string = this.operation.uuid_ope;
+    const message = `Voulez-vous vraiment dupliquer cette opération?`;
+
+    // Sauvegarder les modifications en cours avant de dupliquer
+    this.onSubmit(); // Cela va meme fermer le formulaire laissant voir la liste des opérations ( mis à jour )
+
+    // Appel de la boîte de dialogue de confirmation
+    // Le bouton supprimer de la boite de dialogue ( result ) va appeler le service projetService.deleteItem()
+    this.confirmationService.confirm('Confirmation de duplication', message, 'duplicate').subscribe(result => {
+      if (result) {
+        // L'utilisateur a confirmé la duplication
+        // Utiliser le service projetService pour dupliquer l'élément
+        this.projetService.duplicate('operations', ope2duplicate).subscribe( success => {
+          if (success) {
+            // success === true ici si la duplication a réussi
+            
             if (this.isEditOperation) {
-              console.log("isEditOperation avant la suppression :", this.isEditOperation);
+              console.log("isEditOperation avant la duplication :", this.isEditOperation);
               this.isEditOperation = false;
               this.form = undefined;
               this.isEditFromOperation.emit(this.isEditOperation);
-              console.log("isEditOperation après la suppression :", this.isEditOperation);
+              console.log("isEditOperation après la duplication :", this.isEditOperation);
             }
-              this.fetch(); // Rafraîchir la liste des opérations
+            this.fetch(); // Rafraîchir la liste des opérations            
+          } else {
+            // success === false ici si la duplication a échoué
+            // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
           }
-          if (type == 'localisation') {
-            if (this.operation) {
-              this.operation.localisations = undefined; // Réinitialiser le tableau des localisations
-            }
-          }
-        } else {
-          // success === false ici si la suppression a échoué
-          // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
-        }
-      });
-    }
-  });
+        });
+      }
+    });
 
   }
 

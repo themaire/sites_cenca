@@ -7,6 +7,14 @@
 
 <!-- Boutons -->
 <mat-dialog-actions class = "center-buttons">
-  <button mat-button color="warn" (click)="onYesClick()">Supprimer</button>
+  <button mat-button
+          [ngClass]="{
+            'btn-warn': data.mode === 'delete',
+            'btn-blue': data.mode === 'duplicate'
+          }"
+          (click)="onYesClick()"
+  >
+    {{ data.mode === 'delete' ? 'Supprimer' : (data.mode === 'duplicate' ? 'Dupliquer' : 'Valider') }}
+  </button>
   <button mat-button (click)="onNoClick()">Annuler</button>
 </mat-dialog-actions>

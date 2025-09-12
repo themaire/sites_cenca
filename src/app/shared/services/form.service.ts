@@ -5,9 +5,11 @@ import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
 import { Operation, OperationCheckbox } from '../../sites/site-detail/detail-projets/projet/operation/operations';
 import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
+import { ProjetMfu } from '../../sites/foncier/foncier';
 import { SelectValue } from '../interfaces/formValues';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,7 +18,8 @@ import { SitesService } from '../../sites/sites.service';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
 
 import { v4 as uuidv4 } from 'uuid';
-import { now } from 'moment';
+
+// import { now } from 'moment';
 
 // Des fonctions generalistes sont définies pour gérer les formulaires
 
@@ -304,6 +307,41 @@ export class FormService {
     return form;
   }
   
+  newPmfuForm(projet?: ProjetMfu): FormGroup {
+    return this.fb.group({
+      pmfu_id: [projet?.pmfu_id || null],
+      pmfu_nom: [projet?.pmfu_nom || '', Validators.required],
+      pmfu_responsable: [projet?.pmfu_responsable || ''],
+      pmfu_agence: [projet?.pmfu_agence || ''],
+      pmfu_associe: [projet?.pmfu_associe || ''],
+      pmfu_etapes: [projet?.pmfu_etapes || ''],
+      pmfu_departement: [projet?.pmfu_departement || ''],
+      pmfu_territoire: [projet?.pmfu_territoire || ''],
+      pmfu_type: [projet?.pmfu_type || ''],
+      pmfu_commune: [projet?.pmfu_commune || ''],
+      pmfu_debut: [projet?.pmfu_debut || null],
+      pmfu_proprietaire: [projet?.pmfu_proprietaire || ''],
+      pmfu_appui: [projet?.pmfu_appui || ''],
+      pmfu_juridique: [projet?.pmfu_juridique || ''],
+      pmfu_validation: [projet?.pmfu_validation || ''],
+      pmfu_decision: [projet?.pmfu_decision || ''],
+      pmfu_note: [projet?.pmfu_note || ''],
+      pmfu_acte: [projet?.pmfu_acte || ''],
+      pmfu_compensatoire: [projet?.pmfu_compensatoire || ''],
+      pmfu_cout: [projet?.pmfu_cout || ''],
+      pmfu_financements: [projet?.pmfu_financements || ''],
+      pmfu_superficie: [projet?.pmfu_superficie || null],
+      pmfu_priorite: [projet?.pmfu_priorite || ''],
+      pmf_status: [projet?.pmf_status || ''],
+      pmfu_signature: [projet?.pmfu_signature || null],
+      pmfu_echeances: [projet?.pmfu_echeances || ''],
+      pmfu_creation: [projet?.pmfu_creation || ''],
+      pmfu_derniere_maj: [projet?.pmfu_derniere_maj || ''],
+      pmfu_photos_site: [projet?.pmfu_photos_site || ''],
+      pmfu_date_ajout: [projet?.pmfu_date_ajout || null]
+      });
+  }
+
   newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {
     return this.fb.group({
       uuid_ope: [uuid_ope || null, Validators.required],
