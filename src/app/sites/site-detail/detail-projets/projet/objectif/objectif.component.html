@@ -59,6 +59,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
               {{ element.enjeux_eco?.split(' ').slice(0, 5).join(' ') }}<span *ngIf="element.enjeux_eco?.split(' ').length > 5">...</span>
             </mat-cell>
           </ng-container>
+
           <ng-container matColumnDef="pression_maitrise">
             <mat-header-cell *matHeaderCellDef> Pressions à maitriser </mat-header-cell>
             <mat-cell *matCellDef="let element">
@@ -66,6 +67,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
               <span *ngIf="element.pression_maitrise?.split(' ').length > 5">...</span>
             </mat-cell>
           </ng-container>
+          
           <ng-container matColumnDef="surf_totale">
             <mat-header-cell *matHeaderCellDef> Surf. d'intervention (ha) </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{ element.surf_totale }} </mat-cell>

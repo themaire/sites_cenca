@@ -1,3 +1,28 @@
+.exclude-list {
+  margin-top: 8px;
+}
+.exclude-title {
+  margin: 8px 0 4px;
+  font-weight: 600;
+}
+.exclude-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 12px;
+}
+// Couleur rouge pour suppression
+.btn-warn {
+  color: #d32f2f !important; // Material warn
+}
+
+// Couleur bleue pure pour duplication
+.btn-blue {
+  color: #1976d2 !important; // Material blue
+}
+// Couleur bleue pure pour le bouton de duplication
+.blue-btn {
+  color: #1976d2 !important; /* bleu pur Material */
+}
 .message{
     white-space: pre-line;
 }

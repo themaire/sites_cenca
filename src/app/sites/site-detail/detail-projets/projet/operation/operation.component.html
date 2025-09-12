@@ -12,17 +12,23 @@ Variable (operation) form: {{ form }}<br>
 </div> -->
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
-<app-form-buttons
-  *ngIf="!projetEditMode"
-  icone="add" 
-  [theme]="'gerer'"
-  [isEditActive]="isEditOperation" 
-  [isAddActive]="isAddOperation"
-  [isFormValid]="isFormValid"
-  (toggleAction)="toggleEditOperation($event)"
-  (makeOperationForm)="makeForm($event)"
-  (onSubmit)="onSubmit($event)" 
-></app-form-buttons>
+<ng-template #buttons>
+  <app-form-buttons
+    *ngIf="!projetEditMode"
+    icone="add" 
+    [theme]="'gerer'"
+    [isEditActive]="isEditOperation" 
+    [isAddActive]="isAddOperation"
+    [isFormValid]="isFormValid"
+    (toggleAction)="toggleEditOperation($event)"
+    (makeOperationForm)="makeForm($event)"
+    (onSubmit)="onSubmit($event)" 
+  ></app-form-buttons>
+</ng-template>
+
+
+<!-- Permet d'inclure le template en haut du composant -->
+<ng-container *ngTemplateOutlet="buttons"></ng-container>
 
 <!-- Permet d'appeller un template -->
 <ng-container *ngIf="!isEditOperation && !isAddOperation; then listOperations; else addEditOperation"></ng-container>
@@ -90,6 +96,11 @@ Variable (operation) form: {{ form }}<br>
             <ng-container matColumnDef="unite_str">
               <mat-header-cell *matHeaderCellDef> Unité </mat-header-cell>
               <mat-cell *matCellDef="let element"> {{ element.unite_str }} </mat-cell>
+            </ng-container>
+            
+            <ng-container matColumnDef="date_debut_str">
+              <mat-header-cell *matHeaderCellDef> Date début </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{ element.date_debut_str }} </mat-cell>
             </ng-container>
 
           <mat-header-row *matHeaderRowDef="displayedColumnsOperationsWebapp"></mat-header-row>
@@ -245,9 +256,9 @@ Variable (operation) form: {{ form }}<br>
             </mat-error>
           </mat-form-field>
         </div>
-        <div>
+        <!-- <div>
           <button mat-button matStepperNext>Suivant</button>
-        </div>
+        </div> -->
       </form>
     </mat-step>
 
@@ -290,12 +301,12 @@ Variable (operation) form: {{ form }}<br>
           </mat-form-field>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
-            <mat-label>Participants bénévoles</mat-label>
+            <mat-label>Nb de participants</mat-label>
             <input matInput type="number" formControlName="ben_participants">
           </mat-form-field>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
-            <mat-label>Heures bénévoles</mat-label>
+            <mat-label>Durée du chantier (en h)</mat-label>
             <input matInput type="number" formControlName="ben_heures">
           </mat-form-field>
 
@@ -303,16 +314,16 @@ Variable (operation) form: {{ form }}<br>
             <mat-label>Total heures-participants</mat-label>
             <input matInput 
                    type="number" 
-                   [value]="(step2Form?.get('ben_participants')?.value || 0) * (step2Form?.get('ben_heures')?.value || 0)" 
+                   [value]="(step2Form.get('ben_participants')?.value || 0) * (step2Form.get('ben_heures')?.value || 0)" 
                    readonly>
           </mat-form-field>
 
         </div>
 
-        <div class="form-fields">
+        <!-- <div class="form-fields">
           <button mat-button matStepperPrevious>Retour</button>
           <button mat-button matStepperNext>Suivant</button>
-        </div>
+        </div> -->
 
       </form>
     </mat-step>
@@ -347,10 +358,10 @@ Variable (operation) form: {{ form }}<br>
           </mat-form-field>
         </div>
 
-        <div class="nav-buttons">
+        <!-- <div class="nav-buttons">
               <button mat-button matStepperPrevious>Précédent</button>
               <button mat-button matStepperNext>Suivant</button>
-        </div>
+        </div> -->
       </form>
     </mat-step>
 
@@ -413,10 +424,10 @@ Variable (operation) form: {{ form }}<br>
         <ng-container *ngIf="getFamilleLibelle(step1Form.get('action')?.value, operationTypesFamilles) === 'Gestion hydraulique'; then gestionHydraulique"></ng-container>
         <ng-container *ngIf="getFamilleLibelle(step1Form.get('action')?.value, operationTypesFamilles) === 'Gestion des déchets'; then gestionDechets"></ng-container>
         
-        <div class="nav-buttons">
+        <!-- <div class="nav-buttons">
               <button mat-button matStepperPrevious>Précédent</button>
               <button mat-button matStepperNext>Suivant</button>
-        </div>
+        </div> -->
       </form>
     </mat-step>
 
@@ -482,11 +493,10 @@ Variable (operation) form: {{ form }}<br>
         </form>
       </div>
 
-      <div class="nav-buttons">
+      <!-- <div class="nav-buttons">
               <button mat-button matStepperPrevious>Précédent</button>
-              <!-- <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button> -->
               <button mat-button (click)="stepper.selectedIndex = 0">Retour au début (étape 1)</button>
-      </div>
+      </div> -->
     </mat-step>
 
     <!-- <mat-step [stepControl]="step5Form">
@@ -582,8 +592,18 @@ Variable (operation) form: {{ form }}<br>
   </mat-stepper> 
   
   <div *ngIf="operation !== undefined && operation !== null">
-    <div class="suppression">
-      <button mat-button (click)="deleteItemConfirm('operation')">Supprimer l'opération</button>
+
+    <div class="bottom">
+      <!-- Permet d'inclure le template en bas du composant -->
+      <ng-container *ngTemplateOutlet="buttons"></ng-container>
+
+      <div class="duplication">
+        <button mat-button (click)="duplicateOperationConfirm()">Dupliquer l'opération</button>
+      </div>
+
+      <div class="suppression">
+        <button mat-button (click)="deleteItemConfirm('operation')">Supprimer l'opération</button>
+      </div>
     </div>
   </div>
 </ng-template>
@@ -673,50 +693,60 @@ Variable (operation) form: {{ form }}<br>
             La liste des animaux est vide. C'est a dire que le getter listeOpeAnimaux est undefined ou n'a pas de controls.
           </div>
         
-          <mat-form-field>
-            <mat-label>Effectif</mat-label>
-            <input matInput type="number" formControlName="effectif_paturage">
-          </mat-form-field>
+          <div class="pat-fields">
+            <mat-form-field>
+              <mat-label>N°/Nom du parc</mat-label>
+              <input matInput type="text" formControlName="nom_parc">
+            </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Nombre de jour</mat-label>
-            <input matInput type="number" formControlName="nb_jours_paturage">
-          </mat-form-field>
+            <mat-form-field>
+              <mat-label>Effectif</mat-label>
+              <input matInput type="number" formControlName="effectif_paturage">
+            </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Chargement (UGB/ha)</mat-label>
-            <input matInput type="number" formControlName="chargement_paturage">
-          </mat-form-field>
+            <mat-form-field>
+              <mat-label>Nombre de jour</mat-label>
+              <input matInput type="number" formControlName="nb_jours_paturage">
+            </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Taux d'abroutissement moyen</mat-label>
-            <mat-select formControlName="abroutissement_paturage">
-              <mat-option *ngFor="let type of 
-                [{cd_type: 1, libelle: '1'}, 
-                {cd_type: 2, libelle: '2'},
-                {cd_type: 3, libelle: '3'},
-                {cd_type: 4, libelle: '4'},
-                {cd_type: 5, libelle: '5'},
-                {cd_type: 6, libelle: '6'},
-                {cd_type: 7, libelle: '7'}]" 
-                [value]="type.cd_type">
-                {{ type.libelle }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field>
+              <mat-label>Chargement (UGB/ha)</mat-label>
+              <input matInput type="number" formControlName="chargement_paturage">
+            </mat-form-field>
+          </div>
 
-          <mat-form-field>
-            <mat-label>Recouvrement en ligneux bas moyen</mat-label>
-            <mat-select formControlName="recouvrement_ligneux_paturage">
-              <mat-option *ngFor="let type of 
-                [{cd_type: 1, libelle: 'Faible'}, 
-                {cd_type: 2, libelle: 'Moyen'},
-                {cd_type: 3, libelle: 'Bon'}]" 
-                [value]="type.cd_type">
-                {{ type.libelle }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+          <div class="pat-fields">
+            <mat-form-field>
+              <mat-label>Taux d'abroutissement moyen</mat-label>
+              <mat-select formControlName="abroutissement_paturage">
+                <mat-option *ngFor="let type of 
+                  [{cd_type: 1, libelle: '1'}, 
+                  {cd_type: 2, libelle: '2'},
+                  {cd_type: 3, libelle: '3'},
+                  {cd_type: 4, libelle: '4'},
+                  {cd_type: 5, libelle: '5'},
+                  {cd_type: 6, libelle: '6'}]" 
+                  [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Recouvrement en ligneux bas moyen</mat-label>
+              <mat-select formControlName="recouvrement_ligneux_paturage">
+                <mat-option *ngFor="let type of 
+                  [{cd_type: 1, libelle: '<10l'}, 
+                  {cd_type: 2, libelle: '<10c'},
+                  {cd_type: 3, libelle: '10-30'},
+                  {cd_type: 4, libelle: '30-50'},
+                  {cd_type: 5, libelle: '>50'}]" 
+                  [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
         </div>
 
         <div *ngIf="

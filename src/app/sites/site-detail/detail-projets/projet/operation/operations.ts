@@ -42,6 +42,7 @@ export interface Operation {
   objectif?: string;
   typ_intervention?: string;
   date_debut?: Date;
+  date_debut_str?: string;
   date_fin?: Date;
   date_approx?: string;
   ben_participants?: number; // Nombre de bénévoles
@@ -66,6 +67,7 @@ export interface Operation {
   chargement_paturage?: number;
   abroutissement_paturage?: number;
   recouvrement_ligneux_paturage?: number;
+  nom_parc?: string;
 
   interv_cloture?: number;
 
