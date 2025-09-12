@@ -21,7 +21,7 @@ dialogConfig = {
   height: '220px',
   // maxHeight: '90vh',
   hasBackdrop: true, // Activer le fond
-  backdropClass: 'custom-backdrop-delete', // Classe personnalisé
+  backdropClass: '', // Classe personnalisé
   enterAnimationDuration: '300ms',
   exitAnimationDuration: '300ms',
 
@@ -29,9 +29,14 @@ dialogConfig = {
 
 };
 
-  confirm(title: string, message: string, ): Observable<boolean> {
+  confirm(title: string, message: string, mode: 'delete' | 'duplicate'): Observable<boolean> {
+    if (mode === 'duplicate') {
+      this.dialogConfig.backdropClass = 'custom-backdrop-duplicate'; // Classe personnalisée pour le fond en mode duplication
+    } else if (mode === 'delete') {
+      this.dialogConfig.backdropClass = 'custom-backdrop-delete'; // Classe personnalisée pour le fond en mode suppression
+    }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { title, message },
+      data: { title, message, mode },
 
       ... this.dialogConfig // Les 3 points permettent de décomposer l'objet dialogConfig
     });

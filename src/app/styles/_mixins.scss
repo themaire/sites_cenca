@@ -61,7 +61,7 @@
   padding: 8px 10px;
   cursor: pointer;
   text-transform: uppercase;
-  box-shadow: 7px 7px 5px 5px rgb(0 0 0 / 25%);
+  box-shadow: 5px 5px 3px 3px rgb(0 0 0 / 25%);
   &:hover {
     @include Typo($p14, $semiGras, $textHover);
     background-color: $colorHover;
@@ -159,6 +159,16 @@
   padding: 0 30px 10px 0px;
   button {
     @include btn($superRed, #f1fcf3, white, $superRed);
+    @include align(center, center);
+  }
+}
+
+@mixin duplication-btn {
+  display: flex;
+  @include align(center, flex-end);
+  padding: 0 30px 10px 0px;
+  button {
+    @include btn($superBlue, #f1fcf3, white, $superBlue);
     @include align(center, center);
   }
 }
