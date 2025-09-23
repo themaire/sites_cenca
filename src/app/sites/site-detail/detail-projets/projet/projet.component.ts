@@ -227,7 +227,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
           return [] as OperationLite[]; // Retourner un tableau vide en cas d'erreur
         }
       );
-    }else if (table === 'objectifs') {
+    } else if (table === 'objectifs') {
       const subroute = `objectifs/uuid=${uuid_proj}/lite`;
       return this.projetService.getObjectifs(subroute).then(
         (objectifs) => {

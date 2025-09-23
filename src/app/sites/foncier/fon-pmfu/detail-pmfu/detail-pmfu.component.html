@@ -1,6 +1,6 @@
 <mat-dialog-content class="dialogue" *ngIf="!isLoading; else loading">
   <div class="conteneur-projet">
-    <div class="proteger">Protéger</div>
+    <div class="proteger"><p>Protéger</p></div>
     <div class="projet">
       <!-- -- Variable isEditProjet : {{ isEditProjet }}<br>
       -- Variable isEditProjet : {{ isEditProjet }}<br>
@@ -36,17 +36,23 @@
     "
   >
     <!-- 1er element -->
-    <div *ngIf="!isEditPmfu" class="form-buttons">
-      <app-form-buttons
-        [isEditActive]="isEditPmfu"
-        icone="edit"
-        [theme]="'gerer'"
-        [isFormValid]="isFormValid"
-        (toggleAction)="toggleEditPmfu()"
-        (onSubmit)="onSubmit()"
-      ></app-form-buttons>
+    <div class="buttons-container">
+      <div class="form-buttons">
+        <app-form-buttons
+          [isEditActive]="isEditPmfu"
+          icone="edit"
+          [theme]="'proteger'"
+          [isFormValid]="isFormValid"
+          (toggleAction)="toggleEditPmfu()"
+          (onSubmit)="onSubmit()"
+        ></app-form-buttons>
+      </div>
+      <div class="suppression" *ngIf="!isAddPmfu && !newPmfu">
+        <button mat-button (click)="deletePmfuConfirm()">
+          Supprimer le projet
+        </button>
+      </div>
     </div>
-
     <!-- 2eme element -->
     <div class="title-container">
       <ng-container
@@ -58,19 +64,172 @@
       <div class="title-wrapper">
         <h2 *ngIf="!isEditPmfu">Consultation du Projet MFU</h2>
         <h2 *ngIf="isEditPmfu">Modification du Projet MFU</h2>
-        <h2>{{ projetLite.pmfu_nom }}</h2>
+        <h2 *ngIf="!newPmfu">{{ pmfuTitle }}</h2>
       </div>
     </ng-template>
     <ng-template #newTitle>
       <h2 *ngIf="newPmfu">Création d'un projet neuf en cours</h2>
     </ng-template>
   </div>
-
-  <mat-horizontal-stepper [linear]="true" #mfuStepper>
+  <mat-horizontal-stepper
+    [linear]="true"
+    #mfuStepper
+    [animationDuration]="duration.value"
+  >
     <!-- Étape 1: Informations principales -->
     <mat-step>
-      <form [formGroup]="pmfuForm" class="first-step">
-        <ng-template matStepLabel>Informations principales</ng-template>
+      <ng-template matStepLabel>Informations principales</ng-template>
+      <form
+        [formGroup]="pmfuForm"
+        class="first-step not-edit"
+        *ngIf="!isEditPmfu"
+      >
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Nom du projet</mat-label>
+            <input matInput formControlName="pmfu_nom" readonly />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Responsable</mat-label>
+            <input matInput formControlName="pmfu_responsable" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Collègue associé</mat-label>
+            <input matInput formControlName="pmfu_associe" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Agence</mat-label>
+            <input matInput formControlName="pmfu_agence" readonly />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Territoire</mat-label>
+            <input matInput formControlName="pmfu_territoire" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Département</mat-label>
+            <input matInput formControlName="pmfu_departement" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Commune</mat-label>
+            <input matInput formControlName="pmfu_commune" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Superficie (ha)</mat-label>
+            <input
+              matInput
+              formControlName="pmfu_superficie"
+              type="number"
+              readonly
+            />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Année de début</mat-label>
+            <input
+              matInput
+              formControlName="pmfu_debut"
+              type="number"
+              readonly
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <input matInput formControlName="pmfu_type" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Propriétaire</mat-label>
+            <input matInput formControlName="pmfu_proprietaire" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Mesures compensatoires</mat-label>
+            <input matInput formControlName="pmfu_compensatoire" readonly />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Coût estimé</mat-label>
+            <input matInput formControlName="pmfu_cout" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Financements envisagés</mat-label>
+            <input matInput formControlName="pmfu_financements" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Validation bureau/CA</mat-label>
+            <input matInput formControlName="pmfu_validation" readonly />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Besoin d'appui</mat-label>
+            <input matInput formControlName="pmfu_appui" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Priorité</mat-label>
+            <input matInput formControlName="pmfu_priorite" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Status</mat-label>
+            <input matInput formControlName="pmfu_status" readonly />
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Année de signature</mat-label>
+            <input
+              matInput
+              formControlName="pmfu_signature"
+              type="number"
+              readonly
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Échéances</mat-label>
+            <input matInput formControlName="pmfu_echeances" readonly />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Prochaines étapes</mat-label>
+            <textarea
+              matInput
+              formControlName="pmfu_etapes"
+              rows="3"
+              readonly
+            ></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Détails juridiques</mat-label>
+            <textarea
+              matInput
+              formControlName="pmfu_juridique"
+              rows="3"
+              readonly
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </form>
+      <form [formGroup]="pmfuForm" class="first-step" *ngIf="isEditPmfu">
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Nom du projet</mat-label>
@@ -80,7 +239,7 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Responsable</mat-label>
-            <input matInput formControlName="pmfu_responsable" />
+            <input matInput formControlName="pmfu_responsable" readonly />
           </mat-form-field>
 
           <mat-form-field appearance="fill">
@@ -110,7 +269,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label>Superficie</mat-label>
+            <mat-label>Superficie (ha)</mat-label>
             <input matInput formControlName="pmfu_superficie" type="number" />
           </mat-form-field>
         </div>
@@ -164,7 +323,7 @@
 
           <mat-form-field appearance="fill">
             <mat-label>Status</mat-label>
-            <input matInput formControlName="pmf_status" />
+            <input matInput formControlName="pmfu_status" />
           </mat-form-field>
         </div>
 
@@ -205,68 +364,331 @@
     </mat-step>
     <!-- Étape 2: Pièces jointes -->
     <mat-step>
-<form [formGroup]="docForm">
-  <div class="form-row">
-    <div class="form-field">
-      <label for="noteBureau">Note de bureau (PDF, DOC ou DOCX)</label>
-      <input
-        type="file"
-        id="noteBureau"
-        (change)="onFileSelected($event, 'noteBureau')"
-        accept=".docx,.doc,.pdf"
-        multiple
-      />
-    </div>
-    <div class="form-field">
-      <label for="decisionBureau">Décision bureau/CA (PDF, DOC ou DOCX)</label>
-      <input
-        type="file"
-        id="decisionBureau"
-        (change)="onFileSelected($event, 'decisionBureau')"
-        accept=".docx,.doc,.pdf"
-        multiple
-      />
-    </div>
+      <ng-template matStepLabel>Pièces jointes</ng-template>
+      <form [formGroup]="pmfuForm" class="second-step" *ngIf="isEditPmfu">
+        <div class="form-row">
+          <div
+            class="form-field upload"
+            (drop)="onFileDropped($event, 'noteBureau')"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            [class.dragging]="isDragging"
+          >
+            <label for="noteBureau"
+              >Note de bureau<br />(PDF, DOC ou DOCX)</label
+            >
+            <input
+              type="file"
+              id="noteBureau"
+              (change)="onFileSelected($event, 'noteBureau')"
+              accept=".docx,.doc,.pdf"
+              multiple
+              class="hidden"
+            />
+            <label for="noteBureau" class="drop-zone">
+              <mat-icon class="upload-icon">upload_file</mat-icon>
+              <span class="drop-text"
+                >Glissez-déposez vos fichiers ou cliquez</span
+              >
+            </label>
+            <div
+              *ngIf="fileErrors['noteBureau']?.length"
+              class="error-messages"
+            >
+              <div
+                *ngFor="let err of fileErrors['noteBureau']"
+                class="error-text"
+              >
+                {{ err }}
+              </div>
+            </div>
+            <mat-list class="upload-list">
+              @for (file of filesNames; track file[0]) {
+              <mat-list-item
+                *ngIf="file[1] === 'noteBureau'"
+                class="upload-list-item"
+              >
+                <div class="upload-list-item">
+                  <div matListItemTitle>- {{ file[0] }}</div>
+                  <button
+                    mat-icon-button
+                    (click)="removeDroppedFile([file[0], file[1]])"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-list-item>
+              }
+            </mat-list>
+          </div>
+          <div
+            class="form-field upload"
+            (drop)="onFileDropped($event, 'decisionBureau')"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            [class.dragging]="isDragging"
+          >
+            <label for="decisionBureau"
+              >Décision bureau/CA<br />(PDF, DOC ou DOCX)</label
+            >
+            <input
+              type="file"
+              id="decisionBureau"
+              (change)="onFileSelected($event, 'decisionBureau')"
+              accept=".docx,.doc,.pdf"
+              multiple
+              class="hidden"
+            />
+            <label for="decisionBureau" class="drop-zone">
+              <mat-icon class="upload-icon">upload_file</mat-icon>
+              <span class="drop-text"
+                >Glissez-déposez vos fichiers ou cliquez</span
+              >
+            </label>
+            <div
+              *ngIf="fileErrors['decisionBureau']?.length"
+              class="error-messages"
+            >
+              <div
+                *ngFor="let err of fileErrors['decisionBureau']"
+                class="error-text"
+              >
+                {{ err }}
+              </div>
+            </div>
+            <mat-list class="upload-list">
+              @for (file of filesNames; track file[0]) {
+              <mat-list-item
+                *ngIf="file[1] === 'decisionBureau'"
+                class="upload-list-item"
+              >
+                <div class="upload-list-item">
+                  <div matListItemTitle>- {{ file[0] }}</div>
+                  <button
+                    mat-icon-button
+                    (click)="removeDroppedFile([file[0], file[1]])"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-list-item>
+              }
+            </mat-list>
+          </div>
 
-    <div class="form-field">
-      <label for="projetActe">Projet d'acte (PDF, DOC ou DOCX)</label>
-      <input
-        type="file"
-        id="projetActe"
-        (change)="onFileSelected($event, 'projetActe')"
-        accept=".docx,.doc,.pdf"
-        multiple
-      />
-    </div>
+          <div
+            class="form-field upload"
+            (drop)="onFileDropped($event, 'projetActe')"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            [class.dragging]="isDragging"
+          >
+            <label for="projetActe"
+              >Projet d'acte<br />(PDF, DOC ou DOCX)</label
+            >
+            <input
+              type="file"
+              id="projetActe"
+              (change)="onFileSelected($event, 'projetActe')"
+              accept=".docx,.doc,.pdf"
+              multiple
+              class="hidden"
+            />
+            <label for="projetActe" class="drop-zone"
+              ><mat-icon class="upload-icon">upload_file</mat-icon>
+              <span class="drop-text"
+                >Glissez-déposez vos fichiers ou cliquez</span
+              >
+            </label>
+            <div
+              *ngIf="fileErrors['projetActe']?.length"
+              class="error-messages"
+            >
+              <div
+                *ngFor="let err of fileErrors['projetActe']"
+                class="error-text"
+              >
+                {{ err }}
+              </div>
+            </div>
+            <mat-list class="upload-list">
+              @for (file of filesNames; track file[0]) {
+              <mat-list-item
+                *ngIf="file[1] === 'projetActe'"
+                class="upload-list-item"
+              >
+                <div class="upload-list-item">
+                  <div matListItemTitle>- {{ file[0] }}</div>
+                  <button
+                    mat-icon-button
+                    (click)="removeDroppedFile([file[0], file[1]])"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-list-item>
+              }
+            </mat-list>
+          </div>
 
-    <div class="form-field">
-      <label for="photosSite">Photos site (PNG, JPG/JPEG)</label>
-      <input
-        type="file"
-        id="photosSite"
-        (change)="onFileSelected($event, 'photosSite')"
-        accept=".png,.jpeg,.jpg"
-        multiple
-      />
-    </div>
-  </div>
+          <div
+            class="form-field upload"
+            (drop)="onFileDropped($event, 'photosSite')"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            [class.dragging]="isDragging"
+          >
+            <label for="photosSite">Photos site<br />(PNG, JPG/JPEG)</label>
+            <input
+              type="file"
+              id="photosSite"
+              (change)="onFileSelected($event, 'photosSite')"
+              accept=".png,.jpeg,.jpg"
+              multiple
+              class="hidden"
+            />
+            <label for="photosSite" class="drop-zone">
+              <mat-icon class="upload-icon">upload_file</mat-icon>
+              <span class="drop-text">
+                Glissez-déposez vos fichiers ou cliquez</span
+              >
+            </label>
+            <div
+              *ngIf="fileErrors['photosSite']?.length"
+              class="error-messages"
+            >
+              <div
+                *ngFor="let err of fileErrors['photosSite']"
+                class="error-text"
+              >
+                {{ err }}
+              </div>
+            </div>
+            <mat-list class="upload-list">
+              @for (file of filesNames; track file[0]) {
+              <mat-list-item
+                *ngIf="file[1] === 'photosSite'"
+                class="upload-list-item"
+              >
+                <div class="upload-list-item">
+                  <div matListItemTitle>- {{ file[0] }}</div>
+                  <button
+                    mat-icon-button
+                    (click)="removeDroppedFile([file[0], file[1]])"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-list-item>
+              }
+            </mat-list>
+          </div>
+        </div>
 
-  <input type="hidden" formControlName="pmfu_id" />
+        <input type="hidden" formControlName="pmfu_id" />
+      </form>
+      <form [formGroup]="pmfuForm" class="second-step" *ngIf="!isEditPmfu">
+        <mat-list class="gauche">
+          <mat-list-item
+            *ngFor="let folder of folders$ | async; trackBy: trackByFolder"
+            (click)="onFolderClick(folder)"
+            [ngClass]="{ selected: selectedFolder === folder.cd_type }"
+            class="folder"
+          >
+            <mat-icon matListItemIcon>folder</mat-icon>
+            <div matListItemTitle>{{ folder.name }}</div>
+            <div matListItemLine>{{ folder.numberElements }}</div>
+          </mat-list-item>
+        </mat-list>
+        <div
+          class="droite"
+          *ngIf="
+            filePathList.length > 0 && !previewUrl && !isDocxView && !galerie
+          "
+        >
+          <mat-list class="doc-list">
+            @for (filepath of filePathList; track filepath) {
+            <div class="doc-row">
+              <mat-list-item (click)="openFile(filepath)" class="file">
+                <mat-icon matListItemIcon>description</mat-icon>
+                <div matListItemTitle>{{ filepath }}</div>
+              </mat-list-item>
+              <button
+                mat-icon-button
+                (click)="deleteDocfile(filepath, selectedFolder!)"
+                class="delete-file"
+              >
+                <mat-icon matListItemIcon *ngIf="filepath">delete</mat-icon>
+              </button>
+            </div>
 
-  <button
-    mat-button
-    (click)="handleDocfileSubmission(); onSubmit();"
-    [disabled]="!docForm.get('noteBureau')?.value && !docForm.get('decisionBureau')?.value && !docForm.get('projetActe')?.value && !docForm.get('photosSite')?.value"
-  >
-    Envoyer
-  </button>
-</form>
+            }
+          </mat-list>
+        </div>
+        <div class="droite" *ngIf="previewUrl || isDocxView">
+          <!-- PDF -->
+          <iframe
+            *ngIf="pdfUrl"
+            [src]="previewUrl"
+            width="100%"
+            height="600px"
+          ></iframe>
+
+          <!-- DOCX -->
+          <div #docxContainer class="docx-container" *ngIf="isDocxView"></div>
+
+          <!-- Images -->
+          <img
+            *ngIf="imageUrl"
+            [src]="previewUrl"
+            style="max-width: 100%; max-height: 600px"
+          />
+        </div>
+        <div class="droite galerie" *ngIf="galerie">
+          <div
+            class="card"
+            *ngFor="let image of galerie"
+            [ngStyle]="{
+              'background-color': getColorForImage(image),
+              color: getTextColor(getColorForImage(image))
+            }"
+          >
+            <img
+              [src]="image"
+              (click)="
+                openImage(
+                  imagePathList ? imagePathList[galerie.indexOf(image)] : ''
+                )
+              "
+              class="galerie-img"
+            />
+            <div>
+              <p>
+                {{
+                  (imagePathList
+                    ? imagePathList[galerie.indexOf(image)]
+                    : ""
+                  ).split(".")[0]
+                }}
+              </p>
+              <button
+                mat-button
+                (click)="deleteImage(image)"
+                [ngStyle]="{ color: getTextColor(getColorForImage(image)) }"
+              >
+                Supprimer la photo
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
     </mat-step>
   </mat-horizontal-stepper>
 </ng-template>
 <ng-template #loading>
   <div class="loading-container">
-    <mat-spinner class="spinner-vert"></mat-spinner>
+    <mat-spinner class="spinner-orange"></mat-spinner>
     <p>Chargement ...</p>
   </div>
 </ng-template>
+<ng-template #folder1></ng-template>

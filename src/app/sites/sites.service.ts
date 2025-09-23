@@ -100,7 +100,15 @@ export class SitesService {
 
     return locali_objects;
   }
-
+  getDocfiles(pmfu_id: number, cd_type: number): Observable<ApiResponse> {
+    const url = `${this.activeUrl}pmfu_docs/ref_pmfu_id=${pmfu_id}/cd_type=${cd_type}/lite`;
+    return this.http.get<ApiResponse>(url).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la récupération des docfiles', error);
+        return of({ success: false, message: 'Erreur lors de la récupération des docfiles' } as ApiResponse);
+      })
+    );
+  }
   deleteLocalisation(loc_id: number): Observable<ApiResponse> {
     return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.localisations/loc_id=${loc_id}`).pipe(
       catchError(error => {
@@ -176,6 +184,7 @@ export class SitesService {
     return this.http.put<ApiResponse>(url, formData).pipe(
       tap(response => {
         console.log('Mise à jour réussie:', response);
+        return response.data; 
       }),
       catchError(error => {
         console.error('Erreur lors de la mise à jour', error);
