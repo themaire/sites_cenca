@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -46,5 +47,6 @@ export class ConfirmationDialogComponent {
     } else {
       this.dialogRef.close(true);
     }
+    this.dialogRef.close(true); // Retourne true via l'observable afterClosed() du service
   }
 }

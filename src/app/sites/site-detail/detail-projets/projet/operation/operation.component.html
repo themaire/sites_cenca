@@ -29,6 +29,23 @@ Variable (operation) form: {{ form }}<br>
 
 <!-- Permet d'inclure le template en haut du composant -->
 <ng-container *ngTemplateOutlet="buttons"></ng-container>
+<ng-template #buttons>
+  <app-form-buttons
+    *ngIf="!projetEditMode"
+    icone="add" 
+    [theme]="'gerer'"
+    [isEditActive]="isEditOperation" 
+    [isAddActive]="isAddOperation"
+    [isFormValid]="isFormValid"
+    (toggleAction)="toggleEditOperation($event)"
+    (makeOperationForm)="makeForm($event)"
+    (onSubmit)="onSubmit($event)" 
+  ></app-form-buttons>
+</ng-template>
+
+
+<!-- Permet d'inclure le template en haut du composant -->
+<ng-container *ngTemplateOutlet="buttons"></ng-container>
 
 <!-- Permet d'appeller un template -->
 <ng-container *ngIf="!isEditOperation && !isAddOperation; then listOperations; else addEditOperation"></ng-container>

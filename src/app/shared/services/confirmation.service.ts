@@ -23,6 +23,7 @@ dialogConfig = {
   // maxHeight: '90vh',
   hasBackdrop: true, // Activer le fond
   backdropClass: '', // Classe personnalisé
+  backdropClass: '', // Classe personnalisé
   enterAnimationDuration: '300ms',
   exitAnimationDuration: '300ms',
 

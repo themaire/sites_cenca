@@ -136,6 +136,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
   displayedColumnsOperationsWebapp: string[] = ['type', 'nom_mo', 'quantite', 'unite_str', 'date_debut_str'];
+  displayedColumnsOperationsWebapp: string[] = ['type', 'nom_mo', 'quantite', 'unite_str', 'date_debut_str'];
   operation!: Operation | void; // Pour les détails d'une opération
 
   // Pour le formulaire d'édition d'une opération
