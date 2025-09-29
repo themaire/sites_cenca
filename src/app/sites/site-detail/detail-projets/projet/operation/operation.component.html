@@ -12,23 +12,7 @@ Variable (operation) form: {{ form }}<br>
 </div> -->
 
 <!-- Utilisation du template buttons pour ajouter une opération -->
-<ng-template #buttons>
-  <app-form-buttons
-    *ngIf="!projetEditMode"
-    icone="add" 
-    [theme]="'gerer'"
-    [isEditActive]="isEditOperation" 
-    [isAddActive]="isAddOperation"
-    [isFormValid]="isFormValid"
-    (toggleAction)="toggleEditOperation($event)"
-    (makeOperationForm)="makeForm($event)"
-    (onSubmit)="onSubmit($event)" 
-  ></app-form-buttons>
-</ng-template>
 
-
-<!-- Permet d'inclure le template en haut du composant -->
-<ng-container *ngTemplateOutlet="buttons"></ng-container>
 <ng-template #buttons>
   <app-form-buttons
     *ngIf="!projetEditMode"
@@ -728,7 +712,7 @@ Variable (operation) form: {{ form }}<br>
 
             <mat-form-field>
               <mat-label>Chargement (UGB/ha)</mat-label>
-              <input matInput type="number" formControlName="chargement_paturage">
+              <input matInput type="number" formControlName="chargement_paturage" step="1" min="0" pattern="\d*">
             </mat-form-field>
           </div>
 
