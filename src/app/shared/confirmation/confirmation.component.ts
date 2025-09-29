@@ -1,6 +1,5 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CommonModule } from '@angular/common';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';

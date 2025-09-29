@@ -136,7 +136,6 @@ export class OperationComponent implements OnInit, OnDestroy {
   // Pour la liste des opérations : le tableau Material
   displayedColumnsOperations: string[] = ['code', 'titre', 'description', 'surf', 'date_debut'];
   displayedColumnsOperationsWebapp: string[] = ['type', 'nom_mo', 'quantite', 'unite_str', 'date_debut_str'];
-  displayedColumnsOperationsWebapp: string[] = ['type', 'nom_mo', 'quantite', 'unite_str', 'date_debut_str'];
   operation!: Operation | void; // Pour les détails d'une opération
 
   // Pour le formulaire d'édition d'une opération
@@ -852,6 +851,7 @@ export class OperationComponent implements OnInit, OnDestroy {
                 this.isEditFromOperation.emit(this.isEditOperation);
 
                 // Mise à jour de la liste des opérations (liste - tableau "material table")
+                // Mise à jour de la liste des opérations (liste - tableau "material table")
                 // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
                 this.fetch();
               },
@@ -963,6 +963,36 @@ export class OperationComponent implements OnInit, OnDestroy {
     
     // Appel de la boîte de dialogue de confirmation
     // Le bouton supprimer de la boite de dialogue ( result ) va appeler le service projetService.deleteItem()
+    this.confirmationService.confirm('Confirmation de suppression', message, 'delete').subscribe(result => {
+      if (result) {
+        // L'utilisateur a confirmé la suppression
+        // Utiliser le service projetService pour supprimer l'élément
+        this.projetService.deleteItem(deleteItemTypeEnumValue, ope2delete, loca2delete).subscribe(success => {
+          if (success) {
+            // success === true ici si la suppression a réussi
+            if (type == 'operation') {
+              this.operation = undefined; // Réinitialiser l'opération après suppression
+              if (this.isEditOperation) {
+                console.log("isEditOperation avant la suppression :", this.isEditOperation);
+                this.isEditOperation = false;
+                this.form = undefined;
+                this.isEditFromOperation.emit(this.isEditOperation);
+                console.log("isEditOperation après la suppression :", this.isEditOperation);
+              }
+                this.fetch(); // Rafraîchir la liste des opérations
+            }
+            if (type == 'localisation') {
+              if (this.operation) {
+                this.operation.localisations = undefined; // Réinitialiser le tableau des localisations
+              }
+            }
+          } else {
+            // success === false ici si la suppression a échoué
+            // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
+          }
+        });
+      }
+    });
     this.confirmationService.confirm('Confirmation de suppression', message, 'delete').subscribe(result => {
       if (result) {
         // L'utilisateur a confirmé la suppression
