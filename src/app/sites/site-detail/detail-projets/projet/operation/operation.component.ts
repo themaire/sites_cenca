@@ -993,37 +993,6 @@ export class OperationComponent implements OnInit, OnDestroy {
         });
       }
     });
-    this.confirmationService.confirm('Confirmation de suppression', message, 'delete').subscribe(result => {
-      if (result) {
-        // L'utilisateur a confirmé la suppression
-        // Utiliser le service projetService pour supprimer l'élément
-        this.projetService.deleteItem(deleteItemTypeEnumValue, ope2delete, loca2delete).subscribe(success => {
-          if (success) {
-            // success === true ici si la suppression a réussi
-            if (type == 'operation') {
-              this.operation = undefined; // Réinitialiser l'opération après suppression
-              if (this.isEditOperation) {
-                console.log("isEditOperation avant la suppression :", this.isEditOperation);
-                this.isEditOperation = false;
-                this.form = undefined;
-                this.isEditFromOperation.emit(this.isEditOperation);
-                console.log("isEditOperation après la suppression :", this.isEditOperation);
-              }
-                this.fetch(); // Rafraîchir la liste des opérations
-            }
-            if (type == 'localisation') {
-              if (this.operation) {
-                this.operation.localisations = undefined; // Réinitialiser le tableau des localisations
-              }
-            }
-          } else {
-            // success === false ici si la suppression a échoué
-            // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
-          }
-        });
-      }
-    });
-
   }
 
 /** * Affiche une boîte de dialogue de confirmation pour la duplication d'une opération.
@@ -1045,15 +1014,19 @@ export class OperationComponent implements OnInit, OnDestroy {
     // Appel de la boîte de dialogue de confirmation
     // Le bouton dupliquer de la boite de dialogue ( result ) va appeler le service projetService.duplicate()
     this.confirmationService.confirm('Confirmation de duplication', message, 'duplicate').subscribe(result => {
+      
+      console.log('Champs à exclure de la duplication :', result);
+
       if (result === false) {
         // Annulation de la duplication
         // console.log('Duplication annulée par l\'utilisateur.');
         return;
       }
-      if (Array.isArray(result)) {
+      if (Array.isArray(result)) { // Par exemple result peut valoir : ['dates', 'quantite']
         // L'utilisateur a confirmé la duplication
         // Utiliser le service projetService pour dupliquer l'élément
-        this.projetService.duplicate('operations', ope2duplicate).subscribe(success => {
+        // Ne pas oublié que l'on passe result qui est une liste des champs à exclure de la duplication ['dates', 'quantite', ...]
+        this.projetService.duplicate('operations', ope2duplicate, result).subscribe(success => {
           if (success) {
             // success === true ici si la duplication a réussi
 

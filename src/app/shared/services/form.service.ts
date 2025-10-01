@@ -49,6 +49,20 @@ export class FormService {
     };
   }
 
+  // Validation personnalisée pour vérifier qu'une valeur est un nombre entier
+  integerValidator() {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null; // Pas d'erreur si le champ est vide
+      }
+      const value = Number(control.value);
+      if (isNaN(value) || !Number.isInteger(value)) {
+        return { integer: true };
+      }
+      return null;
+    };
+  }
+
   // Récupérer les valeurs de la liste déroulante
   getSelectValues$(subroute: string): Observable<SelectValue[] | undefined> {
     const url = `${this.activeUrl}${subroute}`;

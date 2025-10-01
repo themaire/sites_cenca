@@ -712,7 +712,10 @@ Variable (operation) form: {{ form }}<br>
 
             <mat-form-field>
               <mat-label>Chargement (UGB/ha)</mat-label>
-              <input matInput type="number" formControlName="chargement_paturage" step="1" min="0" pattern="\d*">
+              <input matInput type="number" formControlName="chargement_paturage">
+              <!-- <mat-error *ngIf="step4Form.get('chargement_paturage')?.hasError('integer')">
+                La valeur doit être un nombre entier.
+              </mat-error> -->
             </mat-form-field>
           </div>
 
@@ -734,7 +737,10 @@ Variable (operation) form: {{ form }}<br>
             </mat-form-field>
 
             <mat-form-field>
-              <mat-label>Recouvrement en ligneux bas moyen</mat-label>
+              <mat-label>
+                Recouvrement en ligneux bas moyen
+                <mat-icon matTooltip="Ligneux inférieurs à 1 mètre" class="info-icon">info</mat-icon>
+              </mat-label>
               <mat-select formControlName="recouvrement_ligneux_paturage">
                 <mat-option *ngFor="let type of 
                   [{cd_type: 1, libelle: '<10l'}, 
@@ -747,6 +753,10 @@ Variable (operation) form: {{ form }}<br>
                 </mat-option>
               </mat-select>
             </mat-form-field>
+
+
+            
+            
           </div>
         </div>
 
