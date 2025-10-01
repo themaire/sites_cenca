@@ -152,6 +152,14 @@
   @include suppression-btn();
 }
 
+// Style pour l'icône d'information
+.info-icon {
+  font-size: 16px;
+  margin-left: 4px;
+  color: #666;
+  cursor: help;
+}
+
 // Pour le bouton de duplication
 .duplication {
   @include duplication-btn();

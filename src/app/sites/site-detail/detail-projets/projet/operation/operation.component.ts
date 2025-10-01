@@ -992,9 +992,13 @@ export class OperationComponent implements OnInit, OnDestroy {
         });
       }
     });
-
   }
 
+/** * Affiche une boîte de dialogue de confirmation pour la duplication d'une opération.
+ * Récupère l'UUID de l'opération à dupliquer à partir de l'opération actuellement ouverte par l'utilisateur,
+ * puis ouvre une boîte de dialogue demandant à l'utilisateur de confirmer la duplication.
+ * Des cases à cocher invitent l'utilisateur à sélectionner les champs à exclure de la duplication.
+ */
   duplicateOperationConfirm(): void {
     if (!this.operation) {
       console.error('Aucune opération sélectionnée par l\'utilisateur pour la duplication.');
@@ -1007,15 +1011,23 @@ export class OperationComponent implements OnInit, OnDestroy {
     this.onSubmit(); // Cela va meme fermer le formulaire laissant voir la liste des opérations ( mis à jour )
 
     // Appel de la boîte de dialogue de confirmation
-    // Le bouton supprimer de la boite de dialogue ( result ) va appeler le service projetService.deleteItem()
+    // Le bouton dupliquer de la boite de dialogue ( result ) va appeler le service projetService.duplicate()
     this.confirmationService.confirm('Confirmation de duplication', message, 'duplicate').subscribe(result => {
-      if (result) {
+      
+      console.log('Champs à exclure de la duplication :', result);
+
+      if (result === false) {
+        // Annulation de la duplication
+        // console.log('Duplication annulée par l\'utilisateur.');
+        return;
+      }
+      if (Array.isArray(result)) { // Par exemple result peut valoir : ['dates', 'quantite']
         // L'utilisateur a confirmé la duplication
         // Utiliser le service projetService pour dupliquer l'élément
-        this.projetService.duplicate('operations', ope2duplicate).subscribe( success => {
+        // Ne pas oublié que l'on passe result qui est une liste des champs à exclure de la duplication ['dates', 'quantite', ...]
+        this.projetService.duplicate('operations', ope2duplicate, result).subscribe(success => {
           if (success) {
             // success === true ici si la duplication a réussi
-            
             if (this.isEditOperation) {
               console.log("isEditOperation avant la duplication :", this.isEditOperation);
               this.isEditOperation = false;
@@ -1031,7 +1043,6 @@ export class OperationComponent implements OnInit, OnDestroy {
         });
       }
     });
-
   }
 
   /**

@@ -3,6 +3,19 @@
   
   <div [innerHTML]="data.message" class='message'></div>
 
+  <!-- Options d'exclusion visibles uniquement en mode duplication -->
+  <div *ngIf="data.mode === 'duplicate' && excludeOptions.length > 0" class="exclude-list">
+    <div class="exclude-title">Champs à exclure</div>
+    <div class="exclude-grid">
+      <mat-checkbox
+        *ngFor="let opt of excludeOptions"
+        (change)="toggleExclude(opt.key, $event.checked)"
+      >
+        {{ opt.label }}
+      </mat-checkbox>
+    </div>
+  </div>
+
 </mat-dialog-content>
 
 <!-- Boutons -->

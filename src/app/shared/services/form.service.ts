@@ -49,6 +49,20 @@ export class FormService {
     };
   }
 
+  // Validation personnalisée pour vérifier qu'une valeur est un nombre entier
+  integerValidator() {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null; // Pas d'erreur si le champ est vide
+      }
+      const value = Number(control.value);
+      if (isNaN(value) || !Number.isInteger(value)) {
+        return { integer: true };
+      }
+      return null;
+    };
+  }
+
   // Récupérer les valeurs de la liste déroulante
   getSelectValues$(subroute: string): Observable<SelectValue[] | undefined> {
     const url = `${this.activeUrl}${subroute}`;
@@ -262,6 +276,7 @@ export class FormService {
         chargement_paturage: [operation?.chargement_paturage || null],
         abroutissement_paturage: [operation?.abroutissement_paturage || null],
         recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux_paturage || null],
+        nom_parc: [operation?.nom_parc || ''],
         
         interv_cloture: [operation?.interv_cloture || null],
         
@@ -492,6 +507,7 @@ private prepareOperationDataForSubmission(form: FormGroup): Operation {
     chargement_paturage: formValue.step4?.chargement_paturage,
     abroutissement_paturage: formValue.step4?.abroutissement_paturage,
     recouvrement_ligneux_paturage: formValue.step4?.recouvrement_ligneux_paturage,
+    nom_parc: formValue.step4?.nom_parc,
     interv_cloture: formValue.step4?.interv_cloture,
     type_intervention_hydro: formValue.step4?.type_intervention_hydro,
 

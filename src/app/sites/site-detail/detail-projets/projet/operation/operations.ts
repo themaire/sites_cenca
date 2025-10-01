@@ -67,6 +67,7 @@ export interface Operation {
   chargement_paturage?: number;
   abroutissement_paturage?: number;
   recouvrement_ligneux_paturage?: number;
+  nom_parc?: string;
 
   interv_cloture?: number;
 

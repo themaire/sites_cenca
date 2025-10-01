@@ -1,5 +1,5 @@
 @import "../../../../../styles/variables.scss";
-@import ".../../../../../../../styles/mixins.scss";
+@import "../../../../../styles/mixins.scss";
 
 .button-title {
   display: flex;
@@ -13,10 +13,43 @@
 ::ng-deep .mat-mdc-tab-group {
   @include mat-tabs-theme($couleur-territoire);
 }
+
+// Padding pour le contenu des onglets
+::ng-deep .mat-mdc-tab-body-content {
+  padding-top: 24px;
+}
+
 // Avec couleur inactive personnalisée
 // ::ng-deep .mat-mdc-tab-group {
 //   @include mat-tabs-theme($superRed, rgba(100, 100, 100, 0.5));
 // }
+
+// Largeur fixe pour les champs de formulaire
+.fixed-width {
+  width: 300px;
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.fixed-width-small {
+  width: 200px;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.fixed-width-large {
+  width: 400px;
+  min-width: 380px;
+  max-width: 420px;
+}
+
+// Centrer un élément sur l'écran
+.center-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 
 // Pour le bouton de suppression
 .suppression {
