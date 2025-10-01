@@ -44,7 +44,7 @@ export class ConfirmationDialogComponent {
 
   /** Annuler la suppression ou la duplication */
   onNoClick(): void {
-    this.dialogRef.close(false); // Annulation
+    this.dialogRef.close(false); // Retourne false via l'observable afterClosed() du service
   }
   
   /** Confirmer la suppression ou la duplication

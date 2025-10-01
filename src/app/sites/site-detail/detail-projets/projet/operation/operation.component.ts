@@ -851,7 +851,6 @@ export class OperationComponent implements OnInit, OnDestroy {
                 this.isEditFromOperation.emit(this.isEditOperation);
 
                 // Mise à jour de la liste des opérations (liste - tableau "material table")
-                // Mise à jour de la liste des opérations (liste - tableau "material table")
                 // Nécessaire puisque l'opération affichée est fermée alors le tableau doit être mis à jour
                 this.fetch();
               },
@@ -1029,7 +1028,6 @@ export class OperationComponent implements OnInit, OnDestroy {
         this.projetService.duplicate('operations', ope2duplicate, result).subscribe(success => {
           if (success) {
             // success === true ici si la duplication a réussi
-
             if (this.isEditOperation) {
               console.log("isEditOperation avant la duplication :", this.isEditOperation);
               this.isEditOperation = false;
