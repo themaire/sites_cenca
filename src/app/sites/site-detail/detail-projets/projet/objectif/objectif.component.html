@@ -39,6 +39,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
 
   <div>
     <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->
+    <ng-container *ngIf="objectifs.length > 0; then table else noObjectifs"></ng-container>
 
     <ng-template #table>
       <div>
