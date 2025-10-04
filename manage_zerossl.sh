@@ -14,8 +14,12 @@ DOMAIN="si-10.cen-champagne-ardenne.org"                  # Votre domaine
 CERT_DIR="/etc/ssl/certs/si-10.cen-champagne-ardenne.org" # Répertoire certs
 CERT_ID_FILE="$CERT_DIR/cert_id"                          # Stockage de l'ID
 CSR_FILE="$CERT_DIR/csr.pem"                              # Chemin du CSR
+VALIDATION_METHOD="${VALIDATION_METHOD:-HTTP_CSR_HASH}"   # Méthode de validation (HTTP_CSR_HASH|CNAME_CSR_HASH|EMAIL)
+# Sinon methode par CNAME: CNAME_CSR_HASH
+# VALIDATION_METHOD="${VALIDATION_METHOD:-CNAME_CSR_HASH}"   # Méthode de validation ()
 
-# Garde-fous
+
+# Garde-fous pour verifier si les outils nécessaires sont présents
 command -v curl >/dev/null 2>&1 || { echo "curl manquant"; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo "jq manquant"; exit 1; }
 command -v openssl >/dev/null 2>&1 || { echo "openssl manquant"; exit 1; }
@@ -76,38 +80,24 @@ create_certificate() {
     exit 1
   fi
 
-  # Construire le payload JSON proprement (csr inclus tel quel)
-  payload="$(jq -n \
-    --arg access_key "$access_key" \
-    --arg cn "$DOMAIN" \
-    --rawfile csr "$CSR_FILE" \
-    '{
-      access_key: $access_key,
-      certificate: {
-        common_name: $cn,
-        validity: 90,
-        csr: $csr
-      }
-    }')"
+  # Appel ZeroSSL en form-encoded (pas JSON)
+  response="$(curl -s -X POST "https://api.zerossl.com/certificates?access_key=$access_key" \
+    --data-urlencode "certificate_domains=$DOMAIN" \
+    --data-urlencode "certificate_validity_days=90" \
+    --data-urlencode "certificate_csr@${CSR_FILE}")"
 
-  response="$(curl -s -X POST "https://api.zerossl.com/certificates" \
-    -H "Content-Type: application/json" \
-    --data "$payload")"
-
-  if echo "$response" | jq -e '.success == true' >/dev/null 2>&1; then
+  # Succès si pas d'objet error et présence d'un id
+  if echo "$response" | jq -e '(.error | not) and (.id != null)' >/dev/null 2>&1; then
     echo "Certificat créé avec succès."
     CERT_ID="$(echo "$response" | jq -r '.id')"
     echo "$CERT_ID" > "$CERT_ID_FILE"
     echo "CERT_ID: $CERT_ID"
 
-    # Ces champs peuvent être null si CSR fourni
-    cert="$(echo "$response" | jq -r '.certificate // empty')"
-    privkey="$(echo "$response" | jq -r '.private_key // empty')"
-    chain="$(echo "$response" | jq -r '.certificate_chain // empty')"
+    # Tip: affiche un résumé de validation pour savoir quoi déployer (HTTP/DNS)
+    echo "Résumé validation:"
+    echo "$response" | jq '.validation // empty'
 
-    [ -n "$cert" ] && [ "$cert" != "null" ] && printf '%s\n' "$cert" > "$CERT_DIR/cert.pem"
-    [ -n "$privkey" ] && [ "$privkey" != "null" ] && printf '%s\n' "$privkey" > "$CERT_DIR/privkey.pem"
-    [ -n "$chain" ] && [ "$chain" != "null" ] && printf '%s\n' "$chain" > "$CERT_DIR/chain.pem"
+    # Certains champs ne sont présents qu’après émission; on ne les force pas ici
   else
     echo "Erreur lors de la création du certificat:"
     echo "$response" | jq .
@@ -118,12 +108,13 @@ create_certificate() {
 # Fonction pour vérifier le domaine
 verify_domain() {
   load_cert_id
-  verification_response="$(curl -s -X POST "https://api.zerossl.com/certificates/$CERT_ID/verify" \
-    -H "Content-Type: application/json" \
-    -d '{ "access_key": "'"$access_key"'" }')"
+  verification_response="$(curl -s -X POST "https://api.zerossl.com/certificates/$CERT_ID/verify?access_key=$access_key" \
+    --data-urlencode "validation_method=$VALIDATION_METHOD")"
 
-  if echo "$verification_response" | jq -e '.success == true' >/dev/null 2>&1; then
-    echo "Domaine vérifié avec succès."
+  if echo "$verification_response" | jq -e '(.error | not)' >/dev/null 2>&1; then
+    echo "Vérification envoyée (méthode: $VALIDATION_METHOD)."
+    # Affiche l’état pour suivre la progression
+    echo "$verification_response" | jq '{id, status, validation}'
   else
     echo "Erreur lors de la vérification du domaine:"
     echo "$verification_response" | jq .
