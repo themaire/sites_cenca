@@ -13,6 +13,7 @@ access_jey="${access_jey:-}"
 DOMAIN="si-10.cen-champagne-ardenne.org"                  # Votre domaine
 CERT_DIR="/etc/ssl/certs/si-10.cen-champagne-ardenne.org" # Répertoire certs
 CERT_ID_FILE="$CERT_DIR/cert_id"                          # Stockage de l'ID
+CSR_FILE="$CERT_DIR/csr.pem"                              # Chemin du CSR
 
 # Garde-fous
 command -v curl >/dev/null 2>&1 || { echo "curl manquant"; exit 1; }
@@ -30,6 +31,14 @@ mkdir -p "$CERT_DIR"
 usage() {
   cat <<'EOF'
 Usage: manage_zerossl.sh <commande>
+
+Important : générez d'abord un CSR (recommandé: vous gardez la clé privée)
+Exemple:
+  mkdir -p /etc/ssl/certs/votre_domaine
+openssl req -new -newkey rsa:2048 -nodes `
+  -keyout /etc/ssl/certs/votre_domaine/privkey.pem `
+  -out    /etc/ssl/certs/votre_domaine/csr.pem `
+  -subj "/CN=votre_domaine"
 
 Commandes:
   create        Crée un nouveau certificat et lance la vérification de domaine
@@ -58,18 +67,31 @@ load_cert_id() {
 
 # Fonction pour créer le certificat
 create_certificate() {
-  # Remplacez "votre_csr_ici" si vous avez un CSR (format PEM, une seule ligne \n -> \n)
-  # Sinon, voyez pour générer un CSR/clé privée en amont.
-  response="$(curl -s -X POST "https://api.zerossl.com/certificates" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "access_key": "'"$access_jey"'",
-      "certificate": {
-        "common_name": "'"$DOMAIN"'",
-        "validity": 90,
-        "csr": "votre_csr_ici"
+  # Lire le CSR local (recommandé: vous gardez la clé privée)
+  if [ ! -f "$CSR_FILE" ]; then
+    echo "CSR introuvable: $CSR_FILE"
+    echo "Générez-le par exemple:"
+    echo "openssl req -new -newkey rsa:2048 -nodes -keyout \"$CERT_DIR/privkey.pem\" -out \"$CSR_FILE\" -subj \"/CN=$DOMAIN\""
+    exit 1
+  fi
+
+  # Construire le payload JSON proprement (csr inclus tel quel)
+  payload="$(jq -n \
+    --arg access_key "$access_jey" \
+    --arg cn "$DOMAIN" \
+    --rawfile csr "$CSR_FILE" \
+    '{
+      access_key: $access_key,
+      certificate: {
+        common_name: $cn,
+        validity: 90,
+        csr: $csr
       }
     }')"
+
+  response="$(curl -s -X POST "https://api.zerossl.com/certificates" \
+    -H "Content-Type: application/json" \
+    --data "$payload")"
 
   if echo "$response" | jq -e '.success == true' >/dev/null 2>&1; then
     echo "Certificat créé avec succès."
