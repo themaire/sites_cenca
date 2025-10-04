@@ -12,5 +12,8 @@ RUN chmod -R 755 /usr/local/apache2/htdocs
 # Ajouter un fichier de configuration Apache pour gérer les routes Angular
 COPY ./apache.conf /usr/local/apache2/conf/httpd.conf
 
-# Expose le port 80
-EXPOSE 80
+# Créer le répertoire pour les certificats SSL
+RUN mkdir -p /etc/ssl/certs
+
+# Exposer les ports 80 et 443
+EXPOSE 80 443
