@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Chargement des secrets (export access_jey="...") depuis /root/secret_zerossl.sh si présent
+# Chargement des secrets (export access_key="...") depuis /root/secret_zerossl.sh si présent
 if [ -f /root/secret_zerossl.sh ]; then
   # shellcheck disable=SC1091
   . /root/secret_zerossl.sh
 fi
 
 # Variables
-# IMPORTANT: access_jey doit venir de /root/secret_zerossl.sh ou de l'env
-access_jey="${access_jey:-}"
+# IMPORTANT: access_key doit venir de /root/secret_zerossl.sh ou de l'env
+access_key="${access_key:-}"
 DOMAIN="si-10.cen-champagne-ardenne.org"                  # Votre domaine
 CERT_DIR="/etc/ssl/certs/si-10.cen-champagne-ardenne.org" # Répertoire certs
 CERT_ID_FILE="$CERT_DIR/cert_id"                          # Stockage de l'ID
@@ -20,8 +20,8 @@ command -v curl >/dev/null 2>&1 || { echo "curl manquant"; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo "jq manquant"; exit 1; }
 command -v openssl >/dev/null 2>&1 || { echo "openssl manquant"; exit 1; }
 
-if [ -z "$access_jey" ]; then
-  echo "Variable 'access_jey' absente. Définissez-la dans /root/secret_zerossl.sh (export access_jey=\"...\")"
+if [ -z "$access_key" ]; then
+  echo "Variable 'access_key' absente. Définissez-la dans /root/secret_zerossl.sh (export access_key=\"...\")"
   exit 1
 fi
 
@@ -35,9 +35,10 @@ Usage: manage_zerossl.sh <commande>
 Important : générez d'abord un CSR (recommandé: vous gardez la clé privée)
 Exemple:
   mkdir -p /etc/ssl/certs/votre_domaine
-openssl req -new -newkey rsa:2048 -nodes `
-  -keyout /etc/ssl/certs/votre_domaine/privkey.pem `
-  -out    /etc/ssl/certs/votre_domaine/csr.pem `
+
+  openssl req -new -newkey rsa:2048 -nodes \
+  -keyout /etc/ssl/certs/votre_domaine/privkey.pem \
+  -out    /etc/ssl/certs/votre_domaine/csr.pem \
   -subj "/CN=votre_domaine"
 
 Commandes:
@@ -49,7 +50,7 @@ Commandes:
   help          Affiche cette aide
 
 Notes:
-- Définissez 'access_jey' via /root/secret_zerossl.sh (voir exemple plus bas).
+- Définissez 'access_key' via /root/secret_zerossl.sh (voir exemple plus bas).
 - Si vous fournissez un CSR, ZeroSSL ne renverra PAS la clé privée: gardez votre clé locale.
 - L'ID du certificat est mémorisé dans: cert_id
 EOF
@@ -77,7 +78,7 @@ create_certificate() {
 
   # Construire le payload JSON proprement (csr inclus tel quel)
   payload="$(jq -n \
-    --arg access_key "$access_jey" \
+    --arg access_key "$access_key" \
     --arg cn "$DOMAIN" \
     --rawfile csr "$CSR_FILE" \
     '{
@@ -119,7 +120,7 @@ verify_domain() {
   load_cert_id
   verification_response="$(curl -s -X POST "https://api.zerossl.com/certificates/$CERT_ID/verify" \
     -H "Content-Type: application/json" \
-    -d '{ "access_key": "'"$access_jey"'" }')"
+    -d '{ "access_key": "'"$access_key"'" }')"
 
   if echo "$verification_response" | jq -e '.success == true' >/dev/null 2>&1; then
     echo "Domaine vérifié avec succès."
@@ -134,7 +135,7 @@ verify_domain() {
 get_certificate() {
   load_cert_id
   get_resp="$(curl -s -G "https://api.zerossl.com/certificates/$CERT_ID" \
-    --data-urlencode "access_key=$access_jey")"
+    --data-urlencode "access_key=$access_key")"
 
   # Affiche le status et quelques champs utiles
   echo "Informations du certificat:"
@@ -148,7 +149,7 @@ download_certificate() {
   zip_path="$CERT_DIR/${DOMAIN}_${CERT_ID}.zip"
   echo "Téléchargement du certificat (ZIP) vers: $zip_path"
   curl -f -sS -G "https://api.zerossl.com/certificates/$CERT_ID/download" \
-    --data-urlencode "access_key=$access_jey" \
+    --data-urlencode "access_key=$access_key" \
     -o "$zip_path"
 
   # Si le fichier ressemble à du texte, c'est probablement une erreur JSON
