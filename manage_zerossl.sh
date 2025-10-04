@@ -5,6 +5,7 @@ set -euo pipefail
 if [ -f /root/secret_zerossl.sh ]; then
   # shellcheck disable=SC1091
   . /root/secret_zerossl.sh
+  echo "Access key trouvée : $access_key."
 fi
 
 # Variables
@@ -14,9 +15,9 @@ DOMAIN="si-10.cen-champagne-ardenne.org"                  # Votre domaine
 CERT_DIR="/etc/ssl/certs/si-10.cen-champagne-ardenne.org" # Répertoire certs
 CERT_ID_FILE="$CERT_DIR/cert_id"                          # Stockage de l'ID
 CSR_FILE="$CERT_DIR/csr.pem"                              # Chemin du CSR
-VALIDATION_METHOD="${VALIDATION_METHOD:-HTTP_CSR_HASH}"   # Méthode de validation (HTTP_CSR_HASH|CNAME_CSR_HASH|EMAIL)
+VALIDATION_METHOD="HTTP_CSR_HASH"   # Méthode de validation (HTTP_CSR_HASH|CNAME_CSR_HASH|EMAIL)
 # Sinon methode par CNAME: CNAME_CSR_HASH
-# VALIDATION_METHOD="${VALIDATION_METHOD:-CNAME_CSR_HASH}"   # Méthode de validation ()
+# VALIDATION_METHOD="CNAME_CSR_HASH"   # Méthode de validation ()
 
 
 # Garde-fous pour verifier si les outils nécessaires sont présents
@@ -108,8 +109,8 @@ create_certificate() {
 # Fonction pour vérifier le domaine
 verify_domain() {
   load_cert_id
-  verification_response="$(curl -s -X POST "https://api.zerossl.com/certificates/$CERT_ID/verify?access_key=$access_key" \
-    --data-urlencode "validation_method=$VALIDATION_METHOD")"
+  verification_response="$(curl -s -X POST "https://api.zerossl.com/certificates/$CERT_ID/challenges?access_key=$access_key" \
+  --data-urlencode "validation_method=$VALIDATION_METHOD")"
 
   if echo "$verification_response" | jq -e '(.error | not)' >/dev/null 2>&1; then
     echo "Vérification envoyée (méthode: $VALIDATION_METHOD)."
