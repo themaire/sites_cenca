@@ -13,7 +13,7 @@ RUN chmod -R 755 /usr/local/apache2/htdocs
 COPY ./apache.conf /usr/local/apache2/conf/httpd.conf
 
 # Créer le répertoire pour les certificats SSL
-RUN mkdir -p /etc/ssl/certs/cenca.familleelie.fr
+RUN mkdir -p /etc/ssl/certs/si-10.cen-champagne-ardenne.org
 
 # Exposer les ports 80 et 443
 EXPOSE 80 443
