@@ -109,8 +109,11 @@ create_certificate() {
 # Fonction pour vérifier le domaine
 verify_domain() {
   load_cert_id
+  
   verification_response="$(curl -s -X POST "https://api.zerossl.com/certificates/$CERT_ID/challenges?access_key=$access_key" \
   --data-urlencode "validation_method=$VALIDATION_METHOD")"
+  sleep 1
+  echo "$verification_response" | jq .
 
   if echo "$verification_response" | jq -e '(.error | not)' >/dev/null 2>&1; then
     echo "Vérification envoyée (méthode: $VALIDATION_METHOD)."
@@ -121,6 +124,26 @@ verify_domain() {
     echo "$verification_response" | jq .
     exit 1
   fi
+
+}
+
+action_apache_container() {
+    local action=$1
+    case $action in
+        start)
+            echo "Démarrage du conteneur Apache..."
+            docker run -d --name apache-container -p 80:80 -v "/root/make_cert/$validation_file_name:/usr/local/apache2/htdocs/.well-known/pki-validation/$validation_file_name" httpd
+            ;;
+        stop)
+            echo "Arrêt du conteneur Apache..."
+            docker stop apache-container
+            sleep 1
+            docker rm apache-container
+            ;;
+        *)
+            echo "Usage: $0 {start|stop}"
+            ;;
+    esac
 }
 
 # Fonction "Get certificate" (métadonnées/status)
@@ -129,20 +152,39 @@ get_certificate() {
   get_resp="$(curl -s -G "https://api.zerossl.com/certificates/$CERT_ID" \
     --data-urlencode "access_key=$access_key")"
 
+  echo $get_resp | jq .
+
+  # Extraire le nom de fichier de la réponse
+  validation_file_name=$(echo "$get_resp" | jq -r --arg domain "$DOMAIN" '.validation.other_methods[$domain].file_validation_url_http | split("/") | last')
+  # Afficher le nom de fichier
+  # echo "Nom de fichier de validation: $validation_file_name"
+
+  # Extraire le contenu de file_validation_content
+  validation_content=$(echo "$get_resp" | jq -r --arg domain "$DOMAIN" '.validation.other_methods[$domain].file_validation_content')
+
+  # Vider le contenu du fichier
+  verification_file_path="/root/make_cert/$validation_file_name"
+  rm $verification_file_path && touch $verification_file_path
+
+  # Écrire chaque élément dans le fichier sans les fioritures
+  echo "$validation_content" | jq -r '.[]' >> "$verification_file_path"
+
   # Affiche le status et quelques champs utiles
   echo "Informations du certificat:"
-  echo "$get_resp" | jq '{id, status, common_name: .certificate.common_name, created: .created, expires: .expires, validation: .validation}'
+  # echo "$get_resp" | jq '{id, status, common_name: .certificate.common_name, created: .created, expires: .expires, validation: .validation}'
 }
 
 # Fonction pour télécharger le certificat (ZIP) et extraire
 download_certificate() {
   load_cert_id
 
+  url="https://api.zerossl.com/certificates/$CERT_ID/download?access_key=$access_key"
+  echo "URL du zip $url."
+
   zip_path="$CERT_DIR/${DOMAIN}_${CERT_ID}.zip"
   echo "Téléchargement du certificat (ZIP) vers: $zip_path"
-  curl -f -sS -G "https://api.zerossl.com/certificates/$CERT_ID/download" \
-    --data-urlencode "access_key=$access_key" \
-    -o "$zip_path"
+  
+  curl -f -sS -G $url -o "$zip_path"
 
   # Si le fichier ressemble à du texte, c'est probablement une erreur JSON
   if file -b --mime-type "$zip_path" 2>/dev/null | grep -qi 'text'; then
@@ -205,6 +247,7 @@ case "$1" in
     renew_certificate
     ;;
   verify)
+    get_certificate
     verify_domain
     ;;
   get)
@@ -213,7 +256,14 @@ case "$1" in
   download)
     download_certificate
     ;;
-  help|-h|--help)
+  ctstart)
+    get_certificate
+    action_apache_container start
+    ;;
+  ctstop)
+    action_apache_container stop 
+    ;;
+help|-h|--help)
     usage
     ;;
   *)
