@@ -197,6 +197,9 @@ download_certificate() {
     echo "Extraction du ZIP dans $CERT_DIR"
     unzip -o -q "$zip_path" -d "$CERT_DIR"
     echo "Contenu extrait. Pensez à pointer Apache vers les bons fichiers (ex: certificate.crt, ca_bundle.crt)."
+    cat "$CERT_DIR/certificate.crt" "$CERT_DIR/ca_bundle.crt" > "$CERT_DIR/fullchain.pem"
+    chmod 600 "$CERT_DIR"/*.pem
+    chmod 644 "$CERT_DIR/certificate.crt" "$CERT_DIR/ca_bundle.crt" "$CERT_DIR/fullchain.pem"
   else
     echo "unzip non disponible. Conservez le ZIP à cet emplacement et extrayez-le manuellement."
   fi
