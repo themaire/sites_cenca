@@ -756,7 +756,7 @@ private prepareOperationDataForSubmission(form: FormGroup): Operation {
   }
 
   passwordStrengthValidator(): Validators {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&]{8,}$/;
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
       return passwordRegex.test(control.value)
