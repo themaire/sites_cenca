@@ -139,6 +139,10 @@ body {
   @include custom-backdrop($redBackdrop);
 }
 
+.custom-backdrop-duplicate {
+  @include custom-backdrop($blueBackdrop);
+}
+
 .custom-backdrop-gerer {
   @include custom-backdrop($gererBackdrop);
 }

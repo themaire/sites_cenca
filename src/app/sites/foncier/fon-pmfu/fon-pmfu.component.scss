@@ -7,6 +7,7 @@
   width: 100%;
   height: 100%;
   min-height: 100vh;
+<<<<<<< HEAD
   & > p {
     writing-mode: vertical-lr;
     text-orientation: sideways;
@@ -53,6 +54,23 @@
   box-sizing: border-box;
   border-top: 1px solid lightgray;
 }
+=======
+}
+.proteger {
+  padding-bottom: 15px;
+  @include bandeau($couleur-faune);
+}
+
+.table-container {
+  display: flex;
+  @include align(center, center);
+  width: 100%;
+}
+
+.table {
+  width: 80%;
+}
+>>>>>>> upstream/dev
 
 .add-pmfu {
   display: flex;

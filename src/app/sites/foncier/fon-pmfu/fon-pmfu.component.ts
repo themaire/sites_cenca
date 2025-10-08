@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   Component,
   OnInit,
@@ -7,12 +8,18 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
+=======
+import { Component, OnInit, Input, ChangeDetectorRef, SimpleChanges } from '@angular/core';
+>>>>>>> upstream/dev
 // import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+<<<<<<< HEAD
 import { MatFormFieldModule } from '@angular/material/form-field';
+=======
+>>>>>>> upstream/dev
 
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Overlay } from '@angular/cdk/overlay';
@@ -22,6 +29,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ProjetMfu, ProjetsMfu } from '../foncier';
 import { DetailPmfuComponent } from './detail-pmfu/detail-pmfu.component';
 import { FormService } from '../../../services/form.service';
+<<<<<<< HEAD
 import { ViewChild, AfterViewInit } from '@angular/core';
 
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -84,6 +92,32 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
   initialFormValues!: FormGroup;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+=======
+
+@Component({
+  selector: 'app-fon-pmfu',
+  standalone: true,
+  imports: [CommonModule, MatTableModule, MatIconModule],
+  templateUrl: './fon-pmfu.component.html',
+  styleUrl: './fon-pmfu.component.scss',
+})
+export class FonPmfuComponent implements OnInit {
+  public isAddPmfu: boolean = false;
+  public isEditPmfu: boolean = false;
+
+  pmfuLite!: ProjetsMfu[];
+  pmfu?: ProjetMfu;
+  isNew: boolean = false;
+  displayedColumns: string[] = [
+    'pmfu_name',
+    'pmfu_responsable',
+    'pmfu_commune',
+  ];
+  dataSource!: MatTableDataSource<ProjetsMfu>;
+  pmfuForm!: FormGroup;
+  initialFormValues!: FormGroup;
+  isFormValid: boolean = false;
+>>>>>>> upstream/dev
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -92,16 +126,20 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     private overlay: Overlay
   ) {}
+<<<<<<< HEAD
   ngAfterViewInit() {
     if (this.dataSource) {
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
     }
   }
+=======
+>>>>>>> upstream/dev
 
   async ngOnInit() {
     const subroute = 'pmfu/id=0/lite';
     const data = await this.foncierService.getProjetsMfu(subroute);
+<<<<<<< HEAD
     this.pmfuLite = data;
     this.initDataSource(this.pmfuLite);
     console.log('data dans ngOnInit() du component fon-pmfu : ');
@@ -111,6 +149,13 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
     this.applyFilter(fakeEvent);
   }
 
+=======
+    console.log('data dans ngOnInit() du component fon-pmfu : ');
+    console.log(data);
+    this.pmfuLite = data;
+    this.dataSource = new MatTableDataSource(this.pmfuLite);
+  }
+>>>>>>> upstream/dev
   onSelect(ProjetMfu?: ProjetMfu): void {
     if (ProjetMfu) {
       this.openDialog(ProjetMfu);
@@ -121,6 +166,10 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
 
   openDialog(ProjetMfu?: ProjetMfu): void {
     // Prend un Projet MFU en paramètre et ouvre une fenetre de dialogue
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/dev
     // Le but est de donner un Projet MFU à la fenetre de dialogue
     // Si le Projet MFU est vide alors on ouvre une fenetre de dialogue vide
     // Ce qui veut dire que l'on doit créé un Projet MFU vide mais qui
@@ -131,6 +180,7 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
 
     // Ouverture de la fenetre de dialogue
     // tout en créant la constante dialogRef
+<<<<<<< HEAD
     if (ProjetMfu) {
       const dialogRef = this.dialog.open(DetailPmfuComponent, {
         data: ProjetMfu, // <---------------- données injectée au composant ProjetComponent dont l'id du porjet selectionné
@@ -211,6 +261,69 @@ cleanString(str: string): string {
   toggleEditPmfu(mode: string): void {
     console.log(
       "----------!!!!!!!!!!!!--------toggleEditPmfu('" +
+=======
+    const dialogRef = this.dialog.open(DetailPmfuComponent, {
+      data: ProjetMfu, // <---------------- données injectée au composant ProjetComponent dont l'uuid du porjet selectionné
+      minWidth: '50vw',
+      maxWidth: '95vw',
+      height: '70vh',
+      maxHeight: '90vh',
+      hasBackdrop: true, // Avec fond
+      backdropClass: 'custom-backdrop-gerer', // Personnalisé
+      enterAnimationDuration: '400ms',
+      exitAnimationDuration: '300ms',
+
+      scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
+    });
+
+    // Préparer à l'avance quand la fenetre de dialogue se ferme
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('La fenetre de dialogue vient de se fermer');
+      this.ngOnChanges({}); // Mettre à jour la liste des projets (mat-table)
+    });
+  }
+
+  async ngOnChanges(changes: SimpleChanges) {
+    // Recuperer les opérations du site selectionné dans un tableau mat-table
+    // Ce component est chargé en meme temps que sitesDetail.
+    let subroute: string = '';
+
+    if (this.pmfu !== undefined) {
+      // Si le site selectionné n'est pas vide
+      console.log(this.pmfu);
+      subroute = `pmfu/id=${this.pmfu.pmfu_id}/lite?`; // On récupère les projets du site selectionné
+      console.log(
+        "Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" +
+          this.pmfu.pmfu_id
+      );
+
+      // ChatGPT 19/07/2024
+      try {
+        // On récupère la liste des projets du site
+        this.pmfuLite = await this.foncierService.getProjetsMfu(subroute);
+        // Assure que chaque projet a un tableau 'communes'
+        // On ajoute le geojson du site à chaque projet
+        // Car l'étape précedente ne replit pas cette information
+        // this.projetsLite.forEach(projet => {
+        //   if (this.inputDetail !== undefined) {
+        //     projet.geojson_site = this.inputDetail.geojson;
+        //   }
+        // });
+        // console.log('Données de projetsLite :', this.projetsLite);
+        this.dataSource = new MatTableDataSource(this.pmfuLite);
+
+        // console.log('Données de this.Mfus après assignation :', this.actes);
+        // this.cdr.detectChanges(); // Forcer la détection des changements
+      } catch (error) {
+        console.error('Error fetching documents', error);
+      }
+    }
+  }
+
+  toggleEditPmfu(mode: string): void {
+    console.log(
+      "----------!!!!!!!!!!!!--------toggleEditOperation('" +
+>>>>>>> upstream/dev
         mode +
         "') dans le composant extraction"
     );
@@ -223,11 +336,21 @@ cleanString(str: string): string {
       ); // Changer l'état du formulaire
 
       console.log(
+<<<<<<< HEAD
         "isEditExtraction apres toggleEditPmfu('" + mode + "') :",
         this.isEditPmfu
       );
     } else if (mode === 'add') {
       console.log('Appel de makeForm() pour créer un nouveau formulaire vide');
+=======
+        "isEditExtraction apres toggleEditOperation('" + mode + "') :",
+        this.isEditPmfu
+      );
+    } else if (mode === 'add') {
+      console.log(
+        'Appel de makeOperationForm() pour créer un nouveau formulaire vide'
+      );
+>>>>>>> upstream/dev
 
       if (!this.isAddPmfu) {
         // Création du formulaire on est pas en mode ajout
@@ -270,6 +393,7 @@ cleanString(str: string): string {
       console.log('Form data to submit:', formData);
     }
   }
+<<<<<<< HEAD
 
 applyFilter(event: Event | string) {
   const value =
@@ -285,4 +409,6 @@ applyFilter(event: Event | string) {
   }
 }
 
+=======
+>>>>>>> upstream/dev
 }

@@ -39,7 +39,6 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
 
   <div>
     <!-- Si le booleen !isEditObjectif && !isAddObjectif sont false, on montre la liste des opérations  -->
-
     <ng-container *ngIf="objectifs.length > 0; then table else noObjectifs"></ng-container>
 
     <ng-template #table>
@@ -59,6 +58,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
               {{ element.enjeux_eco?.split(' ').slice(0, 5).join(' ') }}<span *ngIf="element.enjeux_eco?.split(' ').length > 5">...</span>
             </mat-cell>
           </ng-container>
+
           <ng-container matColumnDef="pression_maitrise">
             <mat-header-cell *matHeaderCellDef> Pressions à maitriser </mat-header-cell>
             <mat-cell *matCellDef="let element">
@@ -66,6 +66,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
               <span *ngIf="element.pression_maitrise?.split(' ').length > 5">...</span>
             </mat-cell>
           </ng-container>
+          
           <ng-container matColumnDef="surf_totale">
             <mat-header-cell *matHeaderCellDef> Surf. d'intervention (ha) </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{ element.surf_totale }} </mat-cell>
@@ -101,8 +102,8 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
         <form *ngIf="form" [formGroup]="form">
 
           <!-- Première ligne -->
-          <div>
-            <mat-form-field>
+          <div class="center-screen">
+            <mat-form-field class="fixed-width-large">
               <mat-label>Objectif opérationnel</mat-label>
               <mat-select [(ngModel)]="selectedtypeObjectifOpe" formControlName="obj_ope">
                 @for (type of typeObjectifOpe; track type) {
@@ -114,7 +115,11 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
               </mat-error>
             </mat-form-field>
             
-            <mat-form-field>
+          </div>
+          
+          <!-- Deuxième ligne -->
+          <div class="center-screen">
+            <mat-form-field class="fixed-width">
               <mat-label>Niveau d'enjeux</mat-label>
               <mat-select [(ngModel)]="selectedNvEnjeux" formControlName="nv_enjeux">
                 @for (type of NvEnjeux; track type) {
@@ -125,11 +130,8 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
                 Ce champ est obligatoire.
               </mat-error>
             </mat-form-field>
-          </div>
 
-          <!-- Deuxième ligne -->
-          <div>
-            <mat-form-field>
+            <mat-form-field class="fixed-width">
               <mat-label>Enjeux écologiques</mat-label>
               <input matInput formControlName="enjeux_eco">
               <mat-error *ngIf="form.get('enjeux_eco')?.hasError('required')">
@@ -140,7 +142,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
               </mat-error>
             </mat-form-field>
 
-            <mat-form-field *ngIf="pro_webapp">
+            <mat-form-field class="fixed-width-large" *ngIf="pro_webapp">
               <mat-label>Pressions à maîtriser</mat-label>
               <input matInput formControlName="pression_maitrise">
               <mat-error *ngIf="form.get('pression_maitrise')?.hasError('required')">

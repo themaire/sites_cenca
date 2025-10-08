@@ -1,3 +1,11 @@
+// Aligne les éléments aux extrémités dans la div .bottom
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 24px;
+}
 @import "../../../../../styles/mixins.scss";
 @import "../../../../../styles/variables.scss";
 
@@ -144,6 +152,38 @@
   @include suppression-btn();
 }
 
+// Style pour l'icône d'information
+.info-icon {
+  font-size: 16px;
+  margin-left: 4px;
+  color: #666;
+  cursor: help;
+}
+
+// Pour le bouton de duplication
+.duplication {
+  @include duplication-btn();
+}
+
 .nav-buttons {
   @include nav-buttons();
+}
+
+.pat-fields {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  // ...autres styles éventuels...
+}
+
+.pat-fields mat-form-field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .pat-fields {
+    flex-direction: column;
+    gap: 8px;
+  }
 }

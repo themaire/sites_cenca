@@ -12,7 +12,6 @@
       -- Variable newProjet : {{ newProjet }}<br>
       <ng-container *ngIf="projet?.pro_webapp">-- pro_webapp : {{ projet?.pro_webapp }}<br></ng-container> -->
 
-
       <ng-container *ngTemplateOutlet="stepper"></ng-container>
 
     </div>
@@ -237,9 +236,9 @@
             </div>
       </div> -->
 
-      <div class="nav-buttons">
+      <!-- <div class="nav-buttons">
         <button mat-button matStepperNext>Suivant</button>
-      </div>
+      </div> -->
     </mat-step>
 
     <mat-step state="flag" *ngIf="projet && newProjet === false">
@@ -250,10 +249,10 @@
 
       </ng-container>
 
-      <div class="nav-buttons">
+      <!-- <div class="nav-buttons">
         <button mat-button matStepperPrevious>Précédent</button>
         <button mat-button matStepperNext>Suivant</button>
-      </div>
+      </div> -->
     </mat-step>
 
     <!-- <mat-step state="landscape">
@@ -285,10 +284,10 @@
 
       </ng-container>
 
-      <div class="nav-buttons">
+      <!-- <div class="nav-buttons">
         <button mat-button matStepperPrevious>Précédent</button>
         <button mat-button matStepperNext>Suivant</button>
-      </div>
+      </div> -->
 
     </mat-step>
 
@@ -386,11 +385,10 @@
         <!-- <button mat-button type="submit">SOUMETTRE</button> -->
       </form>
       
-      <div class="nav-buttons">
+      <!-- <div class="nav-buttons">
         <button mat-button matStepperPrevious>Précédent</button>
-        <!-- <button mat-button (click)="stepper.reset()">Retour au début (étape 1)</button> -->
         <button mat-button (click)="stepper.selectedIndex = 0">Retour au début (étape 1)</button>
-      </div>
+      </div> -->
 
     </mat-step>
 

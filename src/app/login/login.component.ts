@@ -59,7 +59,7 @@ export class LoginComponent implements OnDestroy {
     return /\d/.test(this.newPasswordValue);
   }
   get hasSpecial(): boolean {
-    return /[@$!%*?&]/.test(this.newPasswordValue);
+    return /[@$!%*?&_]/.test(this.newPasswordValue);
   }
 
   // Indique si l'utilisateur est en mode de réinitialisation de mot de passe avec un token
