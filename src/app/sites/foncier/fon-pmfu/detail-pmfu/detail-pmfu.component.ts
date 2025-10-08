@@ -594,7 +594,7 @@ export class DetailPmfuComponent {
 
     // Appel de la boîte de dialogue de confirmation
     this.confirmationService
-      .confirm('Confirmation de suppression', message)
+      .confirm('Confirmation de suppression', message, 'delete')
       .subscribe((result) => {
         if (result) {
           // L'utilisateur a confirmé la suppression

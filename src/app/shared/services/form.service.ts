@@ -22,7 +22,6 @@ import {
 } from '../../sites/site-detail/detail-projets/projet/operation/operations';
 import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { ProjetMfu } from '../../sites/foncier/foncier';
-import { ProjetMfu } from '../../sites/foncier/foncier';
 import { SelectValue } from '../interfaces/formValues';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
