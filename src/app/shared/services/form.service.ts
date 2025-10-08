@@ -14,12 +14,14 @@ import {
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
+
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
 import {
   Operation,
   OperationCheckbox,
 } from '../../sites/site-detail/detail-projets/projet/operation/operations';
 import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
+import { ProjetMfu } from '../../sites/foncier/foncier';
 import { ProjetMfu } from '../../sites/foncier/foncier';
 import { SelectValue } from '../interfaces/formValues';
 
@@ -59,6 +61,20 @@ export class FormService {
       }
       const wordCount = control.value.trim().split(/\s+/).length;
       return wordCount >= minWords ? null : { minWords: true };
+    };
+  }
+
+  // Validation personnalisée pour vérifier qu'une valeur est un nombre entier
+  integerValidator() {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null; // Pas d'erreur si le champ est vide
+      }
+      const value = Number(control.value);
+      if (isNaN(value) || !Number.isInteger(value)) {
+        return { integer: true };
+      }
+      return null;
     };
   }
 
@@ -317,10 +333,9 @@ export class FormService {
         nb_jours_paturage: [operation?.nb_jours_paturage || null],
         chargement_paturage: [operation?.chargement_paturage || null],
         abroutissement_paturage: [operation?.abroutissement_paturage || null],
-        recouvrement_ligneux_paturage: [
-          operation?.recouvrement_ligneux_paturage || null,
-        ],
-
+        recouvrement_ligneux_paturage: [operation?.recouvrement_ligneux_paturage || null],
+        nom_parc: [operation?.nom_parc || ''],
+        
         interv_cloture: [operation?.interv_cloture || null],
 
         type_intervention_hydro: [operation?.type_intervention_hydro || null],
@@ -560,22 +575,22 @@ export class FormService {
       // Step 3
       description_programme: formValue.step3?.description_programme,
 
-      // Step 4
-      date_debut: formValue.step4?.date_debut,
-      date_fin: formValue.step4?.date_fin,
-      quantite: formValue.step4?.quantite,
-      unite: formValue.step4?.unite,
-      exportation_fauche: formValue.step4?.exportation_fauche,
-      total_exporte_fauche: formValue.step4?.total_exporte_fauche,
-      productivite_fauche: formValue.step4?.productivite_fauche,
-      effectif_paturage: formValue.step4?.effectif_paturage,
-      nb_jours_paturage: formValue.step4?.nb_jours_paturage,
-      chargement_paturage: formValue.step4?.chargement_paturage,
-      abroutissement_paturage: formValue.step4?.abroutissement_paturage,
-      recouvrement_ligneux_paturage:
-        formValue.step4?.recouvrement_ligneux_paturage,
-      interv_cloture: formValue.step4?.interv_cloture,
-      type_intervention_hydro: formValue.step4?.type_intervention_hydro,
+    // Step 4
+    date_debut: formValue.step4?.date_debut,
+    date_fin: formValue.step4?.date_fin,
+    quantite: formValue.step4?.quantite,
+    unite: formValue.step4?.unite,
+    exportation_fauche: formValue.step4?.exportation_fauche,
+    total_exporte_fauche: formValue.step4?.total_exporte_fauche,
+    productivite_fauche: formValue.step4?.productivite_fauche,
+    effectif_paturage: formValue.step4?.effectif_paturage,
+    nb_jours_paturage: formValue.step4?.nb_jours_paturage,
+    chargement_paturage: formValue.step4?.chargement_paturage,
+    abroutissement_paturage: formValue.step4?.abroutissement_paturage,
+    recouvrement_ligneux_paturage: formValue.step4?.recouvrement_ligneux_paturage,
+    nom_parc: formValue.step4?.nom_parc,
+    interv_cloture: formValue.step4?.interv_cloture,
+    type_intervention_hydro: formValue.step4?.type_intervention_hydro,
 
       // Step 5
       titre: formValue.step5?.titre,
@@ -898,8 +913,7 @@ export class FormService {
   }
 
   passwordStrengthValidator(): Validators {
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_\-])[A-Za-z\d@$!%*?&_\-]{8,}$/;
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
       return passwordRegex.test(control.value)
