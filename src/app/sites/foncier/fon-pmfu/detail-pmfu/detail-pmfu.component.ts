@@ -33,7 +33,8 @@ import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { FormService } from '../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FileExploratorComponent } from '../../../../shared/file-explorator/file-explorator.component';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { LoginService } from '../../../../login/login.service';
 import { Subscription, lastValueFrom } from 'rxjs';
@@ -76,6 +77,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { renderAsync } from 'docx-preview';
 
 import { ApiResponse } from '../../../../shared/interfaces/api';
+import { User } from '../../../../login/user.model';
 export interface Section {
   cd_type: number;
   name: string;
@@ -90,6 +92,7 @@ export interface Section {
     MatDialogContent,
     MatIconModule,
     FormButtonsComponent,
+    FileExploratorComponent,
     ReactiveFormsModule,
     MatStepperModule,
     MatInputModule,
@@ -110,14 +113,18 @@ export class DetailPmfuComponent {
   projetLite!: ProjetsMfu;
   isLoading: boolean = true;
   loadingDelay: number = 400;
-  doc_type!: SelectValue[];
+  doc_types!: {
+    cd_type: number;
+    libelle: string;
+    path: string;
+    field: string;
+  }[];
   selectedFolder?: number;
   isDragging: boolean = false;
   isAddPmfu: boolean = false;
   isEditPmfu: boolean = false;
   newPmfu: boolean = false;
   pmfuTitle: String = '';
-
   pmfuForm!: FormGroup;
   initialFormValues!: ProjetMfu;
   docForm!: FormGroup;
@@ -136,9 +143,11 @@ export class DetailPmfuComponent {
   imagePathList?: string[];
   filesNames: string[][] = [];
   fileErrors: Record<string, string[]> = {};
-
+  responsables: SelectValue[] = [];
   private foldersSubject = new BehaviorSubject<Section[]>([]);
+  allowedTypes: Record<string, string[]> = {};
   folders$ = this.foldersSubject.asObservable();
+  @ViewChild(FileExploratorComponent) fileExplorator!: FileExploratorComponent;
   constructor(
     public docfileService: DocfileService,
     private confirmationService: ConfirmationService,
@@ -227,7 +236,6 @@ export class DetailPmfuComponent {
               this.pmfu = result.formValue;
               this.isEditPmfu = result.isEditMode;
               this.initialFormValues = result.formValue;
-              this.updateFolderCountsFromPmfu(this.pmfu);
               try {
                 // on déclenche les uploads et on attend qu'ils soient terminés (ou échouent)
                 await this.docfileService.handleDocfileSubmission(
@@ -235,6 +243,9 @@ export class DetailPmfuComponent {
                   this.fileInput,
                   this.pmfu.pmfu_id
                 );
+                if (this.fileExplorator) {
+                  this.fileExplorator.updateFolderCounts();
+                }
               } catch (err) {
                 console.warn('Upload des fichiers échoué ou interrompu :', err);
                 // gérer l'erreur si besoin (snackbar, etc.)
@@ -260,6 +271,7 @@ export class DetailPmfuComponent {
           this.newPmfu
       );
       this.pmfuForm.value.pmfu_id = 0;
+
       console.log('pmfuForm avant envoi :');
       console.log(this.pmfuForm.value);
       const submitObservable = this.formService.putBdd(
@@ -319,22 +331,12 @@ export class DetailPmfuComponent {
   }
 
   async ngOnInit() {
-    const subrouteTypeDoc = `sites/selectvalues=sitcenca.libelles/doc_type`;
-    this.formService.getSelectValues$(subrouteTypeDoc).subscribe(
-      (selectValues: SelectValue[] | undefined) => {
-        console.log('Liste de doc_type récupérée avec succès :');
-        console.log(selectValues);
-        this.doc_type = selectValues || [];
-      },
-      (error) => {
-        console.error(
-          'Erreur lors de la récupération de la liste de choix',
-          error
-        );
-      }
-    );
+    await this.docfileService.loadDocTypes(1);
+    this.doc_types = this.docfileService.doc_types;
+    this.initializeAllowedTypes();
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     const cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
+
     // Récupérer les données d'un projet ou créer un nouveau projet
     // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
     if (this.projetLite?.pmfu_id) {
@@ -342,6 +344,13 @@ export class DetailPmfuComponent {
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
+          this.formService
+            .getSelectValues$('sites/selectvalues=admin.salaries/')
+            .subscribe((selectValues: SelectValue[] | undefined) => {
+              this.responsables = selectValues || [];
+              console.log('this.responsables : ');
+              console.log(this.responsables);
+            });
           // Accéder aux données du projet (va prendre dans le schema opegerer ou opeautre)
 
           // Accéder données du projet
@@ -392,10 +401,15 @@ export class DetailPmfuComponent {
         // Le form_group correspondant aux documents
         this.docForm = this.formService.newDocForm();
         // Définir les valeurs par défaut pour créateur et responsable
-        this.pmfuForm.patchValue({
-          pmfu_responsable: cd_salarie,
-        });
-
+        this.formService
+          .getSelectValues$('sites/selectvalues=admin.salaries/')
+          .subscribe((selectValues: SelectValue[] | undefined) => {
+            this.responsables = selectValues || [];
+            this.pmfuForm.patchValue({
+              pmfu_responsable: cd_salarie ? cd_salarie : '',
+              pmfu_createur: cd_salarie,
+            });
+          });
         console.log(
           'Formulaire de projet créé avec succès :',
           this.pmfuForm.value
@@ -424,36 +438,52 @@ export class DetailPmfuComponent {
       }
     }
   }
-  private allowedTypes: Record<string, string[]> = {
-    noteBureau: ['.pdf', '.doc', '.docx'],
-    decisionBureau: ['.pdf', '.doc', '.docx'],
-    projetActe: ['.pdf', '.doc', '.docx'],
-    photosSite: ['.jpg', '.jpeg', '.png'],
+  private defaultExtensions: Record<string, string[]> = {
+    doc: ['.pdf', '.doc', '.docx'],
+    image: ['.jpg', '.jpeg', '.png'],
   };
+  initializeAllowedTypes(): void {
+    this.allowedTypes = this.doc_types.reduce((acc, type) => {
+      const name = type.field;
+      const isImage =
+        name.toLowerCase().includes('photo') ||
+        name.toLowerCase().includes('image');
+      acc[name] = isImage
+        ? this.defaultExtensions['image']
+        : this.defaultExtensions['doc'];
+      return acc;
+    }, {} as Record<string, string[]>);
+
+    console.log('allowedTypes généré :', this.allowedTypes);
+  }
   private isFileTypeAllowed(file: File, field: string): boolean {
     const exts = this.allowedTypes[field];
-    if (!exts) return true;
+    // Vérifie si le type de fichier existe dans allowedTypes
+    if (!exts) {
+      console.warn(
+        `Aucune règle trouvée pour ${field}. allowedTypes =`,
+        this.allowedTypes
+      );
+      this.fileErrors[field] = this.fileErrors[field] || [];
+      this.fileErrors[field].push('Type de fichier non reconnu.');
+      return false;
+    }
 
     const fileName = file.name.toLowerCase();
     const valid = exts.some((ext) => fileName.endsWith(ext));
-
+    // Ajouter un message d'erreur si le fichier n'est pas autorisé
     if (!valid) {
-      this.addFileError(field, file.name);
+      this.fileErrors[field] = this.fileErrors[field] || [];
+      this.fileErrors[field].push("Le fichier n'est pas autorisé");
+      setTimeout(() => {
+        this.fileErrors[field] = [];
+      }, 3000);
+      console.log(this.fileErrors[field]);
     }
 
     return valid;
   }
-  private addFileError(field: string, fileName: string) {
-    if (!this.fileErrors[field]) {
-      this.fileErrors[field] = [];
-    }
-    const errorMsg = `Le fichier "${fileName}" n'est pas autorisé`;
-    this.fileErrors[field].push(errorMsg);
-    setTimeout(() => {
-    this.fileErrors[field] = this.fileErrors[field].filter(err => err !== errorMsg);
-  }, 3000);
 
-  }
   onFileSelected(event: any, controlName: string) {
     const files: File[] = Array.from(event.target.files);
 
@@ -494,7 +524,7 @@ export class DetailPmfuComponent {
 
       files.forEach((file) => {
         if (!this.isFileTypeAllowed(file, field)) {
-          console.warn(`❌ Fichier refusé (${file.name}) pour ${field}`);
+          console.warn(`Fichier refusé (${file.name}) pour ${field}`);
           return;
         }
 
@@ -534,17 +564,17 @@ export class DetailPmfuComponent {
   }
 
   hasFiles(): void {
+    console.log('docForm.value =', this.docForm.value);
     const v = this.docForm.value || {};
-    console.log('Valeurs du formulaire docForm :', v);
-    let hasFiles = Boolean(
-      // Cherche des fichiers
-      v.noteBureau != undefined ||
-        v.decisionBureau != undefined ||
-        v.projetActe != undefined ||
-        v.photosSite != undefined
-    );
+    const types = this.docfileService.getTypeFields();
+
+    const hasFiles = types.some((name) => {
+      const val = v[name];
+      return val !== undefined && val !== null && val.length > 0;
+    });
+
     this.docfileService.hasFiles = hasFiles;
-    console.log('this.docfileService.hasFiles = ' + hasFiles);
+    console.log('this.docfileService.hasFiles =', hasFiles);
   }
 
   dialogConfig = {
@@ -627,7 +657,7 @@ export class DetailPmfuComponent {
     });
   }
   getFileUrl(filename: string): string {
-    return `http://localhost:8887/uploads/${filename}`;
+    return `http://localhost:8887/${filename}`;
   }
 
   openFile(filename: string): void {
@@ -693,7 +723,7 @@ export class DetailPmfuComponent {
         '4': this.pmfu.note_bureau_nb,
       };
 
-      const newFolders: Section[] = (this.doc_type || []).map((docType) => ({
+      const newFolders: Section[] = (this.doc_types || []).map((docType) => ({
         cd_type: Number(docType.cd_type),
         name: docType.libelle,
         numberElements: typeToField[String(docType.cd_type)] ?? 0,
@@ -713,7 +743,7 @@ export class DetailPmfuComponent {
   }
 
   trackByFolder(index: number, folder: any) {
-    return folder.cd_type; // ou un id unique
+    return folder.cd_type; // id de type unique
   }
   updateFolderCountsFromPmfu(pmfu: ProjetMfu) {
     const typeToField: Record<string, number | undefined> = {
@@ -724,7 +754,7 @@ export class DetailPmfuComponent {
     };
 
     // Récupérer les doc_type existants (this.doc_type doit être déjà initialisé)
-    const newFolders: Section[] = (this.doc_type || []).map((docType) => ({
+    const newFolders: Section[] = (this.doc_types || []).map((docType) => ({
       cd_type: Number(docType.cd_type),
       name: docType.libelle,
       numberElements: typeToField[String(docType.cd_type)] ?? 0,
@@ -748,7 +778,7 @@ export class DetailPmfuComponent {
     console.log('imagePathList:', this.imagePathList);
   }
   openImage(imagePath: string) {
-    const url = 'http://localhost:8887/uploads/' + imagePath;
+    const url = 'http://localhost:8887/' + imagePath;
     const dialogRef = this.dialog.open(ImagePmfuComponent, {
       data: {
         images: this.imagePathList?.slice(0, this.imagePathList.length / 2),

@@ -217,7 +217,7 @@ export class ProjetService {
   }
 
   uploadDocfile(formData: FormData): Observable<ApiResponse> {
-    const url = `${this.activeUrl}put/table=pmfu_docs`;
+    const url = `${this.activeUrl}put/table=docs`;
 
     // Log du contenu du FormData avant envoi
     console.log(

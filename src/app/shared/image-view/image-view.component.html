@@ -1,0 +1,26 @@
+<div class="carousel-container" *ngIf="images.length">
+  <button class="nav left" (click)="prev()"><</button>
+
+  <div class="carousel-image">
+    <img [src]="images[currentIndex]" alt="Image {{ currentIndex + 1 }}" />
+  </div>
+
+  <button class="nav right" (click)="next()">></button>
+  <div class="bottom">
+    <mat-icon
+      aria-hidden="false"
+      aria-label="save icon"
+      fontIcon="save_alt"
+      class="icon"
+      (click)="saveImage(images[currentIndex])"
+    ></mat-icon>
+    <div class="carousel-indicators">
+      <span
+        *ngFor="let img of images; let i = index"
+        [class.active]="i === currentIndex"
+        (click)="currentIndex = i"
+      >
+      </span>
+    </div>
+  </div>
+</div>

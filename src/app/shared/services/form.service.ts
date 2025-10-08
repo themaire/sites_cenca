@@ -27,7 +27,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../../sites/sites.service';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
-
+import { DocfileService } from './docfile.service';
 import { v4 as uuidv4 } from 'uuid';
 
 // import { now } from 'moment';
@@ -47,7 +47,8 @@ export class FormService {
     private sitesService: SitesService,
     private projetService: ProjetService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private docfileService: DocfileService
   ) {}
 
   // Validation personnalisée pour vérifier qu'un champ contient au moins 2 mots si non vide
@@ -368,7 +369,7 @@ export class FormService {
     return this.fb.group({
       pmfu_id: [projet?.pmfu_id || new_pmfu_id],
       pmfu_nom: [projet?.pmfu_nom || '', Validators.required],
-      pmfu_responsable: [projet?.pmfu_responsable || ''],
+      pmfu_responsable: [projet?.pmfu_responsable || null],
       pmfu_agence: [projet?.pmfu_agence || ''],
       pmfu_associe: [projet?.pmfu_associe || ''],
       pmfu_etapes: [projet?.pmfu_etapes || ''],
@@ -393,9 +394,9 @@ export class FormService {
       pmfu_signature: [projet?.pmfu_signature || null],
       pmfu_echeances: [projet?.pmfu_echeances || ''],
       pmfu_creation: [projet?.pmfu_creation || new Date()],
-      pmfu_derniere_maj: [new Date()],
       pmfu_photos_site: [projet?.pmfu_photos_site || ''],
       pmfu_date_ajout: [projet?.pmfu_date_ajout || null],
+      pmfu_createur: [projet?.pmfu_createur || ''],
     });
   }
 
@@ -407,17 +408,28 @@ export class FormService {
     });
   }
   newDocForm(pmfu?: ProjetMfu): FormGroup {
-    return this.fb.group({
-      pmfu_id: [pmfu?.pmfu_id || null, Validators.required],
-      noteBureau: [null],
-      decisionBureau: [null],
-      projetActe: [null],
-      photosSite: [null],
-      noteBureauNb: [pmfu?.note_bureau_nb || null],
-      decisionBureauNb: [pmfu?.decision_bureau_nb || null],
-      projetActeNb: [pmfu?.projet_acte_nb || null],
-      photosSiteNb: [pmfu?.photos_site_nb || null]
+    const group: any = {
+      ref_id: [pmfu?.pmfu_id || null, Validators.required],
+    };
+
+    const types = this.docfileService.getTypeFields();
+
+    types.forEach((type) => {
+      group[type] = [null];
+
+      if (pmfu) {
+        const propertyName = `${type}_nb` as keyof ProjetMfu;
+        if (propertyName in pmfu) {
+          group[`${type}Nb`] = [pmfu[propertyName]];
+        } else {
+          group[`${type}Nb`] = [null];
+        }
+      } else {
+        group[`${type}Nb`] = [null];
+      }
     });
+
+    return this.fb.group(group);
   }
   getFormValidityObservable(): Observable<boolean> {
     return this.formValiditySubject.asObservable();
@@ -638,7 +650,9 @@ export class FormService {
     snackbar: MatSnackBar,
     uuid?: String,
     initialFormValues?: any
-  ): Observable<{ isEditMode: boolean; formValue: any; isEdited?: boolean }> | undefined {
+  ):
+    | Observable<{ isEditMode: boolean; formValue: any; isEdited?: boolean }>
+    | undefined {
     // Cette fonction permet de sauvegarder les modifications
     // Vérifie si le formulaire est valide
     // Envoie les modifications au serveur
@@ -761,7 +775,7 @@ export class FormService {
             return {
               isEditMode: false,
               formValue: value,
-              isEdited: true
+              isEdited: true,
             };
           }),
           tap(() => {

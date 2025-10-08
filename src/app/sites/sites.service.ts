@@ -109,6 +109,15 @@ export class SitesService {
       })
     );
   }
+  getFiles(cd_type: number, section: number, ref_id?: any): Observable<ApiResponse> {
+    const url = ref_id ? `${this.activeUrl}docs/${section}/cd_type=${cd_type}/full/${ref_id}` : `${this.activeUrl}docs/${section}/cd_type=${cd_type}/lite`;
+    return this.http.get<ApiResponse>(url).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la récupération des docfiles', error);
+        return of({ success: false, message: 'Erreur lors de la récupération des docfiles' } as ApiResponse);
+      })
+    );
+  }
   deleteLocalisation(loc_id: number): Observable<ApiResponse> {
     return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.localisations/loc_id=${loc_id}`).pipe(
       catchError(error => {

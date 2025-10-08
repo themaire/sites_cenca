@@ -47,6 +47,7 @@ export interface ProjetMfu {
   pmfu_derniere_maj?: string; // ISO date string
   pmfu_photos_site?: string;
   pmfu_date_ajout?: string; // ISO date string
+  pmfu_createur?: string;
   projet_acte_nb?: number;
   note_bureau_nb?: number;
   decision_bureau_nb?: number;
