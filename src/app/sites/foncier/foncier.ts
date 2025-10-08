@@ -40,13 +40,18 @@ export interface ProjetMfu {
   pmfu_financements?: string;
   pmfu_superficie?: number;
   pmfu_priorite?: string;
-  pmf_status?: string;
+  pmfu_status?: string;
   pmfu_signature?: number;
   pmfu_echeances?: string;
   pmfu_creation?: string; // ISO date string
   pmfu_derniere_maj?: string; // ISO date string
   pmfu_photos_site?: string;
   pmfu_date_ajout?: string; // ISO date string
+  pmfu_createur?: string;
+  projet_acte_nb?: number;
+  note_bureau_nb?: number;
+  decision_bureau_nb?: number;
+  photos_site_nb?: number;
 }
 
 export interface ProjetsMfu {
@@ -54,4 +59,12 @@ export interface ProjetsMfu {
   pmfu_nom: string;
   pmfu_responsable?: string;
   pmfu_commune?: string;
+}
+
+export interface DocPmfu {
+  doc_id: number;
+  doc_name: string;
+  doc_type: string;
+  doc_path: string;
+  ref_pmfu_id: number;
 }

@@ -1,0 +1,88 @@
+<div class="block">
+  <mat-list class="gauche">
+    <mat-list-item
+      *ngFor="let folder of folders$ | async; trackBy: trackByFolder"
+      (click)="onFolderClick(folder)"
+      [ngClass]="{ selected: selectedFolder === folder.cd_type }"
+      class="folder"
+    >
+      <mat-icon matListItemIcon>folder</mat-icon>
+      <div matListItemTitle>{{ folder.name }}</div>
+      <div matListItemLine>{{ folder.numberElements }}</div>
+    </mat-list-item>
+  </mat-list>
+  <div
+    class="droite"
+    *ngIf="filePathList.length > 0 && !previewUrl && !isDocxView && !galerie"
+  >
+    <mat-list class="doc-list">
+      @for (filepath of filePathList; track filepath) {
+      <div class="doc-row">
+        <mat-list-item (click)="openFile(filepath)" class="file">
+          <mat-icon matListItemIcon>description</mat-icon>
+          <div matListItemTitle>{{ filepath.split("\\").pop() }}</div>
+        </mat-list-item>
+        <button
+          mat-icon-button
+          (click)="deleteFile(filepath, selectedFolder!)"
+          class="delete-file"
+        >
+          <mat-icon matListItemIcon *ngIf="filepath">delete</mat-icon>
+        </button>
+      </div>
+
+      }
+    </mat-list>
+  </div>
+  <div class="droite" *ngIf="previewUrl || isDocxView">
+    <!-- PDF -->
+    <iframe
+      *ngIf="pdfUrl"
+      [src]="previewUrl"
+      width="100%"
+      height="600px"
+    ></iframe>
+
+    <!-- DOCX -->
+    <div #docxContainer class="docx-container" *ngIf="isDocxView"></div>
+  </div>
+  <div class="droite galerie" *ngIf="galerie">
+    <div
+      class="card"
+      *ngFor="let image of galerie"
+      [ngStyle]="{
+        'background-color': getColorForImage(image),
+        color: getTextColor(getColorForImage(image))
+      }"
+    >
+      <img
+        [src]="image"
+        (click)="
+          openImage(imagePathList ? imagePathList[galerie.indexOf(image)] : '')
+        "
+        class="galerie-img"
+      />
+      <div>
+        <p>
+          {{
+            (imagePathList ? imagePathList[galerie.indexOf(image)] : "")
+              .split(".")[0]
+              .split("\\")
+              .pop()
+          }}
+        </p>
+        <button
+          mat-button
+          (click)="
+            deleteImage(
+              imagePathList ? imagePathList[galerie.indexOf(image)] : ''
+            )
+          "
+          [ngStyle]="{ color: getTextColor(getColorForImage(image)) }"
+        >
+          Supprimer la photo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
