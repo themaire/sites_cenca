@@ -43,6 +43,21 @@
           </div>
         </div>
         <div class="connexion">
+          <!-- Bouton Aide - toujours visible -->
+          <div class="aide-button">
+            <button 
+              mat-button
+              class="btn-aide"
+              routerLink="/aide"
+              [ngStyle]="{
+                'border-radius': '20px'
+              }"
+            >
+              <mat-icon>help</mat-icon>
+              Aide
+            </button>
+          </div>
+          
           <div class="user" *ngIf="loginService.user()">
             <button class="btn-initiales">
               {{ loginService.user()?.cd_salarie }}
@@ -72,12 +87,19 @@
             (click)="navigateToHome()"
           />
         </div>
-        <div class="connexion" *ngIf="loginService.user()">
-          <!--   <img
-            src="https://randomuser.me/api/portraits/med/women/56.jpg"
-            alt="Icône de connexion"
-          />-->
-          <div class="user">
+        <div class="connexion">
+          <!-- Bouton Aide - toujours visible en mobile -->
+          <div class="aide-button">
+            <button 
+              mat-icon-button
+              class="btn-aide-mobile"
+              routerLink="/aide"
+            >
+              <mat-icon>help</mat-icon>
+            </button>
+          </div>
+          
+          <div class="user" *ngIf="loginService.user()">
             <div class="deconnexion">
               <button
                 mat-button
@@ -149,6 +171,11 @@
                   </ng-container>
                 </mat-menu>
               </ng-container>
+              <!-- Documentation utilisateur pour mobile -->
+              <button mat-menu-item routerLink="/aide">
+                <mat-icon>help</mat-icon>
+                <span>Aide Utilisateur</span>
+              </button>
             </mat-menu>
           </div>
         </div>

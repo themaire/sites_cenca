@@ -142,8 +142,7 @@ span {
       }
       .connexion {
         display: flex; /* Make the container a flexbox */
-      }
-      .connexion {
+        align-items: center;
         margin-left: auto;
         gap: 10px;
 
@@ -165,6 +164,57 @@ span {
         span {
           @include dim(40px, 40px);
         }
+      }
+    }
+  }
+
+  .doc-button {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    margin-left: 10px;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .aide-button {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+
+    .btn-aide {
+      background-color: rgba(76, 175, 80, 0.8) !important;
+      color: white !important;
+      border: 1px solid rgba(76, 175, 80, 1) !important;
+      font-weight: 500;
+      
+      &:hover {
+        background-color: rgba(76, 175, 80, 1) !important;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      }
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+
+    .btn-aide-mobile {
+      background-color: rgba(76, 175, 80, 0.8) !important;
+      color: white !important;
+      border: 2px solid rgba(76, 175, 80, 1) !important;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      
+      &:hover {
+        background-color: rgba(76, 175, 80, 1) !important;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
       }
     }
   }
