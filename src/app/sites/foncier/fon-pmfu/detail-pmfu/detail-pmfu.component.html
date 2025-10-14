@@ -80,11 +80,9 @@
     <!-- Étape 1: Informations principales -->
     <mat-step>
       <ng-template matStepLabel>Informations principales</ng-template>
-      <form
-        [formGroup]="pmfuForm"
-        class="first-step not-edit"
-        *ngIf="!isEditPmfu"
-      >
+
+      <!-- Formulaire en mode consultation -->
+      <form [formGroup]="pmfuForm" class="first-step not-edit" *ngIf="!isEditPmfu">
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Nom du projet</mat-label>
@@ -94,11 +92,19 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Responsable</mat-label>
-            <input matInput formControlName="pmfu_responsable" readonly />
+            <input 
+              matInput 
+              [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_responsable')?.value, salaries)" 
+              readonly 
+            />
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>Créateur du projet</mat-label>
-            <input matInput formControlName="pmfu_createur" readonly />
+            <input 
+              matInput 
+              [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_createur')?.value, salaries)" 
+              readonly 
+            />
           </mat-form-field>
         </div>
         <div class="form-row">
@@ -235,6 +241,8 @@
           </mat-form-field>
         </div>
       </form>
+
+      <!-- Formulaire en mode édition -->
       <form [formGroup]="pmfuForm" class="first-step" *ngIf="isEditPmfu">
         <div class="form-row">
           <mat-form-field appearance="fill">
@@ -248,8 +256,7 @@
             <mat-select formControlName="pmfu_responsable">
               <mat-option
                 *ngFor="let salarie of salaries"
-                [value]="salarie.cd_type"
-              >
+                [value]="salarie.cd_type">
                 {{ salarie.libelle }}
               </mat-option>
             </mat-select>

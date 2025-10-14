@@ -273,7 +273,7 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   public getFamilleLibelle(cd_type: string, liste: SelectValue[]): string {
     // Récupérer le libellé de la famille d'opération à partir de cd_type
-    const selectValue = this.projetService.getLibelleByCdType(cd_type, liste);
+    const selectValue = this.formService.getLibelleByCdType(cd_type, liste);
     return selectValue ? selectValue : '';
   }
 
@@ -935,14 +935,14 @@ export class OperationComponent implements OnInit, OnDestroy {
     if (type == 'operation') {
       if (this.step1Form.get('action_2') !== undefined) {
         const value = this.step1Form.get('action_2')?.value;
-        libelle = "opération de type " + this.projetService.getLibelleByCdType(
-          value,
-          this.operationTypesMeca,
-          this.operationTypesPat,
-          this.operationTypesAme,
-          this.operationTypesHydro,
-          this.operationTypesDech
-        ) || "";
+        libelle = "opération de type " + this.formService.getLibelleByCdType(
+                                                                            value,
+                                                                            this.operationTypesMeca,
+                                                                            this.operationTypesPat,
+                                                                            this.operationTypesAme,
+                                                                            this.operationTypesHydro,
+                                                                            this.operationTypesDech
+                                                                          ) || "";
       }
     } else if (type == 'localisation') {
       if (this.localisations_shapefile_form && this.localisations_shapefile_form.length > 0) {
@@ -1064,14 +1064,14 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     // Bloc qui se souvient de l'ancienne valeur ( previousValue )
     if (field === 'action') {
-      newValueText = this.projetService.getLibelleByCdType(newValue, this.operationTypesFamilles);
+      newValueText = this.formService.getLibelleByCdType(newValue, this.operationTypesFamilles);
       if (previousValue) {
-        previousValueText = this.projetService.getLibelleByCdType(previousValue, this.operationTypesFamilles);
+        previousValueText = this.formService.getLibelleByCdType(previousValue, this.operationTypesFamilles);
       }
     } else if (field === 'action_2') {
-      newValueText = this.projetService.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+      newValueText = this.formService.getLibelleByCdType(newValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
       if (previousValue) {
-        previousValueText = this.projetService.getLibelleByCdType(previousValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
+        previousValueText = this.formService.getLibelleByCdType(previousValue, this.operationTypesMeca, this.operationTypesPat, this.operationTypesAme, this.operationTypesHydro, this.operationTypesDech);
       }
     }
     console.log(`Changement de ${field} détecté, nouvelle valeur : ${newValueText}.`);
