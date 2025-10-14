@@ -258,58 +258,58 @@ span {
   }
 }
 
-// Media query pour les très petits desktops (moins de 935px mais mode desktop)
-@media screen and (max-width: 934px) and (min-width: 769px) {
-  header {
-    nav {
-      // Grid encore plus compacte
-      grid-template-columns: 1.5fr 5fr 2.5fr;
-      margin-left: 15px;
-      margin-right: 15px;
+// // Media query pour les très petits desktops (moins de 935px mais mode desktop)
+// @media screen and (max-width: 934px) and (min-width: 769px) {
+//   header {
+//     nav {
+//       // Grid encore plus compacte
+//       grid-template-columns: 1.5fr 5fr 2.5fr;
+//       margin-left: 15px;
+//       margin-right: 15px;
       
-      .menu-conteneur {
-        .menu {
-          gap: 20px; // Réduire l'espace entre les boutons menu
-        }
-      }
+//       .menu-conteneur {
+//         .menu {
+//           gap: 20px; // Réduire l'espace entre les boutons menu
+//         }
+//       }
       
-      .connexion {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 6px;
+//       .connexion {
+//         display: flex;
+//         align-items: center;
+//         justify-content: flex-end;
+//         gap: 6px;
         
-        .aide-button {
-          .btn-aide {
-            padding: 0 10px !important;
-            font-size: 13px;
-            min-height: 30px !important;
+//         .aide-button {
+//           .btn-aide {
+//             padding: 0 10px !important;
+//             font-size: 13px;
+//             min-height: 30px !important;
             
-            mat-icon {
-              margin-right: 4px !important;
-              font-size: 18px;
-            }
-          }
-        }
+//             mat-icon {
+//               margin-right: 4px !important;
+//               font-size: 18px;
+//             }
+//           }
+//         }
         
-        .user {
-          gap: 6px;
+//         .user {
+//           gap: 6px;
           
-          .btn-initiales {
-            width: 36px !important;
-            height: 30px !important;
-            font-size: 12px;
-          }
+//           .btn-initiales {
+//             width: 36px !important;
+//             height: 30px !important;
+//             font-size: 12px;
+//           }
           
-          .btn-deconnexion {
-            height: 30px !important;
-            width: 30px !important;
-          }
-        }
-      }
-    }
-  }
-}
+//           .btn-deconnexion {
+//             height: 30px !important;
+//             width: 30px !important;
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
 
 @media screen and (max-width: $tablette) {
   header {

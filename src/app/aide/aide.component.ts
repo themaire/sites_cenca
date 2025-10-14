@@ -210,8 +210,14 @@ export class AideComponent implements OnInit {
   loadSection(sectionId: string) {
     this.isLoading = true;
     
-    this.documentationService.getSection(sectionId).subscribe({
-      next: (section) => {
+    // Vérifier le statut d'authentification
+    const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
+    
+    // Rechercher la section dans les sections disponibles selon l'authentification
+    this.documentationService.getSections(isAuthenticated).subscribe({
+      next: (sections) => {
+        const section = sections.find(s => s.id === sectionId);
+        
         if (!section) {
           this.router.navigate([this.baseRoute, 'index']);
           return;
@@ -220,7 +226,7 @@ export class AideComponent implements OnInit {
         this.currentSection = section;
         
         // Charger le contenu
-        this.documentationService.getSectionContent(sectionId).subscribe({
+        this.documentationService.getSectionContent(sectionId, isAuthenticated).subscribe({
           next: (content) => {
             this.currentContent = content;
             this.isLoading = false;

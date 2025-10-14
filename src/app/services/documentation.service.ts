@@ -103,9 +103,10 @@ export class DocumentationService {
   /**
    * Charge le contenu HTML d'une section
    */
-  getSectionContent(id: string): Observable<string> {
-    return this.getSection(id).pipe(
-      map(section => {
+  getSectionContent(id: string, isAuthenticated: boolean = false): Observable<string> {
+    return this.getSections(isAuthenticated).pipe(
+      map(sections => {
+        const section = sections.find(s => s.id === id);
         if (!section) {
           throw new Error(`Section '${id}' not found`);
         }
