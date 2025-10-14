@@ -31,8 +31,23 @@ export class FoncierComponent implements OnInit {
     // });
 
     this.menuService.loadSubMenuItem(10).then((subMenuItems) => {
-      this.foncierItems = subMenuItems;
-      console.log("Sous-menus chargés :", subMenuItems);
+      console.log("subMenuItems de ngOnInit() du component foncier  : ");
+      console.log(subMenuItems);
+      
+      // Debug chaque élément
+      subMenuItems.forEach((item, index) => {
+        console.log(`Item ${index}:`, item);
+        console.log(`Item ${index} opened:`, item.opened);
+        console.log(`Item ${index} opened type:`, typeof item.opened);
+      });
+    
+      // Filtre directement les items qui ont opened: true
+      this.foncierItems = subMenuItems.filter(item => {
+        console.log('Filtering item:', item.name, 'opened:', item.opened);
+        return item.opened === true;
+      });
+      
+      console.log("Sous-menus chargés uniquement opened :", this.foncierItems);
     });
 
     console.log("foncierItems de ngOnInit() du component foncier  : ");
