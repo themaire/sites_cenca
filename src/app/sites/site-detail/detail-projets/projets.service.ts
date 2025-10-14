@@ -415,29 +415,33 @@ export class ProjetService {
     });
   }
 
-  getLibelleByCdType(
-    cdType: string | number | null,
-    liste1: SelectValue[],
-    liste2?: SelectValue[],
-    liste3?: SelectValue[],
-    liste4?: SelectValue[],
-    liste5?: SelectValue[]
-  ): string | undefined {
-    if (!liste1) {
-      console.warn('getLibelleFromCd appelé avec une liste undefined');
-      return '';
-    }
-    const listes = [liste1, liste2, liste3, liste4, liste5].filter(
-      Boolean
-    ) as SelectValue[][];
-    for (const liste of listes) {
-      const type = liste.find((t) => t.cd_type === cdType);
-      if (type?.libelle) {
-        return type.libelle;
-      }
-    }
-    return undefined;
-  }
+  // /** Renvoie le libellé correspondant au cd_type dans une ou plusieurs listes de SelectValue
+  //  * @param cdType Le code type à rechercher (string ou number)
+  //  * @param liste1 Première liste de SelectValue (obligatoire)
+  //  */
+  // getLibelleByCdType(
+  //   cdType: string | number | null,
+  //   liste1: SelectValue[],
+  //   liste2?: SelectValue[],
+  //   liste3?: SelectValue[],
+  //   liste4?: SelectValue[],
+  //   liste5?: SelectValue[]
+  // ): string | undefined {
+  //   if (!liste1) {
+  //     console.warn('getLibelleFromCd appelé avec une liste undefined');
+  //     return '';
+  //   }
+  //   const listes = [liste1, liste2, liste3, liste4, liste5].filter(
+  //     Boolean
+  //   ) as SelectValue[][];
+  //   for (const liste of listes) {
+  //     const type = liste.find((t) => t.cd_type === cdType);
+  //     if (type?.libelle) {
+  //       return type.libelle;
+  //     }
+  //   }
+  //   return undefined;
+  // }
 
   /** Lance le téléchargement d'une fiche travaux au format DOCX
    */

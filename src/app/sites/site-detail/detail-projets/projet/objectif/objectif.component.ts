@@ -329,7 +329,7 @@ export class ObjectifComponent {
             } else {
               obj_ope = "(aucun objectif)";
             }
-            this.objectif_ope.emit(this.projetService.getLibelleByCdType(obj_ope ?? null, this.typeObjectifOpe));
+            this.objectif_ope.emit(this.formService.getLibelleByCdType(obj_ope ?? null, this.typeObjectifOpe));
 
             this.cdr.detectChanges();
             console.log('Liste des objectifs bien mises à jour.');

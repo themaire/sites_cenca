@@ -52,6 +52,34 @@ export class FormService {
     private docfileService: DocfileService
   ) {}
 
+  /** Renvoie le libellé correspondant au cd_type dans une ou plusieurs listes de SelectValue
+   * @param cdType Le code type à rechercher (string ou number)
+   * @param liste1 Première liste de SelectValue (obligatoire)
+   */
+  getLibelleByCdType(
+    cdType: string | number | null,
+    liste1: SelectValue[],
+    liste2?: SelectValue[],
+    liste3?: SelectValue[],
+    liste4?: SelectValue[],
+    liste5?: SelectValue[]
+  ): string | undefined {
+    if (!liste1) {
+      console.warn('getLibelleFromCd appelé avec une liste undefined');
+      return '';
+    }
+    const listes = [liste1, liste2, liste3, liste4, liste5].filter(
+      Boolean
+    ) as SelectValue[][];
+    for (const liste of listes) {
+      const type = liste.find((t) => t.cd_type === cdType);
+      if (type?.libelle) {
+        return type.libelle;
+      }
+    }
+    return undefined;
+  }
+
   // Validation personnalisée pour vérifier qu'un champ contient au moins 2 mots si non vide
   minWordsValidator(minWords: number) {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -384,6 +412,7 @@ export class FormService {
       pmfu_id: [projet?.pmfu_id || new_pmfu_id],
       pmfu_nom: [projet?.pmfu_nom || '', Validators.required],
       pmfu_responsable: [projet?.pmfu_responsable || null],
+      pmfu_createur: [projet?.pmfu_createur || ''],
       pmfu_agence: [projet?.pmfu_agence || ''],
       pmfu_associe: [projet?.pmfu_associe || ''],
       pmfu_etapes: [projet?.pmfu_etapes || ''],
@@ -410,7 +439,6 @@ export class FormService {
       pmfu_creation: [projet?.pmfu_creation || new Date()],
       pmfu_photos_site: [projet?.pmfu_photos_site || ''],
       pmfu_date_ajout: [projet?.pmfu_date_ajout || null],
-      pmfu_createur: [projet?.pmfu_createur || ''],
     });
   }
 
@@ -616,12 +644,14 @@ export class FormService {
 
     return dataToSubmit;
   }
+
   private preparePmfuDataForSubmission(form: FormGroup): ProjetMfu {
     const formValue = { ...form.value };
     const dataToSubmit: ProjetMfu = {
       pmfu_id: formValue.pmfu_id,
       pmfu_nom: formValue.pmfu_nom,
       pmfu_responsable: formValue.pmfu_responsable,
+      pmfu_createur: formValue.pmfu_createur,
       pmfu_agence: formValue.pmfu_agence,
       pmfu_associe: formValue.pmfu_associe,
       pmfu_etapes: formValue.pmfu_etapes,

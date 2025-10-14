@@ -20,7 +20,7 @@
       <div class="doc-row">
         <mat-list-item (click)="openFile(filepath)" class="file">
           <mat-icon matListItemIcon>description</mat-icon>
-          <div matListItemTitle>{{ filepath.split("\\").pop() }}</div>
+          <div matListItemTitle>{{ filepath.split( this.separator ).pop() }}</div>
         </mat-list-item>
         <button
           mat-icon-button
@@ -67,7 +67,7 @@
           {{
             (imagePathList ? imagePathList[galerie.indexOf(image)] : "")
               .split(".")[0]
-              .split("\\")
+              .split( this.separator)
               .pop()
           }}
         </p>

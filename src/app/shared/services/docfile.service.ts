@@ -257,12 +257,12 @@ export class DocfileService {
   deleteFile(doc_path: string): Observable<ApiResponse> {
     console.log(
       'lien de suppression :',
-      `${this.activeUrl}delete/files.docs?doc_path=${doc_path}`
+      `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`
     );
     console.log('doc_path envoyé :', doc_path);
     return this.http
       .delete<ApiResponse>(
-        `${this.activeUrl}delete/files.docs?doc_path=${doc_path}`
+        `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`
       )
       .pipe(
         map((response) => {

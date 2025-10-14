@@ -70,6 +70,8 @@ export class FileExploratorComponent {
   // est en fonction si on est en dev Windows, dev Linux ou en prod Linux
   private activeUrl: string = environment.apiBaseUrl;
 
+  separator: string = environment.pathSep;
+
   @Input() section!: number;
   @Input() referenceId!: number;
   constructor(
@@ -146,15 +148,18 @@ export class FileExploratorComponent {
       console.error('Erreur lors du chargement des documents.', error);
     }
   }
+
   trackByFolder(index: number, folder: any) {
     return folder.cd_type; // id de type unique
   }
+
   deleteFile(doc_path: string, cd_type: number): void {
-    console.log('suppression du fichier');
+    console.log('suppression du fichier :' + doc_path);
     this.docfileService.docfiles.forEach((docfile: any) => {
       console.log('docfile:', docfile.doc_path);
-      if (docfile.doc_path.split('\\').slice(1).join('\\') === doc_path) {
+      if (docfile.doc_path === doc_path) {
         console.log('docfile:', docfile.doc_path);
+        
         this.docfileService.deleteFile(docfile.doc_path).subscribe({
           next: (res) => {
             console.log('Suppression OK', res);
@@ -171,9 +176,11 @@ export class FileExploratorComponent {
           },
           error: (err) => console.error('Erreur suppression', err),
         });
+
       }
     });
   }
+
   async updateFolderCounts() {
     console.log('this.doc_types:', this.doc_types);
     await this.docfileService.getFilesList(0, this.section, this.referenceId);
@@ -313,8 +320,9 @@ export class FileExploratorComponent {
   deleteImage(imagePath: string) {
     console.log('imagePath:', imagePath);
     this.filePathList.forEach((docfile: any) => {
+      console.log('docfile:', docfile);
       if (docfile === imagePath) {
-        this.docfileService.deleteFile('mnt\\'+docfile).subscribe({
+        this.docfileService.deleteFile(docfile).subscribe({
           next: (res) => {
             console.log('Suppression OK', res);
             this.updateFolderCounts();

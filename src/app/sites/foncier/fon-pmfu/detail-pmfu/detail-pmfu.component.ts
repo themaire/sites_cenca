@@ -147,10 +147,11 @@ export class DetailPmfuComponent {
   allowedTypes: Record<string, string[]> = {};
   folders$ = this.foldersSubject.asObservable();
   @ViewChild(FileExploratorComponent) fileExplorator!: FileExploratorComponent;
+
   constructor(
     public docfileService: DocfileService,
     private confirmationService: ConfirmationService,
-    private formService: FormService,
+    public formService: FormService,
     private cdr: ChangeDetectorRef,
     private snackBar: MatSnackBar,
     private foncierService: FoncierService,
@@ -172,6 +173,120 @@ export class DetailPmfuComponent {
       );
     }
   }
+
+  async ngOnInit() {
+    await this.docfileService.loadDocTypes(1);
+    this.doc_types = this.docfileService.doc_types;
+    this.initializeAllowedTypes();
+    // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
+    const cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
+
+    // Récupérer les valeurs pour les selects
+    // Récupérer les salariés pour créateur et responsable
+    this.formService
+      .getSelectValues$('sites/selectvalues=admin.salaries/')
+      .subscribe((selectValues: SelectValue[] | undefined) => {
+        this.salaries = selectValues || [];
+        console.log('this.salaries : ');
+        console.log(this.salaries);
+      });
+
+      
+    // Récupérer les données d'un projet ou créer un nouveau projet
+    // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
+    if (this.projetLite?.pmfu_id) {
+      // Quand un ID est passé en paramètre
+      try {
+        // Simuler un délai artificiel
+        setTimeout(async () => {
+          // Accéder aux données du projet (va prendre dans le schema opegerer ou opeautre)
+
+          // Accéder données du projet
+          // Assigner l'objet projet directement et forcer le type Projet
+          if (this.projetLite) {
+            await this.setupPmfuForm();
+          } else {
+            // Défini un formulaire vide pour le projet MFU
+            this.pmfuForm = this.formService.newPmfuForm();
+            this.initialFormValues = this.pmfuForm.value; // Garder une copie des valeurs initiales du formulaire
+            this.docForm = this.formService.newDocForm();
+            console.log(this.docForm);
+            this.cdr.detectChanges();
+          }
+          // Souscrire aux changements du statut du formulaire principal (projetForm)
+          this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
+            (status) => {
+              this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
+              this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
+            }
+          );
+
+          this.isLoading = false; // Le chargement est terminé
+        }, this.loadingDelay);
+      } catch (error) {
+        console.error(
+          'Erreur lors de la récupération des données du projet',
+          error
+        );
+        this.isLoading = false; // Même en cas d'erreur, arrêter le spinner
+        this.cdr.detectChanges();
+      }
+    } else {
+      // Projet neuf à créer
+      console.log(
+        'Nous avons visiblement un projet neuf à créer. Pas de pmfu_id dans this.projetLite.'
+      );
+      console.log(this.projetLite);
+      try {
+        this.newPmfu = true;
+        // Passer directement en mode edition
+        this.isEditPmfu = true; // On est en mode édition
+
+        // Créer un formulaire vide
+        // Le form_group correspondant aux projet neuf à créer
+        this.pmfuForm = this.formService.newPmfuForm(undefined, 0);
+
+        // Le form_group correspondant aux documents
+        this.docForm = this.formService.newDocForm();
+        // Définir les valeurs par défaut pour créateur et responsable
+        this.formService
+          .getSelectValues$('sites/selectvalues=admin.salaries/')
+          .subscribe((selectValues: SelectValue[] | undefined) => {
+            this.salaries = selectValues || [];
+            this.pmfuForm.patchValue({
+              pmfu_responsable: cd_salarie ? cd_salarie : '',
+              pmfu_createur: cd_salarie,
+            });
+          });
+        console.log(
+          'Formulaire de projet créé avec succès :',
+          this.pmfuForm.value
+        );
+
+        // Souscrire aux changements du statut du formulaire principal (projetForm)
+        this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
+          (status) => {
+            this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
+            // console.log('Statut du formulaire principal :', status);
+            // console.log("this.isFormValid = this.projetForm.valid :");
+            // console.log(this.isFormValid + " = " + this.projetForm.valid);
+            // console.log("isFormValid passé à l'enfant:", this.isFormValid);
+            this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
+          }
+        );
+
+        this.isLoading = false; // Le chargement est terminé
+      } catch (error) {
+        console.error(
+          'Erreur lors de la création du formulaire du nouveau projet.',
+          error
+        );
+        this.isLoading = false; // Même en cas d'erreur, arrêter le spinner
+        this.cdr.detectChanges();
+      }
+    }
+  }
+
   toggleEditPmfu(): void {
     this.isEditPmfu = this.formService.simpleToggle(this.isEditPmfu); // Changer le mode du booleen
     if (this.isEditPmfu) {
@@ -336,118 +451,6 @@ export class DetailPmfuComponent {
     const pmfu = await this.foncierService.getProjetMfu(subroute);
     return pmfu as ProjetMfu; // Retourner l'objet Projet complet
   }
-
-  async ngOnInit() {
-    await this.docfileService.loadDocTypes(1);
-    this.doc_types = this.docfileService.doc_types;
-    this.initializeAllowedTypes();
-    // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
-    const cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
-
-    this.formService
-      .getSelectValues$('sites/selectvalues=admin.salaries/')
-      .subscribe((selectValues: SelectValue[] | undefined) => {
-        this.salaries = selectValues || [];
-        console.log('this.salaries : ');
-        console.log(this.salaries);
-      });
-
-      
-    // Récupérer les données d'un projet ou créer un nouveau projet
-    // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
-    if (this.projetLite?.pmfu_id) {
-      // Quand un ID est passé en paramètre
-      try {
-        // Simuler un délai artificiel
-        setTimeout(async () => {
-          // Accéder aux données du projet (va prendre dans le schema opegerer ou opeautre)
-
-          // Accéder données du projet
-          // Assigner l'objet projet directement et forcer le type Projet
-          if (this.projetLite) {
-            await this.setupPmfuForm();
-          } else {
-            // Défini un formulaire vide pour le projet MFU
-            this.pmfuForm = this.formService.newPmfuForm();
-            this.initialFormValues = this.pmfuForm.value; // Garder une copie des valeurs initiales du formulaire
-            this.docForm = this.formService.newDocForm();
-            console.log(this.docForm);
-            this.cdr.detectChanges();
-          }
-          // Souscrire aux changements du statut du formulaire principal (projetForm)
-          this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
-            (status) => {
-              this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
-              this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
-            }
-          );
-
-          this.isLoading = false; // Le chargement est terminé
-        }, this.loadingDelay);
-      } catch (error) {
-        console.error(
-          'Erreur lors de la récupération des données du projet',
-          error
-        );
-        this.isLoading = false; // Même en cas d'erreur, arrêter le spinner
-        this.cdr.detectChanges();
-      }
-    } else {
-      // Projet neuf à créer
-      console.log(
-        'Nous avons visiblement un projet neuf à créer. Pas de pmfu_id dans this.projetLite.'
-      );
-      console.log(this.projetLite);
-      try {
-        this.newPmfu = true;
-        // Passer directement en mode edition
-        this.isEditPmfu = true; // On est en mode édition
-
-        // Créer un formulaire vide
-        // Le form_group correspondant aux projet neuf à créer
-        this.pmfuForm = this.formService.newPmfuForm(undefined, 0);
-
-        // Le form_group correspondant aux documents
-        this.docForm = this.formService.newDocForm();
-        // Définir les valeurs par défaut pour créateur et responsable
-        this.formService
-          .getSelectValues$('sites/selectvalues=admin.salaries/')
-          .subscribe((selectValues: SelectValue[] | undefined) => {
-            this.salaries = selectValues || [];
-            this.pmfuForm.patchValue({
-              pmfu_responsable: cd_salarie ? cd_salarie : '',
-              pmfu_createur: cd_salarie,
-            });
-          });
-        console.log(
-          'Formulaire de projet créé avec succès :',
-          this.pmfuForm.value
-        );
-
-        // Souscrire aux changements du statut du formulaire principal (projetForm)
-        this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
-          (status) => {
-            this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
-            // console.log('Statut du formulaire principal :', status);
-            // console.log("this.isFormValid = this.projetForm.valid :");
-            // console.log(this.isFormValid + " = " + this.projetForm.valid);
-            // console.log("isFormValid passé à l'enfant:", this.isFormValid);
-            this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
-          }
-        );
-
-        this.isLoading = false; // Le chargement est terminé
-      } catch (error) {
-        console.error(
-          'Erreur lors de la création du formulaire du nouveau projet.',
-          error
-        );
-        this.isLoading = false; // Même en cas d'erreur, arrêter le spinner
-        this.cdr.detectChanges();
-      }
-    }
-  }
-
 
   private defaultExtensions: Record<string, string[]> = {
     doc: ['.pdf', '.doc', '.docx'],
