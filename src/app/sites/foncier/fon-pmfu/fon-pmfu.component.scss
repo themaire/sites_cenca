@@ -7,20 +7,51 @@
   width: 100%;
   height: 100%;
   min-height: 100vh;
+  & > p {
+    writing-mode: vertical-lr;
+    text-orientation: sideways;
+    transform: rotate(180deg);
+    position: fixed;
+    top: 85px;
+    left: 0;
+    z-index: 10;
+    @include Typo($p16, $gras, white);
+  }
 }
 .proteger {
+  position: sticky;
+  top: 0;
+  width: 20px;
+  z-index: 10;
   padding-bottom: 15px;
   @include bandeau($couleur-faune);
+}
+::ng-deep .highlight {
+  background-color: rgb(255, 255, 156);
+}
+.mat-row:hover {
+  cursor: zoom-in;
 }
 
 .table-container {
   display: flex;
-  @include align(center, center);
+  overflow-y: auto;
+  box-sizing: border-box;
+  flex-direction: column;
+  @include align(center, flex-start);
   width: 100%;
 }
-
+.table-header {
+  width: 80%;
+  display: flex;
+  @include align(center, space-between);
+}
 .table {
   width: 80%;
+}
+.paginator {
+  box-sizing: border-box;
+  border-top: 1px solid lightgray;
 }
 
 .add-pmfu {

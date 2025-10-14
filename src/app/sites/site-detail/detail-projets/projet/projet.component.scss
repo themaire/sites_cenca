@@ -151,16 +151,6 @@ mat-dialog-content.dialogue {
   @include nav-buttons();
 }
 
-// Pour le bouton de suppression
-.btn {
-    display: flex;
-    @include align(center, flex-end);
-    padding: 0 30px 0 0px;
-    button {
-      @include btn($superRed, #f1fcf3, white, $superRed);
-      @include align(center, center);
-    }
-}
 
 // .mat-mdc-dialog-container,
 // .mat-mdc-dialog-content,

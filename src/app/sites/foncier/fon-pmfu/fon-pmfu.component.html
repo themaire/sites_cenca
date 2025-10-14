@@ -1,8 +1,9 @@
 <div class="site-parent">
   <!-- Sert a afficher le titre dans la bande orange verticale -->
-  <div class="proteger">Protéger</div>
+  <div class="proteger"></div>
+  <p>Protéger</p>
   <div class="table-container">
-    <div class="table">
+    <div class="table-header">
       <div class="add-pmfu">
         <button
           mat-icon-button
@@ -14,27 +15,71 @@
         </button>
         <p>Ajouter un Projet MFU</p>
       </div>
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-        <ng-container matColumnDef="pmfu_name">
-          <th mat-header-cell *matHeaderCellDef>Nom du Projet</th>
-          <td mat-cell *matCellDef="let element">{{ element.pmfu_nom }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="pmfu_responsable">
-          <th mat-header-cell *matHeaderCellDef>Nom du responsable</th>
+      <mat-form-field class="filtre">
+        <mat-label>Mots-clés</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="" #input />
+      </mat-form-field>
+    </div>
+    <div class="table">
+      <table mat-table
+        [dataSource]="dataSource"
+        matSort
+        class="mat-elevation-z8"
+      >
+        <ng-container matColumnDef="pmfu_nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Nom du Projet
+          </th>
           <td mat-cell *matCellDef="let element">
-            {{ element.pmfu_responsable }}
+            <span
+              [innerHTML]="element.pmfu_nom | highlight : filterValue"
+            ></span>
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="pmfu_responsable">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Nom du responsable
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              [innerHTML]="element.pmfu_responsable | highlight : filterValue"
+            ></span>
+          </td>
+        </ng-container>
         <ng-container matColumnDef="pmfu_commune">
-          <th mat-header-cell *matHeaderCellDef>Commune(s)</th>
-          <td mat-cell *matCellDef="let element">{{ element.pmfu_commune }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune(s)</th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              [innerHTML]="element.pmfu_commune | highlight : filterValue"
+            ></span>
+          </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          matTooltip="{{ 'Ouvrir le projet ' + row.pmfu_nom}}"
+          (click)="onSelect(row)"
+          class="mat-row"
+        ></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td>
+            Pas de donnée correspondante à votre filtre sur le mot clé : "{{
+              input.value
+            }}"
+          </td>
+        </tr>
       </table>
+      <mat-paginator
+        [pageSize]="20"
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+        aria-label="Tableau de selection des sites issue de la recherche."
+        class="paginator"
+      >
+      </mat-paginator>
     </div>
   </div>
 </div>

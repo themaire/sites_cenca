@@ -1,8 +1,9 @@
 // Ceci est un fichier d'interfaces
 
 export interface SelectValue {
-    cd_type: string;
+    cd_type?: string;
     libelle: string;
+    path?: string;
     libelle_pluriel?: string;
     code_supp?: string;
     commantaire?: string;
