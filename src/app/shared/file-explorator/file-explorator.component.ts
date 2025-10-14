@@ -65,7 +65,11 @@ export class FileExploratorComponent {
   fileErrors: Record<string, string[]> = {};
   private foldersSubject = new BehaviorSubject<Folder[]>([]);
   folders$ = this.foldersSubject.asObservable();
-  private activeUrl: string = environment.apiUrl;
+
+  // Pour rappel activeUrl se termine par /
+  // est en fonction si on est en dev Windows, dev Linux ou en prod Linux
+  private activeUrl: string = environment.apiBaseUrl;
+
   @Input() section!: number;
   @Input() referenceId!: number;
   constructor(
@@ -126,8 +130,7 @@ export class FileExploratorComponent {
     this.galerie = undefined;
     console.log('Dossier cliqué :', folder);
     try {
-      this.docfileService
-        .getFilesList(folder.cd_type, this.section, this.referenceId)
+      this.docfileService.getFilesList(folder.cd_type, this.section, this.referenceId)
         .then(() => {
           this.filePathList = this.docfileService.filePathList;
           console.log('this.filePathList:', this.filePathList);
@@ -200,14 +203,27 @@ export class FileExploratorComponent {
     // forcer la vue si nécessaire
     this.cdr.detectChanges();
   }
+
   getFileUrl(filename: string): string {
+    // this.docfileService.docfiles.forEach((file: any) => {
+    //   if (file.doc_path.split('\\').pop() === filename.split('\\').pop()) {
+    //     filename = file.doc_path.split('\\').slice(2).join('\\');
+    //   }
+    // });
+    console.log('filename de getFileUrl :' + filename);
     this.docfileService.docfiles.forEach((file: any) => {
-      if (file.doc_path.split('\\').pop() === filename.split('\\').pop()) {
-        filename = file.doc_path.split('\\').slice(2).join('\\');
+      if (file.doc_path.split('/').pop() === filename.split('/').pop()) {
+        console.log('file.doc_path:', file.doc_path);
+        filename = 'files/' +file.doc_path;
       }
     });
     console.log('filename:', filename);
-    return `http://localhost:8887/${filename}`;
+
+    if (environment.windows) {
+      // Si on est en dev Windows, on remplace les slashes par des backslashes
+      filename = filename.split('/').join('\\');
+    }
+    return `${this.activeUrl}${filename}`;
   }
 
   openFile(filename: string): void {
@@ -255,23 +271,26 @@ export class FileExploratorComponent {
       console.error('Erreur affichage DOCX :', err);
     }
   }
+
+
   getGalerie(filePathList: string[]) {
     filePathList.forEach((path) => {
-      filePathList.push(
-        `http://localhost:3000/img?file=` +
-          path.split('\\').pop() +
-          `&width=200`
-      );
+      // Url qui s'adapte en fonction de l'environnement Windows ou Linux
+      let url = `${this.activeUrl}picts/img?file=${path.split( environment.pathSep ).pop()}&width=200`;
+      filePathList.push(url);
     });
+    console.log('filePathList après ajout des miniatures:', filePathList);
     this.galerie = filePathList.slice(filePathList.length / 2, undefined);
+    console.log('this.galerie:', this.galerie);
+
     this.imagePathList = filePathList;
     console.log('imagePathList:', this.imagePathList);
   }
 
-  //
-  //imagePath sans sous dossier !!!!!
-  //
-
+  /**
+   * Ouvre une image dans un dialogue
+   * @param imagePath imagePath sans sous dossier !!!!!!
+   */
   openImage(imagePath: string) {
     const dialogRef = this.dialog.open(ImageViewComponent, {
       data: {
@@ -289,6 +308,8 @@ export class FileExploratorComponent {
       scrollStrategy: this.overlay.scrollStrategies.close(),
     });
   }
+
+
   deleteImage(imagePath: string) {
     console.log('imagePath:', imagePath);
     this.filePathList.forEach((docfile: any) => {
@@ -343,6 +364,8 @@ export class FileExploratorComponent {
     }
     return Math.abs(hash);
   }
+
+
   getColorForImage(image: string): string {
     const index = this.hashString(image) % this.colors.length;
     return this.colors[index];

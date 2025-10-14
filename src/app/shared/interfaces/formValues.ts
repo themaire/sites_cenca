@@ -10,5 +10,4 @@ export interface SelectValue {
     categorie?: string;
     coef_ugb?: number;
     niveau?: number;
-    cd_salarie?: string;
   }

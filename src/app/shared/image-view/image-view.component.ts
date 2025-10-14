@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '../../../../node_modules/@angular/common';
 import { LoginService } from '../../login/login.service';
@@ -22,6 +23,10 @@ interface DialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageViewComponent {
+  // Pour rappel activeUrl se termine par /
+  // est en fonction si on est en dev Windows, dev Linux ou en prod Linux
+  private activeUrl: string = environment.apiBaseUrl;
+
   images: string[];
   currentIndex: number = 0;
   constructor(
@@ -30,10 +35,11 @@ export class ImageViewComponent {
     private http: HttpClient,
     @Inject(MAT_DIALOG_DATA) public data: DialogData // Inject MAT_DIALOG_DATA to access the passed data
   ) {
-    this.images =
-      data.images.map((path) => 'http://localhost:8887/app/' + path.split('\\').slice(-2).join('/')) || [];
+    const baseUrl = this.activeUrl + 'files/';
+    // On adapte les chemins des images en fonction de l'environnement
+    this.images = data.images.map((path) => baseUrl + path.split( environment.pathSep ).slice(-2).join( environment.pathSep )) || [];
     // Si une image est sélectionnée au départ
-    data.selected = 'http://localhost:8887/app/' + data.selected.split('\\').slice(-2).join('/');
+    data.selected = baseUrl + data.selected.split( environment.pathSep ).slice(-2).join( environment.pathSep );
     this.currentIndex = this.images.indexOf(data.selected) || 0;
   }
   prev() {

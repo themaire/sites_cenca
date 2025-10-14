@@ -22,7 +22,6 @@ import { MatListModule } from '@angular/material/list';
 
 import { ProjetMfu, ProjetsMfu } from '../../foncier';
 import { FoncierService } from '../../foncier.service';
-import { ImagePmfuComponent } from './image-pmfu/image-pmfu.component';
 import {
   HttpClient,
   HttpParams,
@@ -143,7 +142,7 @@ export class DetailPmfuComponent {
   imagePathList?: string[];
   filesNames: string[][] = [];
   fileErrors: Record<string, string[]> = {};
-  responsables: SelectValue[] = [];
+  salaries: SelectValue[] = [];
   private foldersSubject = new BehaviorSubject<Section[]>([]);
   allowedTypes: Record<string, string[]> = {};
   folders$ = this.foldersSubject.asObservable();
@@ -190,6 +189,12 @@ export class DetailPmfuComponent {
     ); // Changer l'état du formulaire
     this.cdr.detectChanges(); // Forcer la détection des changements
   }
+
+  /**
+   * Gère la soumission du formulaire PMFU
+   * Met à jour le formulaire, réinitialise les sélections de dossiers et de galerie
+   * En mode édition, envoie une requête PUT pour mettre à jour un projet existant
+   */
   onSubmit(): void {
     // Mettre à jour le formulaire
     this.selectedFolder = undefined;
@@ -312,9 +317,11 @@ export class DetailPmfuComponent {
       }
     }
   }
+
   updatePmfuTitle() {
     this.pmfuTitle = this.pmfu.pmfu_nom;
   }
+
   async fetch(pmfu_id: Number): Promise<ProjetMfu | undefined> {
     // Récupérer les données d'un projet à partir de son ID
     // @param : gestion ou autre pour que le back sache quelle table interroger
@@ -337,6 +344,15 @@ export class DetailPmfuComponent {
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     const cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
 
+    this.formService
+      .getSelectValues$('sites/selectvalues=admin.salaries/')
+      .subscribe((selectValues: SelectValue[] | undefined) => {
+        this.salaries = selectValues || [];
+        console.log('this.salaries : ');
+        console.log(this.salaries);
+      });
+
+      
     // Récupérer les données d'un projet ou créer un nouveau projet
     // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
     if (this.projetLite?.pmfu_id) {
@@ -344,13 +360,6 @@ export class DetailPmfuComponent {
       try {
         // Simuler un délai artificiel
         setTimeout(async () => {
-          this.formService
-            .getSelectValues$('sites/selectvalues=admin.salaries/')
-            .subscribe((selectValues: SelectValue[] | undefined) => {
-              this.responsables = selectValues || [];
-              console.log('this.responsables : ');
-              console.log(this.responsables);
-            });
           // Accéder aux données du projet (va prendre dans le schema opegerer ou opeautre)
 
           // Accéder données du projet
@@ -404,7 +413,7 @@ export class DetailPmfuComponent {
         this.formService
           .getSelectValues$('sites/selectvalues=admin.salaries/')
           .subscribe((selectValues: SelectValue[] | undefined) => {
-            this.responsables = selectValues || [];
+            this.salaries = selectValues || [];
             this.pmfuForm.patchValue({
               pmfu_responsable: cd_salarie ? cd_salarie : '',
               pmfu_createur: cd_salarie,
@@ -438,10 +447,20 @@ export class DetailPmfuComponent {
       }
     }
   }
+
+
   private defaultExtensions: Record<string, string[]> = {
     doc: ['.pdf', '.doc', '.docx'],
     image: ['.jpg', '.jpeg', '.png'],
   };
+
+  /** 
+   * Initialise allowedTypes en fonction des doc_types
+   * Par défaut, les types contenant "photo" ou "image" sont considérés comme des images
+   * Les autres types sont considérés comme des documents
+   * Utilise defaultExtensions pour définir les extensions autorisées
+   * Résultat stocké dans allowedTypes
+  */
   initializeAllowedTypes(): void {
     this.allowedTypes = this.doc_types.reduce((acc, type) => {
       const name = type.field;
@@ -456,6 +475,15 @@ export class DetailPmfuComponent {
 
     console.log('allowedTypes généré :', this.allowedTypes);
   }
+
+  /**
+   * Vérifie si le type de fichier est autorisé pour un champ donné
+   * @param file Le fichier à vérifier
+   * @param field Le nom du champ de formulaire
+   * @return true si le type de fichier est autorisé, false sinon
+   * Ajoute un message d'erreur dans fileErrors si le type n'est pas autorisé
+   * Utilise allowedTypes pour déterminer les extensions autorisées
+   */
   private isFileTypeAllowed(file: File, field: string): boolean {
     const exts = this.allowedTypes[field];
     // Vérifie si le type de fichier existe dans allowedTypes
@@ -515,6 +543,13 @@ export class DetailPmfuComponent {
     this.isDragging = false;
   }
 
+  /**
+   * Gère le dépôt de fichiers via le glisser-déposer
+   * @param event L'événement de glisser-déposer
+   * @param field Le nom du champ de formulaire associé au dépôt
+   * Permet de déposer plusieurs fichiers à la fois
+   * Vérifie le type de chaque fichier avant de l'ajouter au formulaire
+   */
   onFileDropped(event: DragEvent, field: string) {
     event.preventDefault();
     this.isDragging = false;
@@ -534,6 +569,12 @@ export class DetailPmfuComponent {
       event.dataTransfer.clearData();
     }
   }
+
+  /**
+   * Supprime un fichier déposé du formulaire et de la liste des fichiers
+   * @param fileToRemove Un tableau contenant le nom du fichier et le nom du contrôle associé
+   * Exemple : ['nom_du_fichier.ext', 'nom_du_controle']
+   */
   removeDroppedFile(fileToRemove: [string, string]) {
     const controlName = fileToRemove[1];
     const fileName = fileToRemove[0];
@@ -563,6 +604,11 @@ export class DetailPmfuComponent {
     );
   }
 
+  /**
+   * Vérifie si au moins un fichier est présent dans le formulaire des documents
+   * Met à jour la propriété hasFiles du service DocfileService
+   * Affiche dans la console les valeurs actuelles du formulaire et le résultat de la vérification
+   */
   hasFiles(): void {
     console.log('docForm.value =', this.docForm.value);
     const v = this.docForm.value || {};
@@ -589,6 +635,12 @@ export class DetailPmfuComponent {
     exitAnimationDuration: '300ms',
   };
 
+  /**
+   * Confirme et supprime un projet MFU
+   * Utilise le service ConfirmationService pour afficher une boîte de dialogue de confirmation
+   * Si l'utilisateur confirme, appelle le service FoncierService pour supprimer le projet MFU
+   * Ferme la boîte de dialogue actuelle si la suppression réussit
+   */
   deletePmfuConfirm(): void {
     const message = `Voulez-vous vraiment supprimer ce projet MFU?\n<strong>Cette action est irréversible.</strong>`;
 
@@ -614,98 +666,14 @@ export class DetailPmfuComponent {
         }
       });
   }
-  onFolderClick(folder: Section): void {
-    this.selectedFolder = folder.cd_type;
-    // Ajouter la classe CSS 'selected' à l'élément cliqué
-    this.previewUrl = undefined;
-    this.isDocxView = false;
-    this.galerie = undefined;
-    console.log('Dossier cliqué :', folder);
-    try {
-      this.docfileService
-        .getDocfilesList(this.pmfu.pmfu_id as number, folder.cd_type)
-        .then(() => {
-          this.filePathList = this.docfileService.filePathList;
-          console.log('this.filePathList:', this.filePathList);
-          if (this.selectedFolder === 1) {
-            this.getGalerie(this.filePathList);
-          }
-        });
-    } catch (error) {
-      console.error('Erreur lors du chargement des documents.', error);
-    }
-  }
-  deleteDocfile(doc_path: string, cd_type: number): void {
-    this.docfileService.docfiles.forEach((docfile: any) => {
-      if (docfile.doc_path.split('\\').pop() === doc_path) {
-        console.log('docfile:', docfile.doc_path);
-        this.docfileService.deleteDocfile(docfile.doc_path).subscribe({
-          next: (res) => {
-            console.log('Suppression OK', res);
-            this.setupPmfuForm().then(() => {
-              this.updateFolderCountsFromPmfu(this.pmfu);
-              this.docfileService
-                .getDocfilesList(this.pmfu.pmfu_id as number, cd_type)
-                .then(() => {
-                  this.filePathList = this.docfileService.filePathList;
-                });
-            });
-          },
-          error: (err) => console.error('Erreur suppression', err),
-        });
-      }
-    });
-  }
-  getFileUrl(filename: string): string {
-    return `http://localhost:8887/${filename}`;
-  }
 
-  openFile(filename: string): void {
-    const ext = filename.split('.').pop()?.toLowerCase();
-    const url = this.getFileUrl(filename);
-    this.isDocxView = false;
-    this.previewUrl = undefined;
-    this.pdfUrl = undefined;
-    this.imageUrl = undefined;
-
-    switch (ext) {
-      case 'pdf':
-        this.pdfUrl = url; // string pour vérification
-        this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-        break;
-
-      case 'doc':
-      case 'docx':
-        this.isDocxView = true;
-        this.renderDocx(url);
-        break;
-
-      default:
-        window.open(url, '_blank');
-    }
-  }
-
-  private async renderDocx(url: string): Promise<void> {
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-
-      const container = this.docxContainer.nativeElement;
-      if (!container) return;
-
-      container.innerHTML = ''; // reset avant nouveau rendu
-
-      await renderAsync(arrayBuffer, container, undefined, {
-        className: 'docx',
-        inWrapper: true,
-        breakPages: true,
-      });
-
-      console.log('DOCX affiché');
-    } catch (err) {
-      console.error('Erreur affichage DOCX :', err);
-    }
-  }
+  /**
+   * Configure le formulaire PMFU en récupérant les données du projet et en initialisant les formulaires
+   * Met à jour le titre, le formulaire principal et le formulaire des documents
+   * Initialise les dossiers de documents basés sur les types de documents disponibles
+   * Utilise la détection des changements pour mettre à jour l'affichage
+   * Gère les erreurs potentielles lors de la récupération des données
+   */
   async setupPmfuForm() {
     try {
       // Récupération des données du projet
@@ -740,129 +708,5 @@ export class DetailPmfuComponent {
     } catch (error) {
       console.error('Erreur setupPmfuForm', error);
     }
-  }
-
-  trackByFolder(index: number, folder: any) {
-    return folder.cd_type; // id de type unique
-  }
-  updateFolderCountsFromPmfu(pmfu: ProjetMfu) {
-    const typeToField: Record<string, number | undefined> = {
-      '1': pmfu.photos_site_nb,
-      '2': pmfu.projet_acte_nb,
-      '3': pmfu.decision_bureau_nb,
-      '4': pmfu.note_bureau_nb,
-    };
-
-    // Récupérer les doc_type existants (this.doc_type doit être déjà initialisé)
-    const newFolders: Section[] = (this.doc_types || []).map((docType) => ({
-      cd_type: Number(docType.cd_type),
-      name: docType.libelle,
-      numberElements: typeToField[String(docType.cd_type)] ?? 0,
-    }));
-
-    // Mettre à jour la propriété locale (pratique pour debug) et émettre
-    this.folders = newFolders;
-    this.foldersSubject.next(newFolders);
-
-    // forcer la vue si nécessaire
-    this.cdr.detectChanges();
-  }
-  getGalerie(filePathList: string[]) {
-    filePathList.forEach((path) => {
-      filePathList.push(
-        `http://localhost:3000/img?file=` + path + `&width=200`
-      );
-    });
-    this.galerie = filePathList.slice(filePathList.length / 2, undefined);
-    this.imagePathList = filePathList;
-    console.log('imagePathList:', this.imagePathList);
-  }
-  openImage(imagePath: string) {
-    const url = 'http://localhost:8887/' + imagePath;
-    const dialogRef = this.dialog.open(ImagePmfuComponent, {
-      data: {
-        images: this.imagePathList?.slice(0, this.imagePathList.length / 2),
-        selected: imagePath,
-      }, // <---------------- données injectée au composant
-      minWidth: '70vw',
-      maxWidth: '95vw',
-      height: '95vh',
-      maxHeight: '95vh',
-      hasBackdrop: true, // Avec fond
-      backdropClass: 'custom-backdrop-gerer', // Personnalisation du fond
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '300ms',
-      scrollStrategy: this.overlay.scrollStrategies.close(),
-    });
-  }
-  deleteImage(imagePath: string) {
-    console.log('imagePath:', imagePath.split('=')[1].split('&')[0]);
-    this.docfileService.docfiles.forEach((docfile: any) => {
-      if (
-        docfile.doc_path.split('\\').pop() ===
-        imagePath.split('=')[1].split('&')[0]
-      ) {
-        console.log('docfile:', docfile.doc_path);
-        this.docfileService.deleteDocfile(docfile.doc_path).subscribe({
-          next: (res) => {
-            console.log('Suppression OK', res);
-            this.setupPmfuForm().then(() => {
-              this.updateFolderCountsFromPmfu(this.pmfu);
-              this.docfileService
-                .getDocfilesList(this.pmfu.pmfu_id as number, 1)
-                .then(() => {
-                  this.filePathList = this.docfileService.filePathList;
-                  this.getGalerie(this.filePathList);
-                });
-            });
-          },
-          error: (err) => console.error('Erreur suppression', err),
-        });
-      }
-    });
-  }
-  colors = [
-    '#f5fff7',
-    '#e0de12',
-    '#c1d112',
-    '#4b6426', // verts
-    '#fec700',
-    '#b44917',
-    '#63340d', // oranges
-    '#8cd2f5',
-    '#089cd9',
-    '#495fa9', // bleus
-    '#f8f4ba',
-    '#f4ee92',
-    '#ebe01f', // jaunes
-    '#d0a9cf',
-    '#bb7bb3',
-    '#430035', // violets
-    '#f8baba',
-    '#f4a2a2', // rouges
-  ];
-
-  // fonction hash simple pour générer un index stable
-  private hashString(str: string): number {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0; // Convert to 32bit int
-    }
-    return Math.abs(hash);
-  }
-  getColorForImage(image: string): string {
-    const index = this.hashString(image) % this.colors.length;
-    return this.colors[index];
-  }
-
-  getTextColor(bg: string): string {
-    const c = bg.substring(1); // enlève le "#"
-    const rgb = parseInt(c, 16);
-    const r = (rgb >> 16) & 0xff;
-    const g = (rgb >> 8) & 0xff;
-    const b = (rgb >> 0) & 0xff;
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance > 150 ? '#000' : '#fff';
   }
 }

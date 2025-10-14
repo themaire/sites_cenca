@@ -247,10 +247,10 @@
             <mat-label>Responsable</mat-label>
             <mat-select formControlName="pmfu_responsable">
               <mat-option
-                *ngFor="let responsable of responsables"
-                [value]="responsable.cd_salarie"
+                *ngFor="let salarie of salaries"
+                [value]="salarie.cd_type"
               >
-                {{ responsable.cd_salarie }}
+                {{ salarie.libelle }}
               </mat-option>
             </mat-select>
           </mat-form-field>

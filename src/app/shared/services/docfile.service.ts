@@ -27,7 +27,10 @@ export interface Docfile {
 }
 @Injectable({ providedIn: 'root' })
 export class DocfileService {
-  private activeUrl: string = environment.apiUrl + 'sites/'; // Bureau
+  // Pour rappel activeUrl se termine par /
+  // est en fonction si on est en dev Windows, dev Linux ou en prod Linux
+  private activeUrl: string = environment.apiBaseUrl;
+  
   hasFiles!: boolean;
   filesNames: string[][] = [];
   @ViewChildren('fileInput') fileInputs!: QueryList<
@@ -43,6 +46,12 @@ export class DocfileService {
   ) {}
   filePathList: string[] = [];
   allFiles: number[] = [];
+
+  /** Charge les types possible de documents depuis le backend
+   * @param section - Grande famille de document (de la table files.libelles_nom)
+   * @return Promise<void>
+   * Par exemple retourne (note de burreau, photos, plans, ...) d'une grande famille de types possible d'un element (un pgmu, un site, une operation ...)
+  */
   loadDocTypes(section: number): Promise<void> {
     return this.http
       .get<{ cd_type: number; libelle: string; path: string; field: string }[]>(
@@ -59,6 +68,7 @@ export class DocfileService {
         this.doc_types = [];
       });
   }
+
   getTypes() {
     return this.doc_types;
   }
@@ -85,9 +95,12 @@ export class DocfileService {
   }
 
   /** Méthode pour gérer la soumission du formulaire de doc
+   * En réalité, enrihchie la table files.docs
    * Verifie et affiche un snackbar en cas d'erreur
    * @param docForm - Formulaire contenant les données du docfiles
-   * @param fileInputs - Référence aux éléments input de type fichier
+   * @param fileInputs - Référence aux éléments input de type fichier. Liste des fichiers à uploader
+   * @param pmfu_id - ID de référence pour le docfiles (ex: pmfu_id, uuid_site, ...)
+   * @returns Promise<void> - Résout lorsque la soumission est terminée
    */
   handleDocfileSubmission(
     docForm: FormGroup,
@@ -153,7 +166,7 @@ export class DocfileService {
     const formData = new FormData();
     formData.append('ref_id', ref_id.toString());
 
-    const types = this.getTypes();
+    const types = this.getTypes(); // Récupère les types de documents par exemple [{cd_type: 1, libelle: 'photos', path: '...'}, ...]
 
     types.forEach(({ field }) => {
       const files: File[] = docForm.get(field)?.value;
@@ -164,40 +177,38 @@ export class DocfileService {
 
     return this.projetService.uploadDocfile(formData);
   }
-  getDocfilesList(pmfu_id: number, cd_type: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.sitesService.getDocfiles(pmfu_id, cd_type).subscribe({
-        next: (response: any) => {
-          this.docfiles = response || [];
-          this.hasFiles = this.docfiles.length > 0;
-          this.filePathList = this.docfiles.map(
-            (docfile: any) => docfile.doc_path.split('\\').pop() || ''
-          );
-          resolve();
-        },
-        error: (error) => {
-          console.error('Erreur lors du chargement des docfiles:', error);
-          reject(error);
-        },
-      });
-    });
-  }
 
   //
   // Déplacer le split ?
   //
 
+  /** Récupère la liste des fichiers pour un type et une section donnés
+   * @param cd_type - Id du type de document (ex: 1 pour photos)
+   * @param section - Grande famille de document (de la table files.libelles_nom)
+   * @param ref_id - ID de référence (ex: pmfu_id ou uuid_site ...) optionnel
+   */
   getFilesList(cd_type: number, section: number, ref_id?: any): Promise<void> {
     return new Promise((resolve, reject) => {
       this.sitesService.getFiles(cd_type, section, ref_id).subscribe({
         next: (response: any) => {
+          console.log('Response from this.sitesService.getFiles:', response);
           this.docfiles = response || [];
+          console.log('contenu de données docfiles:');
+          console.log('this.docfiles:', this.docfiles);
+
           this.hasFiles = this.docfiles.length > 0;
           this.filePathList = this.docfiles.map((docfile: any) => {
             if (!docfile || !docfile.doc_path) {
+              if (!docfile.doc_path) {
+                console.warn('docfile.doc_path est undefined ou null');
+              } else if(!docfile) {
+                console.warn('docfile est undefined ou null');
+              }
               return '';
             }
-            return docfile.doc_path.split('\\').slice(1).join('\\');
+            console.log('On a passé les warnings');
+            // return docfile.doc_path.split('\\').slice(1).join('\\');
+            return docfile.doc_path;
           });
           this.allFiles = this.docfiles.map(
             (docfile: any) => docfile.doc_type as number
@@ -212,6 +223,12 @@ export class DocfileService {
       });
     });
   }
+
+  /**
+   * Supprime un document
+   * @param doc_path - Chemin du document à supprimer
+   * @returns 
+   */
   deleteDocfile(doc_path: string): Observable<ApiResponse> {
     console.log(
       'lien de suppression :',

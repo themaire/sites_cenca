@@ -235,6 +235,11 @@ export class ProjetService {
     );
   }
 
+  /**
+   * Upload des documents (docfiles) via un FormData à la route
+   * @param formData FormData contenant le docfile à uploader
+   * @returns 
+   */
   uploadDocfile(formData: FormData): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=docs`;
 

@@ -100,15 +100,14 @@ export class SitesService {
 
     return locali_objects;
   }
-  getDocfiles(pmfu_id: number, cd_type: number): Observable<ApiResponse> {
-    const url = `${this.activeUrl}pmfu_docs/ref_pmfu_id=${pmfu_id}/cd_type=${cd_type}/lite`;
-    return this.http.get<ApiResponse>(url).pipe(
-      catchError((error) => {
-        console.error('Erreur lors de la récupération des docfiles', error);
-        return of({ success: false, message: 'Erreur lors de la récupération des docfiles' } as ApiResponse);
-      })
-    );
-  }
+
+  /**
+   * Récupère la liste des fichiers pour un type et une section donnés
+   * @param cd_type - Id du type de document (ex: 1 pour photos)
+   * @param section - Grande famille de document (de la table files.libelles_nom)
+   * @param ref_id - ID de référence (ex: pmfu_id ou uuid_site ...) optionnel
+   * @returns Observable<ApiResponse>
+   */
   getFiles(cd_type: number, section: number, ref_id?: any): Observable<ApiResponse> {
     const url = ref_id ? `${this.activeUrl}docs/${section}/cd_type=${cd_type}/full/${ref_id}` : `${this.activeUrl}docs/${section}/cd_type=${cd_type}/lite`;
     return this.http.get<ApiResponse>(url).pipe(
@@ -118,6 +117,7 @@ export class SitesService {
       })
     );
   }
+
   deleteLocalisation(loc_id: number): Observable<ApiResponse> {
     return this.http.delete<ApiResponse>(`${this.activeUrl}delete/opegerer.localisations/loc_id=${loc_id}`).pipe(
       catchError(error => {
@@ -131,12 +131,19 @@ export class SitesService {
     return this.getData<ProjetLite[]>(subroute);
   }
   
-    // Recherche par critères ou par mots clefs
-    // Pour la recherche de sites uniquement
+  /**
+   * Récupère la liste des sites
+   * @param subroute - sous-route de l'API
+   * @returns Promise<ListSite[]>
+   */
   async getSites(subroute: string): Promise<ListSite[]> {
     return this.getData<ListSite[]>(subroute);
   }
 
+  /**
+   * Pour récuperer une liste de choix (selectors)
+   * @returns Promise<Selector[]>
+   */
   async getSelectors(): Promise<Selector[]> {
     const data = await fetch(this.activeUrl + 'selectors');
     return (await data.json()) ?? [];
