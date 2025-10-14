@@ -4,7 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
-import { DocumentationComponent } from './documentation.component';
+import { AideComponent } from './aide/aide.component';
 
 export const routes: Routes = [
   {
@@ -46,10 +46,14 @@ export const routes: Routes = [
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),
     canActivate: [isLoggedInGuard],
   },
+  // Routes d'aide - version publique (sans authentification)
   {
-    path: 'documentation',
-    component: DocumentationComponent,
-    canActivate: [isLoggedInGuard],
+    path: 'aide',
+    component: AideComponent,
+  },
+  {
+    path: 'aide/:section',
+    component: AideComponent,
   },
 
   {

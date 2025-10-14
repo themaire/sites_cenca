@@ -7,7 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { DocumentationService, DocSection } from './services/documentation.service';
+import { DocumentationService, DocSection } from '../services/documentation.service';
+import { LoginService } from '../login/login.service';
 
 @Component({
   standalone: true,
@@ -186,11 +187,16 @@ export class AideComponent implements OnInit {
   constructor(
     private documentationService: DocumentationService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private loginService: LoginService
   ) {}
 
   ngOnInit() {
-    this.documentationService.getSections().subscribe(sections => {
+    // Vérifier si l'utilisateur est connecté
+    const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
+    
+    // Charger les sections dynamiquement selon l'authentification
+    this.documentationService.getSections(isAuthenticated).subscribe(sections => {
       this.sections = sections;
     });
     
@@ -203,24 +209,38 @@ export class AideComponent implements OnInit {
 
   loadSection(sectionId: string) {
     this.isLoading = true;
-    this.documentationService.getSection(sectionId).subscribe(section => {
-      this.currentSection = section || null;
-    });
     
-    if (!this.currentSection) {
-      this.router.navigate([this.baseRoute, 'index']);
-      return;
-    }
-
-    this.documentationService.getSectionContent(sectionId).subscribe({
-      next: (content) => {
-        this.currentContent = content;
-        this.isLoading = false;
+    // Vérifier le statut d'authentification
+    const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
+    
+    // Rechercher la section dans les sections disponibles selon l'authentification
+    this.documentationService.getSections(isAuthenticated).subscribe({
+      next: (sections) => {
+        const section = sections.find(s => s.id === sectionId);
+        
+        if (!section) {
+          this.router.navigate([this.baseRoute, 'index']);
+          return;
+        }
+        
+        this.currentSection = section;
+        
+        // Charger le contenu
+        this.documentationService.getSectionContent(sectionId, isAuthenticated).subscribe({
+          next: (content) => {
+            this.currentContent = content;
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Erreur lors du chargement de la documentation:', error);
+            this.currentContent = '<p>Erreur lors du chargement de la documentation.</p>';
+            this.isLoading = false;
+          }
+        });
       },
       error: (error) => {
-        console.error('Erreur lors du chargement de la documentation:', error);
-        this.currentContent = '<p>Erreur lors du chargement de la documentation.</p>';
-        this.isLoading = false;
+        console.error('Erreur lors du chargement de la section:', error);
+        this.router.navigate([this.baseRoute, 'index']);
       }
     });
   }
