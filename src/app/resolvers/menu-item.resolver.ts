@@ -7,8 +7,8 @@ import { MenuItem } from '../menuItem';
 
 @Injectable({
   providedIn: 'root',
-  
 })
+
 export class MenuItemResolver implements Resolve<MenuItem[]> {
   constructor(private menuService: MenuService) {}
 
@@ -46,6 +46,13 @@ export class MenuItemResolver implements Resolve<MenuItem[]> {
       if (child.id !== undefined) {
         let subroute: string = `parent=${child.id.toString()}`;
         child.children = await this.menuService.getMenu(subroute);
+
+        for (let subChild of child.children) {
+          if (subChild.id !== undefined) {
+            let subroute: string = `parent=${subChild.id.toString()}`;
+            subChild.children = await this.menuService.getMenu(subroute);
+          }
+        }
       }
     }
 

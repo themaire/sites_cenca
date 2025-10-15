@@ -5,17 +5,15 @@
 </div>
 
 <div class="home">
-  <ng-container *ngFor="let item of menuItems[0].children">
-    <ng-container *ngFor="let subItem of item.children">
+  <ng-container *ngFor="let item of menuItems">
       <app-card
         [parentItem]="item.name"
         [parentColor]="item?.class_color ?? 'default-color'"
-        [menuItem]="subItem"
-        [route]="subItem.route ?? ''"
-        *ngIf="subItem.accueil == true"
+        [menuItem]="item"
+        [route]="item.route ?? ''"
+        *ngIf="item.accueil == true"
       >
       </app-card>
-    </ng-container>
   </ng-container>
 </div>
 
