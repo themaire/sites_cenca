@@ -27,11 +27,37 @@ export class HomeComponent {
   }
 
   ngOnInit(): void {
-    // Abonnement à l'Observable pour obtenir les données résolues
+
+    /**
+     * Filtre les éléments de menu pour ne garder que ceux avec `accueil: true`.
+     * Utilise une fonction récursive pour parcourir tous les niveaux de la hiérarchie.
+     */
     this.route.data.subscribe((data) => {
-      this.menuItems = data['menuItems'];
+      console.log("Données résolues reçues dans HomeComponent :", data['menuItems']);
+      
+      // Fonction récursive pour parcourir tous les niveaux
+      const findAccueilItems = (items: MenuItem[]): MenuItem[] => {
+        let result: MenuItem[] = [];
+        
+        for (const item of items) {
+          // Si l'item a accueil: true, on l'ajoute
+          if (item.accueil === true) {
+            result.push(item);
+          }
+          
+          // Si l'item a des enfants, on les parcourt récursivement
+          if (item.children && item.children.length > 0) {
+            result = result.concat(findAccueilItems(item.children));
+          }
+        }
+        
+        return result;
+      };
+      
+      // Applique la fonction récursive sur toutes les données
+      this.menuItems = findAccueilItems(data['menuItems']);
     });
-    // console.log("menuItems de ngOnInit() du home component : ");
+    
     console.log(this.menuItems);
   }
 }
