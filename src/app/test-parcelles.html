@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Parcelles Cadastrales</title>
+</head>
+<body>
+    <h1>🗺️ Test d'implémentation des Parcelles Cadastrales</h1>
+    
+    <h2>✅ Nouvelles fonctionnalités ajoutées au MapComponent :</h2>
+    
+    <h3>📝 Nouveaux inputs :</h3>
+    <ul>
+        <li><code>@Input() chargerParcellesDynamiquement: boolean = false</code> - Active le chargement dynamique des parcelles cadastrales</li>
+        <li><code>@Output() parcellesToggled = new EventEmitter&lt;boolean&gt;()</code> - Événement émis lors du toggle des parcelles</li>
+    </ul>
+    
+    <h3>🔧 Nouvelles propriétés privées :</h3>
+    <ul>
+        <li><code>private parcellesLayer?: L.LayerGroup</code> - Couche Leaflet pour les parcelles</li>
+        <li><code>private isLoadingParcelles = false</code> - État de chargement</li>
+        <li><code>private lastBboxParcelles?: string</code> - Cache de la dernière bbox chargée</li>
+        <li><code>private loadingTimeoutParcelles?: any</code> - Timeout pour débounce</li>
+        <li><code>private minZoomParcelles = 15</code> - Zoom minimum (≈ 1:2000ème)</li>
+    </ul>
+    
+    <h3>🚀 Nouvelles méthodes :</h3>
+    <ul>
+        <li><code>setupDynamicParcellesLoading()</code> - Configure le chargement dynamique</li>
+        <li><code>onMapViewChangedParcelles()</code> - Gestionnaire de changement de vue avec contrainte de zoom</li>
+        <li><code>loadParcellesInCurrentView()</code> - Charge les parcelles via apiGeoParcellesUrl</li>
+        <li><code>updateParcellesLayer()</code> - Met à jour la couche</li>
+        <li><code>addParcellesToLayer()</code> - Ajoute les parcelles à la couche</li>
+        <li><code>getParcelleStyle()</code> - Style orange vif pour les parcelles</li>
+        <li><code>addParcellePopupAndTooltip()</code> - Popup avec infos cadastrales</li>
+        <li><code>synchronizeParcellesLayer()</code> - Synchronisation programmatique</li>
+        <li><code>toggleDynamicParcellesLoading()</code> - Toggle public</li>
+        <li><code>reloadParcellesInCurrentView()</code> - Force le rechargement</li>
+    </ul>
+    
+    <h3>🎯 Fonctionnalités clés :</h3>
+    <ul>
+        <li><strong>Contrainte de zoom :</strong> Les parcelles ne s'affichent qu'à partir du zoom 15 (≈ 1:2000ème)</li>
+        <li><strong>Chargement dynamique :</strong> Utilise <code>this.apiGeoParcellesUrl(bbox)</code> comme demandé</li>
+        <li><strong>Débounce :</strong> 500ms d'attente après mouvement pour éviter trop de requêtes</li>
+        <li><strong>Cache bbox :</strong> Évite de recharger la même zone</li>
+        <li><strong>Style distinctif :</strong> Orange vif (#ff6b35) pour différencier des sites CENCA</li>
+        <li><strong>Popup riche :</strong> Informations cadastrales (section, commune, surface, etc.)</li>
+        <li><strong>Contrôle Layer :</strong> Intégré dans le sélecteur de couches "🗺️ Parcelles Cadastrales"</li>
+        <li><strong>EventEmitter :</strong> Communication bidirectionnelle avec composant parent</li>
+    </ul>
+    
+    <h3>📋 Exemple d'utilisation :</h3>
+    <pre><code>&lt;app-map 
+  [mapName]="'test-parcelles'"
+  [chargerParcellesDynamiquement]="true"
+  (parcellesToggled)="onParcellesToggled($event)"&gt;
+&lt;/app-map&gt;</code></pre>
+    
+    <h3>⚡ Performance :</h3>
+    <ul>
+        <li>Zoom minimum requis pour éviter surcharge serveur</li>
+        <li>Débounce pour limiter les appels API</li>
+        <li>Cache de bbox pour éviter rechargements inutiles</li>
+        <li>Nettoyage automatique de la couche si zoom insuffisant</li>
+    </ul>
+    
+    <h3>🎨 Style des parcelles :</h3>
+    <ul>
+        <li><strong>Couleur :</strong> Orange vif (#ff6b35)</li>
+        <li><strong>Épaisseur :</strong> 1.5px</li>
+        <li><strong>Opacité :</strong> 80% contour, 10% remplissage</li>
+        <li><strong>Popup :</strong> Icône 🗺️ avec infos cadastrales</li>
+        <li><strong>Tooltip :</strong> Numéro de parcelle au survol</li>
+    </ul>
+    
+    <p><strong>✅ Implémentation terminée ! Le composant MapComponent supporte maintenant les parcelles cadastrales avec chargement dynamique et contrainte de zoom.</strong></p>
+</body>
+</html>

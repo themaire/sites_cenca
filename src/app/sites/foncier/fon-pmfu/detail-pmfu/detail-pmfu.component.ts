@@ -33,7 +33,7 @@ import { FormService } from '../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 import { FileExploratorComponent } from '../../../../shared/file-explorator/file-explorator.component';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { LoginService } from '../../../../login/login.service';
 import { Subscription, lastValueFrom } from 'rxjs';
@@ -66,13 +66,14 @@ import 'moment/locale/fr';
 
 import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackBar
 
-import { AsyncPipe } from '@angular/common';
+
 import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { DocfileService } from '../../../../shared/services/docfile.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MapComponent } from '../../../../map/map.component';
 import { renderAsync } from 'docx-preview';
 
 import { ApiResponse } from '../../../../shared/interfaces/api';
@@ -93,6 +94,7 @@ export interface Section {
     FormButtonsComponent,
     FileExploratorComponent,
     ReactiveFormsModule,
+    FormsModule,
     MatStepperModule,
     MatInputModule,
     MatSelectModule,
@@ -100,9 +102,9 @@ export interface Section {
     MatSlideToggleModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    AsyncPipe,
     MatButtonModule,
     MatListModule,
+    MapComponent,
   ],
   templateUrl: './detail-pmfu.component.html',
   styleUrl: './detail-pmfu.component.scss',
@@ -147,6 +149,11 @@ export class DetailPmfuComponent {
   allowedTypes: Record<string, string[]> = {};
   folders$ = this.foldersSubject.asObservable();
   @ViewChild(FileExploratorComponent) fileExplorator!: FileExploratorComponent;
+  @ViewChild(MapComponent) mapComponent!: MapComponent;
+
+  // Propriétés pour les sites CENCA
+  afficherSitesCenca: boolean = false;
+  afficherSitesCencaSites: boolean = false;
 
   constructor(
     public docfileService: DocfileService,
@@ -711,5 +718,80 @@ export class DetailPmfuComponent {
     } catch (error) {
       console.error('Erreur setupPmfuForm', error);
     }
+  }
+
+  /**
+   * Active/désactive l'affichage des sites CENCA dynamiques
+   */
+  toggleSitesCenca(): void {
+    console.log(`🌿 Sites CENCA dynamiques: ${this.afficherSitesCenca ? 'ACTIVÉS' : 'DÉSACTIVÉS'}`);
+    
+    // Communiquer avec la carte pour activer/désactiver le chargement dynamique
+    if (this.mapComponent) {
+      // Synchroniser avec le layer control
+      this.mapComponent.synchronizeSitesCencaLayer(this.afficherSitesCenca);
+      
+      if (this.afficherSitesCenca) {
+        console.log('✅ Les sites CENCA vont se charger automatiquement quand vous bougez la carte !');
+        // Forcer un premier chargement
+        setTimeout(() => {
+          this.mapComponent.reloadSitesInCurrentView();
+        }, 500);
+      } else {
+        console.log('❌ Chargement dynamique des sites CENCA désactivé');
+      }
+    } else {
+      console.warn('⚠️ Composant carte non trouvé');
+    }
+  }
+
+  /**
+   * Active/désactive l'affichage des sites CENCA Sites (couche verte)
+   */
+  toggleSitesCencaSites(): void {
+    console.log(`🟢 Sites CENCA Sites: ${this.afficherSitesCencaSites ? 'ACTIVÉS' : 'DÉSACTIVÉS'}`);
+    
+    // Communiquer avec la carte pour activer/désactiver le chargement dynamique
+    if (this.mapComponent) {
+      // Synchroniser avec le layer control
+      this.mapComponent.synchronizeSitesCencaSitesLayer(this.afficherSitesCencaSites);
+      
+      if (this.afficherSitesCencaSites) {
+        console.log('✅ Les sites CENCA Sites vont se charger automatiquement (couche verte) !');
+        // Forcer un premier chargement
+        setTimeout(() => {
+          this.mapComponent.reloadSitesSitesInCurrentView();
+        }, 500);
+      } else {
+        console.log('❌ Chargement dynamique des sites CENCA Sites désactivé');
+      }
+    } else {
+      console.warn('⚠️ Composant carte non trouvé');
+    }
+  }
+
+  /**
+   * Gestionnaire pour la synchronisation des Sites CENCA depuis le layer control
+   */
+  onSitesCencaToggled(active: boolean): void {
+    console.log(`🔄 Synchronisation des Sites CENCA depuis layer control: ${active}`);
+    this.afficherSitesCenca = active;
+  }
+
+  /**
+   * Gestionnaire pour la synchronisation des Sites CENCA Sites depuis le layer control
+   */
+  onSitesCencaSitesToggled(active: boolean): void {
+    console.log(`🔄 Synchronisation des Sites CENCA Sites depuis layer control: ${active}`);
+    this.afficherSitesCencaSites = active;
+  }
+
+  /**
+   * Gestionnaire pour la synchronisation des Parcelles depuis le layer control
+   */
+  onParcellesToggled(active: boolean): void {
+    console.log(`🗺️ Synchronisation des Parcelles Cadastrales depuis layer control: ${active}`);
+    // Note: Les parcelles sont activées par défaut avec [chargerParcellesDynamiquement]="true"
+    // Cette méthode permet de détecter les changements depuis le layer control
   }
 }

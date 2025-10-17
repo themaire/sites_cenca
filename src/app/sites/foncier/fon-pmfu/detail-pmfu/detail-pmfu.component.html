@@ -386,7 +386,52 @@
         </div>
       </form>
     </mat-step>
-    <!-- Étape 2: Pièces jointes -->
+    
+    <!-- Étape 2: Localisation -->
+    <mat-step>
+      <ng-template matStepLabel>Localisation</ng-template>
+      <!-- Contrôles pour les sites CENCA -->
+      <div class="carte-controls">
+        Afficher dynamiquement :
+        <div class="toggles-container">
+          <mat-slide-toggle 
+            [(ngModel)]="afficherSitesCencaSites"
+            (change)="toggleSitesCencaSites()">
+            🟢 Les sites CENCA (gérés en verts)
+          </mat-slide-toggle>
+
+          <mat-slide-toggle 
+            [(ngModel)]="afficherSitesCenca"
+            (change)="toggleSitesCenca()">
+            🌿 Les autres sites (CAST et autres en jaune)
+          </mat-slide-toggle>
+        </div>
+        
+        <!-- <div class="sites-info" *ngIf="afficherSitesCenca || afficherSitesCencaSites">
+          <mat-hint *ngIf="afficherSitesCencaSites">🟢 Sites CENCA Sites se chargent automatiquement !</mat-hint>
+          <mat-hint *ngIf="afficherSitesCenca">🌿 Sites CENCA autres dynamiques se chargent automatiquement !</mat-hint>
+        </div> -->
+      </div>
+
+      <div class="map-container">
+        <app-map 
+          [mapName]="'pmfu-' + (pmfu ? pmfu.pmfu_id : 'nouveau')"
+          [chargerSitesDynamiquement]="afficherSitesCenca"
+          [chargerSitesSitesDynamiquement]="afficherSitesCencaSites"
+          [chargerParcellesDynamiquement]="true"
+          (sitesCencaToggled)="onSitesCencaToggled($event)"
+          (sitesCencaSitesToggled)="onSitesCencaSitesToggled($event)"
+          (parcellesToggled)="onParcellesToggled($event)"
+          style="height: 400px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+        </app-map>
+      </div>
+      <div class="step-actions">
+        <button mat-button matStepperPrevious>Précédent</button>
+        <button mat-button matStepperNext>Suivant</button>
+      </div>
+    </mat-step>
+    
+    <!-- Étape 3: Pièces jointes -->
     <mat-step>
       <ng-template matStepLabel>Pièces jointes</ng-template>
 <form [formGroup]="pmfuForm" class="second-step" *ngIf="isEditPmfu">

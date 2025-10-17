@@ -273,3 +273,79 @@ mat-dialog-content.dialogue {
     box-shadow: inset 0 0 20px rgba(180, 73, 23, 0.15);
   }
 }
+
+// Styles pour la carte
+.map-container {
+  margin: 20px 0;
+  padding: 10px;
+  
+  app-map {
+    display: block;
+    height: 400px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+}
+
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  
+  button {
+    min-width: 100px;
+  }
+}
+
+// Styles pour les contrôles des sites CENCA
+.carte-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  
+  // Container pour les toggles
+  .toggles-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  mat-slide-toggle {
+    ::ng-deep .mat-slide-toggle-label {
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    ::ng-deep .mat-slide-toggle-checked .mat-slide-toggle-thumb {
+      background-color: #28a745;
+    }
+    
+    ::ng-deep .mat-slide-toggle-checked .mat-slide-toggle-bar {
+      background-color: rgba(40, 167, 69, 0.5);
+    }
+  }
+  
+  .sites-info {
+    margin-top: 8px;
+    
+    mat-hint {
+      color: #28a745;
+      font-size: 13px;
+      font-style: italic;
+      display: block;
+      margin-bottom: 4px;
+      
+      &::before {
+        content: "💡 ";
+      }
+    }
+  }
+}
