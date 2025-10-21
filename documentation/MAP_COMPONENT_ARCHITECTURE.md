@@ -403,6 +403,38 @@ private map!: L.Map;
 - **Architecture :** Deux LayerGroup indépendants
 - **Objectif :** Gestion indépendante activation/désactivation
 
+### 5. 🔒 **Protection des Popups (Octobre 2025)**
+- **Variable :** `hasOpenPopup: boolean = false`
+- **Problème résolu :** Popups qui disparaissaient après 0.5s
+- **Cause :** Rechargement automatique des couches effaçait les éléments DOM
+- **Solution :** Suspension intelligente des rechargements pendant affichage popup
+
+**Mécanisme de protection :**
+```typescript
+// Vérification dans toutes les méthodes onMapViewChanged*()
+if (this.hasOpenPopup) {
+  console.log('🔒 Popup ouverte - rechargement suspendu');
+  return;
+}
+
+// Suivi automatique dans chaque addXXXPopupAndTooltip()
+layer.on('popupopen', () => {
+  this.hasOpenPopup = true;
+  console.log('🔓 Popup XXX ouverte - rechargements suspendus');
+});
+
+layer.on('popupclose', () => {
+  this.hasOpenPopup = false;
+  console.log('🔒 Popup XXX fermée - rechargements autorisés');
+});
+```
+
+**Bénéfices UX :**
+- ✅ Popups stables et lisibles
+- ✅ Pas de clignotement/disparition
+- ✅ Navigation fluide même si popup bouge légèrement la carte
+- ✅ Rechargements automatiques reprennent après fermeture
+
 ---
 
 ## 🎯 Points d'Extension
@@ -460,12 +492,15 @@ L.control.layers(baseMaps, overlayMaps).addTo(this.map);
 - `🔵🔴` Activation/désactivation layer control
 
 ### Points de Debug Importants
+
 1. Vérifier `chargerSitesDynamiquement` et `chargerSitesSitesDynamiquement`
 2. Contrôler états `isLoadingSites` et `isLoadingSitesSites`
 3. Vérifier cohérence `lastBbox` et `lastBboxSites`
 4. Surveiller timeouts actifs
+5. **Nouveau :** Vérifier `hasOpenPopup` si rechargements inattendus
 
 ---
 
-*Documentation générée le 17 octobre 2025*
-*MapComponent v2.0 - Architecture avec double couche dynamique*
+*Documentation mise à jour le 19 octobre 2025*
+
+*MapComponent v2.1 - Architecture avec protection des popups*

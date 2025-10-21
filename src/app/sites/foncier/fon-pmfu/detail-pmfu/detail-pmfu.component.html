@@ -391,7 +391,7 @@
     <mat-step>
       <ng-template matStepLabel>Localisation</ng-template>
       <!-- Contrôles pour les sites CENCA -->
-      <div class="carte-controls">
+      <!-- <div class="carte-controls">
         Afficher dynamiquement :
         <div class="toggles-container">
           <mat-slide-toggle 
@@ -405,13 +405,37 @@
             (change)="toggleSitesCenca()">
             🌿 Les autres sites (CAST et autres en jaune)
           </mat-slide-toggle>
+        </div> -->
+
+        <div class="parcelles-selected" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+          <span style="font-weight: bold; margin-right: 8px;">Parcelles sélectionnées :</span>
+          <ng-container *ngFor="let parcelle of parcellesSelected">
+              <div class="parcelle-info" style="background: #e8f5e9; border-radius: 6px; padding: 4px 10px; margin-bottom: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); display: flex; align-items: center;">
+                <div class="zoom-wrapper" (click)="zoomToParcelle(parcelle)" title="Zoomer sur cette parcelle" style="margin-right: 8px; cursor: pointer;">
+                  <mat-icon class="zoom-icon" color="primary">zoom_in</mat-icon>
+                </div>
+                
+                {{ parcelle.nom_com }} {{ parcelle.section }} - {{ parcelle.numero }}
+                
+                <div class="delete-wrapper" (click)="removeParcelle(parcelle)" title="Supprimer cette parcelle">
+                  <mat-icon class="delete-icon">delete</mat-icon>
+                </div>
+              </div>
+          </ng-container>
+          <div style="border: 1px solid #222; border-radius: 8px; padding: 6px 12px; display: flex; gap: 6px; align-items: center; margin-left: 12px; background: #fff;">
+            <button mat-stroked-button color="primary" (click)="undoRemoveParcelle()" [disabled]="historyIndex <= 0">
+              <mat-icon>undo</mat-icon> Undo
+            </button>
+            <button mat-stroked-button color="accent" (click)="redoRemoveParcelle()" [disabled]="historyIndex >= parcellesHistory.length - 1">
+              <mat-icon>redo</mat-icon> Redo
+            </button>
+          </div>
         </div>
         
         <!-- <div class="sites-info" *ngIf="afficherSitesCenca || afficherSitesCencaSites">
           <mat-hint *ngIf="afficherSitesCencaSites">🟢 Sites CENCA Sites se chargent automatiquement !</mat-hint>
           <mat-hint *ngIf="afficherSitesCenca">🌿 Sites CENCA autres dynamiques se chargent automatiquement !</mat-hint>
         </div> -->
-      </div>
 
       <div class="map-container">
         <app-map 
@@ -422,7 +446,8 @@
           (sitesCencaToggled)="onSitesCencaToggled($event)"
           (sitesCencaSitesToggled)="onSitesCencaSitesToggled($event)"
           (parcellesToggled)="onParcellesToggled($event)"
-          style="height: 400px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+          (parcellesSelected)="onParcellesSelected($event)"
+          style="height: 500px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
         </app-map>
       </div>
       <div class="step-actions">

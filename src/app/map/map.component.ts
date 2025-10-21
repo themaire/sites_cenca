@@ -8,6 +8,7 @@ import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de Geo
 
 import { Localisation } from '../shared/interfaces/localisation'; // Import de l'interface Localisation
 import { SiteCencaCollection, SiteCencaFeature } from '../shared/interfaces/site-geojson'; // Import des interfaces pour les sites CENCA
+import { ParcellesSelected } from '../../app/sites/foncier/foncier'; // Import des interfaces pour les sites CENCA
 import { SiteCencaService } from '../shared/services/site-cenca.service'; // Import du service
 
 import { HttpClient } from '@angular/common/http';
@@ -23,8 +24,6 @@ declare module 'leaflet' {
   }
 }
 
-
-
 @Component({
   selector: 'app-map',
   standalone: true,
@@ -33,12 +32,19 @@ declare module 'leaflet' {
   styleUrl: './map.component.scss',
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
+  /** Émet l'idu d'une parcelle supprimée pour synchroniser avec le parent */
+  @Output() parcelleRemoved = new EventEmitter<string>();
   @Input() mapName?: string;
   @Input() localisation_site?: Localisation;
   @Input() localisation_projet?: Localisation;
   @Input() localisations_operations?: Localisation[];
   @Input() sitesCenca?: SiteCencaCollection; // Collection de sites CENCA à afficher
   @Input() chargerSitesDynamiquement: boolean = false; // Active le chargement dynamique des sites CENCA
+  /** Liste des parcelles sélectionnées (émise vers le parent) */
+  @Output() parcellesSelected = new EventEmitter<ParcellesSelected[]>();
+
+  private _parcellesSelectionnees: ParcellesSelected[] = [];
+
   @Input() chargerSitesSitesDynamiquement: boolean = false; // Active le chargement dynamique de la couche cenca_sites
   @Input() chargerParcellesDynamiquement: boolean = false; // Active le chargement dynamique des parcelles cadastrales
   @Input() coucheSitesCenca: string = 'cenca_autres'; // Nom de la couche à charger
@@ -50,6 +56,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   lastColorIndex = -1;
   usedColors: number[] = [];
+
+  // Propriété pour suivre l'état des popups et éviter les rechargements intempestifs
+  private hasOpenPopup = false;
 
   // Propriétés pour le chargement dynamique des sites CENCA (cenca_autres)
   private sitesCencaLayer?: L.LayerGroup;
@@ -68,9 +77,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private isLoadingParcelles = false;
   private lastBboxParcelles?: string;
   private loadingTimeoutParcelles?: any;
-  private minZoomParcelles = 15; // Zoom minimum pour afficher les parcelles (équivaut environ au 1:2000ème)
+  private minZoomParcelles = 14; // Zoom minimum pour afficher les parcelles (équivaut environ au 1:2000ème)
+
+  private surfaceInfoControl: any;
 
   private activeUrl: string = environment.apiBaseUrl;
+  
   apiWFSLizmapUrl(couche: string, bbox: string): string {
     return this.activeUrl + 'api-geo/lizmap/layer/' + couche + '?bbox=' + bbox;
   }
@@ -85,10 +97,19 @@ export class MapComponent implements AfterViewInit, OnDestroy {
             private siteCencaService: SiteCencaService
           ) {}
 
+  /** Exemple d'appel pour émettre la sélection (à adapter selon votre logique de sélection) */
+  emitParcellesSelectionnees() {
+    this.parcellesSelected.emit(this._parcellesSelectionnees);
+    this.updateSurfaceInfoControl();
+  }
+
   ngAfterViewInit() {
     setTimeout(() => {
       console.log('Initialisation de la carte :', this.mapName);
       this.initMap();
+
+      this.createSurfaceInfoControl();
+      this.updateSurfaceInfoControl();
     });
   }
 
@@ -442,11 +463,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         // Transformation de l'objet GeoJSON en couche Leaflet      
         const geojsonLayer = L.geoJSON(this.localisation_site.geojson);
         geojsonLayer.setStyle({
-          color: 'green',
+          color: 'red',
           weight: 2,
           opacity: 1,
-          fillOpacity: 0.5,
-          fillColor: 'green',
+          fillOpacity: 0.0,
+          fillColor: 'red',
         }).addTo(this.map);
         
         // Obtenir les limites et ajuster la vue
@@ -696,6 +717,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       return; // Éviter les requêtes si désactivé ou en cours
     }
 
+    // NOUVEAU : Ne pas recharger si une popup est ouverte
+    if (this.hasOpenPopup) {
+      console.log('🚫 Popup ouverte - rechargement des sites CENCA annulé');
+      return;
+    }
+
     console.log('🔄 Vue de la carte changée - rechargement des sites CENCA...');
 
     // Débounce - attendre 500ms après le dernier mouvement
@@ -835,6 +862,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     
     layer.bindPopup(popupContent);
     
+    // Suivre l'ouverture/fermeture des popups pour éviter les rechargements intempestifs
+    layer.on('popupopen', () => {
+      this.hasOpenPopup = true;
+      console.log('🔓 Popup CENCA ouverte - rechargements suspendus');
+    });
+    
+    layer.on('popupclose', () => {
+      this.hasOpenPopup = false;
+      console.log('🔒 Popup CENCA fermée - rechargements autorisés');
+    });
+    
     // Tooltip avec nom du site
     layer.bindTooltip(`🌿 ${props.nomsite}`, {
       permanent: false,
@@ -873,6 +911,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private onMapViewChangedSites(): void {
     if (!this.chargerSitesSitesDynamiquement || this.isLoadingSitesSites) {
       return; // Éviter les requêtes si désactivé ou en cours
+    }
+
+    // 🔒 Protection contre les rechargements pendant l'affichage des popups
+    if (this.hasOpenPopup) {
+      console.log('🔒 Popup ouverte - rechargement Sites suspendu');
+      return;
     }
 
     console.log('🟢 Vue de la carte changée - rechargement des sites CENCA Sites...');
@@ -999,6 +1043,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     
     layer.bindPopup(popupContent);
     
+    // Suivre l'ouverture/fermeture des popups pour éviter les rechargements intempestifs
+    layer.on('popupopen', () => {
+      this.hasOpenPopup = true;
+      console.log('🔓 Popup Sites CENCA verts ouverte - rechargements suspendus');
+    });
+    
+    layer.on('popupclose', () => {
+      this.hasOpenPopup = false;
+      console.log('🔒 Popup Sites CENCA verts fermée - rechargements autorisés');
+    });
+    
     // Tooltip avec nom du site
     layer.bindTooltip(`🟢 ${props.nomsite}`, {
       permanent: false,
@@ -1041,6 +1096,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       return; // Éviter les requêtes si désactivé ou en cours
     }
 
+    // 🔒 Protection contre les rechargements pendant l'affichage des popups
+    if (this.hasOpenPopup) {
+      console.log('🔒 Popup ouverte - rechargement Parcelles suspendu');
+      return;
+    }
+
     // Vérifier le niveau de zoom minimum
     if (this.map.getZoom() < this.minZoomParcelles) {
       console.log(`🗺️ Zoom insuffisant (${this.map.getZoom()}) pour afficher les parcelles (min: ${this.minZoomParcelles})`);
@@ -1068,11 +1129,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    */
   private loadParcellesInCurrentView(): void {
     if (!this.map || this.isLoadingParcelles || !this.chargerParcellesDynamiquement) {
-      console.log('🗺️ Chargement des parcelles annulé :', {
-        map: !!this.map,
-        isLoading: this.isLoadingParcelles,
-        chargerDynamic: this.chargerParcellesDynamiquement
-      });
+      // console.log('🗺️ Chargement des parcelles annulé :', {
+      //   map: !!this.map,
+      //   isLoading: this.isLoadingParcelles,
+      //   chargerDynamic: this.chargerParcellesDynamiquement
+      // });
       return;
     }
 
@@ -1130,20 +1191,23 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (!this.parcellesLayer || !parcellesCollection.features || parcellesCollection.features.length === 0) return;
 
     parcellesCollection.features.forEach((feature: any) => {
+      // Vérifier si la parcelle est sélectionnée
+      const idu = feature.properties?.idu;
+      const isSelected = this._parcellesSelectionnees.some(p => p.idu === idu);
+      const style = isSelected ? this.getParcelleSelectedStyle() : this.getParcelleStyle();
       const layer = L.geoJSON(feature, {
-        style: this.getParcelleStyle(),
+        style,
         onEachFeature: (feature, layer) => {
           this.addParcellePopupAndTooltip(feature, layer);
           this.addParcelleInteractiveEvents(feature, layer);
         }
       });
-      
       layer.addTo(this.parcellesLayer!);
     });
   }
 
   /**
-   * Retourne le style pour les parcelles cadastrales
+   * Retourne le style pour les parcelles cadastrales (par défaut orange)
    */
   private getParcelleStyle() {
     return {
@@ -1156,27 +1220,122 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Retourne le style pour les parcelles sélectionnées (jaune)
+   */
+  private getParcelleSelectedStyle() {
+    return {
+      color: '#ffd600', // Jaune
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.25,
+      fillColor: '#fffde7'
+    };
+  }
+
+  /**
+   * Ajoute les événements d'interaction (souris) à une couche de parcelle
+   */
+  private addParcelleInteractiveEvents(feature: any, layer: any): void {
+    // Surlignage au survol
+    layer.on('mouseover', (e: any) => {
+      this.highlightParcelle(e);
+    });
+    // Rétablir le style au mouseout
+    layer.on('mouseout', (e: any) => {
+      this.resetParcelleHighlight(e);
+    });
+    // Zoom sur la parcelle au double-clic
+    layer.on('dblclick', (e: any) => {
+      this.zoomToParcelle(e);
+    });
+  }
+
+  /**
+   * Surligne la parcelle au survol (polygone rouge, épaisseur 2, sans remplissage)
+   */
+  private highlightParcelle(e: any): void {
+    const layer = e.target;
+    layer.setStyle({
+      weight: 2,
+      color: 'red',
+      fillOpacity: 0,
+      fillColor: 'transparent',
+      opacity: 1
+    });
+    // Amener la couche au premier plan
+    if (!((L as any).Browser.ie) && !((L as any).Browser.opera)) {
+      layer.bringToFront();
+    }
+    // Afficher le tooltip pendant le survol
+    layer.openTooltip();
+  }
+
+  /**
    * Ajoute popup et tooltip à une parcelle cadastrale
    */
   private addParcellePopupAndTooltip(feature: any, layer: any): void {
     const props = feature.properties;
-    
-    // Popup détaillé
+    // console.log('🗺️ Ajout popup parcelle:', props);
+
+    // Génération du contenu de la popup avec un conteneur pour le bouton d'action
     const popupContent = `
       <div style="max-width: 300px;">
-        <h4 style="margin: 0 0 10px 0; color: #d63031;">🗺️ Parcelle ${props.numero || props.id_par || 'N/A'}</h4>
+        <h4 style="margin: 0 0 10px 0; color: #d63031;">🗺️ Parcelle ${props.section || 'N/A'} ${props.numero || props.id_par || 'N/A'}</h4>
         <div style="font-size: 13px; line-height: 1.4;">
-          <p><strong>Section:</strong> ${props.section || 'N/A'}</p>
           <p><strong>Commune:</strong> ${props.commune || props.nom_com || 'N/A'}</p>
-          <p><strong>Surface:</strong> ${props.contenance || props.surface || 'N/A'}</p>
+          <p><strong>Surface:</strong> ${props.contenance / 10000 + ' ha' || 'N/A'}</p>
           ${props.adresse ? `<p><strong>Adresse:</strong> ${props.adresse}</p>` : ''}
-          <p><strong>Code parcelle:</strong> ${props.id_par || props.code_par || 'N/A'}</p>
         </div>
+        <div id="parcelle-action-btn-${props.idu}" style="display: flex; justify-content: center; align-items: center; margin-top: 10px;"></div>
       </div>
     `;
-    
     layer.bindPopup(popupContent);
-    
+
+    // Attacher l'événement au bouton après ouverture du popup
+    layer.on('popupopen', () => {
+      this.hasOpenPopup = true;
+      console.log('🔓 Popup Parcelle ouverte - rechargements suspendus');
+      // Calculer la bbox à l'ouverture du popup
+      let bbox: number[] | undefined = undefined;
+      try {
+        const bounds = layer.getBounds();
+        bbox = [
+          bounds.getWest(),
+          bounds.getSouth(),
+          bounds.getEast(),
+          bounds.getNorth()
+        ];
+        (layer as any)._bbox = bbox;
+      } catch (e) {
+        console.warn('Impossible de calculer la bbox pour la parcelle', props.idu);
+      }
+      setTimeout(() => {
+        const btnContainer = document.getElementById(`parcelle-action-btn-${props.idu}`);
+        if (btnContainer) {
+          const isSelectedNow = this._parcellesSelectionnees.some(p => p.idu === props.idu);
+          if (!isSelectedNow) {
+            btnContainer.innerHTML = `<span id="select-parcelle-${props.idu}" class="material-icons" style="color:#28a745;cursor:pointer;font-size:28px;" title="Sélectionner cette parcelle">add_shopping_cart</span>`;
+            const btn = document.getElementById(`select-parcelle-${props.idu}`);
+            if (btn) {
+              console.log("Element du bouton de sélection", btnContainer);
+              btn.onclick = () => this.addParcelleToSelection(props.idu, props.nom_com, props.section, props.numero, props.contenance, bbox);
+            }
+          } else {
+            btnContainer.innerHTML = `<span id="remove-parcelle-${props.idu}" class="material-icons" style="color:#c62828;cursor:pointer;font-size:28px;" title="Retirer cette parcelle">remove_shopping_cart</span>`;
+            const btn = document.getElementById(`remove-parcelle-${props.idu}`);
+            if (btn) {
+              btn.onclick = () => this.removeParcelleFromSelection(props.idu);
+            }
+          }
+        }
+      }, 0);
+    });
+
+    layer.on('popupclose', () => {
+      this.hasOpenPopup = false;
+      console.log('🔒 Popup Parcelle fermée - rechargements autorisés');
+    });
+
     // Tooltip avec numéro de parcelle
     layer.bindTooltip(`🗺️ ${props.section} ${props.numero || props.id_par || 'Parcelle'}`, {
       permanent: false,
@@ -1185,41 +1344,40 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  /**
-   * Ajoute les événements interactifs aux parcelles (highlight, zoom, etc.)
-   */
-  private addParcelleInteractiveEvents(feature: any, layer: any): void {
-    layer.on({
-      mouseover: (e: any) => this.highlightParcelle(e),
-      mouseout: (e: any) => this.resetParcelleHighlight(e),
-      dblclick: (e: any) => this.zoomToParcelle(e)
-    });
+  /** Retire une parcelle de la sélection par son idu et informe le parent */
+  removeParcelleFromSelection(idu: string): void {
+    this._parcellesSelectionnees = this._parcellesSelectionnees.filter(p => p.idu !== idu);
+    this.emitParcellesSelectionnees();
+    // Informer le parent pour synchroniser trashParcelle et l'historique
+    this.parcelleRemoved.emit(idu);
+    // Fermer la popup active
+    if (this.map) {
+      this.map.closePopup();
+    }
+    // Réactiver le chargement dynamique
+    this.hasOpenPopup = false;
+    this.reloadParcellesInCurrentView();
   }
 
-  /**
-   * Met en surbrillance une parcelle au survol
-   */
-  private highlightParcelle(e: any): void {
-    const layer = e.target;
-
-    layer.setStyle({
-      weight: 5,
-      color: 'red',
-      dashArray: '',
-      fillOpacity: 0.3,
-      fillColor: 'red'
-    });
-
-    // Amener la couche au premier plan (compatible navigateurs)
-    if (!((L as any).Browser.ie) && !((L as any).Browser.opera)) {
-      layer.bringToFront();
+  /** Ajoute l'idu d'une parcelle à la sélection et émet la liste, ferme la popup et réactive le chargement dynamique */
+  addParcelleToSelection(idu: string, nom_com: string, section: string, numero: string, surface: number, bbox?: number[]): void {
+    if (!idu) return;
+    const existe = this._parcellesSelectionnees.find(p => p.idu === idu && p.nom_com === nom_com && p.section === section && p.numero === numero);
+    if (!existe) {
+      this._parcellesSelectionnees.push({ idu, nom_com, section, numero, surface, bbox });
+      this.emitParcellesSelectionnees();
+      console.log('✅ Parcelle ajoutée à la sélection:', idu, this._parcellesSelectionnees);
+      // Fermer la popup active
+      if (this.map) {
+        this.map.closePopup();
+      }
+      // Réactiver le chargement dynamique
+      this.hasOpenPopup = false;
+      // Déclencher le rechargement des parcelles
+      this.reloadParcellesInCurrentView();
+    } else {
+      console.log('ℹ️ Parcelle déjà sélectionnée:', idu);
     }
-
-    // Afficher le tooltip en permanence pendant le survol
-    layer.openTooltip();
-    
-    // console.log('🗺️ Parcelle en surbrillance:', layer.feature.properties);
-    // console.log('🗺️ Niveau de zoom actuel:', this.map.getZoom());
   }
 
   /**
@@ -1227,14 +1385,19 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    */
   private resetParcelleHighlight(e: any): void {
     const layer = e.target;
-    
-    // Restaurer le style par défaut
-    layer.setStyle(this.getParcelleStyle());
-    
+    const props = layer.feature?.properties;
+    const idu = props?.idu;
+    const isSelected = this._parcellesSelectionnees.some(p => p.idu === idu);
+
+    // Restaurer le style selon sélection
+    if (isSelected) {
+      layer.setStyle(this.getParcelleSelectedStyle());
+    } else {
+      layer.setStyle(this.getParcelleStyle());
+    }
+
     // Fermer le tooltip
     layer.closeTooltip();
-    
-    console.log('🗺️ Parcelle déselectionnée');
   }
 
   /**
@@ -1242,11 +1405,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    */
   private zoomToParcelle(e: any): void {
     const layer = e.target;
-    
     // Zoomer sur l'emprise de la parcelle
-    this.map.fitBounds(layer.getBounds());
-    
-    console.log('🗺️ Zoom sur parcelle:', layer.feature.properties);
+    const bounds = layer.getBounds();
+    this.map.fitBounds(bounds);
+    // Centrer sur le centroïde après le fitBounds
+    const center = bounds.getCenter();
+    setTimeout(() => {
+      this.map.setView(center, this.map.getZoom());
+    }, 400); // délai pour laisser le fitBounds s'appliquer
+    console.log('🗺️ Zoom sur parcelle (centroïde):', layer.feature.properties, center);
   }
 
   /**
@@ -1462,6 +1629,63 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.chargerSitesSitesDynamiquement = false;
       this.sitesCencaSitesLayer.clearLayers();
     }
+  }
+
+  /**
+   * Zoom sur une bbox [west, south, east, north] passée en paramètre
+   */
+  public zoomToBbox(bbox: number[]): void {
+    if (bbox && bbox.length === 4 && this.map) {
+      const bounds = L.latLngBounds(
+        [bbox[1], bbox[0]], // SW
+        [bbox[3], bbox[2]]  // NE
+      );
+      this.map.fitBounds(bounds);
+    }
+  }
+
+  /** Permet au parent de synchroniser la sélection des parcelles */
+  public setParcellesSelection(parcelles: ParcellesSelected[]) {
+    this._parcellesSelectionnees = [...parcelles];
+    this.emitParcellesSelectionnees();
+    // Optionnel : recharger la couche pour mettre à jour la couleur
+    this.reloadParcellesInCurrentView();
+  }
+
+  private createSurfaceInfoControl(): void {
+    if (this.surfaceInfoControl) {
+      this.surfaceInfoControl.remove();
+    }
+    const SurfaceInfo = L.Control.extend({
+      options: { position: 'topright' }, // 'topcenter' n'existe pas nativement
+      onAdd: (map: any) => {
+        const div = L.DomUtil.create('div', 'leaflet-surface-info');
+        div.style.textAlign = 'center';
+        div.style.background = 'rgba(255,255,255,0.9)';
+        div.style.padding = '6px 16px';
+        div.style.borderRadius = '8px';
+        div.style.fontWeight = 'bold';
+        div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+        div.style.marginTop = '10px';
+        div.style.maxWidth = '320px';
+        div.id = 'surface-info-control';
+        div.innerHTML = '';
+        return div;
+      }
+    });
+    this.surfaceInfoControl = new SurfaceInfo();
+    this.surfaceInfoControl.addTo(this.map);
+  }
+
+  private updateSurfaceInfoControl(): void {
+    if (!this.surfaceInfoControl) return;
+    const div = document.getElementById('surface-info-control');
+    if (!div) return;
+    let total = 0;
+    for (const p of this._parcellesSelectionnees) {
+      if (p.surface) total += p.surface / 10000; // convertir m² en ha
+    }
+    div.innerHTML = `<span style="font-size:16px;">Surface totale sélectionnée : <b>${total.toLocaleString('fr-FR', { maximumFractionDigits: 4 })} ha</b></span>`;
   }
 
 }

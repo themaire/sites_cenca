@@ -135,7 +135,44 @@ COUCHE AUTRES          COUCHE SITES          GLOBAL
 │ • Évite spam    │    │ • Évite reload  │    │ • Évite double │
 │   requêtes      │    │   même zone     │    │   requête      │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ POPUP TRACKING │    │ UX PROTECTION   │    │ SMART RELOAD    │
+│                 │    │                 │    │                │
+│ • hasOpenPopup  │    │ • Popup stable  │    │ • Auto-resume   │
+│ • Event-based   │    │ • Pas de flash  │    │ • après close   │
+│ • Layer-aware   │    │ • UX fluide     │    │ • Intelligent   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
+
+## 🔒 **Nouveauté 2025 : Protection des Popups**
+
+**Problème résolu :** Les popups disparaissaient après 0.5s à cause du rechargement automatique des couches qui effaçait les éléments DOM.
+
+**Solution implémentée :**
+
+```typescript
+private hasOpenPopup = false; // Variable de suivi globale
+
+// Dans chaque méthode onMapViewChanged*()
+if (this.hasOpenPopup) {
+  console.log('🔒 Popup ouverte - rechargement suspendu');
+  return;
+}
+
+// Dans chaque addXXXPopupAndTooltip()
+layer.on('popupopen', () => {
+  this.hasOpenPopup = true;
+  console.log('🔓 Popup XXX ouverte - rechargements suspendus');
+});
+
+layer.on('popupclose', () => {
+  this.hasOpenPopup = false;
+  console.log('🔒 Popup XXX fermée - rechargements autorisés');
+});
+```
+
+**Couches protégées :** Sites CENCA Autres, Sites CENCA Sites, Parcelles cadastrales ✅
 
 ## 🚀 Workflow Complet
 
@@ -159,6 +196,7 @@ COUCHE AUTRES          COUCHE SITES          GLOBAL
 ---
 
 **Métriques du Composant :**
+
 - 🎯 **Complexité :** Élevée (1100+ lignes)
 - 🔄 **États gérés :** 12 variables privées
 - 🌐 **API calls :** 2 couches dynamiques
@@ -166,4 +204,4 @@ COUCHE AUTRES          COUCHE SITES          GLOBAL
 - 🔗 **Couplage :** Faible (EventEmitter)
 - 📥 **Inputs :** 7 propriétés configurables
 
-*Schéma généré le 17 octobre 2025*
+*Schéma généré le 19 octobre 2025*

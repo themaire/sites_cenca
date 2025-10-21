@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 
-import { ProjetMfu, ProjetsMfu } from '../../foncier';
+import { ProjetMfu, ProjetsMfu, ParcellesSelected } from '../../foncier';
 import { FoncierService } from '../../foncier.service';
 import {
   HttpClient,
@@ -110,6 +110,23 @@ export interface Section {
   styleUrl: './detail-pmfu.component.scss',
 })
 export class DetailPmfuComponent {
+  /**
+   * Zoom sur la parcelle sélectionnée en utilisant sa bbox
+   */
+  zoomToParcelle(parcelle: ParcellesSelected) {
+    if (parcelle.bbox && this.mapComponent && typeof this.mapComponent.zoomToBbox === 'function') {
+      this.mapComponent.zoomToBbox(parcelle.bbox);
+    } else {
+      this.snackBar.open('Impossible de zoomer : bbox non disponible.', 'Fermer', { duration: 2500 });
+    }
+  }
+
+  ngAfterViewInit() {
+    // Abonnement à l'EventEmitter de suppression de parcelle côté carte
+    if (this.mapComponent && this.mapComponent.parcelleRemoved) {
+      this.mapComponent.parcelleRemoved.subscribe((idu: string) => this.onParcelleRemoved(idu));
+    }
+  }
   pmfu!: ProjetMfu;
   projetLite!: ProjetsMfu;
   isLoading: boolean = true;
@@ -154,6 +171,126 @@ export class DetailPmfuComponent {
   // Propriétés pour les sites CENCA
   afficherSitesCenca: boolean = false;
   afficherSitesCencaSites: boolean = false;
+
+  // Parcelles selectionnées dans la carte
+  // A chaque fois qu'une parcelle est selectionnée, cette liste est mise à jour en utilisant un emmeteur vers cette propriété ci-dessous
+  parcellesSelected: ParcellesSelected[] = [];
+
+  // Poubelle des parcelles supprimées
+  trashParcelle: ParcellesSelected[] = [];
+  // Historique pour undo/redo
+  parcellesHistory: ParcellesSelected[][] = [];
+  trashHistory: ParcellesSelected[][] = [];
+  historyIndex: number = -1;
+
+  onParcellesSelected(parcelles: ParcellesSelected[]) {
+    // Tri par idu
+    const sorted = [...parcelles].sort((a, b) => a.idu.localeCompare(b.idu));
+    // Vérifier si la sélection a changé
+    if (JSON.stringify(this.parcellesSelected) === JSON.stringify(sorted)) {
+      return; // Ne rien faire si la sélection est identique
+    }
+    this.parcellesSelected = sorted;
+    // Initialisation de l'historique uniquement à la première action
+    if (this.historyIndex === -1) {
+      this.parcellesHistory = [ [...this.parcellesSelected] ];
+      this.trashHistory = [ [...this.trashParcelle] ];
+      this.historyIndex = 0;
+    } else {
+      this.historyIndex++;
+      this.parcellesHistory = this.parcellesHistory.slice(0, this.historyIndex);
+      this.trashHistory = this.trashHistory.slice(0, this.historyIndex);
+      this.parcellesHistory.push([...this.parcellesSelected]);
+      this.trashHistory.push([...this.trashParcelle]);
+    }
+    // Synchroniser avec le formulaire si besoin :
+    if (this.pmfuForm) {
+      this.pmfuForm.patchValue({ pmfu_parc_list: this.parcellesSelected.map(p => p.idu) });
+    }
+    // Synchroniser la sélection sur la carte uniquement si elle a changé
+    if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
+      this.mapComponent.setParcellesSelection(this.parcellesSelected);
+    }
+
+    // console.log('Parcelles sélectionnées mises à jour :', this.parcellesSelected);
+    // console.log('Historique des parcelles :', this.parcellesHistory);
+    // console.log('Index historique :', this.historyIndex);
+    // console.log('Poubelle des parcelles :', this.trashParcelle);
+    // console.log('Historique des suppressions :', this.trashHistory);
+  }
+
+// Supprimer une parcelle et l'ajouter à la poubelle
+removeParcelle(parcelle: ParcellesSelected) {
+  this.parcellesSelected = this.parcellesSelected.filter(p => p.idu !== parcelle.idu);
+  this.trashParcelle = [...this.trashParcelle, parcelle];
+  this.historyIndex++;
+  this.parcellesHistory = this.parcellesHistory.slice(0, this.historyIndex);
+  this.trashHistory = this.trashHistory.slice(0, this.historyIndex);
+  this.parcellesHistory.push([...this.parcellesSelected]);
+  this.trashHistory.push([...this.trashParcelle]);
+  // Synchroniser avec le formulaire
+  if (this.pmfuForm) {
+    this.pmfuForm.patchValue({ pmfu_parc_list: this.parcellesSelected.map(p => p.idu) });
+  }
+  // Synchroniser la sélection sur la carte
+  if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
+    this.mapComponent.setParcellesSelection(this.parcellesSelected);
+  }
+}
+
+// Undo : restaurer la dernière parcelle supprimée
+undoRemoveParcelle() {
+    if (this.historyIndex > 0) {
+      this.historyIndex--;
+      this.parcellesSelected = [...this.parcellesHistory[this.historyIndex]];
+      this.trashParcelle = [...this.trashHistory[this.historyIndex]];
+      if (this.pmfuForm) {
+        this.pmfuForm.patchValue({ pmfu_parc_list: this.parcellesSelected.map(p => p.idu) });
+      }
+      // Synchroniser la sélection sur la carte
+      if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
+        this.mapComponent.setParcellesSelection(this.parcellesSelected);
+      }
+    }
+  }
+
+  // Redo : retirer à nouveau la dernière restaurée
+  redoRemoveParcelle() {
+    if (this.historyIndex < this.parcellesHistory.length - 1) {
+      this.historyIndex++;
+      this.parcellesSelected = [...this.parcellesHistory[this.historyIndex]];
+      this.trashParcelle = [...this.trashHistory[this.historyIndex]];
+      if (this.pmfuForm) {
+        this.pmfuForm.patchValue({ pmfu_parc_list: this.parcellesSelected.map(p => p.idu) });
+      }
+      // Synchroniser la sélection sur la carte
+      if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
+        this.mapComponent.setParcellesSelection(this.parcellesSelected);
+      }
+    }
+  }
+
+    // Synchronise la suppression d'une parcelle depuis la carte
+  onParcelleRemoved(idu: string) {
+    const removed = this.parcellesSelected.find(p => p.idu === idu);
+    if (removed) {
+      this.parcellesSelected = this.parcellesSelected.filter(p => p.idu !== idu);
+      this.trashParcelle = [...this.trashParcelle, removed];
+      this.historyIndex++;
+      this.parcellesHistory = this.parcellesHistory.slice(0, this.historyIndex);
+      this.trashHistory = this.trashHistory.slice(0, this.historyIndex);
+      this.parcellesHistory.push([...this.parcellesSelected]);
+      this.trashHistory.push([...this.trashParcelle]);
+      // Synchroniser le formulaire
+      if (this.pmfuForm) {
+        this.pmfuForm.patchValue({ pmfu_parc_list: this.parcellesSelected.map(p => p.idu) });
+      }
+      // Synchroniser la carte
+      if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
+        this.mapComponent.setParcellesSelection(this.parcellesSelected);
+      }
+    }
+  }
 
   constructor(
     public docfileService: DocfileService,

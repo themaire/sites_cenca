@@ -52,6 +52,7 @@ export interface ProjetMfu {
   note_bureau_nb?: number;
   decision_bureau_nb?: number;
   photos_site_nb?: number;
+  pmfu_parc_list?: string[];
 }
 
 export interface ProjetsMfu {
@@ -67,4 +68,13 @@ export interface DocPmfu {
   doc_type: string;
   doc_path: string;
   ref_pmfu_id: number;
+}
+
+export interface ParcellesSelected {
+  idu: string;
+  nom_com: string;
+  section: string;
+  numero: string;
+  surface: number;
+  bbox?: number[]; // [minX, minY, maxX, maxY]
 }

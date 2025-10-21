@@ -38,7 +38,7 @@ export enum DeleteItemTypeEnum {
   providedIn: 'root',
 })
 export class ProjetService {
-  private activeUrl: string = environment.apiUrl + 'sites/'; // Bureau
+  private activeUrl: string = environment.apiBaseUrl + 'sites/'; // Bureau
 
   constructor(
     private http: HttpClient,
@@ -88,6 +88,7 @@ export class ProjetService {
   // Utilisé aussi dans operation.component.ts
   async getOperationFinanceurs(subroute: string): Promise<OperationCheckbox[]> {
     const data = await fetch(this.activeUrl + subroute);
+    console.log("route pour recup operation financeurs :", this.activeUrl + subroute);
     return (await data.json()) ?? [];
   }
 

@@ -439,6 +439,7 @@ export class FormService {
       pmfu_creation: [projet?.pmfu_creation || new Date()],
       pmfu_photos_site: [projet?.pmfu_photos_site || ''],
       pmfu_date_ajout: [projet?.pmfu_date_ajout || null],
+      pmfu_parc_list: [projet?.pmfu_parc_list || []],
     });
   }
 
