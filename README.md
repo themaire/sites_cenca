@@ -16,7 +16,8 @@ SiteCenca est une application Angular générée avec [Angular CLI](https://gith
   - [Contribuer](#contribuer)
   - [Support](#support)
   - [Ressources supplémentaires](#ressources-supplémentaires)
-  - [Notes](#notes)
+  - [Architecture des composants](#architecture-des-composants)
+  - [Ci/Cd](#cicd)
 
 ---
 
@@ -136,5 +137,73 @@ Cypress Documentation
 
 ---
 
-## Notes
-Ce projet utilise un webhook pour déclencher des builds Jenkins. Assurez-vous que le webhook est correctement configuré pour votre dépôt.
+
+---
+
+## Architecture des composants
+
+
+L'application SiteCenca est organisée autour de composants Angular modulaires, chacun dédié à une fonctionnalité ou une section de l'interface. Cette architecture favorise la maintenabilité, la réutilisation et la clarté du code.
+
+Chaque dossier principal correspond à une grande partie de l'application : navigation, authentification, administration, affichage des données, etc. Les sous-dossiers permettent de structurer les fonctionnalités plus fines (ex : cartes sur la page d'accueil, gestion des utilisateurs admin, composants partagés).
+
+Ci-dessous, une carte ASCII illustre la structure des composants sur deux niveaux :
+
+Voici une vue simplifiée de la structure des composants principaux :
+
+```
+src/app/
+│
+├── header/                # Barre de navigation et bouton d'aide
+│   └── header.component.*
+│
+├── footer/                # Pied de page
+│   └── footer.component.*
+│
+├── home/                  # Page d'accueil
+│   ├── home.component.*
+│   └── card/              # Cartes d'affichage sur la home
+│       └── card.component.*
+│
+├── login/                 # Authentification utilisateur
+│   ├── login.component.*
+│   ├── login.service.ts
+│   ├── credentials.ts
+│   └── user.model.ts
+│
+├── admin/                 # Espace d'administration
+│   ├── admin.component.*
+│   ├── admin-service.service.ts
+│   ├── admin.routes.ts
+│   └── admin-users/       # Gestion des utilisateurs admin
+│       └── admin-users.component.*
+│
+├── map/                   # Carte interactive des sites
+│   └── map.component.*
+│
+├── shared/                # Composants réutilisables
+│   ├── confirmation/
+│   ├── costomMaterial/
+│   ├── file-explorator/
+│   ├── form-buttons/
+│   ├── image-view/
+│   ├── interfaces/
+│   └── services/
+│
+├── services/              # Services Angular (API, validation, documentation)
+│   ├── documentation.service.ts
+│   ├── form.service.ts
+│   └── custom_validators.ts
+│
+└── ...
+```
+
+Chaque dossier contient généralement :
+- `*.component.ts` : logique du composant
+- `*.component.html` : template HTML
+- `*.component.scss` : styles spécifiques
+
+---
+
+## Ci/Cd
+Ce projet utilise un webhook pour déclencher des builds via l'outil Jenkins. C'est un réglage depuis les paramètres du repo sur GitHub qui déclanche ce webhook à chaque commit sur la branche main pour le serveur de production et la branche dev pour le serveur de pré-production.
