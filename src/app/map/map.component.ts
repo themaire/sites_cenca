@@ -122,22 +122,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     // console.log('Parcelles sélectionnées initiales dans ngOnChanges :', this.parcellesSelectedInitiales);
     if (this.parcellesSelectedInitiales && this.parcellesSelectedInitiales.length > 0) {
       this._parcellesSelectionnees = this.parcellesSelectedInitiales || [];
-      if (this._parcellesSelectionnees.length > 0 && this.map) {
-        // Récupère toutes les bbox des parcelles sélectionnées
-        const bboxes = this._parcellesSelectionnees
-          .map(p => p.bbox)
-          .filter(bbox => Array.isArray(bbox) && bbox.length === 4);
-
-        if (bboxes.length > 0) {
-          // Calcule la bbox globale
-          const west = Math.min(...bboxes.filter(b => b !== undefined).map(b => b![0]));
-          const south = Math.min(...bboxes.filter(b => b !== undefined).map(b => b![1]));
-          const east = Math.max(...bboxes.filter(b => b !== undefined).map(b => b![2]));
-          const north = Math.max(...bboxes.filter(b => b !== undefined).map(b => b![3]));
-          const globalBounds = L.latLngBounds([south, west], [north, east]);
-          this.map.fitBounds(globalBounds);
-        }
-      }
+      this.zoomToSelectedParcells(this._parcellesSelectionnees);
     }
 
     console.log('Parcelles sélectionnées après initialisation dans ngOnChanges :', this._parcellesSelectionnees);
@@ -1759,6 +1744,25 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       if (p.contenance) total += p.contenance / 10000; // convertir m² en ha
     }
     div.innerHTML = `<span style="font-size:16px;">Surface totale sélectionnée : <b>${total.toLocaleString('fr-FR', { maximumFractionDigits: 4 })} ha</b></span>`;
+  }
+
+  zoomToSelectedParcells(parcellesCollection: ParcellesSelected[]) {
+    if (parcellesCollection.length > 0 && this.map) {
+        // Récupère toutes les bbox des parcelles sélectionnées
+        const bboxes = parcellesCollection
+          .map(p => p.bbox)
+          .filter(bbox => Array.isArray(bbox) && bbox.length === 4);
+
+        if (bboxes.length > 0) {
+          // Calcule la bbox globale
+          const west = Math.min(...bboxes.filter(b => b !== undefined).map(b => b![0]));
+          const south = Math.min(...bboxes.filter(b => b !== undefined).map(b => b![1]));
+          const east = Math.max(...bboxes.filter(b => b !== undefined).map(b => b![2]));
+          const north = Math.max(...bboxes.filter(b => b !== undefined).map(b => b![3]));
+          const globalBounds = L.latLngBounds([south, west], [north, east]);
+          this.map.fitBounds(globalBounds);
+        }
+    }
   }
 
 }
