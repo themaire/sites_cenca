@@ -1316,7 +1316,6 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
             ${props.adresse ? `<p><strong>Adresse:</strong> ${props.adresse}</p>` : ''}
           </div>
           <div id="parcelle-action-btn-${props.idu}" style="display: flex; justify-content: center; align-items: center; margin-top: 10px;"></div>
-          <div>props.idu : ${props.idu}</div>
         </div>`
       );
     } else {
