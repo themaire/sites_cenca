@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ElementRef, AfterViewInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, AfterViewInit, OnDestroy, Renderer2, input, OnChanges } from '@angular/core';
 import { environment } from '../../environments/environment';
 
 import * as L from 'leaflet'; // Import de Leaflet
@@ -31,7 +31,7 @@ declare module 'leaflet' {
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
 })
-export class MapComponent implements AfterViewInit, OnDestroy {
+export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   /** Émet l'idu d'une parcelle supprimée pour synchroniser avec le parent */
   @Output() parcelleRemoved = new EventEmitter<string>();
   @Input() mapName?: string;
@@ -47,7 +47,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Input() chargerSitesSitesDynamiquement: boolean = false; // Active le chargement dynamique de la couche cenca_sites
   @Input() chargerParcellesDynamiquement: boolean = false; // Active le chargement dynamique des parcelles cadastrales
+  @Input() parcellesSelectedInitiales?: ParcellesSelected[] = []; // Parcelles sélectionnées initiales
+  @Input() selectParcellesMode: boolean = false; // Active le mode sélection de parcelles
   @Input() coucheSitesCenca: string = 'cenca_autres'; // Nom de la couche à charger
+
+  @Input() isEditMode: boolean = false; // Mode édition du parent
 
   // Événements pour synchroniser avec le composant parent
   @Output() sitesCencaToggled = new EventEmitter<boolean>();
@@ -97,20 +101,49 @@ export class MapComponent implements AfterViewInit, OnDestroy {
             private siteCencaService: SiteCencaService
           ) {}
 
-  /** Exemple d'appel pour émettre la sélection (à adapter selon votre logique de sélection) */
+  /** Envoyer la sélection des parcelles au composant parent */
   emitParcellesSelectionnees() {
     this.parcellesSelected.emit(this._parcellesSelectionnees);
     this.updateSurfaceInfoControl();
   }
 
+  // Quand la vue est initialisée. On peut dire aussi : quand le composant s'est initialisé ou ouvert
   ngAfterViewInit() {
     setTimeout(() => {
       console.log('Initialisation de la carte :', this.mapName);
       this.initMap();
-
-      this.createSurfaceInfoControl();
-      this.updateSurfaceInfoControl();
     });
+  }
+
+  // Quand une des propriétés d'entrée change. C'est a dire par exemple ici ce qui nous interresse : quand les inputs changent
+  ngOnChanges() {
+    console.log('Initialisation de la carte :', this.mapName);
+    
+    // console.log('Parcelles sélectionnées initiales dans ngOnChanges :', this.parcellesSelectedInitiales);
+    if (this.parcellesSelectedInitiales && this.parcellesSelectedInitiales.length > 0) {
+      this._parcellesSelectionnees = this.parcellesSelectedInitiales || [];
+      if (this._parcellesSelectionnees.length > 0 && this.map) {
+        // Récupère toutes les bbox des parcelles sélectionnées
+        const bboxes = this._parcellesSelectionnees
+          .map(p => p.bbox)
+          .filter(bbox => Array.isArray(bbox) && bbox.length === 4);
+
+        if (bboxes.length > 0) {
+          // Calcule la bbox globale
+          const west = Math.min(...bboxes.filter(b => b !== undefined).map(b => b![0]));
+          const south = Math.min(...bboxes.filter(b => b !== undefined).map(b => b![1]));
+          const east = Math.max(...bboxes.filter(b => b !== undefined).map(b => b![2]));
+          const north = Math.max(...bboxes.filter(b => b !== undefined).map(b => b![3]));
+          const globalBounds = L.latLngBounds([south, west], [north, east]);
+          this.map.fitBounds(globalBounds);
+        }
+      }
+    }
+
+    console.log('Parcelles sélectionnées après initialisation dans ngOnChanges :', this._parcellesSelectionnees);
+    
+    this.createSurfaceInfoControl();
+    this.updateSurfaceInfoControl();
   }
 
   ngOnDestroy() {
@@ -617,7 +650,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.addSitesCencaToMap(this.sitesCenca);
     }
 
-    // Ajout d'un marqueur pour illustrer
+    // Ajout d'un marqueur pour illustrer les antennes du CENCA
     L.marker([48.9623054, 4.3562082], { icon: customIconMarkers })
       .addTo(this.map)
       .bindPopup('Châlons-en-Champagne');
@@ -1225,7 +1258,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private getParcelleSelectedStyle() {
     return {
       color: '#ffd600', // Jaune
-      weight: 2,
+      weight: 2.5,
       opacity: 1,
       fillOpacity: 0.25,
       fillColor: '#fffde7'
@@ -1271,25 +1304,48 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * À appeler depuis le parent après modification de selectParcellesMode ou isEditMode
+   * pour forcer la mise à jour des popups de parcelles (bouton sélection/déselection)
+   */
+  public refreshParcellesPopups(): void {
+    if (this.map) {
+      this.map.closePopup();
+    }
+    this.reloadParcellesInCurrentView();
+  }
+
+  /**
    * Ajoute popup et tooltip à une parcelle cadastrale
    */
   private addParcellePopupAndTooltip(feature: any, layer: any): void {
     const props = feature.properties;
     // console.log('🗺️ Ajout popup parcelle:', props);
 
-    // Génération du contenu de la popup avec un conteneur pour le bouton d'action
-    const popupContent = `
-      <div style="max-width: 300px;">
-        <h4 style="margin: 0 0 10px 0; color: #d63031;">🗺️ Parcelle ${props.section || 'N/A'} ${props.numero || props.id_par || 'N/A'}</h4>
-        <div style="font-size: 13px; line-height: 1.4;">
-          <p><strong>Commune:</strong> ${props.commune || props.nom_com || 'N/A'}</p>
-          <p><strong>Surface:</strong> ${props.contenance / 10000 + ' ha' || 'N/A'}</p>
-          ${props.adresse ? `<p><strong>Adresse:</strong> ${props.adresse}</p>` : ''}
-        </div>
-        <div id="parcelle-action-btn-${props.idu}" style="display: flex; justify-content: center; align-items: center; margin-top: 10px;"></div>
-      </div>
-    `;
-    layer.bindPopup(popupContent);
+    if (this.selectParcellesMode && this.isEditMode) {
+      layer.bindPopup(`
+        <div style="max-width: 300px;">
+          <h4 style="margin: 0 0 10px 0; color: #d63031;">🗺️ Parcelle ${props.section || 'N/A'} ${props.numero || props.id_par || 'N/A'}</h4>
+          <div style="font-size: 13px; line-height: 1.4;">
+            <p><strong>Commune:</strong> ${props.commune || props.nom_com || 'N/A'}</p>
+            <p><strong>Surface:</strong> ${props.contenance / 10000 + ' ha' || 'N/A'}</p>
+            ${props.adresse ? `<p><strong>Adresse:</strong> ${props.adresse}</p>` : ''}
+          </div>
+          <div id="parcelle-action-btn-${props.idu}" style="display: flex; justify-content: center; align-items: center; margin-top: 10px;"></div>
+          <div>props.idu : ${props.idu}</div>
+        </div>`
+      );
+    } else {
+      layer.bindPopup(`
+        <div style="max-width: 300px;">
+          <h4 style="margin: 0 0 10px 0; color: #d63031;">🗺️ Parcelle ${props.section || 'N/A'} ${props.numero || props.id_par || 'N/A'}</h4>
+          <div style="font-size: 13px; line-height: 1.4;">
+            <p><strong>Commune:</strong> ${props.commune || props.nom_com || 'N/A'}</p>
+            <p><strong>Surface:</strong> ${props.contenance / 10000 + ' ha' || 'N/A'}</p>
+            ${props.adresse ? `<p><strong>Adresse:</strong> ${props.adresse}</p>` : ''}
+          </div>
+        </div>`
+      );
+    }
 
     // Attacher l'événement au bouton après ouverture du popup
     layer.on('popupopen', () => {
@@ -1346,9 +1402,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   /** Retire une parcelle de la sélection par son idu et informe le parent */
   removeParcelleFromSelection(idu: string): void {
+    console.log('🗺️ Retrait de la parcelle de la sélection:', idu);
     this._parcellesSelectionnees = this._parcellesSelectionnees.filter(p => p.idu !== idu);
+
+    console.log('✅ Parcelle retirée. Parcelles sélectionnées actuelles:', this._parcellesSelectionnees);
+
     this.emitParcellesSelectionnees();
     // Informer le parent pour synchroniser trashParcelle et l'historique
+    console.log('[Carte] Emission de parcelleRemoved avec idu :', idu);
     this.parcelleRemoved.emit(idu);
     // Fermer la popup active
     if (this.map) {
@@ -1360,11 +1421,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   /** Ajoute l'idu d'une parcelle à la sélection et émet la liste, ferme la popup et réactive le chargement dynamique */
-  addParcelleToSelection(idu: string, nom_com: string, section: string, numero: string, surface: number, bbox?: number[]): void {
+  addParcelleToSelection(idu: string, nom_com: string, section: string, numero: string, contenance: number, bbox?: number[]): void {
     if (!idu) return;
     const existe = this._parcellesSelectionnees.find(p => p.idu === idu && p.nom_com === nom_com && p.section === section && p.numero === numero);
     if (!existe) {
-      this._parcellesSelectionnees.push({ idu, nom_com, section, numero, surface, bbox });
+      this._parcellesSelectionnees.push({ idu, nom_com, section, numero, contenance, bbox });
       this.emitParcellesSelectionnees();
       console.log('✅ Parcelle ajoutée à la sélection:', idu, this._parcellesSelectionnees);
       // Fermer la popup active
@@ -1646,13 +1707,23 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   /** Permet au parent de synchroniser la sélection des parcelles */
   public setParcellesSelection(parcelles: ParcellesSelected[]) {
-    this._parcellesSelectionnees = [...parcelles];
-    this.emitParcellesSelectionnees();
-    // Optionnel : recharger la couche pour mettre à jour la couleur
-    this.reloadParcellesInCurrentView();
-  }
+  const nouvelleSelection = JSON.stringify(parcelles);
+  const ancienneSelection = JSON.stringify(this._parcellesSelectionnees);
+  if (nouvelleSelection === ancienneSelection) return; // Ne rien faire si identique
+  this._parcellesSelectionnees = [...parcelles];
+  this.emitParcellesSelectionnees();
+  this.reloadParcellesInCurrentView();
+}
 
   private createSurfaceInfoControl(): void {
+    if (!this.selectParcellesMode) {
+      // Si le chargement dynamique n'est pas activé, ne pas afficher le contrôle
+      if (this.surfaceInfoControl) {
+        this.surfaceInfoControl.remove();
+        this.surfaceInfoControl = undefined;
+      }
+      return;
+    }
     if (this.surfaceInfoControl) {
       this.surfaceInfoControl.remove();
     }
@@ -1682,8 +1753,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const div = document.getElementById('surface-info-control');
     if (!div) return;
     let total = 0;
+
+    console.log('Parcelles sélectionnées dans la methode updateSurfaceInfoControl : ', this._parcellesSelectionnees);
     for (const p of this._parcellesSelectionnees) {
-      if (p.surface) total += p.surface / 10000; // convertir m² en ha
+      if (p.contenance) total += p.contenance / 10000; // convertir m² en ha
     }
     div.innerHTML = `<span style="font-size:16px;">Surface totale sélectionnée : <b>${total.toLocaleString('fr-FR', { maximumFractionDigits: 4 })} ha</b></span>`;
   }

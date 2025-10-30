@@ -52,7 +52,8 @@ export interface ProjetMfu {
   note_bureau_nb?: number;
   decision_bureau_nb?: number;
   photos_site_nb?: number;
-  pmfu_parc_list?: string[];
+  pmfu_parc_list_array?: string[];
+  pmfu_parc_list?: string;
 }
 
 export interface ProjetsMfu {
@@ -75,6 +76,6 @@ export interface ParcellesSelected {
   nom_com: string;
   section: string;
   numero: string;
-  surface: number;
+  contenance: number;
   bbox?: number[]; // [minX, minY, maxX, maxY]
 }
