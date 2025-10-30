@@ -14,9 +14,51 @@ import { Extraction, ProjetMfu, ProjetsMfu, DocPmfu } from './foncier';
   providedIn: 'root',
 })
 export class FoncierService {
-  private activeUrl: string = environment.apiUrl + 'sites/';
+  private activeUrl: string = environment.apiBaseUrl + 'sites/';
 
   constructor(private http: HttpClient) {}
+
+  /**
+   * Récupère les informations détaillées de tous les projets MFU (pour la liste des projets MFU)
+   * @param subroute Sous-route à ajouter à l'URL de base
+   * @returns Promise avec les infos des projets MFU
+   */
+  async getProjetsMfu(subroute: string): Promise<ProjetsMfu[]> {
+    // Récupère les infos détaillées du projet MFU sélectionné
+    const data = await fetch(this.activeUrl + subroute);
+    const pmfu = (await data.json()) ?? [];
+    return pmfu;
+  }
+
+  /** Récupère les infos détaillées du projet MFU sélectionné (pour la page détail d'un seul projet MFU)
+    * @param subroute Sous-route à ajouter à l'URL de base
+    * @return Promise avec les infos du projet MFU
+  */
+  async getProjetMfu(subroute: string): Promise<ProjetMfu> {
+    // Récupère les infos détaillées du projet MFU sélectionné
+    const data = await fetch(this.activeUrl + subroute);
+    const pmfu = (await data.json()) ?? [];
+    return pmfu;
+  }
+
+
+  /**
+   * Récupère les infos des parcelles via POST sur l'API backend
+   * @param idus Tableau d'idus à envoyer
+   * @returns Observable<any> avec les infos des parcelles
+   */
+  getParcellesInfosByIdus(idus: string[]): Observable<any> {
+    const url = environment.apiBaseUrl + 'api-geo/parcelles/infos-by-idus';
+    const body = { idus };
+    return this.http.post<any>(url, body, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la récupération des infos parcelles (POST)', error);
+        throw error;
+      })
+    );
+  }
 
   // Sert à utiliser le fichier excel donné par l'utilisateur et l'info de l'historique pour les envoyer au backend
   processFile(file: File, writeHisto: boolean): Observable<any> {
@@ -50,6 +92,21 @@ export class FoncierService {
           'Erreur lors de la récupération des extractions foncières',
           error
         );
+        throw error;
+      })
+    );
+  }
+
+  /** Récupère les informations des parcelles à partir de son code parcelle ou idu
+   * @param iduList Liste des IDU des parcelles à récupérer
+   * @returns Observable avec les informations des parcelles
+   */
+  getParcellesInfos(subroute: string): Observable<any> {
+    const url = `${this.activeUrl}${subroute}`;
+
+    return this.http.get<any>(url).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la récupération des infos parcelles', error); 
         throw error;
       })
     );
@@ -95,19 +152,6 @@ export class FoncierService {
     );
   }
 
-  async getProjetMfu(subroute: string): Promise<ProjetMfu> {
-    // Récupère les infos détaillées du projet MFU sélectionné
-    const data = await fetch(this.activeUrl + subroute);
-    const pmfu = (await data.json()) ?? [];
-    return pmfu;
-  }
-  async getProjetsMfu(subroute: string): Promise<ProjetsMfu[]> {
-    // Récupère les infos détaillées du projet MFU sélectionné
-    const data = await fetch(this.activeUrl + subroute);
-    const pmfu = (await data.json()) ?? [];
-    return pmfu;
-  }
-
   deletePmfu(pmfu_id: number): Observable<ApiResponse> {
     return this.http
       .delete<ApiResponse>(
@@ -123,6 +167,7 @@ export class FoncierService {
         })
       );
   }
+
   async getDocMfu(subroute: string): Promise<DocPmfu> {
     const data = await fetch(this.activeUrl + subroute);
     const pmfu = (await data.json()) ?? [];

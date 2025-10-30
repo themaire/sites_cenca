@@ -39,7 +39,7 @@ import { v4 as uuidv4 } from 'uuid';
   providedIn: 'root',
 })
 export class FormService {
-  private activeUrl: string = environment.apiUrl;
+  private activeUrl: string = environment.apiBaseUrl;
   private formValiditySubject: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
@@ -78,6 +78,15 @@ export class FormService {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Transforme un tableau de chaînes en format PostgreSQL array string :
+   * ['a','b','c'] => '{a,b,c}'
+   */
+  toPostgresArrayString(arr?: string[] | null): string {
+    if (!arr || arr.length === 0) return '{}';
+    return '{' + arr.map(e => e.replace(/"/g, '"')).join(',') + '}';
   }
 
   // Validation personnalisée pour vérifier qu'un champ contient au moins 2 mots si non vide
@@ -439,6 +448,8 @@ export class FormService {
       pmfu_creation: [projet?.pmfu_creation || new Date()],
       pmfu_photos_site: [projet?.pmfu_photos_site || ''],
       pmfu_date_ajout: [projet?.pmfu_date_ajout || null],
+      pmfu_parc_list_array: [projet?.pmfu_parc_list_array || []],
+      pmfu_parc_list: [projet?.pmfu_parc_list || []],
     });
   }
 
@@ -676,6 +687,8 @@ export class FormService {
       pmfu_photos_site: formValue.pmfu_photos_site,
       pmfu_date_ajout: formValue.pmfu_date_ajout,
       pmfu_validation: formValue.pmfu_validation,
+      pmfu_parc_list_array: formValue.pmfu_parc_list_array,
+      pmfu_parc_list: formValue.pmfu_parc_list,
     };
 
     console.log(
@@ -742,7 +755,7 @@ export class FormService {
         }
       });
 
-      console.log('Formulaire original :', form.value);
+      // console.log('Formulaire original :', form.value);
 
       // Supprimer les contrôles 'liste_ope_programmes' et 'liste_ope_animaux_paturage' du workingForm s'il existe
       // Rappel, un controle de type FormArray est un tableau de FormGroup
@@ -787,8 +800,18 @@ export class FormService {
 
         console.log('Données du formulaire nettoyé :', workingForm);
       } else if (table === 'projets_mfu') {
-        value = this.preparePmfuDataForSubmission(workingForm);
-        console.log('Données du formulaire nettoyé :', workingForm);
+        console.log('enregistrement dans la table projets_mfu');
+        console.log('formulaire avant nettoyage :', form.value);
+
+        // Transformer l'objet de parcelles en string PostgreSQL
+        workingForm.patchValue({ pmfu_parc_list: this.toPostgresArrayString(workingForm.get('pmfu_parc_list_array')?.value  ) });
+        console.log('valeur de pmfu_parc_list après conversion :', workingForm.get('pmfu_parc_list')?.value);
+
+        workingForm.removeControl('pmfu_parc_list_array');
+        // Puis tout remettre les données du formulaire dans value
+        value = workingForm.value;
+
+        console.log('Données du formulaire nettoyé :', value);
       } else {
         // Si ce n'est pas un projet
         value = workingForm.value;
