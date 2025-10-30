@@ -13,4 +13,4 @@ export const environment = {
         // Si la propriété windows est à true, on utilise '\\', sinon '/'
         return this.windows ? '\\' : '/';
     }
-  };
+};
