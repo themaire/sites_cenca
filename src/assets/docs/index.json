@@ -59,6 +59,16 @@
       "requireAuth": true,
       "backendUrl": "docs?file=traitement_fichiers/ope_shapefile.md&css=default",
       "accessLevel": 5
+    },
+    {
+      "id": "auth_logic",
+      "title": "Logique d'authentification",
+      "path": "auth/appcomponent-auth.md",
+      "order": 7,
+      "published": true,
+      "requireAuth": true,
+      "backendUrl": null,
+      "accessLevel": 5
     }
   ]
 }
