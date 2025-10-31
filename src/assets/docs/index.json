@@ -56,7 +56,7 @@
       "path": null,
       "order": 6,
       "published": true,
-      "requireAuth": false,
+      "requireAuth": true,
       "backendUrl": "docs?file=traitement_fichiers/ope_shapefile.md&css=default",
       "accessLevel": 5
     }

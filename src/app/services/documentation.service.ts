@@ -56,8 +56,11 @@ export class DocumentationService {
         const filteredSections = index.sections
           .filter(section => section.published)
           .filter(section => !section.requireAuth || isAuthenticated)
-          .filter(section => (typeof section.accessLevel === 'number' ? section.accessLevel : 0) >= userGroId)
+          .filter(section => (typeof section.accessLevel === 'number' ? section.accessLevel : 0) <= userGroId)
           .sort((a, b) => a.order - b.order);
+        
+        console.log('Sections filtrées chargées:', filteredSections.map(s => s.id));
+        
         return filteredSections;
       })
     );
