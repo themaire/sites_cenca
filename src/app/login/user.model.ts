@@ -4,4 +4,5 @@ export class User {
   nom: string = '';
   prenom: string = '';
   initiales?: string = '';
+  gro_id: number = 0;
 }

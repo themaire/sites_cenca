@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -177,6 +178,7 @@ import { LoginService } from '../login/login.service';
   `]
 })
 export class AideComponent implements OnInit {
+  private activeUrl: string = environment.apiBaseUrl;
   sections: DocSection[] = [];
   currentContent: string = '';
   currentSection: DocSection | null = null;
