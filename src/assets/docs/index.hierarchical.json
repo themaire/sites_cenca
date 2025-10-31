@@ -1,0 +1,88 @@
+{
+  "categories": [
+    {
+      "id": "utilisateur",
+      "title": "Documentation utilisateur",
+      "accessLevel": 0,
+      "sections": [
+        {
+          "id": "index",
+          "title": "Accueil",
+          "path": "index.md",
+          "order": 1,
+          "published": true,
+          "requireAuth": false,
+          "backendUrl": null,
+          "accessLevel": 0
+        },
+        {
+          "id": "getting-started",
+          "title": "Guide de démarrage",
+          "path": "getting-started.md",
+          "order": 2,
+          "published": true,
+          "requireAuth": false,
+          "backendUrl": null,
+          "accessLevel": 0
+        },
+        {
+          "id": "map-usage",
+          "title": "Utilisation de la carte",
+          "path": "map-usage.md",
+          "order": 3,
+          "published": true,
+          "requireAuth": false,
+          "backendUrl": null,
+          "accessLevel": 0
+        },
+        {
+          "id": "faq",
+          "title": "Questions fréquentes",
+          "path": "faq.md",
+          "order": 4,
+          "published": true,
+          "requireAuth": false,
+          "backendUrl": null,
+          "accessLevel": 0
+        },
+        {
+          "id": "sites-management",
+          "title": "Gestion des sites",
+          "path": "sites-management.md",
+          "order": 5,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null,
+          "accessLevel": 0
+        }
+      ]
+    },
+    {
+      "id": "admin",
+      "title": "Documentation administrateur",
+      "accessLevel": 5,
+      "sections": [
+        {
+          "id": "traitement_fichiers_shapefile",
+          "title": "Traitement des fichiers Shapefile",
+          "path": null,
+          "order": 2,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": "docs?file=traitement_fichiers/ope_shapefile.md&css=default",
+          "accessLevel": 5
+        },
+        {
+          "id": "auth_logic",
+          "title": "Logique d'authentification",
+          "path": "auth/appcomponent-auth.md",
+          "order": 3,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null,
+          "accessLevel": 5
+        }
+      ]
+    }
+  ]
+}

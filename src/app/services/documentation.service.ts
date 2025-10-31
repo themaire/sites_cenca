@@ -18,6 +18,17 @@ export interface DocSection {
   accessLevel?: number;
 }
 
+export interface DocCategory {
+  id: string;
+  title: string;
+  accessLevel: number;
+  sections: DocSection[];
+}
+
+interface DocHierarchicalIndex {
+  categories: DocCategory[];
+}
+
 interface DocIndex {
   sections: DocSection[];
 }
@@ -31,6 +42,40 @@ export class DocumentationService {
   private sectionsCache: DocSection[] = [];
   private allSectionsCache: DocSection[] = [];
 
+  /**
+   * Charge l'index hiérarchique des catégories et sections depuis le nouveau JSON
+   */
+  private loadHierarchicalIndex(): Observable<DocHierarchicalIndex> {
+    return this.http.get<DocHierarchicalIndex>(`${this.docsPath}index.hierarchical.json`);
+  }
+
+  /**
+   * Récupère les catégories et leurs sections accessibles selon le groupe utilisateur
+   */
+  getHierarchicalSections(isAuthenticated: boolean = false): Observable<DocCategory[]> {
+    return this.loadHierarchicalIndex().pipe(
+      map(index => {
+        const userGroId = this.loginService.user()?.gro_id ?? 0;
+        // Filtrer les catégories accessibles
+        const filteredCategories = index.categories
+          .filter(cat => cat.accessLevel <= userGroId)
+          .map(cat => ({
+            ...cat,
+            sections: cat.sections
+              .filter(section => section.published)
+              .filter(section => !section.requireAuth || isAuthenticated)
+              .filter(section => (typeof section.accessLevel === 'number' ? section.accessLevel : 0) <= userGroId)
+              .sort((a, b) => a.order - b.order)
+          }));
+        console.log('Catégories et sections accessibles:', filteredCategories.map(c => ({
+          cat: c.id,
+          sections: c.sections.map(s => s.id)
+        })));
+        return filteredCategories;
+      })
+    );
+  }
+
   constructor(private http: HttpClient, public loginService: LoginService) {
     // Configuration de marked pour améliorer le rendu
     marked.setOptions({
@@ -43,7 +88,7 @@ export class DocumentationService {
    * Charge l'index des sections depuis le fichier JSON
    */
   private loadSectionsIndex(): Observable<DocIndex> {
-    return this.http.get<DocIndex>(`${this.docsPath}index.json`);
+    return this.http.get<DocIndex>(`${this.docsPath}index.hierarchical.json`);
   }
 
   /**

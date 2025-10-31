@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DocumentationService, DocSection } from '../services/documentation.service';
+import { DocCategory } from '../services/documentation.service';
 import { LoginService } from '../login/login.service';
 
 @Component({
@@ -38,14 +39,16 @@ import { LoginService } from '../login/login.service';
       <mat-sidenav-container class="sidenav-container">
         <mat-sidenav [opened]="sidenavOpened" mode="side" class="sidenav">
           <mat-nav-list>
-            <h3 matSubheader>Sections</h3>
-            <a mat-list-item 
-               *ngFor="let section of sections" 
-               (click)="navigateToSection(section)"
-               [class.active]="currentSection?.id === section.id">
-              <mat-icon matListIcon>description</mat-icon>
-              <span matLine>{{ section.title }}</span>
-            </a>
+            <ng-container *ngFor="let category of categories">
+              <h3 matSubheader *ngIf="userGroupId === 5">{{ category.title }}</h3>
+              <a mat-list-item 
+                 *ngFor="let section of category.sections" 
+                 (click)="navigateToSection(section)"
+                 [class.active]="currentSection?.id === section.id">
+                <mat-icon matListIcon>description</mat-icon>
+                <span matLine>{{ section.title }}</span>
+              </a>
+            </ng-container>
           </mat-nav-list>
         </mat-sidenav>
 
@@ -70,6 +73,15 @@ import { LoginService } from '../login/login.service';
       height: 100vh;
       display: flex;
       flex-direction: column;
+    }
+
+    .sidenav h3[matSubheader] {
+      margin-top: 5px;
+      // font-weight: bold;
+      height: 32px;
+      line-height: 32px;
+      display: block;
+      padding-left: 0;
     }
 
     .toolbar-spacer {
@@ -179,79 +191,100 @@ import { LoginService } from '../login/login.service';
 })
 export class AideComponent implements OnInit {
   private activeUrl: string = environment.apiBaseUrl;
-  sections: DocSection[] = [];
+  userGroupId: number = 0;
+  categories: DocCategory[] = [];
   currentContent: string = '';
   currentSection: DocSection | null = null;
   isLoading = false;
   sidenavOpened = true;
   baseRoute = '/aide'; // Toujours utiliser /aide
-
+  
   constructor(
     private documentationService: DocumentationService,
     private route: ActivatedRoute,
     private router: Router,
     private loginService: LoginService
-  ) {}
+  ) {
+    this.userGroupId = this.loginService.user()?.gro_id ?? 0;
+  }
+  
+  toggleSidenav() {
+    this.sidenavOpened = !this.sidenavOpened;
+  }
 
   ngOnInit() {
-    // Vérifier si l'utilisateur est connecté
     const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
-    
-    // Charger les sections dynamiquement selon l'authentification
-    this.documentationService.getSections(isAuthenticated).subscribe(sections => {
-      this.sections = sections;
+    // Charger les catégories et sections dynamiquement
+    this.documentationService.getHierarchicalSections(isAuthenticated).subscribe(categories => {
+      this.categories = categories;
+      // Si on est sur /aide sans section, charger la section 'index' de la première catégorie
+      const currentUrl = this.router.url;
+      if (currentUrl === '/aide' && categories.length > 0 && categories[0].sections.length > 0) {
+        this.loadSection(categories[0].sections[0].id);
+      }
     });
-    
     // Écouter les changements de route
     this.route.params.subscribe(params => {
-      const sectionId = params['section'] || 'index';
-      this.loadSection(sectionId);
+      const sectionId = params['section'];
+      if (sectionId) {
+        this.loadSection(sectionId);
+      }
     });
   }
 
   loadSection(sectionId: string) {
     this.isLoading = true;
-    
-    // Vérifier le statut d'authentification
     const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
-    
-    // Rechercher la section dans les sections disponibles selon l'authentification
-    this.documentationService.getSections(isAuthenticated).subscribe({
-      next: (sections) => {
-        const section = sections.find(s => s.id === sectionId);
-        
-        if (!section) {
-          this.router.navigate([this.baseRoute, 'index']);
-          return;
-        }
-        
-        this.currentSection = section;
-        
-        // Charger le contenu
-        this.documentationService.getSectionContent(sectionId, isAuthenticated).subscribe({
-          next: (content) => {
-            this.currentContent = content;
-            this.isLoading = false;
-          },
-          error: (error) => {
-            console.error('Erreur lors du chargement de la documentation:', error);
-            this.currentContent = '<p>Erreur lors du chargement de la documentation.</p>';
-            this.isLoading = false;
-          }
-        });
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement de la section:', error);
-        this.router.navigate([this.baseRoute, 'index']);
+    // Rechercher la section dans toutes les catégories
+    let foundSection: DocSection | null = null;
+    for (const category of this.categories) {
+      const section = category.sections.find(s => s.id === sectionId);
+      if (section) {
+        foundSection = section;
+        break;
       }
-    });
+    }
+    if (!foundSection) {
+      this.router.navigate([this.baseRoute, 'index']);
+      return;
+    }
+    this.currentSection = foundSection;
+    // Charger le contenu selon la source (backend ou markdown local)
+    if (foundSection.backendUrl) {
+      let url = foundSection.backendUrl;
+      if (!/^https?:\/\//.test(url)) {
+        url = this.activeUrl.replace(/\/$/, '') + (url.startsWith('/') ? url : '/' + url);
+      }
+      this.documentationService['http'].get(url, { responseType: 'text' }).subscribe({
+        next: (content: string) => {
+          this.currentContent = content;
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+          console.error('Erreur lors du chargement de la documentation backend:', error);
+          this.currentContent = '<p>Erreur lors du chargement de la documentation.</p>';
+          this.isLoading = false;
+        }
+      });
+    } else if (foundSection.path) {
+      this.documentationService.loadMarkdownFile(foundSection.path).subscribe({
+        next: (content: string) => {
+          this.currentContent = content;
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+          console.error('Erreur lors du chargement du markdown:', error);
+          this.currentContent = '<p>Erreur lors du chargement de la documentation.</p>';
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.currentContent = '<p>Aucun contenu disponible pour cette section.</p>';
+      this.isLoading = false;
+    }
   }
 
   navigateToSection(section: DocSection) {
     this.router.navigate([this.baseRoute, section.id]);
-  }
-
-  toggleSidenav() {
-    this.sidenavOpened = !this.sidenavOpened;
-  }
+  };
 }
