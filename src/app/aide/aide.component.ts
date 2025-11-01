@@ -222,6 +222,11 @@ export class AideComponent implements OnInit {
       if (currentUrl === '/aide' && categories.length > 0 && categories[0].sections.length > 0) {
         this.loadSection(categories[0].sections[0].id);
       }
+      // Recharger la section si un paramètre section est présent dans l'URL
+      const sectionId = this.route.snapshot.params['section'];
+      if (sectionId) {
+        this.loadSection(sectionId);
+      }
     });
     // Écouter les changements de route
     this.route.params.subscribe(params => {
@@ -235,6 +240,11 @@ export class AideComponent implements OnInit {
   loadSection(sectionId: string) {
     this.isLoading = true;
     const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
+    // Si les catégories ne sont pas chargées, attendre
+    if (!this.categories || this.categories.length === 0) {
+      this.isLoading = false;
+      return;
+    }
     // Rechercher la section dans toutes les catégories
     let foundSection: DocSection | null = null;
     for (const category of this.categories) {
@@ -244,8 +254,10 @@ export class AideComponent implements OnInit {
         break;
       }
     }
+    // Si la section n'est pas trouvée, ne pas rediriger, juste afficher un message
     if (!foundSection) {
-      this.router.navigate([this.baseRoute, 'index']);
+      this.currentContent = '<p>Section introuvable.</p>';
+      this.isLoading = false;
       return;
     }
     this.currentSection = foundSection;
@@ -285,6 +297,7 @@ export class AideComponent implements OnInit {
   }
 
   navigateToSection(section: DocSection) {
+    // Naviguer vers la route de la section, le chargement se fait via l'abonnement à this.route.params
     this.router.navigate([this.baseRoute, section.id]);
-  };
+  }
 }

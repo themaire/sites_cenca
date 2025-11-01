@@ -54,6 +54,16 @@
           "requireAuth": true,
           "backendUrl": null,
           "accessLevel": 0
+        },
+        {
+          "id": "ajout_shapefile",
+          "title": "Ajout d'un Shapefile",
+          "path": "sites/projets/ajout_shapefile.md",
+          "order": 5,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null,
+          "accessLevel": 0
         }
       ]
     },

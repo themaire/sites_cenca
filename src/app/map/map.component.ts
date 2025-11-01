@@ -6,10 +6,11 @@ import * as turf from '@turf/turf'; // Import de Turf.js pour les opérations g�
 import 'leaflet.fullscreen'; // Import du plugin Fullscreen
 import { GeoJsonObject, Feature, MultiPolygon } from 'geojson'; // Import de GeoJsonObject et Feature
 
-import { Localisation } from '../shared/interfaces/localisation'; // Import de l'interface Localisation
-import { SiteCencaCollection, SiteCencaFeature } from '../shared/interfaces/site-geojson'; // Import des interfaces pour les sites CENCA
-import { ParcellesSelected } from '../../app/sites/foncier/foncier'; // Import des interfaces pour les sites CENCA
-import { SiteCencaService } from '../shared/services/site-cenca.service'; // Import du service
+import { Localisation } from '../shared/interfaces/localisation'; // Interface Localisations (site et opération)
+import { SiteCencaCollection, SiteCencaFeature } from '../shared/interfaces/site-geojson'; // Interfaces pour les sites CENCA
+import { ParcellesSelected } from '../../app/sites/foncier/foncier';
+import { GeoService } from '../shared/services/geo.service';
+import { SiteCencaService } from '../shared/services/site-cenca.service';
 
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError } from 'rxjs';
@@ -86,19 +87,14 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   private surfaceInfoControl: any;
 
   private activeUrl: string = environment.apiBaseUrl;
-  
-  apiWFSLizmapUrl(couche: string, bbox: string): string {
-    return this.activeUrl + 'api-geo/lizmap/layer/' + couche + '?bbox=' + bbox;
-  }
-  apiGeoParcellesUrl(bbox: string): string {
-    return this.activeUrl + 'api-geo/parcelles/bbox?bbox=' + bbox;
-  }  
+
   private map!: L.Map;
 
   constructor(private elementRef: ElementRef, 
             private renderer: Renderer2,
             private http: HttpClient,
-            private siteCencaService: SiteCencaService
+            private siteCencaService: SiteCencaService,
+            private geoService: GeoService
           ) {}
 
   /** Envoyer la sélection des parcelles au composant parent */
@@ -465,6 +461,12 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     this.resetMapView();
 
+    // Affichage des sites CENCA si fournis
+    if (this.sitesCenca && this.sitesCenca.features.length > 0) {
+      console.log('Affichage des sites CENCA:', this.sitesCenca.features.length, 'sites');
+      this.addSitesCencaToMap(this.sitesCenca);
+    }
+
     // Traitements sur le GeoJSON principal
     if (this.localisation_site !== undefined || this.localisations_operations !== undefined) {
       // S'assure que le GeoJSON primaire est un objet valide
@@ -486,7 +488,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
           opacity: 1,
           fillOpacity: 0.0,
           fillColor: 'red',
-        }).addTo(this.map);
+        // }).addTo(this.map);
+        });
         
         // Obtenir les limites et ajuster la vue
         const bounds = geojsonLayer.getBounds();
@@ -525,6 +528,12 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
         console.log('Aucun GeoJSON de site trouvé');
       }
 
+      this.map.createPane('starPane');
+      const starPane = this.map.getPane('starPane');
+      if (starPane) {
+        starPane.style.zIndex = '650'; // plus haut que les autres
+      }
+      
       // On regarde maintenant si on a des localisations_operations
       if (this.localisations_operations && this.localisations_operations?.length > 0) {
         console.log('Localisations d\'opérations trouvées :', this.localisations_operations.length);
@@ -547,6 +556,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
           ) {
             if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
               const geojsonLayer = L.geoJSON(geojson, {
+                pane: 'starPane', // Definit la couche personnalisée pour être au-dessus
                 onEachFeature: (feature, layer) => {
                   let surface = 'N/A';
                   surface = (turf.area(feature) / 10000).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' ha';
@@ -568,23 +578,25 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                     const middleLng = (westLng + eastLng) / 2;
                     const targetLat = southLat + 0.9 * (northLat - southLat);
                     
-                    // Crée un marker invisible
+                    // Crée un marker invisible pour afficher le label au-dessus du polygone
                     const marker = L.marker([targetLat, middleLng], { opacity: 0 });
                     marker.bindTooltip(
                       `Surface : ${surface}`,
                       { permanent: true, direction: 'top' }
                     ).addTo(this.map);
                   }
-                  }
-                }); // Fin de la création de geojsonLayer
-                const color = this.getRandomColorName();
-                geojsonLayer.setStyle({
-                  color: color,
-                  weight: 2,
-                  opacity: 1,
-                  fillOpacity: 0.5,
-                  fillColor: color,
-                }).addTo(this.map);
+                }
+              }); // Fin de la création de geojsonLayer
+              const color = this.getRandomColorName();
+              geojsonLayer.setStyle({
+                color: color,
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.5,
+                fillColor: color,
+              }).addTo(this.map);
+              geojsonLayer.bringToFront();
+
             } else if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
               const geojsonLayer = L.geoJSON(geojson, {
                 onEachFeature: (feature, layer) => {
@@ -607,6 +619,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                 weight: 5,
                 opacity: 1,
               }).addTo(this.map);
+              geojsonLayer.bringToFront();
+
             } else if (geometryType === 'Point' || geometryType === 'MultiPoint') {
               const geojsonLayer = L.geoJSON(geojson, {
                 pointToLayer: (feature, latlng) => {
@@ -616,6 +630,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                   return marker;
                 }
               }).addTo(this.map);
+              geojsonLayer.bringToFront();
             } else {
               console.warn('Localisation d\'opération invalide ou sans GeoJSON :', loc_ope);
             }
@@ -626,13 +641,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
         console.log('Aucun GeoJSON d\'opération trouvé');
       }
     } else {
-        console.log('Ni d\'emplacement du site ni d\'opérations n\'ont été fournis.');
-      }
-
-    // Affichage des sites CENCA si fournis
-    if (this.sitesCenca && this.sitesCenca.features.length > 0) {
-      console.log('Affichage des sites CENCA:', this.sitesCenca.features.length, 'sites');
-      this.addSitesCencaToMap(this.sitesCenca);
+      console.log('Ni d\'emplacement du site ni d\'opérations n\'ont été fournis.');
     }
 
     // Ajout d'un marqueur pour illustrer les antennes du CENCA
@@ -1088,7 +1097,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
    * Configure le chargement dynamique des parcelles cadastrales
    */
   private setupDynamicParcellesLoading(): void {
-    console.log('🗺️ Configuration du chargement dynamique des parcelles cadastrales');
+    // console.log('🗺️ Configuration du chargement dynamique des parcelles cadastrales');
 
     // La couche est déjà créée dans initMap()
     // Juste s'assurer qu'elle est ajoutée à la carte
@@ -1103,7 +1112,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     // Chargement initial après un petit délai (seulement si zoom suffisant)
     setTimeout(() => {
       this.onMapViewChangedParcelles();
-    }, 1000);
+    }, 500); // 1000 de base
   }
 
   /**
@@ -1166,17 +1175,17 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     // Éviter de recharger la même zone
     if (this.lastBboxParcelles === bbox) {
-      console.log('🗺️ Même bbox que précédemment, pas de rechargement');
+      // console.log('🗺️ Même bbox que précédemment, pas de rechargement');
       return;
     }
 
-    console.log('🗺️ Chargement des parcelles cadastrales pour la bbox:', bbox);
+    // console.log('🗺️ Chargement des parcelles cadastrales pour la bbox:', bbox);
     this.isLoadingParcelles = true;
     this.lastBboxParcelles = bbox;
 
-    this.http.get<any>(this.apiGeoParcellesUrl(bbox)).subscribe({
+    this.http.get<any>(this.geoService.apiGeoParcellesUrl(bbox)).subscribe({
       next: (parcelles) => {
-        console.log('🗺️ Parcelles reçues:', parcelles.features?.length || 0, 'parcelles');
+        // console.log('🗺️ Parcelles reçues:', parcelles.features?.length || 0, 'parcelles');
         this.updateParcellesLayer(parcelles);
         this.isLoadingParcelles = false;
       },
@@ -1528,7 +1537,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
    */
   getSitesCencaGeoJson$(couche: string, bbox?: string): Observable<SiteCencaCollection> {
     const url = bbox 
-      ? this.apiWFSLizmapUrl(couche, bbox)
+      ? this.geoService.apiWFSLizmapUrl(couche, bbox)
       : `${this.activeUrl}/api-geo/lizmap/layer/${couche}`;
     
     return this.http.get<SiteCencaCollection>(url).pipe(
@@ -1691,13 +1700,13 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   /** Permet au parent de synchroniser la sélection des parcelles */
   public setParcellesSelection(parcelles: ParcellesSelected[]) {
-  const nouvelleSelection = JSON.stringify(parcelles);
-  const ancienneSelection = JSON.stringify(this._parcellesSelectionnees);
-  if (nouvelleSelection === ancienneSelection) return; // Ne rien faire si identique
-  this._parcellesSelectionnees = [...parcelles];
-  this.emitParcellesSelectionnees();
-  this.reloadParcellesInCurrentView();
-}
+    const nouvelleSelection = JSON.stringify(parcelles);
+    const ancienneSelection = JSON.stringify(this._parcellesSelectionnees);
+    if (nouvelleSelection === ancienneSelection) return; // Ne rien faire si identique
+    this._parcellesSelectionnees = [...parcelles];
+    this.emitParcellesSelectionnees();
+    this.reloadParcellesInCurrentView();
+  }
 
   private createSurfaceInfoControl(): void {
     if (!this.selectParcellesMode) {

@@ -12,13 +12,18 @@ import { FoncierService } from '../../foncier.service';
 import { HttpClient, HttpParams, HttpErrorResponse,} from '@angular/common/http';
 
 import { SelectValue } from '../../../../shared/interfaces/formValues';
+import { Commune, Communes } from '../../../../shared/interfaces/geo';
 import { FormService } from '../../../../shared/services/form.service';
+import { LoginService } from '../../../../login/login.service';
+import { GeoService } from '../../../../shared/services/geo.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
+import { DocfileService } from '../../../../shared/services/docfile.service';
+
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 import { FileExploratorComponent } from '../../../../shared/file-explorator/file-explorator.component';
+
 import { FormControl, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 
-import { LoginService } from '../../../../login/login.service';
 import { Subscription, lastValueFrom } from 'rxjs';
 
 import { MatStepperModule, StepperOrientation,} from '@angular/material/stepper';
@@ -26,20 +31,19 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
 import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackBar
 import { MatDatepickerIntl, MatDatepickerModule,} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS,} from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
+
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import 'moment/locale/fr';
 
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { DocfileService } from '../../../../shared/services/docfile.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MapComponent } from '../../../../map/map.component';
 
@@ -70,26 +74,46 @@ export interface Section {
     MatButtonModule,
     MatListModule,
     MapComponent,
+      MatAutocompleteModule,
   ],
   templateUrl: './detail-pmfu.component.html',
   styleUrl: './detail-pmfu.component.scss',
 })
 export class DetailPmfuComponent {
-  newPmfu: boolean = false;  
-  pmfuForm!: FormGroup;
-  initialFormValues!: ProjetMfu;
-  isFormValid: boolean = false;
-  
+    /**
+     * Active ou désactive le FormControl pmfu_commune selon la valeur du département
+     */
+    setupCommuneSelectDisabling() {
+      const communeControl = this.pmfuForm.get('pmfu_commune');
+      const departementControl = this.pmfuForm.get('pmfu_departement');
+      if (!communeControl || !departementControl) return;
+      const updateCommuneState = (value: any) => {
+        const val = (value || '').toString().trim();
+        if (["08","10","51","52"].includes(val)) {
+          communeControl.enable();
+        } else {
+          communeControl.disable();
+        }
+      };
+      updateCommuneState(departementControl.value);
+      departementControl.valueChanges.subscribe(updateCommuneState);
+    }
+    
+    newPmfu: boolean = false;  
+    pmfuForm!: FormGroup;
+    initialFormValues!: ProjetMfu;
+    isFormValid: boolean = false;
+    
   salaries: SelectValue[] = [];
 
   pmfuTitle: String = '';
-
+  
   
   pmfu!: ProjetMfu;
   projetLite!: ProjetsMfu;
   isLoading: boolean = true;
   loadingDelay: number = 400;
-
+  
   doc_types!: {cd_type: number, libelle: string, path: string, field: string}[];
   selectedFolder?: number;
   isDragging: boolean = false;
@@ -117,6 +141,11 @@ export class DetailPmfuComponent {
   @ViewChild(FileExploratorComponent) fileExplorator!: FileExploratorComponent;
   @ViewChild(MapComponent) mapComponent!: MapComponent;
   
+  communeInsee?: Commune; // Commune chargée dans le formulaire
+  communes: Commune[] = [];
+  communeCtrl = new FormControl('');
+  filteredCommunes: Commune[] = [];
+
   // Propriétés pour les sites CENCA
   afficherSitesCenca: boolean = false;
   afficherSitesCencaSites: boolean = false;
@@ -135,7 +164,7 @@ export class DetailPmfuComponent {
   selectParcellesMode: boolean = true;
   // Poubelle des parcelles supprimées
   trashParcelle: ParcellesSelected[] = [];
-
+  
   constructor(
     public docfileService: DocfileService,
     private confirmationService: ConfirmationService,
@@ -144,6 +173,7 @@ export class DetailPmfuComponent {
     private snackBar: MatSnackBar,
     private foncierService: FoncierService,
     private loginService: LoginService, // Inject LoginService
+    private geoService: GeoService,
     private dialogRef: MatDialogRef<DetailPmfuComponent>,
     private sanitizer: DomSanitizer,
     private http: HttpClient,
@@ -160,6 +190,29 @@ export class DetailPmfuComponent {
       );
     }
   }
+  
+  getDepartementLibelle(code: string): string {
+    switch (code) {
+      case '08': return 'Ardennes';
+      case '10': return 'Aube';
+      case '51': return 'Marne';
+      case '52': return 'Haute-Marne';
+      default: return code || '';
+    }
+  }
+
+  async getCommunesFromDepartement(code: string): Promise<Communes[] | undefined> {
+    const communesRaw = await this.geoService.apiGeoCommunesUrl(code);
+    // Mapping Communes[] -> Commune[] (ajoute les propriétés manquantes si besoin)
+    this.communes = communesRaw.map((item: any) => ({
+      nom: item.nom,
+      insee: item.code,
+      population: item.population ?? 0,
+      codeposte: item.codeposte ?? ''
+    }));
+    return this.communes;
+  // Méthode d'affichage pour l'autocomplete commune
+  }
 
   ngAfterViewInit() {
     // Abonnement à l'EventEmitter de suppression de parcelle côté carte
@@ -168,7 +221,24 @@ export class DetailPmfuComponent {
     }
   }
 
+  // Affichage du nom de la commune pour l'autocomplete
+  displayCommune(commune?: Commune): string {
+    return commune ? commune.nom : '';
+  }
+
   async ngOnInit() {
+    // Initialisation du filtrage pour l'autocomplete commune
+    this.communeCtrl.valueChanges.subscribe(value => {
+      let filterValue = '';
+      if (typeof value === 'string') {
+        filterValue = value.toLowerCase();
+      } else if (value && typeof value === 'object' && 'nom' in value) {
+        filterValue = (value as Commune).nom.toLowerCase();
+      }
+      this.filteredCommunes = this.communes.filter(commune =>
+        commune.nom.toLowerCase().includes(filterValue)
+      );
+    });
     await this.docfileService.loadDocTypes(1); // Le parametre 1 veut dire "documents de projet" c'est la clé primaire de la table des types de documents
     this.doc_types = this.docfileService.doc_types;
     this.initializeAllowedTypes();
@@ -184,7 +254,6 @@ export class DetailPmfuComponent {
         console.log(this.salaries);
       });
 
-      
     // Récupérer les données d'un projet ou créer un nouveau projet
     // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
     if (this.projetLite?.pmfu_id) {
@@ -203,6 +272,10 @@ export class DetailPmfuComponent {
             this.pmfuForm = this.formService.newPmfuForm();
             this.initialFormValues = this.pmfuForm.value; // Garder une copie des valeurs initiales du formulaire
             this.docForm = this.formService.newDocForm();
+
+            //
+            const communeInsee = await this.geoService.apiGeoCommuneByInsee(this.pmfuForm.get('pmfu_commune')?.value);
+
             console.log(this.docForm);
             this.cdr.detectChanges();
           }
@@ -277,7 +350,34 @@ export class DetailPmfuComponent {
         this.isLoading = false; // Même en cas d'erreur, arrêter le spinner
         this.cdr.detectChanges();
       }
+
+      // Récuperer les liste de communes en fonction du département sélectionné
+      const departementControl = this.pmfuForm.get('pmfu_departement');
+      if (departementControl) {
+        departementControl.valueChanges.subscribe(async (insee: string) => {
+          if (insee) {
+            const communesRaw = await this.geoService.apiGeoCommunesUrl(insee);
+            this.communes = communesRaw.map((item: any) => ({
+              nom: item.nom,
+              insee: item.code,
+              population: item.population ?? 0,
+              codeposte: item.codeposte ?? ''
+            }));
+            console.log('🗺️ Communes chargées pour le département ' + insee + ' :', this.communes);
+            this.cdr.detectChanges();
+          } else {
+            this.communes = [];
+          }
+        });
+      }
+      
     }
+      // Appeler la logique de désactivation dynamique du select commune après création du formulaire
+      setTimeout(() => {
+        if (this.pmfuForm) {
+          this.setupCommuneSelectDisabling();
+        }
+      }, 0);
   }
 
   /**

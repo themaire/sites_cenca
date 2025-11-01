@@ -28,6 +28,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../../sites/sites.service';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
+import { GeoService } from '../../shared/services/geo.service';
 import { DocfileService } from './docfile.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -47,6 +48,7 @@ export class FormService {
     private http: HttpClient,
     private sitesService: SitesService,
     private projetService: ProjetService,
+    // private geoService: GeoService, // Ca peut servir plus tard
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private docfileService: DocfileService
