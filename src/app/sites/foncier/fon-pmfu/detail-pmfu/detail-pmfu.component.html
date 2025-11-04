@@ -70,6 +70,8 @@
     </ng-template>
     <ng-template #newTitle>
       <h2 *ngIf="newPmfu">Création d'un projet neuf en cours</h2>
+      <div>Formulaire valide : {{ pmfuForm.valid }}</div>
+      <div>Commune sélectionnée : {{ pmfuForm.get('pmfu_commune')?.value }}</div>
     </ng-template>
   </div>
   <mat-horizontal-stepper
@@ -114,8 +116,18 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Collègue associé</mat-label>
-            <input matInput formControlName="pmfu_associe" [readonly]="!isEditPmfu" />
+            <ng-container *ngIf="isEditPmfu; else associeReadonly">
+              <mat-select formControlName="pmfu_associe">
+                <mat-option *ngFor="let salarie of salaries" [value]="salarie.cd_type">
+                  {{ salarie.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <ng-template #associeReadonly>
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_associe')?.value, salaries)" readonly />
+            </ng-template>
           </mat-form-field>
+
           <mat-form-field appearance="fill">
             <mat-label>Agence</mat-label>
             <input matInput formControlName="pmfu_agence" [readonly]="!isEditPmfu" />
@@ -130,7 +142,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Département</mat-label>
             <ng-container *ngIf="isEditPmfu; else departementReadonly">
-              <mat-select formControlName="pmfu_departement">
+              <mat-select formControlName="pmfu_dep">
                 <mat-option value="08">Ardennes</mat-option>
                 <mat-option value="10">Aube</mat-option>
                 <mat-option value="51">Marne</mat-option>
@@ -138,14 +150,14 @@
               </mat-select>
             </ng-container>
             <ng-template #departementReadonly>
-              <input matInput [value]="getDepartementLibelle(pmfuForm.get('pmfu_departement')?.value)" readonly />
+              <input matInput [value]="getDepartementLibelle(pmfuForm.get('pmfu_dep')?.value)" readonly />
             </ng-template>
           </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>Commune</mat-label>
             <ng-container *ngIf="isEditPmfu; else communeReadonly">
-              <input type="text" matInput [formControl]="communeCtrl" [matAutocomplete]="auto" />
+              <input type="text" matInput [formControl]="communeCtrl" [matAutocomplete]="auto" #trigger="matAutocompleteTrigger" (focus)="trigger.openPanel()" [disabled]="isCommuneDisabled" />
               <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCommune">
                 <mat-option *ngFor="let commune of filteredCommunes" [value]="commune">
                   {{ commune.nom }}
@@ -153,7 +165,7 @@
               </mat-autocomplete>
             </ng-container>
             <ng-template #communeReadonly>
-              <input matInput [value]="communeInsee ? communeInsee.nom : ''" readonly />
+              <input matInput [value]="communeNomReadonly" readonly />
             </ng-template>
           </mat-form-field>
 
@@ -165,20 +177,19 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Année de début</mat-label>
-            <input matInput formControlName="pmfu_debut" type="number" [readonly]="!isEditPmfu" />
+            <input matInput formControlName="pmfu_annee_debut" type="number" [readonly]="!isEditPmfu" />
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label>Type</mat-label>
-            <input matInput formControlName="pmfu_type" [readonly]="!isEditPmfu" />
+            <mat-label>Type d'acte</mat-label>
+            <input matInput formControlName="pmfu_type_acte" [readonly]="!isEditPmfu" />
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>Propriétaire</mat-label>
             <input matInput formControlName="pmfu_proprietaire" [readonly]="!isEditPmfu" />
           </mat-form-field>
-          <mat-form-field appearance="fill">
+
             <mat-label>Mesures compensatoires</mat-label>
-            <input matInput formControlName="pmfu_compensatoire" [readonly]="!isEditPmfu" />
-          </mat-form-field>
+            <mat-checkbox formControlName="pmfu_mes_comp" [disabled]="!isEditPmfu"></mat-checkbox>
         </div>
         <div class="form-row">
           <mat-form-field appearance="fill">
@@ -200,6 +211,10 @@
             <input matInput formControlName="pmfu_appui" [readonly]="!isEditPmfu" />
           </mat-form-field>
           <mat-form-field appearance="fill">
+            <mat-label>Description appui</mat-label>
+            <textarea matInput formControlName="pmfu_appui_desc" rows="3" [readonly]="!isEditPmfu"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
             <mat-label>Priorité</mat-label>
             <input matInput formControlName="pmfu_priorite" [readonly]="!isEditPmfu" />
           </mat-form-field>
@@ -211,7 +226,7 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Année de signature</mat-label>
-            <input matInput formControlName="pmfu_signature" type="number" [readonly]="!isEditPmfu" />
+            <input matInput formControlName="pmfu_annee_signature" type="number" [readonly]="!isEditPmfu" />
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>Échéances</mat-label>
@@ -221,11 +236,11 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Prochaines étapes</mat-label>
-            <textarea matInput formControlName="pmfu_etapes" rows="3" [readonly]="!isEditPmfu"></textarea>
+            <textarea matInput formControlName="pmfu_proch_etape" rows="3" [readonly]="!isEditPmfu"></textarea>
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>Détails juridiques</mat-label>
-            <textarea matInput formControlName="pmfu_juridique" rows="3" [readonly]="!isEditPmfu"></textarea>
+            <textarea matInput formControlName="pmfu_quest_juri" rows="3" [readonly]="!isEditPmfu"></textarea>
           </mat-form-field>
         </div>
         <div *ngIf="isEditPmfu">
@@ -325,7 +340,7 @@
           <mat-hint *ngIf="afficherSitesCenca">🌿 Sites CENCA autres dynamiques se chargent automatiquement !</mat-hint>
         </div> -->
 
-      <div class="map-container">
+      <!-- <div class="map-container">
         <app-map 
           [isEditMode]="isEditPmfu"
           [mapName]="'pmfu-' + (pmfu ? pmfu.pmfu_id : 'nouveau')"
@@ -341,7 +356,7 @@
           (parcelleRemoved)="onParcelleRemoved($event)"
           style="height: 500px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
         </app-map>
-      </div>
+      </div> -->
       <div class="step-actions">
         <button mat-button matStepperPrevious>Précédent</button>
         <button mat-button matStepperNext>Suivant</button>

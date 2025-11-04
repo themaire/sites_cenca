@@ -2,6 +2,7 @@ import { Component, Inject, ChangeDetectorRef, ViewChild, ElementRef} from '@ang
 import { CommonModule } from '../../../../../../node_modules/@angular/common';
 
 import { MatDialogRef, MatDialogContent, MAT_DIALOG_DATA,} from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Overlay } from '@angular/cdk/overlay';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,7 +23,7 @@ import { DocfileService } from '../../../../shared/services/docfile.service';
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 import { FileExploratorComponent } from '../../../../shared/file-explorator/file-explorator.component';
 
-import { FormControl, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, FormsModule, Form } from '@angular/forms';
 
 import { Subscription, lastValueFrom } from 'rxjs';
 
@@ -59,6 +60,7 @@ export interface Section {
   imports: [
     CommonModule,
     MatDialogContent,
+    MatCheckboxModule,
     MatIconModule,
     FormButtonsComponent,
     FileExploratorComponent,
@@ -80,29 +82,12 @@ export interface Section {
   styleUrl: './detail-pmfu.component.scss',
 })
 export class DetailPmfuComponent {
-    /**
-     * Active ou désactive le FormControl pmfu_commune selon la valeur du département
-     */
-    setupCommuneSelectDisabling() {
-      const communeControl = this.pmfuForm.get('pmfu_commune');
-      const departementControl = this.pmfuForm.get('pmfu_departement');
-      if (!communeControl || !departementControl) return;
-      const updateCommuneState = (value: any) => {
-        const val = (value || '').toString().trim();
-        if (["08","10","51","52"].includes(val)) {
-          communeControl.enable();
-        } else {
-          communeControl.disable();
-        }
-      };
-      updateCommuneState(departementControl.value);
-      departementControl.valueChanges.subscribe(updateCommuneState);
-    }
-    
-    newPmfu: boolean = false;  
-    pmfuForm!: FormGroup;
-    initialFormValues!: ProjetMfu;
-    isFormValid: boolean = false;
+  communeNomReadonly: string = '';
+
+  newPmfu: boolean = false;  
+  pmfuForm!: FormGroup;
+  initialFormValues!: ProjetMfu;
+  isFormValid: boolean = false;
     
   salaries: SelectValue[] = [];
 
@@ -144,6 +129,7 @@ export class DetailPmfuComponent {
   communeInsee?: Commune; // Commune chargée dans le formulaire
   communes: Commune[] = [];
   communeCtrl = new FormControl('');
+  isCommuneDisabled: boolean = true;
   filteredCommunes: Commune[] = [];
 
   // Propriétés pour les sites CENCA
@@ -214,6 +200,10 @@ export class DetailPmfuComponent {
   // Méthode d'affichage pour l'autocomplete commune
   }
 
+  async getCommuneByInsee(insee: string): Promise<Commune | undefined> {
+    return this.communes.find(commune => commune.insee === insee);
+  }
+
   ngAfterViewInit() {
     // Abonnement à l'EventEmitter de suppression de parcelle côté carte
     if (this.mapComponent && this.mapComponent.parcelleRemoved) {
@@ -226,19 +216,66 @@ export class DetailPmfuComponent {
     return commune ? commune.nom : '';
   }
 
+  /**
+   * Active ou désactive le FormControl pmfu_commune selon la valeur du département
+   */
+  setupCommuneSelectDisabling() {
+    const departementControl = this.pmfuForm.get('pmfu_dep');
+    if (!departementControl) return;
+
+    // Fonction pour mettre à jour l'état du champ commune
+    // prend en paramètre la valeur du département
+    // retourne true si le champ commune doit être désactivé, false sinon
+    const updateCommuneState = (value: any) => {
+      const val = (value || '').toString().trim();
+      this.isCommuneDisabled = !["08","10","51","52"].includes(val);
+    };
+
+    updateCommuneState(departementControl.value);
+    departementControl.valueChanges.subscribe(updateCommuneState);
+  }
+
+  /**
+   * Rend le champ commune obligatoire
+   */
+  communeFieldToRequired() {
+    // Vérifier la validité du champ commune au démarrage (formulaire neuf)
+    if (this.pmfuForm.get('pmfu_commune')?.value === null || this.pmfuForm.get('pmfu_commune')?.value === '') {
+      this.pmfuForm.get('pmfu_commune')?.setValue(null);
+      console.log('[setValue] pmfu_commune <- null (communeFieldToRequired)');
+      console.log('[validity] pmfu_commune.valid =', this.pmfuForm.get('pmfu_commune')?.valid, '| errors =', this.pmfuForm.get('pmfu_commune')?.errors);
+    }
+  }
+
   async ngOnInit() {
     // Initialisation du filtrage pour l'autocomplete commune
+    // Synchronisation communeCtrl <-> pmfu_commune (FormGroup)
     this.communeCtrl.valueChanges.subscribe(value => {
+
+      console.log('Valeur du champ communeCtrl :', value);
+
       let filterValue = '';
       if (typeof value === 'string') {
         filterValue = value.toLowerCase();
-      } else if (value && typeof value === 'object' && 'nom' in value) {
-        filterValue = (value as Commune).nom.toLowerCase();
-      }
+        // Recherche d'une commune correspondante
+        const found = this.communes.find(commune =>
+          commune.nom.toLowerCase() === filterValue
+        );
+        this.pmfuForm.get('pmfu_commune')?.setValue(found ? found.insee : '');
+        console.log('[setValue] pmfu_commune <-', found ? found.insee : '', '(communeCtrl string)');
+            } else if (value && typeof value === 'object' && 'nom' in value) {
+              filterValue = (value as Commune).nom.toLowerCase();
+        this.pmfuForm.get('pmfu_commune')?.setValue((value as Commune).insee);
+        console.log('[setValue] pmfu_commune <-', (value as Commune).insee, '(communeCtrl object)');
+              console.log("Valeur du champ commune : " + this.pmfuForm.get('pmfu_commune')?.value + ' ' + (typeof this.pmfuForm.get('pmfu_commune')?.value));
+            }
+
+      // Filtrage de la liste
       this.filteredCommunes = this.communes.filter(commune =>
         commune.nom.toLowerCase().includes(filterValue)
       );
     });
+
     await this.docfileService.loadDocTypes(1); // Le parametre 1 veut dire "documents de projet" c'est la clé primaire de la table des types de documents
     this.doc_types = this.docfileService.doc_types;
     this.initializeAllowedTypes();
@@ -273,9 +310,6 @@ export class DetailPmfuComponent {
             this.initialFormValues = this.pmfuForm.value; // Garder une copie des valeurs initiales du formulaire
             this.docForm = this.formService.newDocForm();
 
-            //
-            const communeInsee = await this.geoService.apiGeoCommuneByInsee(this.pmfuForm.get('pmfu_commune')?.value);
-
             console.log(this.docForm);
             this.cdr.detectChanges();
           }
@@ -297,12 +331,16 @@ export class DetailPmfuComponent {
         this.isLoading = false; // Même en cas d'erreur, arrêter le spinner
         this.cdr.detectChanges();
       }
+
+      //
+      //// 
+      ////// FIN DU CAS D'UN PROJET EXISTANT QUE L'ON CHARGE
     } else {
       // Projet neuf à créer
       console.log(
         'Nous avons visiblement un projet neuf à créer. Pas de pmfu_id dans this.projetLite.'
       );
-      console.log(this.projetLite);
+
       try {
         this.newPmfu = true;
         // Passer directement en mode edition
@@ -311,10 +349,31 @@ export class DetailPmfuComponent {
         // Créer un formulaire vide
         // Le form_group correspondant aux projet neuf à créer
         this.pmfuForm = this.formService.newPmfuForm(undefined, 0);
+        console.log('Formulaire de projet créé :', this.pmfuForm.value);
+
+        // Marquer le champ comme touché pour déclencher la validation
+        // this.pmfuForm.get('pmfu_commune')?.setValue('');
+        // this.pmfuForm.get('pmfu_commune')?.markAsTouched();
+        // this.pmfuForm.get('pmfu_commune')?.updateValueAndValidity();
+
+        // DEBUG :
+        // console.log('Formulaire projet MFU est valide ? :', this.pmfuForm.valid);
+        // // Boucle sur les champs du formulaire et affiche ceux qui sont required avec leur valeur et type
+        // for (let control in this.pmfuForm.controls) {
+        //   const ctrl = this.pmfuForm.get(control);
+        //   if (ctrl && ctrl.validator) {
+        //     // Vérifie si le champ a le validateur required
+        //     const validators = ctrl.validator({} as any);
+        //     if (validators && validators['required'] !== undefined) {
+        //       console.log(`Champ required : ${control} | valeur =`, ctrl.value, '| type =', typeof ctrl.value);
+        //     }
+        //   }
+        // }
 
         // Le form_group correspondant aux documents
         this.docForm = this.formService.newDocForm();
-        // Définir les valeurs par défaut pour créateur et responsable
+
+        // Définir les valeurs par défaut pour créateur et responsable avec le salarié connecté actuellement
         this.formService
           .getSelectValues$('sites/selectvalues=admin.salaries/')
           .subscribe((selectValues: SelectValue[] | undefined) => {
@@ -324,14 +383,13 @@ export class DetailPmfuComponent {
               pmfu_createur: cd_salarie,
             });
           });
-        console.log(
-          'Formulaire de projet créé avec succès :',
-          this.pmfuForm.value
-        );
 
-        // Souscrire aux changements du statut du formulaire principal (projetForm)
+        // console.log('Formulaire de projet créé avec succès :', this.pmfuForm.value);
+
+        // Souscrire aux changements du statut du formulaire principal (pmfuForm)
         this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
           (status) => {
+            console.log('Formulaire projet MFU valide juste avant :', this.pmfuForm.valid);
             this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
             // console.log('Statut du formulaire principal :', status);
             // console.log("this.isFormValid = this.projetForm.valid :");
@@ -351,33 +409,60 @@ export class DetailPmfuComponent {
         this.cdr.detectChanges();
       }
 
-      // Récuperer les liste de communes en fonction du département sélectionné
-      const departementControl = this.pmfuForm.get('pmfu_departement');
-      if (departementControl) {
-        departementControl.valueChanges.subscribe(async (insee: string) => {
-          if (insee) {
-            const communesRaw = await this.geoService.apiGeoCommunesUrl(insee);
-            this.communes = communesRaw.map((item: any) => ({
-              nom: item.nom,
-              insee: item.code,
-              population: item.population ?? 0,
-              codeposte: item.codeposte ?? ''
-            }));
-            console.log('🗺️ Communes chargées pour le département ' + insee + ' :', this.communes);
-            this.cdr.detectChanges();
-          } else {
-            this.communes = [];
-          }
-        });
-      }
-      
+      // Souscrire dynamiquement au chargement des communes selon le département
+      // Fait en sorte que si on change de département, la liste des communes se mette à jour
+      const departementControl = this.pmfuForm.get('pmfu_dep') as FormControl;
+      const communeControl = this.pmfuForm.get('pmfu_commune') as FormControl;
+      this.subscribeDepartementCommunes(departementControl, communeControl, this.communeCtrl);
+
+      // FIN DU CAS D'UN PROJET NEUF
     }
-      // Appeler la logique de désactivation dynamique du select commune après création du formulaire
-      setTimeout(() => {
-        if (this.pmfuForm) {
-          this.setupCommuneSelectDisabling();
-        }
-      }, 0);
+
+    // LOGIQUE COMMUNE AUX DEUX CAS : PROJET EXISTANT OU NOUVEAU PROJET
+
+    
+    // // Rendre le champ commune obligatoire
+    // this.communeFieldToRequired();
+
+    // Appeler la logique de désactivation dynamique du select commune après création du formulaire
+    // setTimeout(() => {
+    //   if (this.pmfuForm) {
+    //     this.setupCommuneSelectDisabling();
+    //   }
+    // }, 1000);
+  }
+
+  /**
+   * SUPER IMPORTANT POUR LE CHARGEMENT DYNAMIQUE DES COMMUNES
+   * Décrit ce qu'il va se passer si l'utilisateur change le département dans le formulaire
+   * 
+   * Souscrit aux changements du département et charge dynamiquement la liste des communes
+   * Peut être utilisé pour un nouveau formulaire ou un formulaire existant
+   * @param departementControl FormControl du département
+   */
+  subscribeDepartementCommunes(departementControl: FormControl | null, communeControl: FormControl | null, dynCommunesCtl: FormControl | null) {
+    if (!departementControl) return;
+    departementControl.valueChanges.subscribe(async (insee: string) => {
+      if (insee) {
+        const communesRaw = await this.geoService.apiGeoCommunesUrl(insee);
+        this.communes = communesRaw.map((item: any) => ({
+          nom: item.nom,
+          insee: item.code,
+          population: item.population ?? 0,
+          codeposte: item.codeposte ?? ''
+        }));
+        console.log('🗺️ Communes chargées pour le département ' + insee + ' :', this.communes);
+        this.cdr.detectChanges();
+      } else {
+        this.communes = [];
+      }
+
+      // Réinitialiser le contrôle de la commune
+      if (communeControl && dynCommunesCtl) {
+        communeControl.reset();
+        dynCommunesCtl.reset();
+      };
+    });
   }
 
   /**
@@ -391,6 +476,8 @@ export class DetailPmfuComponent {
     try {
       // Récupération des données du projet
       this.pmfu = (await this.fetch(this.projetLite.pmfu_id)) as ProjetMfu;
+      this.communeNomReadonly = (await this.getCommuneByInsee(this.pmfu.pmfu_commune || ''))?.nom || '';
+      console.log('Nom de la commune en lecture seule :', this.communeNomReadonly);
 
       // Réaffecter le titre, formulaire, etc.
       this.updatePmfuTitle();
@@ -417,6 +504,12 @@ export class DetailPmfuComponent {
       // forcer la détection (surtout si tu as des zones OnPush)
       setTimeout(() => this.cdr.detectChanges(), 0);
 
+      // Souscrire dynamiquement au chargement des communes selon le département
+      // Fait en sorte que si on change de département, la liste des communes se mette à jour
+      const departementControl = this.pmfuForm.get('pmfu_dep') as FormControl;
+      const communeControl = this.pmfuForm.get('pmfu_commune') as FormControl;
+      this.subscribeDepartementCommunes(departementControl, communeControl, this.communeCtrl);
+
       console.log('setupPmfuForm terminé :', this.folders);
     } catch (error) {
       console.error('Erreur setupPmfuForm', error);
@@ -437,12 +530,12 @@ export class DetailPmfuComponent {
 
     const subroute = `pmfu/id=${pmfu_id}/full`; // Full puisque UN SEUL projet
     console.log('subroute dans fetch : ' + subroute);
-    console.log(
-      "Récupération des données du projet avec l'ID du projet :" + pmfu_id
-    );
-    const pmfu = await this.foncierService.getProjetMfu(subroute);
+    console.log("Récupération des données du projet avec l'ID du projet :" + pmfu_id);
 
-    // Transformation du format PostgreSQL en tableau
+    const pmfu = await this.foncierService.getProjetMfu(subroute);
+    console.log('Données du projet récupérées :', pmfu);
+
+    // Transformation du format PostgreSQL en tableau provenant de la base de données
     pmfu.pmfu_parc_list_array = this.postgresArrayStringToArray(pmfu.pmfu_parc_list);
     // Récupérer les infos complètes des parcelles
     if (pmfu.pmfu_parc_list_array && pmfu.pmfu_parc_list_array.length > 0) {

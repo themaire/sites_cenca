@@ -20,40 +20,37 @@ export interface ProjetMfu {
   pmfu_id: number;
   pmfu_nom: string;
   pmfu_responsable?: string;
-  pmfu_agence?: string;
+  pmfu_agence?: number;
   pmfu_associe?: string;
-  pmfu_etapes?: string;
-  pmfu_departement?: string;
-  pmfu_territoire?: string;
-  pmfu_type?: string;
+  pmfu_proch_etape?: number;
+  pmfu_dep?: string;
+  pmfu_territoire?: number;
+  pmfu_type_acte?: number;
   pmfu_commune?: string;
-  pmfu_debut?: number;
+  pmfu_annee_debut?: number;
   pmfu_proprietaire?: string;
-  pmfu_appui?: string;
-  pmfu_juridique?: string;
-  pmfu_validation?: string;
-  pmfu_decision?: string;
-  pmfu_note?: string;
-  pmfu_acte?: string;
-  pmfu_compensatoire?: string;
-  pmfu_cout?: string;
-  pmfu_financements?: string;
+  pmfu_appui?: number;
+  pmfu_appui_desc?: string;
+  pmfu_quest_juri?: string;
+  pmfu_validation?: number;
+  pmfu_mes_comp?: boolean;
+  pmfu_cout?: number;
+  pmfu_financements?: number;
   pmfu_superficie?: number;
-  pmfu_priorite?: string;
-  pmfu_status?: string;
-  pmfu_signature?: number;
-  pmfu_echeances?: string;
-  pmfu_creation?: string; // ISO date string
-  pmfu_derniere_maj?: string; // ISO date string
-  pmfu_photos_site?: string;
-  pmfu_date_ajout?: string; // ISO date string
+  pmfu_priorite?: number;
+  pmfu_status?: number;
+  pmfu_annee_signature?: number;
+  pmfu_echeances?: Date;
+  pmfu_creation?: Date; // ISO date string
+  pmfu_derniere_maj?: Date; // ISO date string
+  pmfu_parc_list?: string;
+  // Maintenant les champs additionnels hors bdd
+  pmfu_parc_list_array?: string[];
   pmfu_createur?: string;
   projet_acte_nb?: number;
   note_bureau_nb?: number;
   decision_bureau_nb?: number;
   photos_site_nb?: number;
-  pmfu_parc_list_array?: string[];
-  pmfu_parc_list?: string;
 }
 
 export interface ProjetsMfu {
