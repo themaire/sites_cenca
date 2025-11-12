@@ -30,14 +30,20 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private loginService: LoginService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    // Appel explicite au chargement initial
-    this.checkToken();
+    const publicRoutes = ['/aide', '/documentation', '/login', '/reset-password', '/not-found'];
 
-    this.router.events.subscribe(event => {
-    if (event instanceof NavigationEnd) {
+    // Appel explicite au chargement initial uniquement si route privée
+    if (!publicRoutes.some(route => this.router.url.startsWith(route))) {
       this.checkToken();
     }
-  });
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        if (!publicRoutes.some(route => this.router.url.startsWith(route))) {
+          this.checkToken();
+        }
+      }
+    });
   }
 
   /**
@@ -46,6 +52,12 @@ export class AppComponent implements OnInit {
    * Si le token n'est pas valide ou inexistant, l'utilisateur est redirigé vers la page de connexion.
    */
   checkToken() {
+    const publicRoutes = ['/aide', '/documentation', '/login', '/reset-password', '/not-found'];
+    // Ne rien faire si route publique
+    if (publicRoutes.some(route => this.router.url.startsWith(route))) {
+      return;
+    }
+
     // Toujours relire le token depuis le localStorage
     this.token = localStorage.getItem('token');
     console.log('Checking token:', this.token);
@@ -53,11 +65,11 @@ export class AppComponent implements OnInit {
     if (this.token) {
       console.log('Token exists:', this.token);
       this.isResetPasswordMode = false;
-  
+
       this.loginService.getUsers().subscribe({
         next: (result: User | undefined | null) => {
           console.log('User:', result);
-  
+
           // Ne redirige que si l'utilisateur est sur la page de login
           if (this.router.url === '/login') {
             console.log('Redirecting to home');
@@ -66,7 +78,11 @@ export class AppComponent implements OnInit {
         },
         error: (error: Error) => {
           console.log('Error:', error);
-  
+
+          // Suppression du token si erreur d'authentification
+          localStorage.removeItem('token');
+          this.token = null;
+
           // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
           if (this.router.url !== '/login') {
             this.navigate('login');

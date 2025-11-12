@@ -1,6 +1,9 @@
+
 # SiteCenca
 
 SiteCenca est une application Angular générée avec [Angular CLI](https://github.com/angular/angular-cli) version 17.1.3.
+
+> ⚠️ **Attention : cette application nécessite un serveur backend pour fonctionner. Sans backend, aucune fonctionnalité métier n'est disponible et l'application ne sert qu'à afficher une interface vide.**
 
 ---
 
@@ -16,7 +19,8 @@ SiteCenca est une application Angular générée avec [Angular CLI](https://gith
   - [Contribuer](#contribuer)
   - [Support](#support)
   - [Ressources supplémentaires](#ressources-supplémentaires)
-  - [Notes](#notes)
+  - [Architecture des composants](#architecture-des-composants)
+  - [Ci/Cd](#cicd)
 
 ---
 
@@ -96,27 +100,29 @@ Accédez à l'application à l'adresse http://localhost.
 
 ---
 
+
 ## Contribuer
-Les contributions sont les bienvenues ! Pour contribuer :
+Les contributions sont les bienvenues ! Pour contribuer :
 
-1. Forkez le dépôt.
-
-2. Créez une branche pour votre fonctionnalité ou correctif :
-```bash
-docker run -d -p 80:80 --name site-cenca site-cenca
-```
-
-3. Faites vos modifications et validez-les :
-```bash
-git commit -m "Ajout de ma fonctionnalité"
-```
-
-4. Poussez vos changements :
-```bash
-git push origin feature/ma-fonctionnalite
-```
-
-5. Ouvrez une pull request sur la branche dev.
+1. **Forkez** le dépôt sur GitHub.
+2. **Clonez** votre fork localement :
+  ```bash
+  git clone https://github.com/votre-utilisateur/site-cenca.git
+  ```
+3. **Créez une branche** pour votre fonctionnalité ou correctif :
+  ```bash
+  git checkout -b feature/ma-fonctionnalite
+  ```
+4. **Faites vos modifications et validez-les** :
+  ```bash
+  git add .
+  git commit -m "Ajout de ma fonctionnalité"
+  ```
+5. **Poussez vos changements** :
+  ```bash
+  git push origin feature/ma-fonctionnalite
+  ```
+6. **Ouvrez une pull request** sur la branche `dev` du dépôt principal.
 
 ---
 
@@ -136,5 +142,73 @@ Cypress Documentation
 
 ---
 
-## Notes
-Ce projet utilise un webhook pour déclencher des builds Jenkins. Assurez-vous que le webhook est correctement configuré pour votre dépôt.
+
+---
+
+## Architecture des composants
+
+
+L'application SiteCenca est organisée autour de composants Angular modulaires, chacun dédié à une fonctionnalité ou une section de l'interface. Cette architecture favorise la maintenabilité, la réutilisation et la clarté du code.
+
+Chaque dossier principal correspond à une grande partie de l'application : navigation, authentification, administration, affichage des données, etc. Les sous-dossiers permettent de structurer les fonctionnalités plus fines (ex : cartes sur la page d'accueil, gestion des utilisateurs admin, composants partagés).
+
+Ci-dessous, une carte ASCII illustre la structure des composants sur deux niveaux :
+
+Voici une vue simplifiée de la structure des composants principaux :
+
+```
+src/app/
+│
+├── header/                # Barre de navigation et bouton d'aide
+│   └── header.component.*
+│
+├── footer/                # Pied de page
+│   └── footer.component.*
+│
+├── home/                  # Page d'accueil
+│   ├── home.component.*
+│   └── card/              # Cartes d'affichage sur la home
+│       └── card.component.*
+│
+├── login/                 # Authentification utilisateur
+│   ├── login.component.*
+│   ├── login.service.ts
+│   ├── credentials.ts
+│   └── user.model.ts
+│
+├── admin/                 # Espace d'administration
+│   ├── admin.component.*
+│   ├── admin-service.service.ts
+│   ├── admin.routes.ts
+│   └── admin-users/       # Gestion des utilisateurs admin
+│       └── admin-users.component.*
+│
+├── map/                   # Carte interactive des sites
+│   └── map.component.*
+│
+├── shared/                # Composants réutilisables
+│   ├── confirmation/
+│   ├── costomMaterial/
+│   ├── file-explorator/
+│   ├── form-buttons/
+│   ├── image-view/
+│   ├── interfaces/
+│   └── services/
+│
+├── services/              # Services Angular (API, validation, documentation)
+│   ├── documentation.service.ts
+│   ├── form.service.ts
+│   └── custom_validators.ts
+│
+└── ...
+```
+
+Chaque dossier contient généralement :
+- `*.component.ts` : logique du composant
+- `*.component.html` : template HTML
+- `*.component.scss` : styles spécifiques
+
+---
+
+## Ci/Cd
+Ce projet utilise un webhook pour déclencher des builds via l'outil Jenkins. C'est un réglage depuis les paramètres du repo sur GitHub qui déclanche ce webhook à chaque commit sur la branche main pour le serveur de production et la branche dev pour le serveur de pré-production.

@@ -23,7 +23,8 @@ export class HomeComponent {
     private route: ActivatedRoute,
     public loginService: LoginService,
   ) {
-    console.log("loginService.user()?.nom" + loginService.user()?.nom);
+    // console.log("loginService.user()?.nom " + loginService.user()?.nom);
+    // console.log("loginService.user()?.nom " + loginService.user()?.gro_id);
   }
 
   ngOnInit(): void {

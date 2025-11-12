@@ -1,7 +1,10 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, switchMap } from 'rxjs';
 import { marked } from 'marked';
+
+import { LoginService } from '../login/login.service';
 
 export interface DocSection {
   id: string;
@@ -10,7 +13,20 @@ export interface DocSection {
   order: number;
   published: boolean;
   requireAuth: boolean;
+  backendUrl?: string | null;
   content?: string;
+  accessLevel?: number;
+}
+
+export interface DocCategory {
+  id: string;
+  title: string;
+  accessLevel: number;
+  sections: DocSection[];
+}
+
+interface DocHierarchicalIndex {
+  categories: DocCategory[];
 }
 
 interface DocIndex {
@@ -21,11 +37,46 @@ interface DocIndex {
   providedIn: 'root'
 })
 export class DocumentationService {
+  private activeUrl: string = environment.apiBaseUrl;
   private readonly docsPath = '/assets/docs/';
   private sectionsCache: DocSection[] = [];
   private allSectionsCache: DocSection[] = [];
 
-  constructor(private http: HttpClient) {
+  /**
+   * Charge l'index hiérarchique des catégories et sections depuis le nouveau JSON
+   */
+  private loadHierarchicalIndex(): Observable<DocHierarchicalIndex> {
+    return this.http.get<DocHierarchicalIndex>(`${this.docsPath}index.hierarchical.json`);
+  }
+
+  /**
+   * Récupère les catégories et leurs sections accessibles selon le groupe utilisateur
+   */
+  getHierarchicalSections(isAuthenticated: boolean = false): Observable<DocCategory[]> {
+    return this.loadHierarchicalIndex().pipe(
+      map(index => {
+        const userGroId = this.loginService.user()?.gro_id ?? 0;
+        // Filtrer les catégories accessibles
+        const filteredCategories = index.categories
+          .filter(cat => cat.accessLevel <= userGroId)
+          .map(cat => ({
+            ...cat,
+            sections: cat.sections
+              .filter(section => section.published)
+              .filter(section => !section.requireAuth || isAuthenticated)
+              .filter(section => (typeof section.accessLevel === 'number' ? section.accessLevel : 0) <= userGroId)
+              .sort((a, b) => a.order - b.order)
+          }));
+        console.log('Catégories et sections accessibles:', filteredCategories.map(c => ({
+          cat: c.id,
+          sections: c.sections.map(s => s.id)
+        })));
+        return filteredCategories;
+      })
+    );
+  }
+
+  constructor(private http: HttpClient, public loginService: LoginService) {
     // Configuration de marked pour améliorer le rendu
     marked.setOptions({
       breaks: true,
@@ -37,7 +88,7 @@ export class DocumentationService {
    * Charge l'index des sections depuis le fichier JSON
    */
   private loadSectionsIndex(): Observable<DocIndex> {
-    return this.http.get<DocIndex>(`${this.docsPath}index.json`);
+    return this.http.get<DocIndex>(`${this.docsPath}index.hierarchical.json`);
   }
 
   /**
@@ -46,10 +97,15 @@ export class DocumentationService {
   getSections(isAuthenticated: boolean = false): Observable<DocSection[]> {
     return this.loadSectionsIndex().pipe(
       map(index => {
+        const userGroId = this.loginService.user()?.gro_id ?? 0;
         const filteredSections = index.sections
           .filter(section => section.published)
           .filter(section => !section.requireAuth || isAuthenticated)
+          .filter(section => (typeof section.accessLevel === 'number' ? section.accessLevel : 0) <= userGroId)
           .sort((a, b) => a.order - b.order);
+        
+        console.log('Sections filtrées chargées:', filteredSections.map(s => s.id));
+        
         return filteredSections;
       })
     );
@@ -102,6 +158,7 @@ export class DocumentationService {
 
   /**
    * Charge le contenu HTML d'une section
+   * Si backendUrl est défini, charge le HTML depuis le backend
    */
   getSectionContent(id: string, isAuthenticated: boolean = false): Observable<string> {
     return this.getSections(isAuthenticated).pipe(
@@ -112,7 +169,19 @@ export class DocumentationService {
         }
         return section;
       }),
-      switchMap(section => this.loadMarkdownFile(section.path))
+      switchMap(section => {
+        if (section.backendUrl) {
+          // Préfixer l'URL si besoin
+          let url = section.backendUrl;
+          if (!/^https?:\/\//.test(url)) {
+            url = this.activeUrl.replace(/\/$/, '') + (url.startsWith('/') ? url : '/' + url);
+          }
+          return this.http.get(url, { responseType: 'text' });
+        } else {
+          // Charge le markdown local
+          return this.loadMarkdownFile(section.path);
+        }
+      })
     );
   }
 }

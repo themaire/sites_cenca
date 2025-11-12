@@ -67,11 +67,6 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
             </mat-cell>
           </ng-container>
           
-          <ng-container matColumnDef="surf_totale">
-            <mat-header-cell *matHeaderCellDef> Surf. d'intervention (ha) </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ element.surf_totale }} </mat-cell>
-          </ng-container>
-          
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <!-- Ouvrir la fenetre de dialogue d'une opération -->
           <mat-row *matRowDef="let objectif; columns: displayedColumns;" (click)="this.makeForm({ objectif })"></mat-row>

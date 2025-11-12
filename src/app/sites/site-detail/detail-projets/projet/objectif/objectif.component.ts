@@ -91,7 +91,7 @@ export class ObjectifComponent {
   dataSource!: MatTableDataSource<Objectif>;
   // Pour la liste des opérations : le tableau Material
   // displayedColumns: string[] = ['typ_objectif', 'attentes', 'surf_totale', 'surf_prevue'];
-  displayedColumns: string[] = ['obj_ope', 'enjeux_eco', 'pression_maitrise', 'surf_totale'];
+  displayedColumns: string[] = ['obj_ope', 'enjeux_eco', 'pression_maitrise'];
   objectif: Objectif = {} as Objectif; // Pour les détails d'un objectif
   nbObjectifs: number = 0; // Pour le nombre d'objectifs
 

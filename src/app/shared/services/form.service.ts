@@ -1,3 +1,5 @@
+
+import { inseeCommuneValidator } from '../validators/validator';
 import { environment } from '../../../environments/environment';
 
 import { Injectable } from '@angular/core';
@@ -28,8 +30,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../../sites/sites.service';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
+import { GeoService } from '../../shared/services/geo.service';
 import { DocfileService } from './docfile.service';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, validate } from 'uuid';
 
 // import { now } from 'moment';
 
@@ -39,7 +42,8 @@ import { v4 as uuidv4 } from 'uuid';
   providedIn: 'root',
 })
 export class FormService {
-  private activeUrl: string = environment.apiUrl;
+
+  private activeUrl: string = environment.apiBaseUrl;
   private formValiditySubject: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
@@ -47,6 +51,7 @@ export class FormService {
     private http: HttpClient,
     private sitesService: SitesService,
     private projetService: ProjetService,
+    // private geoService: GeoService, // Ca peut servir plus tard
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private docfileService: DocfileService
@@ -80,6 +85,15 @@ export class FormService {
     return undefined;
   }
 
+  /**
+   * Transforme un tableau de chaînes en format PostgreSQL array string :
+   * ['a','b','c'] => '{a,b,c}'
+   */
+  toPostgresArrayString(arr?: string[] | null): string {
+    if (!arr || arr.length === 0) return '{}';
+    return '{' + arr.map(e => e.replace(/"/g, '"')).join(',') + '}';
+  }
+
   // Validation personnalisée pour vérifier qu'un champ contient au moins 2 mots si non vide
   minWordsValidator(minWords: number) {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -110,10 +124,7 @@ export class FormService {
     const url = `${this.activeUrl}${subroute}`;
     return this.http.get<SelectValue[]>(url).pipe(
       tap((response) => {
-        console.log(
-          'Valeurs de la liste déroulante récupérées avec succès:',
-          response
-        );
+        // console.log('Valeurs de la liste déroulante récupérées avec succès:', response);
       }),
       catchError((error) => {
         console.error(
@@ -410,35 +421,34 @@ export class FormService {
   newPmfuForm(projet?: ProjetMfu, new_pmfu_id?: number): FormGroup {
     return this.fb.group({
       pmfu_id: [projet?.pmfu_id || new_pmfu_id],
-      pmfu_nom: [projet?.pmfu_nom || '', Validators.required],
+      pmfu_nom: [projet?.pmfu_nom || ''],
       pmfu_responsable: [projet?.pmfu_responsable || null],
       pmfu_createur: [projet?.pmfu_createur || ''],
-      pmfu_agence: [projet?.pmfu_agence || ''],
+      pmfu_agence: [projet?.pmfu_agence || null],
       pmfu_associe: [projet?.pmfu_associe || ''],
-      pmfu_etapes: [projet?.pmfu_etapes || ''],
-      pmfu_departement: [projet?.pmfu_departement || ''],
-      pmfu_territoire: [projet?.pmfu_territoire || ''],
-      pmfu_type: [projet?.pmfu_type || ''],
-      pmfu_commune: [projet?.pmfu_commune || ''],
-      pmfu_debut: [projet?.pmfu_debut || null],
+      pmfu_proch_etape: [projet?.pmfu_proch_etape || null],
+      pmfu_dep: [projet?.pmfu_dep || ''],
+      pmfu_territoire: [projet?.pmfu_territoire || null],
+      pmfu_type_acte: [projet?.pmfu_type_acte || null],
+      pmfu_commune: [projet?.pmfu_commune || null, [Validators.required, inseeCommuneValidator()]],
+      pmfu_annee_debut: [projet?.pmfu_annee_debut || null],
       pmfu_proprietaire: [projet?.pmfu_proprietaire || ''],
-      pmfu_appui: [projet?.pmfu_appui || ''],
-      pmfu_juridique: [projet?.pmfu_juridique || ''],
-      pmfu_validation: [projet?.pmfu_validation || ''],
-      pmfu_decision: [projet?.pmfu_decision || ''],
-      pmfu_note: [projet?.pmfu_note || ''],
-      pmfu_acte: [projet?.pmfu_acte || ''],
-      pmfu_compensatoire: [projet?.pmfu_compensatoire || ''],
-      pmfu_cout: [projet?.pmfu_cout || ''],
-      pmfu_financements: [projet?.pmfu_financements || ''],
+      pmfu_appui: [projet?.pmfu_appui || null],
+      pmfu_appui_desc: [projet?.pmfu_appui_desc || ''],
+      pmfu_quest_juri: [projet?.pmfu_quest_juri || ''],
+      pmfu_validation: [projet?.pmfu_validation || null],
+      pmfu_mes_comp: [projet?.pmfu_mes_comp || null],
+      pmfu_cout: [projet?.pmfu_cout || null],
+      pmfu_financements: [projet?.pmfu_financements || null],
       pmfu_superficie: [projet?.pmfu_superficie || null],
-      pmfu_priorite: [projet?.pmfu_priorite || ''],
-      pmfu_status: [projet?.pmfu_status || ''],
-      pmfu_signature: [projet?.pmfu_signature || null],
-      pmfu_echeances: [projet?.pmfu_echeances || ''],
+      pmfu_priorite: [projet?.pmfu_priorite || null],
+      pmfu_status: [projet?.pmfu_status || null],
+      pmfu_annee_signature: [projet?.pmfu_annee_signature || null],
+      pmfu_echeances: [projet?.pmfu_echeances || null],
       pmfu_creation: [projet?.pmfu_creation || new Date()],
-      pmfu_photos_site: [projet?.pmfu_photos_site || ''],
-      pmfu_date_ajout: [projet?.pmfu_date_ajout || null],
+      pmfu_derniere_maj: [projet?.pmfu_derniere_maj || null],
+      pmfu_parc_list_array: [projet?.pmfu_parc_list_array || []],
+      pmfu_parc_list: [projet?.pmfu_parc_list || []],
     });
   }
 
@@ -600,24 +610,24 @@ export class FormService {
       ben_heures: formValue.step2?.ben_heures,
 
       // Step 3
-      description_programme: formValue.step3?.description_programme,
+      financeur_description: formValue.step3?.financeur_description,
 
-    // Step 4
-    date_debut: formValue.step4?.date_debut,
-    date_fin: formValue.step4?.date_fin,
-    quantite: formValue.step4?.quantite,
-    unite: formValue.step4?.unite,
-    exportation_fauche: formValue.step4?.exportation_fauche,
-    total_exporte_fauche: formValue.step4?.total_exporte_fauche,
-    productivite_fauche: formValue.step4?.productivite_fauche,
-    effectif_paturage: formValue.step4?.effectif_paturage,
-    nb_jours_paturage: formValue.step4?.nb_jours_paturage,
-    chargement_paturage: formValue.step4?.chargement_paturage,
-    abroutissement_paturage: formValue.step4?.abroutissement_paturage,
-    recouvrement_ligneux_paturage: formValue.step4?.recouvrement_ligneux_paturage,
-    nom_parc: formValue.step4?.nom_parc,
-    interv_cloture: formValue.step4?.interv_cloture,
-    type_intervention_hydro: formValue.step4?.type_intervention_hydro,
+      // Step 4
+      date_debut: formValue.step4?.date_debut,
+      date_fin: formValue.step4?.date_fin,
+      quantite: formValue.step4?.quantite,
+      unite: formValue.step4?.unite,
+      exportation_fauche: formValue.step4?.exportation_fauche,
+      total_exporte_fauche: formValue.step4?.total_exporte_fauche,
+      productivite_fauche: formValue.step4?.productivite_fauche,
+      effectif_paturage: formValue.step4?.effectif_paturage,
+      nb_jours_paturage: formValue.step4?.nb_jours_paturage,
+      chargement_paturage: formValue.step4?.chargement_paturage,
+      abroutissement_paturage: formValue.step4?.abroutissement_paturage,
+      recouvrement_ligneux_paturage: formValue.step4?.recouvrement_ligneux_paturage,
+      nom_parc: formValue.step4?.nom_parc,
+      interv_cloture: formValue.step4?.interv_cloture,
+      type_intervention_hydro: formValue.step4?.type_intervention_hydro,
 
       // Step 5
       titre: formValue.step5?.titre,
@@ -654,28 +664,28 @@ export class FormService {
       pmfu_createur: formValue.pmfu_createur,
       pmfu_agence: formValue.pmfu_agence,
       pmfu_associe: formValue.pmfu_associe,
-      pmfu_etapes: formValue.pmfu_etapes,
-      pmfu_departement: formValue.pmfu_departement,
+      pmfu_proch_etape: formValue.pmfu_proch_etape,
+      pmfu_dep: formValue.pmfu_dep,
       pmfu_territoire: formValue.pmfu_territoire,
-      pmfu_type: formValue.pmfu_type,
+      pmfu_type_acte: formValue.pmfu_type_acte,
       pmfu_commune: formValue.pmfu_commune,
-      pmfu_debut: formValue.pmfu_debut,
+      pmfu_annee_debut: formValue.pmfu_annee_debut,
       pmfu_proprietaire: formValue.pmfu_proprietaire,
       pmfu_appui: formValue.pmfu_appui,
-      pmfu_juridique: formValue.pmfu_juridique,
-      pmfu_compensatoire: formValue.pmfu_compensatoire,
+      pmfu_quest_juri: formValue.pmfu_quest_juri,
+      pmfu_validation: formValue.pmfu_validation,
+      pmfu_mes_comp: formValue.pmfu_mes_comp,
       pmfu_cout: formValue.pmfu_cout,
       pmfu_financements: formValue.pmfu_financements,
       pmfu_superficie: formValue.pmfu_superficie,
       pmfu_priorite: formValue.pmfu_priorite,
       pmfu_status: formValue.pmfu_status,
-      pmfu_signature: formValue.pmfu_signature,
+      pmfu_annee_signature: formValue.pmfu_annee_signature,
       pmfu_echeances: formValue.pmfu_echeances,
       pmfu_creation: formValue.pmfu_creation,
       pmfu_derniere_maj: formValue.pmfu_derniere_maj,
-      pmfu_photos_site: formValue.pmfu_photos_site,
-      pmfu_date_ajout: formValue.pmfu_date_ajout,
-      pmfu_validation: formValue.pmfu_validation,
+      pmfu_parc_list_array: formValue.pmfu_parc_list_array,
+      pmfu_parc_list: formValue.pmfu_parc_list,
     };
 
     console.log(
@@ -742,7 +752,7 @@ export class FormService {
         }
       });
 
-      console.log('Formulaire original :', form.value);
+      // console.log('Formulaire original :', form.value);
 
       // Supprimer les contrôles 'liste_ope_programmes' et 'liste_ope_animaux_paturage' du workingForm s'il existe
       // Rappel, un controle de type FormArray est un tableau de FormGroup
@@ -787,8 +797,18 @@ export class FormService {
 
         console.log('Données du formulaire nettoyé :', workingForm);
       } else if (table === 'projets_mfu') {
-        value = this.preparePmfuDataForSubmission(workingForm);
-        console.log('Données du formulaire nettoyé :', workingForm);
+        console.log('enregistrement dans la table projets_mfu');
+        console.log('formulaire avant nettoyage :', form.value);
+
+        // Transformer l'objet de parcelles en string PostgreSQL
+        workingForm.patchValue({ pmfu_parc_list: this.toPostgresArrayString(workingForm.get('pmfu_parc_list_array')?.value  ) });
+        console.log('valeur de pmfu_parc_list après conversion :', workingForm.get('pmfu_parc_list')?.value);
+
+        workingForm.removeControl('pmfu_parc_list_array');
+        // Puis tout remettre les données du formulaire dans value
+        value = workingForm.value;
+
+        console.log('Données du formulaire nettoyé :', value);
       } else {
         // Si ce n'est pas un projet
         value = workingForm.value;
