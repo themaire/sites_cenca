@@ -7,10 +7,7 @@
 <div class="home">
   <ng-container *ngFor="let item of menuItems">
       <app-card
-        [parentItem]="item.name"
-        [parentColor]="item?.class_color ?? 'default-color'"
         [menuItem]="item"
-        [route]="item.route ?? ''"
         *ngIf="item.accueil == true"
       >
       </app-card>

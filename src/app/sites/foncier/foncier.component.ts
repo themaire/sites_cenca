@@ -61,6 +61,13 @@ export class FoncierComponent implements OnInit {
         
         // Reconstruit la route
         item.route = remainingSegments.join('/');
+
+        // parent_name pour l'affichage
+        if ((item.class_color?.split('-').length ?? 0) > 1) {
+          item.parent_name = item.class_color?.split('-').slice(1).join(' ').replace(/^\w/, l => l.toUpperCase());
+        } else if ((item.class_color?.split('-').length ?? 0) === 1) {
+          item.parent_name = item.class_color?.replace(/^\w/, l => l.toUpperCase());
+        }
         
         console.log('Route modifiée:', item.route); // ← Ajoute ce log ici
         console.log('Filtering item:', item.name, 'opened:', item.opened);

@@ -3,6 +3,7 @@ export interface MenuItem {
   name: string;
   class_color?: string;
   parent?: number;
+  parent_name?: string;
   route?: string;
   short?: string;
   url?: string;
