@@ -1,6 +1,12 @@
-<a class="carte {{ parentColor }}" [routerLink]="[route]">
+<a
+  *ngIf="menuItem.url; else internalLink"
+  class="carte {{ menuItem.class_color ?? 'default-color' }}"
+  [href]="menuItem.url"
+  target="_blank"
+  rel="noopener noreferrer"
+>
   <div class="titre">
-    {{ parentItem }}
+    {{ menuItem.parent_name }}
   </div>
   <div class="infos">
     <div class="liens">
@@ -10,6 +16,21 @@
       {{ menuItem.description }}
     </div>
   </div>
-  <!-- Etiquette "New" clignotante -->
   <div *ngIf="isNew" class="new-label">New</div>
 </a>
+<ng-template #internalLink>
+  <a class="carte {{ menuItem.class_color ?? 'default-color' }}" [routerLink]="[menuItem.route]">
+    <div class="titre">
+      {{ menuItem.parent_name }}
+    </div>
+    <div class="infos">
+      <div class="liens">
+        {{ menuItem.name }}
+      </div>
+      <div class="description">
+        {{ menuItem.description }}
+      </div>
+    </div>
+    <div *ngIf="isNew" class="new-label">New</div>
+  </a>
+</ng-template>

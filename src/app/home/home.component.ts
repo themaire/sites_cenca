@@ -34,7 +34,7 @@ export class HomeComponent {
      * Utilise une fonction récursive pour parcourir tous les niveaux de la hiérarchie.
      */
     this.route.data.subscribe((data) => {
-      console.log("Données résolues reçues dans HomeComponent :", data['menuItems']);
+      // console.log("Données résolues reçues dans HomeComponent :", data['menuItems']);
       
       // Fonction récursive pour parcourir tous les niveaux
       const findAccueilItems = (items: MenuItem[]): MenuItem[] => {
@@ -43,6 +43,11 @@ export class HomeComponent {
         for (const item of items) {
           // Si l'item a accueil: true, on l'ajoute
           if (item.accueil === true) {
+            if (item.class_color?.split('-').length! > 1) {
+              item.parent_name = item.class_color?.split('-').slice(1).join(' ').replace(/^\w/, l => l.toUpperCase());
+            } else if (item.class_color?.split('-').length! === 0) {
+              item.parent_name = item.class_color?.replace(/^\w/, l => l.toUpperCase());
+            }
             result.push(item);
           }
           
@@ -59,6 +64,6 @@ export class HomeComponent {
       this.menuItems = findAccueilItems(data['menuItems']);
     });
     
-    console.log(this.menuItems);
+    console.log("Menu items filtré avec les acceuils is true :", this.menuItems);
   }
 }
