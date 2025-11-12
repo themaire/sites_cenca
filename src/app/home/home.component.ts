@@ -43,9 +43,9 @@ export class HomeComponent {
         for (const item of items) {
           // Si l'item a accueil: true, on l'ajoute
           if (item.accueil === true) {
-            if (item.class_color?.split('-').length! > 1) {
+            if ((item.class_color?.split('-').length ?? 0) > 1) {
               item.parent_name = item.class_color?.split('-').slice(1).join(' ').replace(/^\w/, l => l.toUpperCase());
-            } else if (item.class_color?.split('-').length! === 0) {
+            } else if ((item.class_color?.split('-').length ?? 0) === 1) {
               item.parent_name = item.class_color?.replace(/^\w/, l => l.toUpperCase());
             }
             result.push(item);
