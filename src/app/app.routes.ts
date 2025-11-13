@@ -41,7 +41,7 @@ export const routes: Routes = [
 
   // Lazy-load
   {
-    path: 'admin',
+    path: 'parametres',
     loadChildren: () =>
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),
     canActivate: [isLoggedInGuard],

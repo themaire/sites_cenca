@@ -16,7 +16,7 @@ import { Operation, OperationLite } from './site-detail/detail-projets/projet/op
 import { DetailSite } from './site-detail';
 import { Localisation } from '../shared/interfaces/localisation';
 import { ApiResponse } from '../shared/interfaces/api';
-import { Selector } from './selector';
+import { Selector } from '../shared/interfaces/selector';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +26,7 @@ export class SitesService {
 
   constructor(private http: HttpClient) {}
 
-  // fonction modèle de base réutilisée pour les différentes methode de ce fichier
+  // fonction modèle de base réutilisée partout pour les différentes methode de ce fichier
   async getData<T>(subroute: string): Promise<T> {
     const url = `${this.activeUrl}${subroute}`;
     console.log(`Dans getData() avec ${url}`);

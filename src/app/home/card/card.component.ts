@@ -27,4 +27,17 @@ export class CardComponent implements OnInit {
       this.isNew = publicationDate > oneMonthAgo;
     }
   }
+
+  getRouterLink(): any {
+  const route = this.menuItem.route;
+  
+  // Vérifier si le format est "outlet:route"
+  if (route && route.includes(':')) {
+    const [outletName, routePath] = route.split(':');
+    return [{ outlets: { [outletName]: [routePath] } }];
+  }
+  
+  // Sinon, routage classique
+  return [route];
+}
 }

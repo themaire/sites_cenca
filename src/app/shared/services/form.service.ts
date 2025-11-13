@@ -25,6 +25,7 @@ import {
 import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { ProjetMfu } from '../../sites/foncier/foncier';
 import { SelectValue } from '../interfaces/formValues';
+import { Salarie } from '../../admin/admin';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -946,6 +947,18 @@ export class FormService {
     operationDate: Date | undefined
   ): boolean {
     return (form.get(fieldName)?.value ?? null) != (operationDate ?? null);
+  }
+
+  newSalarieForm(salarie?: Salarie): FormGroup {
+    return this.fb.group({
+      cd_salarie: [salarie?.cd_salarie || ''],
+      nom: [salarie?.nom || '', Validators.required],
+      prenom: [salarie?.prenom || '', Validators.required],
+      email: [salarie?.email || '', [Validators.required, Validators.email]],
+      typ_fonction: [salarie?.typ_fonction || '', Validators.required],
+      identifiant: [salarie?.identifiant || '', Validators.required],
+      sal_role: [salarie?.sal_role || '', Validators.required],
+    });
   }
 
   login(): FormGroup {

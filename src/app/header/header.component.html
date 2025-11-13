@@ -21,7 +21,7 @@
                 [ngStyle]="{
                   'border-radius': '20px'
                 }"
-                [ngClass]="item.class_color"
+                [ngClass]="item.id != 28 ? item.class_color : item.class_color + '_hover'"
                 [matMenuTriggerFor]="menuButtons"
               >
                 {{ item.name }}
@@ -29,14 +29,34 @@
               <!-- Elements de l'axe en question -->
               <mat-menu #menuButtons="matMenu">
                 <ng-container *ngFor="let child of item.children">
-                  <button
-                    mat-menu-item
-                    [ngClass]="item.class_color"
-                    *ngIf="!child.children"
-                    [routerLink]="child.route"
-                  >
-                    <span>{{ child.name }}</span>
-                  </button>
+                  
+                  <ng-container *ngIf="child.url; then externalBtnLink; else internalBtnLink">
+                  </ng-container>
+
+                  <ng-template #externalBtnLink>
+                    <a
+                      mat-menu-item
+                      [ngClass]="item.class_color"
+                      *ngIf="!child.children"
+                      [href]="child.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      (click)="$event.stopPropagation()"
+                    >
+                      <span>{{ child.name }}</span>
+                    </a>
+                  </ng-template>
+
+                  <ng-template #internalBtnLink>
+                    <button
+                      mat-menu-item
+                      [ngClass]="item.class_color"
+                      *ngIf="!child.children"
+                      [routerLink]="child.route"
+                    >
+                      <span>{{ child.name }}</span>
+                    </button>
+                  </ng-template>
                 </ng-container>
               </mat-menu>
             </ng-container>

@@ -1,6 +1,18 @@
-<p>admin works!</p>
-<br />
-<a [routerLink]="[{ outlets: { toUsers: ['vipUsers'] } }]"
-  >Gestion des utilisateurs</a
->
-<br />
+<h1>Préférences</h1>
+<p>Espace de préférences pour les administrateurs.</p>
+
+<div class="home">
+    <ng-container *ngFor="let item of preferencesItems">
+      <app-card
+        [menuItem]="item"
+        *ngIf="1"
+      >
+      </app-card>
+    </ng-container>
+</div>
+
+
+<div class="admin-contenu">
+  <!-- Outlet pour le contenu dynamique -->
+  <router-outlet name="userDroits"></router-outlet>
+</div>

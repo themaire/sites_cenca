@@ -1012,8 +1012,11 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     // Appel de la boîte de dialogue de confirmation
     // Le bouton dupliquer de la boite de dialogue ( result ) va appeler le service projetService.duplicate()
-    this.confirmationService.confirm('Confirmation de duplication', message, 'duplicate').subscribe(result => {
+    this.confirmationService.confirm('Confirmation de duplication', message, 'duplicate', 'operation').subscribe(result => {
       
+      // La boite de dialiogue renvoie dans result : 
+      // false si l'utilisateur annule la duplication
+      // ou une liste des champs à exclure de la duplication si l'utilisateur confirme
       console.log('Champs à exclure de la duplication :', result);
 
       if (result === false) {
