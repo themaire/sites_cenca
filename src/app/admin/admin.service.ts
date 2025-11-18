@@ -7,13 +7,13 @@ import { of, from, Observable } from 'rxjs';
 
 import { ApiResponse } from '../shared/interfaces/api';
 import { Selector } from '../shared/interfaces/selector';
-import { Salaries } from './admin';
+import { Salaries, Salarie } from './admin';
 import { SnackbarService } from '../shared/services/snackbar.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AdminServiceService {
+export class AdminService {
   private activeUrl: string = environment.apiUrl + 'admin/';
 
   constructor(
@@ -41,7 +41,7 @@ export class AdminServiceService {
     return this.getData<Salaries[]>('users/lite');
   }
 
-   /**
+  /**
    * Dupliquer un élément (salarie) en excluant certains champs
    * !! id et exclude sont passés dans le corps de la requête
    * 
@@ -84,5 +84,30 @@ export class AdminServiceService {
         }
       );
     });
+  }
+
+  /**
+   * Modifier un utilisateur
+   * @param userData Les données de l'utilisateur à modifier
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  updateUser(userData: Salarie, id: string): Observable<ApiResponse> {
+    console.log('Données envoyées pour la mise à jour de l\'utilisateur:', userData);
+    
+    return this.http.put<ApiResponse>(`${this.activeUrl}put/user/update/${id}`, userData).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Utilisateur mis à jour avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la mise à jour de l\'utilisateur');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la mise à jour de l\'utilisateur';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
   }
 }

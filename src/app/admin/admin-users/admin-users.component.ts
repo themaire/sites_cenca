@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { environment } from '../../../environments/environment';
 
-import { AdminServiceService } from '../admin-service.service';
+import { AdminService } from '../admin.service';
 import { Salaries, Salarie } from '../admin';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ConfirmationService } from '../../shared/services/confirmation.service';
@@ -38,15 +38,19 @@ export class AdminUsersComponent implements OnInit {
   baseUrl: string = environment.apiBaseUrl;
 
   constructor(
-    private adminService: AdminServiceService,
+    private adminService: AdminService,
     private dialog: MatDialog,
     private confirmationService: ConfirmationService,
     private snackBar: MatSnackBar
   ) {}
 
+  async fetch(): Promise<Salaries[]> {
+    return this.adminService.getAllUsers();
+  }
+
   async ngOnInit(): Promise<void> {
     try {
-      this.salaries = await this.adminService.getAllUsers();
+      this.salaries = await this.fetch();
       this.dataSource = new MatTableDataSource<Salaries>(this.salaries);
     } catch (e) {
       console.error('Erreur lors du chargement des utilisateurs:', e);
@@ -59,9 +63,17 @@ export class AdminUsersComponent implements OnInit {
   }
 
   openUserDialog(row: Salaries) {
-    this.dialog.open(AdminUserDialogComponent, {
+    const dialogRef = this.dialog.open(AdminUserDialogComponent, {
       width: '840px',
       data: { cd_salarie: row.cd_salarie }
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: async () => {
+        // Rafraîchir la liste après fermeture du dialogue
+        this.salaries = await this.fetch();
+        this.dataSource.data = this.salaries;
+      }
     });
   }
 

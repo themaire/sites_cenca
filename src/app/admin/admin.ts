@@ -11,6 +11,7 @@ export interface Salarie {
     nom: string;
     prenom: string;
     email: string;
+    statut: boolean;
     typ_fonction: string;
     identifiant: string;
     sal_role: string;

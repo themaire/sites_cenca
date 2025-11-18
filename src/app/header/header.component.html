@@ -16,7 +16,10 @@
           <div class="menu">
             <ng-container *ngFor="let item of menuItems[0].children">
               <!-- Un bouton pour chaque axe du CENCA -->
+              
+              <!-- Si c'est un bouton normal (hors Paramètres:28) -->
               <button
+                *ngIf = "item.id != 28"
                 mat-button
                 [ngStyle]="{
                   'border-radius': '20px'
@@ -26,6 +29,20 @@
               >
                 {{ item.name }}
               </button>
+
+              <!-- Si c'est LE bouton Paramètres (id:28) -->
+              <button
+                *ngIf = "item.id == 28"
+                mat-button
+                [ngStyle]="{
+                  'border-radius': '20px'
+                }"
+                [ngClass]="item.id != 28 ? item.class_color : item.class_color + '_hover'"
+                [routerLink]="item.route"
+              >
+                {{ item.name }}
+              </button>
+
               <!-- Elements de l'axe en question -->
               <mat-menu #menuButtons="matMenu">
                 <ng-container *ngFor="let child of item.children">

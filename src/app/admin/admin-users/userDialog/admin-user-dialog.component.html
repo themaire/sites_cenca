@@ -3,7 +3,7 @@
   <app-form-buttons
     *ngIf="!loading && !error"
     icone="edit"
-    theme="foncier"
+    theme="preferences"
     [isFormValid]="isFormValid"
     [isEditActive]="isEditActive"
     [isAddActive]="isAddActive"
@@ -19,10 +19,6 @@
 
   <ng-container *ngIf="!loading && !error && userForm">
     <form [formGroup]="userForm">
-      <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
-        <mat-label>Code salarié</mat-label>
-        <input matInput formControlName="cd_salarie">
-      </mat-form-field>
 
       <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
         <mat-label>Nom</mat-label>
@@ -39,6 +35,14 @@
           Le prénom est obligatoire
         </mat-error>
       </mat-form-field>
+      
+            <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+              <mat-label>Identifiant</mat-label>
+              <input matInput formControlName="identifiant">
+              <mat-error *ngIf="userForm.get('identifiant')?.hasError('required')">
+                L'identifiant est obligatoire
+              </mat-error>
+            </mat-form-field>
 
       <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
         <mat-label>Email</mat-label>
@@ -60,20 +64,16 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
-        <mat-label>Identifiant</mat-label>
-        <input matInput formControlName="identifiant">
-        <mat-error *ngIf="userForm.get('identifiant')?.hasError('required')">
-          L'identifiant est obligatoire
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
         <mat-label>Rôle</mat-label>
         <input matInput formControlName="sal_role">
         <mat-error *ngIf="userForm.get('sal_role')?.hasError('required')">
           Le rôle est obligatoire
         </mat-error>
       </mat-form-field>
+
+      <mat-checkbox formControlName="statut" style="margin-top: 16px;">
+        Actif
+      </mat-checkbox>
     </form>
   </ng-container>
 </div>

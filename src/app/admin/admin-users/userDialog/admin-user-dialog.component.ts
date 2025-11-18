@@ -7,8 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
-import { AdminServiceService } from '../../admin-service.service';
+import { AdminService } from '../../admin.service';
+import { FormAdmin } from '../../form-admin'
 import { Salarie } from '../../admin';
 import { FormService } from '../../../shared/services/form.service';
 import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.component';
@@ -23,6 +25,7 @@ import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
     ReactiveFormsModule,
     FormButtonsComponent,
   ],
@@ -35,16 +38,19 @@ export class AdminUserDialogComponent implements OnInit {
   
   // Formulaire réactif
   userForm!: FormGroup;
+  initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
   
   // Flags pour FormButtonsComponent
   isEditActive: boolean = false;
   isAddActive: boolean = false;
   isFormValid: boolean = false;
 
+  newUser: boolean = false;
+
   constructor(
-    private adminService: AdminServiceService,
+    private adminService: AdminService,
+    private formAdmin: FormAdmin,
     private dialogRef: MatDialogRef<AdminUserDialogComponent>,
-    private formService: FormService,
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: { cd_salarie: string },
   ) {}
@@ -57,9 +63,12 @@ export class AdminUserDialogComponent implements OnInit {
       this.user = await this.adminService.getUserById(cd_salarie);
       
       // Créer le formulaire avec les données de l'utilisateur
-      this.userForm = this.formService.newSalarieForm(this.user || undefined);
+      this.userForm = this.formAdmin.salarieForm(this.user || undefined);
       this.userForm.disable(); // Désactivé par défaut (mode lecture)
       
+      // Créer une copie des valeurs initiales du formulaire pour la comparaison ultérieure
+      this.initialFormValues = this.userForm.value;
+
       // S'abonner aux changements de validité du formulaire
       this.userForm.statusChanges.subscribe(() => {
         this.isFormValid = this.userForm.valid;
@@ -84,23 +93,43 @@ export class AdminUserDialogComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.userForm.valid) {
-      console.log('Sauvegarde des données utilisateur :', this.userForm.value);
-      // TODO: Appeler le service pour sauvegarder les modifications
-      // this.adminService.updateUser(this.userForm.value).subscribe(...);
-      
-      this.snackBar.open('Modifications enregistrées avec succès', 'Fermer', {
+    
+    console.log("Modification d'un formulaire utilisateur :", this.userForm.value);
+    console.log("this.newUser =", this.newUser);
+
+    if(this.newUser){
+      this.snackBar.open('Création d\'utilisateur non encore implémentée', 'Fermer', {
         duration: 3000,
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-info'],
       });
+    } else {
+      // Effectuer la création de l'utilisateur via le service adminService
+      // Nous faisons cela au travers / dans l'observable retourné par putBdd()
+      const cd_salarie = this.user?.cd_salarie || '';
+      const submitObservable = this.formAdmin.putbdd('update', 'salaries', this.userForm, this.isEditActive, this.snackBar, cd_salarie, this.initialFormValues);
+      
+      // S'abonner à l'observable pour gérer la réponse
+      if (submitObservable) {
+        submitObservable.subscribe({
+          next: (result) => {
+            this.isEditActive = result.isEditMode;
+            this.initialFormValues = result.formValue;
+            this.snackBar.open('Modifications enregistrées avec succès', 'Fermer', {
+              duration: 3000,
+              panelClass: ['snackbar-success'],
+            });
+          },
+          error: (error) => {
+            this.snackBar.open('Erreur lors de l\'enregistrement des modifications. ' + error.message, 'Fermer', {
+              duration: 3000,
+              panelClass: ['snackbar-error'],
+            });
+          }
+        });
+      }
       
       this.isEditActive = false;
       this.userForm.disable();
-    } else {
-      this.snackBar.open('Veuillez remplir tous les champs obligatoires', 'Fermer', {
-        duration: 3000,
-        panelClass: ['snackbar-error'],
-      });
     }
   }
 
