@@ -44,6 +44,7 @@
     }
   }
 }
+
 .new-label {
   position: absolute;
   top: 10px;
@@ -56,6 +57,7 @@
   font-weight: bold;
   animation: blink 5s infinite; /* Animation clignotante */
 }
+
 @keyframes blink {
   0%,
   50%,
@@ -67,6 +69,7 @@
     opacity: 0;
   }
 }
+
 .c-proteger {
   .titre {
     background-color: $proteger;
@@ -76,6 +79,7 @@
     border-radius: 0px 30px 30px 0px;
   }
 }
+
 .c-connaitre {
   .titre {
     background-color: $connaitre;
@@ -85,6 +89,7 @@
     border-radius: 0px 30px 30px 0px;
   }
 }
+
 .c-gerer {
   .titre {
     background-color: $gerer;
@@ -94,6 +99,7 @@
     border-radius: 0px 30px 30px 0px;
   }
 }
+
 .c-valoriser {
   .titre {
     background-color: $valoriser;
@@ -103,6 +109,7 @@
     border-radius: 0px 30px 30px 0px;
   }
 }
+
 .c-accompagner {
   .titre {
     background-color: $accompagner;
@@ -112,15 +119,17 @@
     border-radius: 0px 30px 30px 0px;
   }
 }
-.c-administrafif {
+
+.c-administratif {
   .titre {
-    background-color: $administrafif;
+    background-color: $administratif;
   }
   .infos {
-    border: 2px solid $administrafif;
+    border: 2px solid $administratif;
     border-radius: 0px 30px 30px 0px;
   }
 }
+
 .c-liens-utiles {
   .titre {
     background-color: $liens-utiles;
@@ -130,6 +139,17 @@
     border-radius: 0px 30px 30px 0px;
   }
 }
+
+.c-parametres {
+  .titre {
+    background-color: $parametres;
+  }
+  .infos {
+    border: 2px solid $parametres;
+    border-radius: 0px 30px 30px 0px;
+  }
+}
+
 // RESPONSIVE
 
 @media screen and (max-width: $mobile) {

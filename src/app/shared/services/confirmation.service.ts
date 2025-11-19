@@ -29,7 +29,7 @@ dialogConfig = {
   scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
 };
 
-  confirm(title: string, message: string, mode: 'delete' | 'duplicate', excludeOptions?: ExcludeOption[]): Observable<boolean | string[]> {
+  confirm(title: string, message: string, mode: 'delete' | 'duplicate', context?: string): Observable<boolean | string[]> {
     if (mode === 'duplicate') {
       this.dialogConfig.height = '350px'; // Laisser de la place pour les checkbox en mode duplication
       this.dialogConfig.backdropClass = 'custom-backdrop-duplicate'; // Classe personnalisée pour le fond en mode duplication
@@ -38,7 +38,7 @@ dialogConfig = {
     }
     
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { title, message, mode, excludeOptions },
+      data: { title, message, mode, context },
 
       ... this.dialogConfig // Les 3 points permettent de décomposer l'objet dialogConfig
     });

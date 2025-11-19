@@ -14,7 +14,7 @@ import {
   FormArray,
 } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, skip, tap } from 'rxjs/operators';
 
 
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
@@ -30,7 +30,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../../sites/sites.service';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
-import { GeoService } from '../../shared/services/geo.service';
+// import { GeoService } from '../../shared/services/geo.service';
 import { DocfileService } from './docfile.service';
 import { v4 as uuidv4, validate } from 'uuid';
 
@@ -491,9 +491,18 @@ export class FormService {
     this.formValiditySubject.next(isValid);
   }
 
+  // Fonctions utilitaires pour les formulaires
+  /**
+   * Verifie si le formulaire a été modifié
+   * @param form 
+   * @param initialFormValue 
+   * @returns 
+   */
   isFormChanged(form: FormGroup, initialFormValue: FormGroup): boolean {
     // Vérifie si le formulaire a été modifié
-    return JSON.stringify(form.value) !== JSON.stringify(initialFormValue);
+    const CHANGED = JSON.stringify(form.value) !== JSON.stringify(initialFormValue);
+    // console.log("isFormChanged retourne : " + CHANGED);
+    return CHANGED;
   }
 
   // A verifier dans le code si snackbar est bien passé en parametre
@@ -697,15 +706,15 @@ export class FormService {
   }
 
   putBdd(
-    mode: String,
-    table: String,
+    mode: string |'update' | 'insert',
+    table: string,
     form: FormGroup,
     isEditMode: boolean,
     snackbar: MatSnackBar,
-    uuid?: String,
+    uuid?: string,
     initialFormValues?: any
   ):
-    | Observable<{ isEditMode: boolean; formValue: any; isEdited?: boolean }>
+    | Observable<{ isEditMode: boolean; formValue: any; isEdited?: boolean, skipped?: boolean }>
     | undefined {
     // Cette fonction permet de sauvegarder les modifications
     // Vérifie si le formulaire est valide
@@ -713,7 +722,7 @@ export class FormService {
     // Affiche un message dans le Snackbar
     // Sort du mode édition après la sauvegarde (passe this.isEditMode à false) à false en cas de succès)
 
-    // Vérifier si le formulaire a été modifié
+    // Si le formulaire n'a pas changé, on sort du mode édition sans faire d'appel
     if (mode === 'update' && initialFormValues != null) {
       if (!this.isFormChanged(form, initialFormValues)) {
         // Si pas changé
@@ -725,9 +734,12 @@ export class FormService {
         return of({
           isEditMode: false,
           formValue: form.value,
+          skipped: true,
         });
       }
     }
+    
+    // Début du travail de sauvegarde
     if (form.valid) {
       console.log('Formulaire valide, préparation de la sauvegarde...');
       // Dupliquer le FormGroup en un nouvel objet nommé workingForm
@@ -772,7 +784,7 @@ export class FormService {
         }
       });
 
-      console.log('Formulaire dupliqué (workingForm) :', workingForm.value);
+      // console.log('Formulaire dupliqué (workingForm) :', workingForm.value);
 
       let value = {};
 
@@ -814,14 +826,14 @@ export class FormService {
         value = workingForm.value;
       }
 
-      console.log('------- DEBUG :');
-      console.log('Données du formulaire value tout court :', value);
-      console.log(
-        'mode actuel :' + mode + '. Table de travail :',
-        table,
-        '. uuid :',
-        uuid
-      );
+      // console.log('------- DEBUG :');
+      // console.log('Données du formulaire value tout court :', value);
+      // console.log(
+      //   'mode actuel :' + mode + '. Table de travail :',
+      //   table,
+      //   '. uuid :',
+      //   uuid
+      // );
 
       // Envoi des modifications au serveur
       if (mode === 'update' && uuid != null) {
@@ -851,7 +863,7 @@ export class FormService {
           })
         );
       } else if (mode === 'insert') {
-        console.log('PAR ICI');
+        console.log('Insert dans la table ' + table);
         return this.sitesService.insertTable(table, value).pipe(
           map((response) => {
             console.log(table + ' insérés avec succès:', response);

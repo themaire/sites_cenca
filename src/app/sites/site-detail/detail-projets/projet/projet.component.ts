@@ -206,10 +206,13 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // Il s'agira de deux schémas different où les données sont stockées
     if (table === 'projets') {
       const subroute = `projets/uuid=${uuid_proj}/full?type=${type}&webapp=1`; // Full puisque UN SEUL projet
-      console.log("subroute dans fetch : " + subroute);
-      console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
+      
+      // console.log("subroute dans fetch : " + subroute);
+      // console.log("Récupération des données du projet avec l'UUID du projet :" + uuid_proj);
+      
       const projet = await this.projetService.getProjet(subroute);
       if (projet.typ_projet) this.selectedProjetType = projet.typ_projet; // Assigner le type de projet sélectionné à la variable
+      
       return projet as Projet; // Retourner l'objet Projet complet
     } else if (table === 'operations') {
       const subroute = `operations/uuid=${uuid_proj}/lite`;
@@ -282,6 +285,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
           // Défini un formulaire pour le projet
           this.projetForm = this.formService.newProjetForm(this.projet, undefined, this.projet.pro_webapp);
+
+          // Faire une copie des valeurs initiales du formulaire pour la comparaison ultérieure
+          this.initialFormValues = this.projetForm.value;
 
           // Souscrire aux changements du statut du formulaire principal (projetForm)
           this.formStatusSubscription = this.projetForm.statusChanges.subscribe(status => {
@@ -421,22 +427,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   onSubmit(): void {
     // Mettre à jour le formulaire
-    console.log("Je me concentre sur ", this.projetForm.get('step1.pro_fin')?.value);
-
-    // Formater les dates avant l'envoi au backend        
-    // if (
-    //   this.formService.isDateModified(this.projetForm, 'step1.pro_debut', this.projet?.pro_debut) ||
-    //   this.formService.isDateModified(this.projetForm, 'step1.pro_fin', this.projet?.pro_fin)
-    // ) {
-    //   console.log("Une des 3 dates à été modifiée par l'utilisateur.");
-    //   this.projetForm.patchValue({
-    //     step1: {
-    //       pro_debut: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_debut')?.value),
-    //       pro_fin: this.formService.formatDateToPostgres(this.projetForm.get('step1.pro_fin')?.value),
-    //     }
-    //   });
-    //   console.log("Formulaire patché avec les bonnes dates: ", this.projetForm.value);
-    // }
+    // console.log("Mise à jour d'un formulaire de projet via onSubmit().");
 
     if(!this.newProjet){
       console.log("Modification d'un projet existant. this.newProjet = " + this.newProjet);
@@ -452,16 +443,30 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
       // S'abonner à l'observable
       if (submitObservable) {
-        submitObservable.subscribe(
-          (result) => {
+        submitObservable.subscribe({
+          next: (result) => {
             this.isEditProjet = result.isEditMode;
             this.initialFormValues = result.formValue;
-            console.log('Projet mis à jour avec succès:', result.formValue);
+            if (result.skipped === true) {
+              // Le formulaire n'a pas été modifié, on n'appelle pas le backend, on fait rien
+              this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
+                duration: 3000,
+                panelClass: ['snackbar-info'],
+              });
+              this.isEditProjet = result.isEditMode;
+            } else {
+              this.snackBar.open('Modifications enregistrées avec succès', 'Fermer', {
+                duration: 3000,
+                panelClass: ['snackbar-success'],
+              });
+              console.log('Projet mis à jour avec succès:', result.formValue);
+            }
+              
           },
-          (error) => {
+          error: (error) => {
             console.error('Erreur lors de la mise à jour du formulaire', error);
           }
-        );
+        });
       }
     }else if (this.newProjet){
       console.log("Création d'un nouveau projet dans la BDD. this.newProjet = " + this.newProjet);
@@ -470,8 +475,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       
       // S'abonner à l'observable
       if (submitObservable) {
-        submitObservable.subscribe(
-          (result) => {
+        submitObservable.subscribe({
+          next: (result) => {
             this.isEditProjet = result.isEditMode;
             this.initialFormValues = result.formValue;
             this.newProjet = false; // On n'est plus en mode création, donc maintenant le formulaire s'affiche normalement
@@ -480,10 +485,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
             // La liste des projets dans le composant parent sera mise à jour au moment de fermer la fenêtre de dialogue
             console.log('Nouveau projet enregistré avec succès:', result.formValue);
           },
-          (error) => {
+          error: (error) => {
             console.error('Erreur lors de la mise à jour du formulaire', error);
           }
-        );
+        });
       }
     }
   }

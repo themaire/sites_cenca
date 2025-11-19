@@ -21,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MenuItem } from '../menuItem';
 import { LoginService } from '../login/login.service';
 import { Subscription } from 'rxjs';
+import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-header',
@@ -40,12 +41,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public logoutSubscription: Subscription | null = null;
   initials: string | null = null;
 
+  userGroId: number | null = null;
+
   constructor(
     private router: Router,
     private menuService: MenuService,
     private breakpointObserver: BreakpointObserver,
     public loginService: LoginService
-  ) {}
+  ) {
+    effect(() => {
+      const user = this.loginService.user();
+      if (user) {
+        // console.log('Utilisateur chargé dans HeaderComponent :', user);
+        this.userGroId = user.gro_id ?? null;
+        this.menuService.loadMenuItems(this.userGroId ?? 0);
+      }
+    });
+  }
 
   isMobile: boolean = false;
   menuItems: MenuItem[] = [
@@ -56,7 +68,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     },
     {
       id: 1,
-      name: 'Plus tard',
+      name: 'Préférences',
       children: [
         {
           id: 3,
@@ -73,7 +85,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
 
     // Si ce n'est pas déjà fait, charger les données
-    this.menuService.loadMenuItems();
+    this.menuService.loadMenuItems(this.userGroId ?? 0);
 
     // console.log('Menu Items at end of onInit() :');
     // console.log(this.menuItems);

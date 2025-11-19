@@ -5,6 +5,7 @@
   target="_blank"
   rel="noopener noreferrer"
 >
+
   <div class="titre">
     {{ menuItem.parent_name }}
   </div>
@@ -17,9 +18,15 @@
     </div>
   </div>
   <div *ngIf="isNew" class="new-label">New</div>
+
 </a>
+
 <ng-template #internalLink>
-  <a class="carte {{ menuItem.class_color ?? 'default-color' }}" [routerLink]="[menuItem.route]">
+  <a 
+    class="carte {{ menuItem.class_color ?? 'default-color' }}" 
+    [routerLink]="getRouterLink()"
+  >
+    
     <div class="titre">
       {{ menuItem.parent_name }}
     </div>
@@ -32,5 +39,6 @@
       </div>
     </div>
     <div *ngIf="isNew" class="new-label">New</div>
+
   </a>
 </ng-template>

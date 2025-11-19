@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { Router } from '@angular/router';
 // import { Observable } from 'rxjs'
-import { Selector } from '../selector';
+import { Selector } from '../../shared/interfaces/selector';
 
 import { SitesService } from '../sites.service';
 
