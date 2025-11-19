@@ -1,0 +1,7 @@
+@import "../../../styles/mixins.scss";
+@import "../../../styles/variables.scss";
+
+// Pour le bouton de suppression
+.suppression {
+    @include suppression-btn(#f1f5fc);
+}

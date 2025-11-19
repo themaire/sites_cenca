@@ -153,12 +153,12 @@
   --mat-tab-header-pagination-icon-color: #{$main-color};
 }
 
-@mixin suppression-btn {
+@mixin suppression-btn($color: $superRed) {
   display: flex;
   @include align(center, flex-end);
   padding: 0 30px 10px 0px;
   button {
-    @include btn($superRed, #f1fcf3, white, $superRed);
+    @include btn($superRed, $color, white, $superRed);
     @include align(center, center);
   }
 }

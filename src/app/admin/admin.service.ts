@@ -110,4 +110,42 @@ export class AdminService {
       })
     );
   }
+
+  /**
+   * Supprimer un utilisateur par son cd_salarie
+   * @param cd_salarie L'ID de l'utilisateur à supprimer
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  deleteUser(cd_salarie: string): Observable<ApiResponse> {
+    try {
+      return this.http.delete<ApiResponse>(`${this.activeUrl}delete/admin.salaries/cd_salarie=${cd_salarie}`).pipe(
+        tap(response => {
+          if (response.success) {
+            this.snackbarService.success('Utilisateur supprimé avec succès');
+          } else {
+            this.snackbarService.error(response.message || 'Erreur lors de la suppression de l\'utilisateur');
+          }
+        }),
+        catchError(error => {
+          const messageTxt = 'Erreur lors de la suppression de l\'utilisateur';
+          console.error(messageTxt, error);
+          this.snackbarService.error(messageTxt);
+          return of({ success: false, message: messageTxt } as ApiResponse);
+        })
+      );
+    } catch (error) {
+      if (cd_salarie === '') {
+        const messageTxt = 'CD salarié vide pour la suppression de l\'utilisateur. Il est obligatoire';
+        console.error(messageTxt);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      } else {
+        const messageTxt = 'Erreur inattendue lors de la suppression de l\'utilisateur';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      }
+    }
+
+  }
 }

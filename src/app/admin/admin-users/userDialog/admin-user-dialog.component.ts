@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,6 +15,7 @@ import { FormAdmin } from '../../form-admin'
 import { Salarie } from '../../admin';
 import { FormService } from '../../../shared/services/form.service';
 import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.component';
+import { ConfirmationService } from '../../../shared/services/confirmation.service';
 
 @Component({
   selector: 'app-admin-user-dialog',
@@ -30,7 +32,9 @@ import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.
     FormButtonsComponent,
   ],
   templateUrl: './admin-user-dialog.component.html',
+  styleUrl: './admin-user-dialog.component.scss'
 })
+  
 export class AdminUserDialogComponent implements OnInit {
   loading = true;
   error: string | null = null;
@@ -49,6 +53,7 @@ export class AdminUserDialogComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
+    private confirmationService: ConfirmationService,
     private formAdmin: FormAdmin,
     private dialogRef: MatDialogRef<AdminUserDialogComponent>,
     private snackBar: MatSnackBar,
@@ -131,6 +136,40 @@ export class AdminUserDialogComponent implements OnInit {
       this.isEditActive = false;
       this.userForm.disable();
     }
+  }
+
+  /**
+   * Affiche une boîte de dialogue de confirmation pour la suppression d'une opération ou d'une localisation.
+   * Récupère le libellé de l'opération à partir du formulaire, puis ouvre une boîte de dialogue
+   * demandant à l'utilisateur de confirmer la suppression. Si l'utilisateur confirme,
+   * la méthode `deleteItem` contenue dans projetService.ts est appelée pour supprimer l'élément.
+   *
+   * @remarks
+   * Cette action est irréversible. La boîte de dialogue utilise un fond personnalisé
+   * et des animations d'entrée/sortie.
+   */
+  deleteItemConfirm(): void {
+    
+    // Fabriquer le libellé de l'opération
+
+    const libelle = "l'utilisateur " + this.user?.nom + " " + this.user?.prenom;
+
+    const message = `Voulez-vous vraiment supprimer ${libelle}?\n<strong>Cette action est irréversible.</strong>`
+    
+    // Appel de la boîte de dialogue de confirmation
+    // Le bouton supprimer de la boite de dialogue ( result ) va appeler le service projetService.deleteItem()
+    this.confirmationService.confirm('Confirmation de suppression', message, 'delete').subscribe(result => {
+      if (result) {
+        // L'utilisateur a confirmé la suppression
+        // Utiliser le service projetService pour supprimer l'élément
+        this.adminService.deleteUser(this.user?.cd_salarie || '').subscribe(success => {
+          if (success) {
+            this.close();
+          }
+          // En cas d'erreur, le service adminService gère l'affichage du message d'erreur
+        });
+      }
+    });
   }
 
   close(): void {
