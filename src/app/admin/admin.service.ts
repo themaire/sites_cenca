@@ -7,7 +7,7 @@ import { of, from, Observable } from 'rxjs';
 
 import { ApiResponse } from '../shared/interfaces/api';
 import { Selector } from '../shared/interfaces/selector';
-import { Salaries, Salarie } from './admin';
+import { Salaries, Salarie, Groupes, Groupe } from './admin';
 import { SnackbarService } from '../shared/services/snackbar.service';
 
 @Injectable({
@@ -39,6 +39,17 @@ export class AdminService {
   // Récupérer la liste de tous les utilisateurs
   async getAllUsers(): Promise<Salaries[]> {
     return this.getData<Salaries[]>('users/lite');
+  }
+
+  // Récupérer les détails d'un groupe par son gro_id
+  async getGroupById(gro_id: string): Promise<any> {
+    const subroute = `group/full/${gro_id}`;
+    return this.getData<any>(subroute);
+  }
+
+  // Récupérer la liste de tous les groupes
+  async getAllGroups(): Promise<Groupes[]> {
+    return this.getData<Groupes[]>('group/lite');
   }
 
   /**
@@ -104,6 +115,31 @@ export class AdminService {
       }),
       catchError(error => {
         const messageTxt = 'Erreur lors de la mise à jour de l\'utilisateur';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
+  /**
+   * Modifier un groupe
+   * @param groupData Les données du groupe à modifier
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  updateGroup(groupData: Groupe, id: string): Observable<ApiResponse> {
+    console.log('Données envoyées pour la mise à jour du groupe:', groupData);
+    
+    return this.http.put<ApiResponse>(`${this.activeUrl}put/group/update/${id}`, groupData).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Groupe mis à jour avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la mise à jour du groupe');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la mise à jour du groupe';
         console.error(messageTxt, error);
         this.snackbarService.error(messageTxt);
         return of({ success: false, message: messageTxt } as ApiResponse);

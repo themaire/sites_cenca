@@ -10,13 +10,14 @@ import {
   AbstractControl,
   ValidationErrors,
   FormArray,
+  StatusChangeEvent,
 } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AdminService } from './admin.service';
-import { Salarie } from './admin';
+import { Salarie, Groupe } from './admin';
 
 @Injectable({
   providedIn: 'root',
@@ -77,11 +78,25 @@ export class FormAdmin {
       prenom: [salarie?.prenom || '', Validators.required],
       email: [salarie?.email || '@cen-champagne-ardenne.org', [Validators.required, Validators.email]],
       statut: [salarie?.statut || 'actif', Validators.required],
-      // date_embauche: [salarie?.date_embauche || ''],
-      // date_depart: [salarie?.date_depart || ''],
+      date_embauche: [salarie?.date_embauche || ''],
+      date_depart: [salarie?.date_depart || ''],
       typ_fonction: [salarie?.typ_fonction || ''],
       identifiant: [salarie?.identifiant || '', Validators.required],
       sal_role: [salarie?.sal_role || ''],
+      });
+  }
+
+  /**
+   * Formulaire pour un groupe utilisateur
+   * @param groupe 
+   * @returns 
+   */
+  groupForm(groupe?: Groupe): FormGroup {
+      return this.fb.group({
+      gro_id: [groupe?.gro_id || '', Validators.required],
+      gro_nom: [groupe?.gro_nom || '', Validators.required],
+      gro_description: [groupe?.gro_description || ''],
+      gro_statut: [groupe?.gro_statut || ''],
       });
   }
 
@@ -123,39 +138,49 @@ export class FormAdmin {
   if (form.valid) {
     console.log('Formulaire admin valide, préparation de la sauvegarde en mode ' + mode);
 
-    const salarie = form.value as Salarie;
-    console.log('Données du salarié à sauvegarder :', salarie);
+    const valuesToUpdate = form.value as Salarie;
+    console.log('Données de la table ' + table + ' à sauvegarder :', valuesToUpdate);
 
-    if (table === 'salaries') {
-      if (mode === 'update' && id) {
-        return this.adminService.updateUser(salarie, id).pipe(
-          map((response) => {
-            console.log(table + ' mis à jour avec succès:', response);
-            isEditMode = false; // Sortir du mode édition après la sauvegarde
+    
+    if (mode === 'update' && id) {
 
-            // Afficher le message dans le Snackbar
-            const message = String(response.message); // Conversion en string
-            this.snackMessage(message, response.code, snackbar);
-
-            form.disable(); // Désactiver le formulaire après la sauvegarde
-            // Retourner l'objet avec isEditMode et formValue
-            return {
-              isEditMode: false,
-              formValue: form.value,
-              isEdited: true,
-            };
-          }),
-          tap(() => {
-            console.log('Mise à jour réussie');
-          }),
-          catchError((error) => {
-            console.error('Erreur lors de la mise à jour', error);
-            throw error;
-          })
-        );
+      // Aiguillage de la bonne methode update à utiliser pour ne pas surcharger le code
+      let rightMethod: (data: any, id: string) => Observable<any>;
+      if (table === 'salaries') {
+        rightMethod = (data, id) => this.adminService.updateUser(data, id);
+      } else if (table === 'groupes') {
+        rightMethod = (data, id) => this.adminService.updateGroup(data, id);
+      } else {
+        throw new Error(`Table '${table}' non supportée`);
       }
-    }
 
+      return rightMethod(valuesToUpdate, id).pipe(
+        map((response) => {
+          console.log(table + ' mis à jour avec succès:', response);
+          isEditMode = false; // Sortir du mode édition après la sauvegarde
+
+          // Afficher le message dans le Snackbar
+          const message = String(response.message); // Conversion en string
+          this.snackMessage(message, response.code, snackbar);
+
+          form.disable(); // Désactiver le formulaire après la sauvegarde
+          // Retourner l'objet avec isEditMode et formValue
+          return {
+            isEditMode: false,
+            formValue: form.value,
+            isEdited: true,
+          };
+        }),
+        tap(() => {
+          console.log('Mise à jour réussie');
+        }),
+        catchError((error) => {
+          console.error('Erreur lors de la mise à jour', error);
+          throw error;
+        })
+      );
+    }
+  
   }
 
     // Return undefined if form is invalid or no other condition is met

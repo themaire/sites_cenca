@@ -6,7 +6,7 @@
 		<input matInput (keyup)="applyFilter($event)" placeholder="Nom, email, identifiant..." />
 	</mat-form-field>
 
-	<table mat-table [dataSource]="dataSource" class="mat-elevation-z1" style="width: 100%;">
+	<table mat-table [dataSource]="dataSource" class="mat-elevation-z1 users-table">
 
 		<!-- Nom complet -->
 		<ng-container matColumnDef="nom_complet">

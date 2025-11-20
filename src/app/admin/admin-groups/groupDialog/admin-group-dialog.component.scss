@@ -1,0 +1,19 @@
+// Styles pour le dialog de groupe
+.error {
+  color: red;
+  padding: 16px;
+}
+
+.suppression {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  
+  button {
+    color: #f44336;
+    
+    &:hover {
+      background-color: rgba(244, 67, 54, 0.1);
+    }
+  }
+}
