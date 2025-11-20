@@ -42,13 +42,13 @@
           </mat-error>
         </mat-form-field>
         
-              <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
-                <mat-label>Identifiant</mat-label>
-                <input matInput formControlName="identifiant">
-                <mat-error *ngIf="userForm.get('identifiant')?.hasError('required')">
-                  L'identifiant est obligatoire
-                </mat-error>
-              </mat-form-field>
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Identifiant</mat-label>
+          <input matInput formControlName="identifiant">
+          <mat-error *ngIf="userForm.get('identifiant')?.hasError('required')">
+            L'identifiant est obligatoire
+          </mat-error>
+        </mat-form-field>
 
         <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
           <mat-label>Email</mat-label>
@@ -72,6 +72,22 @@
         <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
           <mat-label>Rôle</mat-label>
           <input matInput formControlName="sal_role">
+          <mat-error *ngIf="userForm.get('sal_role')?.hasError('required')">
+            Le rôle est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Rôle</mat-label>
+          <input matInput formControlName="date_embauche">
+          <mat-error *ngIf="userForm.get('sal_role')?.hasError('required')">
+            Le rôle est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Rôle</mat-label>
+          <input matInput formControlName="date_depart">
           <mat-error *ngIf="userForm.get('sal_role')?.hasError('required')">
             Le rôle est obligatoire
           </mat-error>

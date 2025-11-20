@@ -13,7 +13,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AdminService } from '../../admin.service';
 import { FormAdmin } from '../../form-admin'
 import { Salarie } from '../../admin';
-import { FormService } from '../../../shared/services/form.service';
 import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.component';
 import { ConfirmationService } from '../../../shared/services/confirmation.service';
 
@@ -34,7 +33,7 @@ import { ConfirmationService } from '../../../shared/services/confirmation.servi
   templateUrl: './admin-user-dialog.component.html',
   styleUrl: './admin-user-dialog.component.scss'
 })
-  
+
 export class AdminUserDialogComponent implements OnInit {
   loading = true;
   error: string | null = null;
@@ -62,7 +61,7 @@ export class AdminUserDialogComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      console.log('Données reçues dans le dialog :', this.data);
+      // console.log('Données reçues dans le dialog de la fiche utilisateur :', this.data);
       // cd_salarie est une chaîne (ex: 'ES', 'JD', etc.)
       const cd_salarie = String(this.data.cd_salarie);
       this.user = await this.adminService.getUserById(cd_salarie);
