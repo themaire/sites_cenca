@@ -114,6 +114,22 @@ export const MY_DATE_FORMATS = {
   styleUrls: ['./operation.component.scss']
 })
 export class OperationComponent implements OnInit, OnDestroy {
+
+  // Méthode pour n'accepter que les entiers dans un champ numérique
+  blockDecimal(event: KeyboardEvent) {
+    if (event.key === '.' || event.key === ',' || event.key === 'e') {
+      event.preventDefault();
+    }
+  }
+
+  sanitizeInteger(event: Event) {
+    const input = event.target as HTMLInputElement;
+    // Supprime tout ce qui n'est pas chiffre
+    input.value = input.value.replace(/[^0-9]/g, '');
+    // Mets à jour le formControl si besoin
+    this.step2Form.get('ben_heures')?.setValue(input.value ? parseInt(input.value, 10) : null, { emitEvent: false });
+  }
+
   @Input() pro_webapp?: boolean;
   @Input() objectif_ope?: string;
   @Input() localisation_site?: Localisation;
