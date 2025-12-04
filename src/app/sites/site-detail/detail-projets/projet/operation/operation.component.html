@@ -278,10 +278,7 @@ Variable (operation) form: {{ form }}<br>
             <mat-label>Nom du maitre d'oeuvre</mat-label>
             <input matInput formControlName="nom_mo">
           </mat-form-field>
-        </div>
-        
-        <div class="form-fields">
-
+  
           <mat-form-field class="medium-width">
             <mat-label>Cadre de l'intervention</mat-label>
             <mat-select formControlName="cadre_intervention" (selectionChange)="cleanFields($event.value, 'cadre_intervention')">
@@ -290,6 +287,9 @@ Variable (operation) form: {{ form }}<br>
               </mat-option>
             </mat-select>
           </mat-form-field>
+        </div>
+        
+        <div class="form-fields">
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
             <mat-label>Détail du cadre</mat-label>
@@ -308,9 +308,13 @@ Variable (operation) form: {{ form }}<br>
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
             <mat-label>
               Durée du chantier (en h)
-              <mat-icon matTooltip="Nombre entier uniquement" class="info-icon">info</mat-icon>
+              <!-- <mat-icon matTooltip="Nombre entier uniquement" class="info-icon">info</mat-icon> -->
             </mat-label>
-            <input matInput type="number" formControlName="ben_heures" step="1" min="0">
+            <input matInput type="number"
+              formControlName="ben_heures"
+              step="1" min="0"
+              (keydown)="blockDecimal($event)"
+              (input)="sanitizeInteger($event)">
           </mat-form-field>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
