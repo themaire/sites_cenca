@@ -60,10 +60,10 @@ export class AppComponent implements OnInit {
 
     // Toujours relire le token depuis le localStorage
     this.token = localStorage.getItem('token');
-    console.log('Checking token:', this.token);
+    // console.log('Checking token:', this.token);
 
     if (this.token) {
-      console.log('Token exists:', this.token);
+      // console.log('Token exists:', this.token);
       this.isResetPasswordMode = false;
 
       this.loginService.getUsers().subscribe({

@@ -27,6 +27,17 @@
       @include btn-icon(white, $couleur-territoire);
       @include icon($couleur-flore, white);
     }
+
+    // Theme preferences
+    .btn-edition-preferences {
+      @include btn-icon($parametres, $bleuC);
+      @include icon(white, black);
+    }
+    .btn-sauvegarde-preferences {
+      @include btn-icon(white, $couleur-territoire);
+      @include icon($parametres, white);
+    }
+
     .btn-sauvegarde-disabled {
       // Couleur fond :  normal / hover
       @include btn-icon(grey, rgb(87, 87, 87));
@@ -35,6 +46,7 @@
       @include icon(rgb(223, 223, 223), rgb(194, 194, 194));
       
     }
+
     .btn-annulation {
       @include btn-icon(white, red);
       @include icon(red, white);

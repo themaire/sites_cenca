@@ -1,9 +1,8 @@
 import { environment } from '../environments/environment';
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+// import { catchError } from 'rxjs/operators';
 
 // prototypes utilisés dans la promise de la fonction
 import { MenuItem } from './menuItem';
@@ -18,25 +17,28 @@ export class MenuService {
   private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   menuItems$ = this.menuItemsSubject.asObservable();
 
-  async getMenu(subroute: string): Promise<MenuItem[]> {
-    const url = `${this.activeUrl}${subroute}`;
+  // Cache pour éviter de recharger les données à chaque fois
+  private cachedMenuItems: MenuItem[] | null = null;
+  private cachedUserGroId: number | null = null;
 
+  async getMenu(subroute: string): Promise<MenuItem[]> {
     const data = await fetch(this.activeUrl + subroute);
     return (await data.json()) ?? [];
   }
 
-  // getMenu2(subroute: string): Observable<MenuItem[]> {
-  //   const url = `${this.url}${subroute}`;
+  async loadMenuItems(userGroId: number, forceReload: boolean = false): Promise<void> {
+    // Si on a déjà les données en cache pour ce même utilisateur, on les retourne directement
+    if (!forceReload && this.cachedMenuItems && this.cachedUserGroId === userGroId) {
+      this.menuItemsSubject.next(this.cachedMenuItems);
+      return;
+    }
 
-  //   return this.http.get<MenuItem[]>(url).pipe(
-  //     catchError(() => of([])) // Gestion des erreurs : retourne un tableau vide en cas d'erreur
-  //   );
-  // }
-  // private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
-  // menuItems$ = this.menuItemsSubject.asObservable();
+    let subroute: string = 'parent=null'
 
-  async loadMenuItems(): Promise<void> {
-    let subroute: string = 'parent=null';
+    // Surcharger la subroute pour les admins
+    if (userGroId && userGroId == 5) {
+      subroute += '/admin';
+    }
 
     // Fonction pour trier par ordre alphabétique
     const sortAlphabetically = (items: MenuItem[]) => {
@@ -51,6 +53,11 @@ export class MenuService {
           item.children = await this.getMenu(subroute);
           item.children = sortAlphabetically(item.children); // Trie les sous-menus
         }
+        
+        // Mettre en cache les données chargées
+        this.cachedMenuItems = mainMenuItems;
+        this.cachedUserGroId = userGroId;
+        
         // Met à jour le BehaviorSubject une fois les données chargées
         this.menuItemsSubject.next(mainMenuItems);
       };
@@ -58,7 +65,8 @@ export class MenuService {
       loadChildren();
     });
 
-  } 
+  }
+  
   async loadSubMenuItem(menu_parent: number): Promise<MenuItem[]> {
     const subroute: string = `parent=${menu_parent}`;
     const subMenuItems = await this.getMenu(subroute);

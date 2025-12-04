@@ -1,18 +1,15 @@
 import { Route } from '@angular/router';
 import { AdminComponent } from './admin.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { AdminGroupsComponent } from './admin-groups/admin-groups.component';
 
-export const ADMIN_ROUTES: Route[] = [{
+export const ADMIN_ROUTES = [
+  {
     path: '',
-    
-    pathMatch: 'prefix',
-    providers: [
-    //   AdminService,
-    //   {provide: ADMIN_API_KEY, useValue: 12345},
-    ],
+    component: AdminComponent,
     children: [
-        {path: '', component: AdminComponent},
-        {path: 'users', component: AdminUsersComponent, outlet: 'toUsers'},
-    //   {path: 'teams', component: AdminTeams},
-    ],
-  }];
+      { path: 'utilisateurs', component: AdminUsersComponent, outlet: 'userDroits' },
+      { path: 'groupes', component: AdminGroupsComponent, outlet: 'userDroits' }
+    ]
+  }
+];

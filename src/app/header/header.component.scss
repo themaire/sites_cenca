@@ -117,14 +117,46 @@ header {
 
 .c-administratif {
   @include btn-menu(
-    $administrafif
+    $administratif
   ); // Inclut les styles de base comme padding et border-radius
 }
+
 .c-liens-utiles {
   @include btn-menu(
     $liens-utiles
   ); // Inclut les styles de base comme padding et border-radius
 }
+
+.c-parametres, .c-parametres_hover {
+  @include btn-menu(
+    $parametres
+  ); // Inclut les styles de base comme padding et border-radius
+}
+
+.c-parametres_hover:hover {
+  background: linear-gradient(45deg,
+    #ff0000,
+    #ff9900,
+    #ffff00,
+    #33ff00,
+    #00ffff,
+    #3300ff,
+    #9900ff,
+    #ff00cc,
+    #ff0000
+  );
+  background-size: 300% 300%;
+  animation: rainbow-move 2s linear;
+  color: rgb(255, 87, 87) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  transition: box-shadow 0.5s;
+}
+
+@keyframes rainbow-move {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
 span {
   color: black !important;
 }

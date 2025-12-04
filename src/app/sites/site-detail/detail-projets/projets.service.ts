@@ -159,6 +159,32 @@ export class ProjetService {
     );
   }
 
+  /**
+   * Dupliquer un élément (opération ou projet) en excluant certains champs
+   * @param type 'operations' ou 'projet'
+   * @param id 
+   * @param excludeOptions 
+   * @returns un Observable<boolean> indiquant le succès ou l'échec de l'opération
+   */
+  duplicate(type: 'operations' | 'projet', id: string, excludeOptions?: string[]): Observable<boolean> {
+    return new Observable<boolean>(observer => {
+      this.duplicateItem(type, id, excludeOptions).subscribe(
+        response => {
+          observer.next(response.success);
+          this.snackbarService.success(type === 'operations' ? 'Opération dupliquée avec succès' : 'Projet dupliqué avec succès');
+          observer.complete();
+        },
+        error => {
+          const errorMessage = error.message || `Erreur lors de la duplication ${type === 'operations' ? 'de l\'opération' : 'du projet'}`;
+          this.snackbarService.error(errorMessage);
+          console.error("Erreur lors de la duplication de l'élément:", error);
+          observer.next(false);
+          observer.complete();
+        }
+      );
+    });
+  }
+
   /** Gestion des cases à cocher dans un formumaire
    *   Utilisé dans operation.component.ts - Ajouter un élément revient à cocher une case dans le formulaire
    *   @param checkBoxList: OperationCheckbox[] : l'objet contenant les informations du programme d'une opération
@@ -395,25 +421,6 @@ export class ProjetService {
       this.snackbarService.info(`Aucun element "${type}" à supprimer`);
       return of(false); // Aucune action effectuée
     }
-  }
-
-  duplicate(type: 'operations' | 'projet', id: string, excludeOptions?: string[]): Observable<boolean> {
-    return new Observable<boolean>(observer => {
-      this.duplicateItem(type, id, excludeOptions).subscribe(
-        response => {
-          observer.next(response.success);
-          this.snackbarService.success(type === 'operations' ? 'Opération dupliquée avec succès' : 'Projet dupliqué avec succès');
-          observer.complete();
-        },
-        error => {
-          const errorMessage = error.message || `Erreur lors de la duplication ${type === 'operations' ? 'de l\'opération' : 'du projet'}`;
-          this.snackbarService.error(errorMessage);
-          console.error("Erreur lors de la duplication de l'élément:", error);
-          observer.next(false);
-          observer.complete();
-        }
-      );
-    });
   }
 
   // /** Renvoie le libellé correspondant au cd_type dans une ou plusieurs listes de SelectValue

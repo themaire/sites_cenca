@@ -1,0 +1,102 @@
+<div mat-dialog-container>
+  <div>
+    <h2 mat-dialog-title>
+        Détail utilisateur
+    </h2>
+    <app-form-buttons
+      *ngIf="!loading && !error"
+      icone="edit"
+      theme="preferences"
+      [isFormValid]="isFormValid"
+      [isEditActive]="isEditActive"
+      [isAddActive]="isAddActive"
+      [nbObjectifs]="-1"
+      (toggleAction)="toggleEdit()"
+      (onSubmit)="onSubmit()">
+    </app-form-buttons>
+    <div class="suppression">
+      <button mat-button (click)="deleteItemConfirm()">Supprimer</button>
+    </div>
+  </div>
+
+  <div mat-dialog-content>
+    <div *ngIf="loading">Chargement...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <ng-container *ngIf="!loading && !error && userForm">
+      <form [formGroup]="userForm">
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom">
+          <mat-error *ngIf="userForm.get('nom')?.hasError('required')">
+            Le nom est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom">
+          <mat-error *ngIf="userForm.get('prenom')?.hasError('required')">
+            Le prénom est obligatoire
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Identifiant</mat-label>
+          <input matInput formControlName="identifiant">
+          <mat-error *ngIf="userForm.get('identifiant')?.hasError('required')">
+            L'identifiant est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email">
+          <mat-error *ngIf="userForm.get('email')?.hasError('required')">
+            L'email est obligatoire
+          </mat-error>
+          <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+            Email invalide
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Fonction</mat-label>
+          <input matInput formControlName="typ_fonction">
+          <mat-error *ngIf="userForm.get('typ_fonction')?.hasError('required')">
+            La fonction est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Rôle</mat-label>
+          <input matInput formControlName="sal_role">
+          <mat-error *ngIf="userForm.get('sal_role')?.hasError('required')">
+            Le rôle est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Rôle</mat-label>
+          <input matInput formControlName="date_embauche">
+          <mat-error *ngIf="userForm.get('sal_role')?.hasError('required')">
+            Le rôle est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Rôle</mat-label>
+          <input matInput formControlName="date_depart">
+          <mat-error *ngIf="userForm.get('sal_role')?.hasError('required')">
+            Le rôle est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="statut" style="margin-top: 16px;">
+          Actif
+        </mat-checkbox>
+      </form>
+    </ng-container>
+  </div>
+</div>

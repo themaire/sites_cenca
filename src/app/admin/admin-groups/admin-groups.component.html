@@ -1,0 +1,45 @@
+<div class="admin-groups">
+	<h2>{{ groups.length }} groupes</h2>
+
+	<mat-form-field appearance="outline" style="width: 320px; max-width: 100%;">
+		<mat-label>Rechercher</mat-label>
+		<input matInput (keyup)="applyFilter($event)" placeholder="Nom du groupe, description..." />
+	</mat-form-field>
+
+	<table mat-table [dataSource]="dataSource" class="mat-elevation-z1 groups-table">
+
+		<!-- Nom du groupe -->
+		<ng-container matColumnDef="gro_id">
+			<th mat-header-cell *matHeaderCellDef> # </th>
+			<td mat-cell *matCellDef="let row"> {{ row.gro_id }} </td>
+		</ng-container>
+
+        <!-- Nom du groupe -->
+		<ng-container matColumnDef="gro_nom">
+			<th mat-header-cell *matHeaderCellDef> Nom du groupe </th>
+			<td mat-cell *matCellDef="let row"> {{ row.gro_nom }} </td>
+		</ng-container>
+
+		<!-- Description -->
+		<ng-container matColumnDef="description">
+			<th mat-header-cell *matHeaderCellDef> Description </th>
+			<td mat-cell *matCellDef="let row"> {{ row.gro_description }} </td>
+		</ng-container>
+
+		<!-- Actions -->
+		<ng-container matColumnDef="actions">
+			<th mat-header-cell *matHeaderCellDef style="text-align: right;"> Actions </th>
+			<td mat-cell *matCellDef="let row" style="text-align: right;">
+                <button mat-icon-button class="green-button" aria-label="Voir le groupe" (click)="openGroupDialog(row)">
+                    <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" aria-label="Dupliquer le groupe" (click)="duplicateGroupConfirm(row)">
+                    <mat-icon>content_copy</mat-icon>
+                </button>
+			</td>
+		</ng-container>
+
+		<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+		<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+	</table>
+</div>

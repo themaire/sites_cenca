@@ -17,19 +17,28 @@ export interface ExcludeOption { key: string; label: string }
 export class ConfirmationDialogComponent {
   excludeOptions: ExcludeOption[] = [];
   selectedExcludes = new Set<string>(); // Ce qui va etre retourné en cas de duplication. Par exemple: ['dates', 'quantite']
-
+  
   constructor(
     public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string, mode: Mode }
+    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string, mode: Mode, context?: string },
   ) {
     if (this.data.mode === 'duplicate') {
-      this.excludeOptions = [
-        { key: 'dates', label: 'Dates' },
-        { key: 'quantite', label: 'Quantité' },
-        { key: 'unite', label: 'Unité' },
-        { key: 'description', label: 'Description' },
-      ];
+      if (this.data.context === 'operation') {
+        this.excludeOptions = [
+          { key: 'dates', label: 'Dates' },
+          { key: 'quantite', label: 'Quantité' },
+          { key: 'unite', label: 'Unité' },
+          { key: 'description', label: 'Description' },
+        ];
+      } else if (this.data.context === 'user') {
+        this.excludeOptions = [
+          { key: 'fonction', label: 'Fonction' }
+        ];
+      }
     }
+    
+    // Toujours exclure le hash du salarié en duplication
+    this.selectedExcludes.add("sal_hash"); 
   }
 
   /** Gestion des cases à cocher pour l'exclusion
