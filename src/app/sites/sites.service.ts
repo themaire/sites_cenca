@@ -144,13 +144,15 @@ export class SitesService {
    * Pour récuperer une liste de choix (selectors)
    * @returns Promise<Selector[]>
    */
-  async getSelectors(): Promise<Selector[]> {
-    const data = await fetch(this.activeUrl + 'selectors');
+  async getSelectors(type: string): Promise<Selector[]> {
+    if (type === 'sites') {
+      type = 'selectors_sites';
+    } else if (type === 'projets') {
+      type = 'selectors_projets';
+    }
+    const data = await fetch(this.activeUrl + type);
     return (await data.json()) ?? [];
   }
-
-
-  
 
   getOperations(subroute: string): Observable<OperationLite[]> {
     // Est utilisé dans le step "Operations" de la page détail d'un projet pour lister les opérations du projet actuel

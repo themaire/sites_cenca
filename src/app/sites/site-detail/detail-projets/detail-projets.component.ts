@@ -1,5 +1,6 @@
-import { Component, Input, inject, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, inject, SimpleChanges, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 // import { ProjetVComponent } from './projetV/projetV.component';
 import { ProjetComponent } from './projet/projet.component';
@@ -35,10 +36,14 @@ import { Overlay } from '@angular/cdk/overlay';
   templateUrl: './detail-projets.component.html',
   styleUrls: ['./detail-projets.component.scss', '../../../shared/form-buttons/form-buttons.component.scss']
 })
-export class DetailProjetsComponent {
+export class DetailProjetsComponent implements OnInit {
   @Input() siteDetailProjet?: DetailSiteProjet; // Le site selectionné pour voir son détail
   public projetsLite: ProjetLite[] = [];
   public dataSource!: MatTableDataSource<ProjetLite>;
+  
+  // Mode de fonctionnement : 'site' (par uuid_site) ou 'search' (par critères)
+  public mode: 'site' | 'search' = 'site';
+  public searchParams: any = {};
 
   // Pour la liste des opérations : le tableau Material
   public displayedColumns: string[] = ['annee', 'responsable', 'projet', 'action', 'date_deb', 'statut',];
@@ -48,12 +53,55 @@ export class DetailProjetsComponent {
 
   constructor(
     private dialog: MatDialog,
-    private overlay: Overlay
+    private overlay: Overlay,
+    private route: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    // Détecter si on est en mode recherche via les paramètres de route
+    this.route.params.subscribe(params => {
+      if (params['annee'] || params['responsable'] || params['statut'] || params['generation']) {
+        this.mode = 'search';
+        this.searchParams = {
+          annee: params['annee'] || '*',
+          responsable: params['responsable'] || '*',
+          statut: params['statut'] || '*',
+          generation: params['generation'] || '*'
+        };
+        this.loadProjetsFromSearch();
+      }
+    });
+  }
+
+  async loadProjetsFromSearch(): Promise<void> {
+    try {
+      // Construire la subroute avec les paramètres de recherche
+      // TODO: Adapter cette route selon votre API backend
+      const queryParams = new URLSearchParams();
+      
+      if (this.searchParams.annee !== '*') queryParams.append('annee', this.searchParams.annee);
+      if (this.searchParams.responsable !== '*') queryParams.append('responsable', decodeURIComponent(this.searchParams.responsable));
+      if (this.searchParams.statut !== '*') queryParams.append('statut', decodeURIComponent(this.searchParams.statut));
+      if (this.searchParams.generation !== '*') queryParams.append('generation', decodeURIComponent(this.searchParams.generation));
+      
+      const subroute = `projets/search?${queryParams.toString()}`;
+      console.log('Recherche de projets avec:', subroute);
+      
+      this.projetsLite = await this.research.getProjets(subroute);
+      this.dataSource = new MatTableDataSource(this.projetsLite);
+      
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Erreur lors de la recherche de projets', error);
+    }
+  }
 
   async ngOnChanges(changes: SimpleChanges){
     // Recuperer les opérations du site selectionné dans un tableau mat-table
     // Ce component est chargé en meme temps que sitesDetail.
+    // Ne charger que si on est en mode 'site'
+    if (this.mode === 'search') return;
+    
     let subroute: string = "";
     
     if (this.siteDetailProjet !== undefined) {  // Si le site selectionné n'est pas vide

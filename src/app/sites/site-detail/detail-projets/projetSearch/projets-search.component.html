@@ -1,0 +1,89 @@
+<div class="conteneur">
+  <div class="recherche">
+    
+    <!-- Sélection de l'année -->
+    <mat-form-field appearance="fill" ngClass="annee">
+      <mat-label ngClass="label" for="annee">Année :</mat-label>
+      <input
+        matInput
+        id="annee"
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="2024"
+        [formControl]="anneeFormControl"
+        (change)="stringChange($event)"
+        [(ngModel)]="anneeFormControl.value"
+        (keyup.enter)="projetSelection()"
+      />
+      <mat-error *ngIf="anneeFormControl.hasError('minlength') || anneeFormControl.hasError('maxlength')">
+        <li>4 chiffres requis</li>
+      </mat-error>
+      <mat-error *ngIf="anneeFormControl.hasError('pattern')">
+        <li>Format AAAA</li>
+      </mat-error>
+      <button
+        ngClass="close"
+        *ngIf="anneeFormControl.value"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="clearField('annee')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Sélection de la génération -->
+    <mat-form-field appearance="fill" ngClass="generation">
+      <mat-label ngClass="label" for="generation">Génération :</mat-label>
+      <mat-select
+        id="generation"
+        (selectionChange)="selectionSelectors($event, 'generation')"
+      >
+        <mat-option [value]="{ id: 0, name: 'generation' }" selected>
+          Toutes générations
+        </mat-option>
+        <mat-option [value]="{ id: 1, name: '1_TVX' }">
+          Travaux (1_TVX)
+        </mat-option>
+        <mat-option [value]="{ id: 2, name: '2_WEB' }">
+          WebApp (2_WEB)
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Sélecteurs dynamiques (responsable, statut) -->
+    <mat-form-field
+      *ngFor="let selector of selectors"
+      appearance="fill"
+      ngClass="selecteur"
+    >
+      <mat-label ngClass="label">{{ selector.title }} :</mat-label>
+      <mat-select
+        id="{{ selector.name }}"
+        (selectionChange)="selectionSelectors($event, selector.name)"
+      >
+        <mat-option
+          [value]="{ id: selector.name, name: selector.name }"
+          selected
+        >
+          Sélectionner {{ selector.name }}
+        </mat-option>
+        <mat-option
+          *ngFor="let value of selector.values"
+          [value]="{ id: value, name: value }"
+        >
+          {{ value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Validation du filtre -->
+  <div class="btn">
+    <button mat-button-flat (click)="projetSelection()">
+      Rechercher les projets
+    </button>
+  </div>
+</div>

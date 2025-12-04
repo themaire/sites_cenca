@@ -91,7 +91,7 @@ export class SitesDisplayComponent implements AfterViewInit {
       if (params['type'] !== undefined) {
         // Cas d'une recherche sur critères
         subroute =
-          'criteria/' +
+          'criteria_sites/' +
           params['type'] +
           '/' +
           params['code'] +

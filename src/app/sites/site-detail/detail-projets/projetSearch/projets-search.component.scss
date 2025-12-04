@@ -1,0 +1,96 @@
+@import "../../../../styles/variables.scss";
+@import "../../../../styles/mixins.scss";
+
+.conteneur {
+  @include dim(100%, auto);
+  display: grid;
+  grid-template-rows: 2fr 1fr;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  
+  .recherche {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-top: 20px;
+    @include dim(auto, auto);
+    @include align(center, space-between);
+  }
+  
+  .annee,
+  .generation,
+  .selecteur {
+    @include dim(100%, auto);
+  }
+  
+  .label {
+    @include Typo($p14, $normal, $couleur-flore);
+  }
+  
+  .btn {
+    display: flex;
+    @include align(center, center);
+    margin: 0 40px 0 19px;
+    
+    button {
+      @include btn($couleur-flore, white, white, $couleur-territoire);
+      @include align(center, center);
+    }
+  }
+  
+  .close {
+    @include btn-icon(white, white);
+    @include dim(25px, 25px);
+    padding: 5px 0;
+    
+    .mat-icon {
+      @include icon($couleur-flore, red);
+    }
+  }
+}
+
+// RESPONSIVE
+// Mobile portrait
+@media screen and (max-width: $mobile) {
+  .conteneur {
+    grid-template-rows: 1fr 30%;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    
+    .recherche {
+      grid-template-columns: 1fr;
+    }
+    
+    .label {
+      font-size: $p12;
+    }
+
+    .btn {
+      padding: 20px;
+      height: 30%;
+    }
+  }
+}
+
+// Mobile paysage et tablette
+@media screen and (min-width: $mobile) and (max-width: $tablette) {
+  .conteneur {
+    grid-template-rows: 1fr 30%;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    
+    .recherche {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    .label {
+      font-size: $p12;
+    }
+
+    .btn {
+      height: 30%;
+    }
+  }
+}

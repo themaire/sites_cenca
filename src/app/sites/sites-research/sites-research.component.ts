@@ -48,7 +48,7 @@ export class SitesResearchComponent implements OnInit {
   research: SitesService = inject(SitesService);
 
   constructor(private router: Router) {
-    this.research.getSelectors().then((selectors: Selector[]) => {
+    this.research.getSelectors('sites').then((selectors: Selector[]) => {
       this.selectors = selectors;
       // console.log(this.selectors);
     });
