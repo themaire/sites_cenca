@@ -158,7 +158,7 @@
   @include align(center, flex-end);
   padding: 0 30px 10px 0px;
   button {
-    @include btn($superRed, $color, white, $superRed);
+    @include btn(white, $color, white, rgb(121, 0, 0));
     @include align(center, center);
   }
 }

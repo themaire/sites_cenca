@@ -306,8 +306,11 @@ Variable (operation) form: {{ form }}<br>
           </mat-form-field>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
-            <mat-label>Durée du chantier (en h)</mat-label>
-            <input matInput type="number" formControlName="ben_heures">
+            <mat-label>
+              Durée du chantier (en h)
+              <mat-icon matTooltip="Nombre entier uniquement" class="info-icon">info</mat-icon>
+            </mat-label>
+            <input matInput type="number" formControlName="ben_heures" step="1" min="0">
           </mat-form-field>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">

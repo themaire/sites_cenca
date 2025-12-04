@@ -145,12 +145,9 @@ export class SitesService {
    * @returns Promise<Selector[]>
    */
   async getSelectors(): Promise<Selector[]> {
-    const data = await fetch(this.activeUrl + 'selectors');
+    const data = await fetch(this.activeUrl + 'selectors_sites');
     return (await data.json()) ?? [];
   }
-
-
-  
 
   getOperations(subroute: string): Observable<OperationLite[]> {
     // Est utilisé dans le step "Operations" de la page détail d'un projet pour lister les opérations du projet actuel
