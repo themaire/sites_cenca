@@ -302,11 +302,11 @@ Variable (operation) form: {{ form }}<br>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
             <mat-label>Nb de participants</mat-label>
-            <input matInput type="number" 
+            <input matInput type="number"
               formControlName="ben_participants"
               step="1" min="0"
               (keydown)="blockDecimal($event)"
-              (input)="sanitizeInteger($event)">
+              (input)="sanitizeInteger($event, 'ben_participants')">
           </mat-form-field>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
@@ -318,7 +318,7 @@ Variable (operation) form: {{ form }}<br>
               formControlName="ben_heures"
               step="1" min="0"
               (keydown)="blockDecimal($event)"
-              (input)="sanitizeInteger($event)">
+              (input)="sanitizeInteger($event, 'ben_heures')">
           </mat-form-field>
 
           <mat-form-field *ngIf="selectedCadreInterventionType !== undefined || step2Form?.get('cadre_intervention')?.value === 12">
@@ -717,15 +717,18 @@ Variable (operation) form: {{ form }}<br>
 
             <mat-form-field>
               <mat-label>Nombre de jour</mat-label>
-              <input matInput type="number" formControlName="nb_jours_paturage">
+              <input matInput type="number" formControlName="nb_jours_paturage"
+              step="1" min="0"
+              (keydown)="blockDecimal($event)"
+              (input)="sanitizeInteger($event, 'nb_jours_paturage')">
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Chargement (UGB/ha)</mat-label>
-              <input matInput type="number" formControlName="chargement_paturage">
-              <!-- <mat-error *ngIf="step4Form.get('chargement_paturage')?.hasError('integer')">
-                La valeur doit être un nombre entier.
-              </mat-error> -->
+              <input matInput type="number" formControlName="chargement_paturage"
+              step="1" min="0"
+              (keydown)="blockDecimal($event)"
+              (input)="sanitizeInteger($event, 'chargement_paturage')">
             </mat-form-field>
           </div>
 

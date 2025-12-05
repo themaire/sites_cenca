@@ -122,12 +122,12 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
-  sanitizeInteger(event: Event) {
+  sanitizeInteger(event: Event, fieldName: string) {
     const input = event.target as HTMLInputElement;
     // Supprime tout ce qui n'est pas chiffre
     input.value = input.value.replace(/[^0-9]/g, '');
     // Mets à jour le formControl si besoin
-    this.step2Form.get('ben_heures')?.setValue(input.value ? parseInt(input.value, 10) : null, { emitEvent: false });
+    this.step2Form.get(fieldName)?.setValue(input.value ? parseInt(input.value, 10) : null, { emitEvent: false });
   }
 
   @Input() pro_webapp?: boolean;

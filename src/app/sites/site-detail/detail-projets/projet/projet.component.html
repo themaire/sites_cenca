@@ -109,15 +109,16 @@
             <mat-label>Date création projet</mat-label>
             <input matInput [value]="step1Form.get('date_crea')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
-        </div>
-        
-        <!-- Dans le cas d'un opération ancienne methode -->
-        <div *ngIf="!projetForm.get('pro_webapp')?.value">
 
           <mat-form-field class="custom-mat-form-field">
             <mat-label>Statut</mat-label>
             <input matInput [value]="this.getLibelle(step1Form.get('statut')?.value, statusTypes) || 'Non renseigné'" readonly>
           </mat-form-field>
+        </div>
+        
+        <!-- Dans le cas d'un opération ancienne methode -->
+        <div *ngIf="!projetForm.get('pro_webapp')?.value">
+
 
           <mat-slide-toggle
             class="toggle"
@@ -184,11 +185,6 @@
               <mat-label>Maitre d'ouvrage</mat-label>
               <textarea matInput formControlName="pro_maitre_ouvrage" ></textarea>
             </mat-form-field>
-          </div>
-
-          <!-- Dans le cas d'un opération ancienne methode -->
-          <div *ngIf="!projetForm.get('pro_webapp')?.value">
-            <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
 
             <mat-form-field>
               <mat-label>Statut</mat-label>
@@ -198,6 +194,12 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
+          </div>
+
+          <!-- Dans le cas d'un opération ancienne methode -->
+          <div *ngIf="!projetForm.get('pro_webapp')?.value">
+            <mat-slide-toggle formControlName="validite">Validité*</mat-slide-toggle>
+
 
             <mat-form-field>
               <mat-label>Nom du projet</mat-label>
