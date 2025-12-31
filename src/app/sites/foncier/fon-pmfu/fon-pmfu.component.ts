@@ -78,7 +78,7 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
 
   pmfuLite!: ProjetsMfu[];
   pmfu?: ProjetMfu;
-  displayedColumns: string[] = ['pmfu_nom', 'pmfu_responsable', 'pmfu_commune'];
+  displayedColumns: string[] = ['pmfu_nom', 'pmfu_responsable', 'pmfu_commune_nom', 'type_acte'];
   dataSource!: MatTableDataSource<ProjetsMfu>;
   pmfuForm!: FormGroup;
   initialFormValues!: FormGroup;
@@ -92,6 +92,7 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     private overlay: Overlay
   ) {}
+  
   ngAfterViewInit() {
     if (this.dataSource) {
       this.dataSource.sort = this.sort;
@@ -178,9 +179,10 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
       console.error('Error fetching documents', error);
     }
   }
-cleanString(str: string): string {
-  return str.replace(/\s+/g, ' ').trim().toLowerCase();
-}
+
+  cleanString(str: string): string {
+    return str.replace(/\s+/g, ' ').trim().toLowerCase();
+  }
 
   private initDataSource(data: ProjetsMfu[]) {
     this.dataSource = new MatTableDataSource(data);
@@ -195,19 +197,20 @@ cleanString(str: string): string {
             ? item.pmfu_responsable.toLowerCase()
             : '';
         case 'pmfu_commune':
-          return item.pmfu_commune ? item.pmfu_commune.toLowerCase() : '';
+          return item.pmfu_commune_insee ? item.pmfu_commune_insee.toLowerCase() : '';
         default:
           return '';
       }
     };
     if (this.filterValue) {
-    // setTimeout pour s'assurer que sort/paginator sont attachés avant l'application du filtre
-    setTimeout(() => {
-      this.dataSource.filter = this.filterValue;
-      if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
-    }, 0);
+      // setTimeout pour s'assurer que sort/paginator sont attachés avant l'application du filtre
+      setTimeout(() => {
+        this.dataSource.filter = this.filterValue;
+        if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
+      }, 0);
+    }
   }
-  }
+
   toggleEditPmfu(mode: string): void {
     console.log(
       "----------!!!!!!!!!!!!--------toggleEditPmfu('" +

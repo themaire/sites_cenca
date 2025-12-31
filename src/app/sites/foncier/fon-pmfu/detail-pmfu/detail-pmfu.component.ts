@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 
+import { FilterByPipe } from '../../../../shared/pipes/filter-by.pipe';
+
 import { ProjetMfu, ProjetsMfu, ParcellesSelected } from '../../foncier';
 import { FoncierService } from '../../foncier.service';
 import { HttpClient, HttpParams, HttpErrorResponse,} from '@angular/common/http';
@@ -49,6 +51,19 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MapComponent } from '../../../../map/map.component';
 
 import { ApiResponse } from '../../../../shared/interfaces/api';
+
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
 export interface Section {
   cd_type: number;
   name: string;
@@ -57,15 +72,26 @@ export interface Section {
 @Component({
   selector: 'app-detail-pmfu',
   standalone: true,
+  providers: [
+    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    provideMomentDateAdapter(),
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: {displayDefaultIndicatorType: false},
+    },
+  ],
   imports: [
     CommonModule,
-    MatDialogContent,
-    MatCheckboxModule,
-    MatIconModule,
+    FilterByPipe,
     FormButtonsComponent,
     FileExploratorComponent,
     ReactiveFormsModule,
+    MatDialogContent,
     FormsModule,
+    MatCheckboxModule,
+    MatIconModule,
     MatStepperModule,
     MatInputModule,
     MatSelectModule,
@@ -76,7 +102,7 @@ export interface Section {
     MatButtonModule,
     MatListModule,
     MapComponent,
-      MatAutocompleteModule,
+    MatAutocompleteModule,
   ],
   templateUrl: './detail-pmfu.component.html',
   styleUrl: './detail-pmfu.component.scss',
@@ -84,13 +110,64 @@ export interface Section {
 export class DetailPmfuComponent {
   communeNomReadonly: string = '';
 
+  get anneeSignatureMin(): number {
+    const debutValue = this.pmfuForm?.get('pmfu_annee_debut')?.value;
+    const debut = debutValue === null || debutValue === '' ? null : Number(debutValue);
+    if (debut === null || Number.isNaN(debut)) return 2025;
+    return Math.max(2025, debut);
+  }
+
+  getFinancementsLibelles(): string {
+    const values = this.pmfuForm?.get('pmfu_financements')?.value;
+    if (!values || !Array.isArray(values) || values.length === 0) return '';
+    return values
+      .map(cd => this.formService.getLibelleByCdType(cd, this.typeFinancement))
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  getAppuisLibelles(): string {
+    const values = this.pmfuForm?.get('pmfu_appui')?.value;
+    if (!values || !Array.isArray(values) || values.length === 0) return '';
+    return values
+      .map(cd => this.formService.getLibelleByCdType(cd, this.typebesoinAppuis))
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  getAgencesLibelles(): string {
+    const values = this.pmfuForm?.get('pmfu_agence')?.value;
+    if (!values || !Array.isArray(values) || values.length === 0) return '';
+    return values
+      .map(cd => this.formService.getLibelleByCdType(cd, this.typeAgence))
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  getProprietairesLibelles(): string {
+    const values = this.pmfuForm?.get('pmfu_proprietaire')?.value;
+    if (!values || !Array.isArray(values) || values.length === 0) return '';
+    return values
+      .map(cd => this.formService.getLibelleByCdType(cd, this.typeProprio))
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  getEtapesLibelles(): string {
+    const values = this.pmfuForm?.get('pmfu_proch_etape')?.value;
+    if (!values || !Array.isArray(values) || values.length === 0) return '';
+    return values
+      .map(cd => this.formService.getLibelleByCdType(cd, this.typeProchEtape))
+      .filter(Boolean)
+      .join(', ');
+  }
+
   newPmfu: boolean = false;  
   pmfuForm!: FormGroup;
   initialFormValues!: ProjetMfu;
   isFormValid: boolean = false;
     
   salaries: SelectValue[] = [];
-
   pmfuTitle: String = '';
   
   
@@ -128,9 +205,35 @@ export class DetailPmfuComponent {
   
   communeInsee?: Commune; // Commune chargée dans le formulaire
   communes: Commune[] = [];
-  communeCtrl = new FormControl('');
+  communeCtrl = new FormControl<string | Commune>('');
   isCommuneDisabled: boolean = true;
   filteredCommunes: Commune[] = [];
+
+  // Listes de choix du formulaire
+  typeFinancement!: SelectValue[];
+  typeAgence!: SelectValue[];
+  typeActe!: SelectValue[];
+  typeProprio!: SelectValue[];
+  typebesoinAppuis!: SelectValue[];
+  typeValidationCa!: SelectValue[];
+  typePriorite!: SelectValue[];
+  typeStatus!: SelectValue[];
+  typeProchEtape!: SelectValue[];
+
+  // Endpoints qui ont échoué lors du chargement des listes de choix
+  failedSelects: string[] = [];
+
+  // Helper pour charger un endpoint selectvalues et assigner sa valeur ou enregistrer l'échec
+  private async loadAndAssign(endpoint: string, assign: (vals?: SelectValue[]) => void) {
+    try {
+      const selectValues = await lastValueFrom(this.formService.getSelectValues$(endpoint));
+      console.log(`Liste de choix ${endpoint} récupérée avec succès :`, selectValues);
+      assign(selectValues);
+    } catch (error) {
+      console.error(`Erreur lors de la récupération de la liste de choix ${endpoint}:`, error);
+      this.failedSelects.push(endpoint);
+    }
+  }
 
   // Propriétés pour les sites CENCA
   afficherSitesCenca: boolean = false;
@@ -217,6 +320,17 @@ export class DetailPmfuComponent {
   }
 
   /**
+   * Réinitialise la commune (vide tous les champs liés)
+   */
+  clearCommune(): void {
+    this.communeCtrl.setValue(null, { emitEvent: false });
+    this.pmfuForm.get('pmfu_commune')?.setValue(null);
+    this.pmfuForm.get('pmfu_commune_insee')?.setValue(null);
+    this.pmfuForm.get('pmfu_commune_nom')?.setValue(null);
+    console.log('[clearCommune] Commune réinitialisée');
+  }
+
+  /**
    * Active ou désactive le FormControl pmfu_commune selon la valeur du département
    */
   setupCommuneSelectDisabling() {
@@ -248,6 +362,40 @@ export class DetailPmfuComponent {
   }
 
   async ngOnInit() {
+
+    // Récuperer les listes de choix via helper (collecte des endpoints en échec)
+    const subrouteTypfinancement = `sites/selectvalues=${'sitcenca.libelles'}/financement_agence`;
+    const subrouteTypeAgence = `sites/selectvalues=${'sitcenca.libelles'}/financement_agence-agence`;
+    const subrouteTypeActe = `sites/selectvalues=${'sitcenca.libelles'}/types_acte`;
+    const subrouteTypeProprio = `sites/selectvalues=${'sitcenca.libelles'}/type_proprio`;
+    const subrouteBesoinAppuis = `sites/selectvalues=${'sitcenca.libelles'}/besoin_appuis`;
+    const subrouteValidationCa = `sites/selectvalues=${'sitcenca.libelles'}/validation_ca`;
+    const subroutePriorite = `sites/selectvalues=${'sitcenca.libelles'}/priorite`;
+    const subrouteStatus = `sites/selectvalues=${'sitcenca.libelles'}/status`;
+    const subrouteProchaineEtape = `sites/selectvalues=${'sitcenca.libelles'}/prochaine_etape`;
+    // Lancer les chargements et attendre qu'ils soient terminés pour pouvoir
+    // afficher une alerte globale si certains endpoints ont échoué.
+    const loaders = [
+      this.loadAndAssign(subrouteTypfinancement, (vals) => (this.typeFinancement = vals || [])),
+      this.loadAndAssign(subrouteTypeAgence, (vals) => (this.typeAgence = vals || [])),
+      this.loadAndAssign(subrouteTypeActe, (vals) => (this.typeActe = vals || [])),
+      this.loadAndAssign(subrouteTypeProprio, (vals) => (this.typeProprio = vals || [])),
+      this.loadAndAssign(subrouteBesoinAppuis, (vals) => (this.typebesoinAppuis = vals || [])),
+      this.loadAndAssign(subrouteValidationCa, (vals) => (this.typeValidationCa = vals || [])),
+      this.loadAndAssign(subroutePriorite, (vals) => (this.typePriorite = vals || [])),
+      this.loadAndAssign(subrouteStatus, (vals) => (this.typeStatus = vals || [])),
+      this.loadAndAssign(subrouteProchaineEtape, (vals) => (this.typeProchEtape = vals || [])),
+    ];
+    await Promise.all(loaders);
+    if (this.failedSelects.length > 0) {
+      const msg = `Échec chargement listes: ${this.failedSelects.join(', ')}`;
+      this.snackBar.open(msg, 'OK', { duration: 8000 });
+      console.warn('Endpoints failed:', this.failedSelects);
+    }
+
+
+
+
     // Initialisation du filtrage pour l'autocomplete commune
     // Synchronisation communeCtrl <-> pmfu_commune (FormGroup)
     this.communeCtrl.valueChanges.subscribe(value => {
@@ -257,20 +405,33 @@ export class DetailPmfuComponent {
       let filterValue = '';
       if (typeof value === 'string') {
         filterValue = value.toLowerCase();
-        // Recherche d'une commune correspondante
+        // Recherche d'une commune correspondante par nom exact
         const found = this.communes.find(commune =>
           commune.nom.toLowerCase() === filterValue
         );
-        this.pmfuForm.get('pmfu_commune')?.setValue(found ? found.insee : '');
-        console.log('[setValue] pmfu_commune <-', found ? found.insee : '', '(communeCtrl string)');
-            } else if (value && typeof value === 'object' && 'nom' in value) {
-              filterValue = (value as Commune).nom.toLowerCase();
-        this.pmfuForm.get('pmfu_commune')?.setValue((value as Commune).insee);
-        console.log('[setValue] pmfu_commune <-', (value as Commune).insee, '(communeCtrl object)');
-              console.log("Valeur du champ commune : " + this.pmfuForm.get('pmfu_commune')?.value + ' ' + (typeof this.pmfuForm.get('pmfu_commune')?.value));
-            }
+        if (found) {
+          // Mettre à jour les champs utilisés pour la persistance
+          this.pmfuForm.get('pmfu_commune_insee')?.setValue(found.insee);
+          this.pmfuForm.get('pmfu_commune_nom')?.setValue(found.nom);
+          this.pmfuForm.get('pmfu_commune')?.setValue(found.insee);
+          console.log('[setValue] pmfu_commune_insee/nom <-', found.insee, found.nom, '(communeCtrl string match)');
+        } else {
+          // Aucune correspondance exacte -> vider les valeurs d'identification
+          this.pmfuForm.get('pmfu_commune_insee')?.setValue('');
+          this.pmfuForm.get('pmfu_commune_nom')?.setValue('');
+          this.pmfuForm.get('pmfu_commune')?.setValue('');
+          console.log('[clear] pmfu_commune_* <- (communeCtrl string no match)');
+        }
+      } else if (value && typeof value === 'object' && 'nom' in value) {
+        filterValue = (value as Commune).nom.toLowerCase();
+        const sel = value as Commune;
+        this.pmfuForm.get('pmfu_commune_insee')?.setValue(sel.insee);
+        this.pmfuForm.get('pmfu_commune_nom')?.setValue(sel.nom);
+        this.pmfuForm.get('pmfu_commune')?.setValue(sel.insee);
+        console.log('[setValue] pmfu_commune_insee/nom <-', sel.insee, sel.nom, '(communeCtrl object)');
+      }
 
-      // Filtrage de la liste
+      // Filtrage de la liste pour l'autocomplete
       this.filteredCommunes = this.communes.filter(commune =>
         commune.nom.toLowerCase().includes(filterValue)
       );
@@ -287,8 +448,11 @@ export class DetailPmfuComponent {
     this.formService.getSelectValues$('sites/selectvalues=admin.salaries/')
       .subscribe((selectValues: SelectValue[] | undefined) => {
         this.salaries = selectValues || [];
-        console.log('this.salaries : ');
+        console.log('LISTE DE CHOIX this.salaries : ');
         console.log(this.salaries);
+        // Filtrage en TypeScript (la syntaxe de pipe `| filterBy` n'est valide que dans les templates)
+        const operationnels = (this.salaries || []).filter(s => Boolean((s as any).is_ope));
+        console.log('LISTE DE CHOIX this.salaries (opérationnels filtrés) :', operationnels);
       });
 
     // Récupérer les données d'un projet ou créer un nouveau projet
@@ -442,7 +606,7 @@ export class DetailPmfuComponent {
    */
   subscribeDepartementCommunes(departementControl: FormControl | null, communeControl: FormControl | null, dynCommunesCtl: FormControl | null) {
     if (!departementControl) return;
-    departementControl.valueChanges.subscribe(async (insee: string) => {
+    const loadCommunes = async (insee: string | null, resetControls = true) => {
       if (insee) {
         const communesRaw = await this.geoService.apiGeoCommunesUrl(insee);
         this.communes = communesRaw.map((item: any) => ({
@@ -451,18 +615,54 @@ export class DetailPmfuComponent {
           population: item.population ?? 0,
           codeposte: item.codeposte ?? ''
         }));
+        // Remplir aussi la liste filtrée pour que l'autocomplete affiche immédiatement
+        this.filteredCommunes = this.communes.slice();
         console.log('🗺️ Communes chargées pour le département ' + insee + ' :', this.communes);
         this.cdr.detectChanges();
       } else {
         this.communes = [];
+        this.filteredCommunes = [];
       }
 
-      // Réinitialiser le contrôle de la commune
-      if (communeControl && dynCommunesCtl) {
+      // Réinitialiser le contrôle de la commune uniquement si demandé (changement de département)
+      if (resetControls && communeControl && dynCommunesCtl) {
         communeControl.reset();
         dynCommunesCtl.reset();
-      };
+        // Effacer aussi le nom de la commune dans le formulaire
+        this.pmfuForm?.get('pmfu_commune_nom')?.setValue('');
+        // Effacer aussi l'insee de la commune pour éviter incohérences
+        this.pmfuForm?.get('pmfu_commune_insee')?.setValue('');
+        // Conserver compatibilité avec l'ancien champ pmfu_commune si utilisé ailleurs
+        this.pmfuForm?.get('pmfu_commune')?.setValue('');
+      }
+
+      // Si une commune est déjà sélectionnée (cas d'ouverture d'une fiche existante),
+      // synchroniser le contrôle autocomplete et stocker le nom dans pmfu_commune_nom
+      const currentInsee = communeControl?.value || this.pmfuForm?.get('pmfu_commune')?.value;
+      if (currentInsee && this.communes && this.communes.length > 0) {
+        const found = this.communes.find(c => c.insee === currentInsee);
+        if (found) {
+          // Mettre à jour le FormControl utilisé par l'autocomplete pour afficher le libellé
+          if (dynCommunesCtl) dynCommunesCtl.setValue(found, { emitEvent: false });
+          // Stocker le nom de la commune dans le formulaire principal
+          this.pmfuForm?.get('pmfu_commune_nom')?.setValue(found.nom);
+          // Stocker l'insee de la commune (champ utilisé pour la persistance)
+          this.pmfuForm?.get('pmfu_commune_insee')?.setValue(found.insee);
+          // Garder aussi le champ historique `pmfu_commune` en synchro
+          this.pmfuForm?.get('pmfu_commune')?.setValue(found.insee);
+        }
+      }
+    };
+
+    // Sur changement de département (interaction utilisateur), on recharge et on réinitialise la commune
+    departementControl.valueChanges.subscribe((insee: string) => {
+      void loadCommunes(insee, true);
     });
+
+    // Si le contrôle département contient déjà une valeur (ouverture d'une fiche existante), charger immédiatement
+    if (departementControl.value) {
+      void loadCommunes(departementControl.value, false);
+    }
   }
 
   /**
@@ -476,12 +676,49 @@ export class DetailPmfuComponent {
     try {
       // Récupération des données du projet
       this.pmfu = (await this.fetch(this.projetLite.pmfu_id)) as ProjetMfu;
-      this.communeNomReadonly = (await this.getCommuneByInsee(this.pmfu.pmfu_commune || ''))?.nom || '';
-      console.log('Nom de la commune en lecture seule :', this.communeNomReadonly);
+      // Ne pas toucher à `pmfuForm` ici (il n'est pas encore initialisé)
+
+      // Récupérer la commune via l'INSEE du projet chargé.
+      // Ne pas utiliser this.pmfuForm ici car il n'est pas encore initialisé.
+      const currentInsee = this.pmfu?.pmfu_commune_insee || null;
+      let communeChargee: {success: boolean, data?: string, mode: string} | undefined;
+      if (currentInsee) {
+        communeChargee = await this.geoService.apiGeoCommuneByInsee(currentInsee, 'nom');
+        // Mettre à jour le libellé en lecture seule si trouvé
+        this.communeNomReadonly = communeChargee?.data || this.communeNomReadonly;
+      }
+      console.warn('Commune chargée pour le projet :', communeChargee);
 
       // Réaffecter le titre, formulaire, etc.
       this.updatePmfuTitle();
+
+      // Créer les formulaires avec les données récupérées
       this.pmfuForm = this.formService.newPmfuForm(this.pmfu);
+      // Appliquer l'INSEE et le nom de la commune dans le formulaire et préremplir
+      // le contrôle d'autocomplete `communeCtrl` pour afficher le libellé.
+      if (currentInsee) {
+        // Stocker l'insee dans le formGroup (champ présent dans le form builder)
+        this.pmfuForm.get('pmfu_commune_insee')?.setValue(currentInsee);
+        // Si l'API a renvoyé le nom, le mettre dans le champ pmfu_commune_nom
+        if (communeChargee && communeChargee.data) {
+          this.pmfuForm.get('pmfu_commune_nom')?.setValue(communeChargee.data);
+          // Construire un objet Commune minimal pour l'autocomplete
+          const prefillCommune: Commune = {
+            insee: currentInsee,
+            nom: communeChargee.data,
+            population: 0,
+            codeposte: ''
+          };
+          // Préremplir le FormControl utilisé par l'autocomplete sans déclencher d'événement
+          this.communeCtrl.setValue(prefillCommune, { emitEvent: false });
+          // S'assurer que la liste de communes contient cet élément pour permettre
+          // l'ouverture immédiate du panel et le filtrage
+          if (!this.communes.find(c => c.insee === currentInsee)) {
+            this.communes.unshift(prefillCommune);
+            this.filteredCommunes = this.communes.slice();
+          }
+        }
+      }
       this.initialFormValues = this.pmfuForm.value;
       this.docForm = this.formService.newDocForm(this.pmfu);
       const typeToField: Record<string, number | undefined> = {

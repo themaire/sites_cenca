@@ -16,6 +16,29 @@
 .delete-wrapper:hover .delete-icon {
   color: #ff0000; /* rouge pur au hover */
 }
+
+/* Bouton clear pour réinitialiser les mat-select */
+.clear-btn {
+  color: rgba(0, 0, 0, 0.54);
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #d32f2f; /* rouge Material */
+    
+    mat-icon {
+      color: #d32f2f;
+    }
+  }
+}
+
+/* Style pour les textarea en lecture seule avec retour à la ligne automatique */
+.textarea {
+  resize: none;
+  overflow: auto;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
 @import "../../../../styles/mixins.scss";
 @import "../../../../styles/variables.scss";
 

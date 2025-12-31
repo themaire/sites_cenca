@@ -15,8 +15,8 @@ export interface Salarie {
     typ_fonction: string;
     identifiant: string;
     sal_role: string;
-    date_embauche?: string;
-    date_depart?: string;
+    date_embauche?: Date;
+    date_depart?: Date;
 }
 
 export interface Groupes {
