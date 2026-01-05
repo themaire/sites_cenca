@@ -411,15 +411,15 @@
             <mat-label>Échéances</mat-label>
             <ng-container *ngIf="isEditPmfu; else echeancesReadonly">
               <input matInput [matDatepicker]="echeancesPicker" formControlName="pmfu_echeances" />
-              <mat-datepicker-toggle matSuffix [for]="echeancesPicker"></mat-datepicker-toggle>
-              <mat-datepicker #echeancesPicker></mat-datepicker>
             </ng-container>
-            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_echeances')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_echeances')?.setValue(null); $event.stopPropagation()">
-              <mat-icon>close</mat-icon>
-            </button>
             <ng-template #echeancesReadonly>
               <input matInput [value]="pmfuForm.get('pmfu_echeances')?.value | date:'dd/MM/yyyy'" readonly />
             </ng-template>
+            <mat-datepicker-toggle *ngIf="isEditPmfu" matSuffix [for]="echeancesPicker"></mat-datepicker-toggle>
+            <mat-datepicker #echeancesPicker></mat-datepicker>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_echeances')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_echeances')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
           </mat-form-field>
 
           <mat-form-field appearance="fill">
