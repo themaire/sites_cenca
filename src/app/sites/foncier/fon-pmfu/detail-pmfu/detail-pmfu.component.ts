@@ -162,6 +162,15 @@ export class DetailPmfuComponent {
       .join(', ');
   }
 
+  getTerritoiresLibelles(): string {
+    const values = this.pmfuForm?.get('pmfu_territoire')?.value;
+    if (!values || !Array.isArray(values) || values.length === 0) return '';
+    return values
+      .map(cd => this.formService.getLibelleByCdType(cd, this.typeTerritoire))
+      .filter(Boolean)
+      .join(', ');
+  }
+
   newPmfu: boolean = false;  
   pmfuForm!: FormGroup;
   initialFormValues!: ProjetMfu;
@@ -219,6 +228,7 @@ export class DetailPmfuComponent {
   typePriorite!: SelectValue[];
   typeStatus!: SelectValue[];
   typeProchEtape!: SelectValue[];
+  typeTerritoire!: SelectValue[];
 
   // Endpoints qui ont échoué lors du chargement des listes de choix
   failedSelects: string[] = [];
@@ -373,6 +383,7 @@ export class DetailPmfuComponent {
     const subroutePriorite = `sites/selectvalues=${'sitcenca.libelles'}/priorite`;
     const subrouteStatus = `sites/selectvalues=${'sitcenca.libelles'}/status`;
     const subrouteProchaineEtape = `sites/selectvalues=${'sitcenca.libelles'}/prochaine_etape`;
+    const subrouteTerritoire = `sites/selectvalues=${'sitcenca.libelles'}/territoire`;
     // Lancer les chargements et attendre qu'ils soient terminés pour pouvoir
     // afficher une alerte globale si certains endpoints ont échoué.
     const loaders = [
@@ -385,6 +396,7 @@ export class DetailPmfuComponent {
       this.loadAndAssign(subroutePriorite, (vals) => (this.typePriorite = vals || [])),
       this.loadAndAssign(subrouteStatus, (vals) => (this.typeStatus = vals || [])),
       this.loadAndAssign(subrouteProchaineEtape, (vals) => (this.typeProchEtape = vals || [])),
+      this.loadAndAssign(subrouteTerritoire, (vals) => (this.typeTerritoire = vals || [])),
     ];
     await Promise.all(loaders);
     if (this.failedSelects.length > 0) {

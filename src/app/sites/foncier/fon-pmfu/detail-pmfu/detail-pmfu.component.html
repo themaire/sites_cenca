@@ -240,10 +240,22 @@
             </ng-template>
           </mat-form-field>
 
-          <!-- <mat-form-field appearance="fill">
+          <mat-form-field appearance="fill">
             <mat-label>Territoire</mat-label>
-            <input matInput formControlName="pmfu_territoire" [readonly]="!isEditPmfu" />
-          </mat-form-field> -->
+            <ng-container *ngIf="isEditPmfu; else TerritReadonly">
+              <mat-select formControlName="pmfu_territoire" multiple>
+                <mat-option *ngFor="let type of typeTerritoire" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_territoire')?.value?.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_territoire')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #TerritReadonly>
+              <textarea matInput [value]="getTerritoiresLibelles()" readonly rows="2" class="textarea"></textarea>
+            </ng-template>
+          </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>Superficie (ha)</mat-label>
