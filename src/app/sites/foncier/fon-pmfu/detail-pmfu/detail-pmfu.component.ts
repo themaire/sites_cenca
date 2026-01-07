@@ -177,6 +177,8 @@ export class DetailPmfuComponent {
   isFormValid: boolean = false;
     
   salaries: SelectValue[] = [];
+  cd_salarie: string | null = null; // Code salarié de l'utilisateur connecté
+  gro_id: number | null = null; // Groupe de l'utilisateur connecté
   pmfuTitle: String = '';
   
   
@@ -453,7 +455,8 @@ export class DetailPmfuComponent {
     this.doc_types = this.docfileService.doc_types;
     this.initializeAllowedTypes();
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
-    const cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
+    this.cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
+    this.gro_id = this.loginService.user()?.gro_id || null; // Groupe de l'utilisateur connecté
 
     // Récupérer les valeurs pour les selects
     // Récupérer les salariés pour créateur et responsable
@@ -486,7 +489,7 @@ export class DetailPmfuComponent {
             this.initialFormValues = this.pmfuForm.value; // Garder une copie des valeurs initiales du formulaire
             this.docForm = this.formService.newDocForm();
 
-            console.log(this.docForm);
+            // console.log(this.docForm);
             this.cdr.detectChanges();
           }
           // Souscrire aux changements du statut du formulaire principal (projetForm)
@@ -525,7 +528,7 @@ export class DetailPmfuComponent {
         // Créer un formulaire vide
         // Le form_group correspondant aux projet neuf à créer
         this.pmfuForm = this.formService.newPmfuForm(undefined, 0);
-        console.log('Formulaire de projet créé :', this.pmfuForm.value);
+        // console.log('Formulaire de projet créé :', this.pmfuForm.value);
 
         // Marquer le champ comme touché pour déclencher la validation
         // this.pmfuForm.get('pmfu_commune')?.setValue('');
@@ -555,8 +558,8 @@ export class DetailPmfuComponent {
           .subscribe((selectValues: SelectValue[] | undefined) => {
             this.salaries = selectValues || [];
             this.pmfuForm.patchValue({
-              pmfu_responsable: cd_salarie ? cd_salarie : '',
-              pmfu_createur: cd_salarie,
+              pmfu_responsable: this.cd_salarie ? this.cd_salarie : '',
+              pmfu_createur: this.cd_salarie,
             });
           });
 

@@ -12,5 +12,7 @@ export const environment = {
     get pathSep() {
         // Si la propriété windows est à true, on utilise '\\', sinon '/'
         return this.windows ? '\\' : '/';
-    }
+    },
+
+    apiBaseDir : "/mnt/storage_data/app"
 };
