@@ -782,13 +782,14 @@ export class OperationComponent implements OnInit, OnDestroy {
           this.formService.isDateModified(this.step4Form, 'date_fin', this.operation?.date_fin)
         ) {
           // console.log("Une des 3 dates à été modifiée par l'utilisateur.");
+          console.log("Dates avant le formatage : ", this.formService.formatDateToPostgres(this.step4Form.get('date_debut')?.value), this.formService.formatDateToPostgres(this.step4Form.get('date_fin')?.value));
           this.step4Form.patchValue({
             date_debut: this.formService.formatDateToPostgres(this.step4Form.get('date_debut')?.value),
             date_fin: this.formService.formatDateToPostgres(this.step4Form.get('date_fin')?.value),
           });
-          // console.log("Formulaire patché avec les bonnes dates: ", this.form.value);
+          console.log("Formulaire patché avec les bonnes dates: ", this.form.value);
         }
-        
+
 
         // Nouvelle opération
         if (this.isAddOperation === true){

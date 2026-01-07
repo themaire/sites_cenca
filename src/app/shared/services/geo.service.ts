@@ -39,8 +39,15 @@ export class GeoService {
     }));
   }
 
-  async apiGeoCommuneByInsee(insee: string): Promise<Commune> {
-    const response = await fetch(this.activeUrl + 'api-geo/commune/' + insee);
+  /** Récupère les informations d'une commune par son code INSEE
+   * Si on ne précise pas le mode, toutes les infos sont retournées (mode 'full'), sinon utilisez un des paramètres disponibles (ex: 'nom')
+   * @param insee Code INSEE de la commune
+   * @param mode Mode de retour (full pour toutes les infos (PAR DEFAUT), nom pour avoir le nom seulement, etc.
+   * @returns Promise avec les infos de la commune
+  */
+
+  async apiGeoCommuneByInsee(insee: string, mode: string = 'full'): Promise<{success: boolean, data?: string, mode: string}> {
+    const response = await fetch(this.activeUrl + 'api-geo/commune/' + insee + '/' + mode);
     if (!response.ok) {
       throw new Error('Failed to fetch commune');
     }

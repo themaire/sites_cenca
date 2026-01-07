@@ -9,16 +9,41 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+import 'moment/locale/fr';
 
 import { AdminService } from '../../admin.service';
 import { FormAdmin } from '../../form-admin'
+import { FormService } from '../../../shared/services/form.service';
 import { Salarie } from '../../admin';
 import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.component';
 import { ConfirmationService } from '../../../shared/services/confirmation.service';
 
+// Configuration des formats de date
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
 @Component({
   selector: 'app-admin-user-dialog',
   standalone: true,
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    provideMomentDateAdapter(),
+  ],
   imports: [
     CommonModule,
     MatDialogModule,
@@ -27,6 +52,8 @@ import { ConfirmationService } from '../../../shared/services/confirmation.servi
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     ReactiveFormsModule,
     FormButtonsComponent,
   ],
@@ -54,6 +81,7 @@ export class AdminUserDialogComponent implements OnInit {
     private adminService: AdminService,
     private confirmationService: ConfirmationService,
     private formAdmin: FormAdmin,
+    private formService: FormService,
     private dialogRef: MatDialogRef<AdminUserDialogComponent>,
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: { cd_salarie: string },
@@ -110,6 +138,10 @@ export class AdminUserDialogComponent implements OnInit {
       // Effectuer la création de l'utilisateur via le service adminService
       // Nous faisons cela au travers / dans l'observable retourné par putBdd()
       const cd_salarie = this.user?.cd_salarie || '';
+      this.userForm.patchValue({
+        date_embauche: this.formService.formatDateToPostgres(this.userForm.get('date_embauche')?.value),
+        date_depart: this.formService.formatDateToPostgres(this.userForm.get('date_depart')?.value),
+      })
       const submitObservable = this.formAdmin.putbdd('update', 'salaries', this.userForm, this.isEditActive, this.snackBar, cd_salarie, this.initialFormValues);
       
       // S'abonner à l'observable pour gérer la réponse

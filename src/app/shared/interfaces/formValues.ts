@@ -10,4 +10,5 @@ export interface SelectValue {
     categorie?: string;
     coef_ugb?: number;
     niveau?: number;
+    is_ope?: boolean;
   }

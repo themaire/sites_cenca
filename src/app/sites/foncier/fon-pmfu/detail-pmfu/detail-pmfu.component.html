@@ -48,6 +48,13 @@
           (onSubmit)="onSubmit()"
         ></app-form-buttons>
       </div>
+
+      <div class="title-container">
+        <ng-container
+          *ngTemplateOutlet="newPmfu ? newTitle : title"
+        ></ng-container>
+      </div>
+      
       <div class="suppression" *ngIf="!isAddPmfu && !newPmfu">
         <button mat-button (click)="deletePmfuConfirm()">
           Supprimer le projet
@@ -55,11 +62,6 @@
       </div>
     </div>
     <!-- 2eme element -->
-    <div class="title-container">
-      <ng-container
-        *ngTemplateOutlet="newPmfu ? newTitle : title"
-      ></ng-container>
-    </div>
 
     <ng-template #title>
       <div class="title-wrapper">
@@ -85,59 +87,67 @@
 
       <!-- Formulaire mutualisé édition/lecture seule -->
       <form [formGroup]="pmfuForm" class="first-step">
+
         <div class="form-row">
+
           <mat-form-field appearance="fill">
             <mat-label>Nom du projet</mat-label>
             <input matInput formControlName="pmfu_nom" [readonly]="!isEditPmfu" />
           </mat-form-field>
-        </div>
-        <div class="form-row">
 
-          <mat-form-field appearance="fill">
-            <mat-label>Responsable</mat-label>
-            <ng-container *ngIf="isEditPmfu; else responsableReadonly">
-              <mat-select formControlName="pmfu_responsable">
-                <mat-option *ngFor="let salarie of salaries" [value]="salarie.cd_type">
-                  {{ salarie.libelle }}
-                </mat-option>
-              </mat-select>
-            </ng-container>
-            <ng-template #responsableReadonly>
-              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_responsable')?.value, salaries)" readonly />
-            </ng-template>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Créateur du projet</mat-label>
-            <input matInput formControlName="pmfu_createur" [readonly]="!isEditPmfu" />
-          </mat-form-field>
+          <mat-label>Mesures compensatoires</mat-label>
+          <mat-checkbox formControlName="pmfu_mes_comp" [disabled]="!isEditPmfu"></mat-checkbox>
 
         </div>
-        <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Collègue associé</mat-label>
-            <ng-container *ngIf="isEditPmfu; else associeReadonly">
-              <mat-select formControlName="pmfu_associe">
-                <mat-option *ngFor="let salarie of salaries" [value]="salarie.cd_type">
-                  {{ salarie.libelle }}
-                </mat-option>
-              </mat-select>
-            </ng-container>
-            <ng-template #associeReadonly>
-              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_associe')?.value, salaries)" readonly />
-            </ng-template>
-          </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Agence</mat-label>
-            <input matInput formControlName="pmfu_agence" [readonly]="!isEditPmfu" />
-          </mat-form-field>
-        </div>
         <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Territoire</mat-label>
-            <input matInput formControlName="pmfu_territoire" [readonly]="!isEditPmfu" />
-          </mat-form-field>
+        
+        <!-- <div *ngFor="let salarie of salaries | filterBy:'is_ope':1">
+          <div>{{ salarie.libelle }} - is_ope :{{ salarie.is_ope }}</div>
+        </div> -->
+
+        <mat-form-field appearance="fill">
+          <mat-label>Responsable</mat-label>
+          <ng-container *ngIf="isEditPmfu; else responsableReadonly">
+            <mat-select formControlName="pmfu_responsable">
+              <mat-option *ngFor="let salarie of salaries | filterBy:'is_ope':1" [value]="salarie.cd_type">
+                {{ salarie.libelle }}
+              </mat-option>
+            </mat-select>
+          </ng-container>
+          <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_responsable')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_responsable')?.setValue(null); $event.stopPropagation()">
+            <mat-icon>close</mat-icon>
+          </button>
+          <ng-template #responsableReadonly>
+            <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_responsable')?.value, salaries)" readonly />
+          </ng-template>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Collègue associé</mat-label>
+          <ng-container *ngIf="isEditPmfu; else associeReadonly">
+            <mat-select formControlName="pmfu_associe">
+              <mat-option *ngFor="let salarie of salaries | filterBy:'is_ope':1" [value]="salarie.cd_type">
+                {{ salarie.libelle }}
+              </mat-option>
+            </mat-select>
+          </ng-container>
+          <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_associe')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_associe')?.setValue(null); $event.stopPropagation()">
+            <mat-icon>close</mat-icon>
+          </button>
+          <ng-template #associeReadonly>
+            <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_associe')?.value, salaries)" readonly />
+          </ng-template>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Créateur du projet</mat-label>
+          <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_createur')?.value, salaries)" [readonly]="!isEditPmfu" />
+        </mat-form-field>
+
+        </div>
+
+        <div class="form-row">
 
           <mat-form-field appearance="fill">
             <mat-label>Département</mat-label>
@@ -149,6 +159,9 @@
                 <mat-option value="52">Haute-Marne</mat-option>
               </mat-select>
             </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_dep')?.value && !communeCtrl.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_dep')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
             <ng-template #departementReadonly>
               <input matInput [value]="getDepartementLibelle(pmfuForm.get('pmfu_dep')?.value)" readonly />
             </ng-template>
@@ -164,8 +177,83 @@
                 </mat-option>
               </mat-autocomplete>
             </ng-container>
+            <button *ngIf="isEditPmfu && communeCtrl.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="clearCommune(); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
             <ng-template #communeReadonly>
               <input matInput [value]="communeNomReadonly" readonly />
+            </ng-template>
+          </mat-form-field>
+          
+          <mat-form-field appearance="fill">
+            <mat-label>Type d'acte</mat-label>
+            <ng-container *ngIf="isEditPmfu; else typeActeReadonly">
+              <mat-select formControlName="pmfu_type_acte">
+                <mat-option *ngFor="let type of typeActe" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_type_acte')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_type_acte')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #typeActeReadonly>
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_type_acte')?.value, typeActe)" readonly />
+            </ng-template>
+          </mat-form-field>
+
+        </div>
+
+        <div class="form-row">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Validation bureau/CA</mat-label>
+            <ng-container *ngIf="isEditPmfu; else validCaReadonly">
+              <mat-select formControlName="pmfu_validation">
+                <mat-option *ngFor="let type of typeValidationCa" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_validation')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_validation')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #validCaReadonly>
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_validation')?.value, typeValidationCa)" readonly />
+            </ng-template>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Territoire Agence Eau</mat-label>
+            <ng-container *ngIf="isEditPmfu; else agenceReadonly">
+              <mat-select formControlName="pmfu_agence" multiple>
+                <mat-option *ngFor="let type of typeAgence" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_agence')?.value?.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_agence')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #agenceReadonly>
+              <textarea matInput [value]="getAgencesLibelles()" readonly rows="2" class="textarea"></textarea>
+            </ng-template>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Territoire</mat-label>
+            <ng-container *ngIf="isEditPmfu; else TerritReadonly">
+              <mat-select formControlName="pmfu_territoire" multiple>
+                <mat-option *ngFor="let type of typeTerritoire" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_territoire')?.value?.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_territoire')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #TerritReadonly>
+              <textarea matInput [value]="getTerritoiresLibelles()" readonly rows="2" class="textarea"></textarea>
             </ng-template>
           </mat-form-field>
 
@@ -173,79 +261,215 @@
             <mat-label>Superficie (ha)</mat-label>
             <input matInput formControlName="pmfu_superficie" type="number" [readonly]="!isEditPmfu" />
           </mat-form-field>
+
         </div>
+
         <div class="form-row">
+
           <mat-form-field appearance="fill">
             <mat-label>Année de début</mat-label>
-            <input matInput formControlName="pmfu_annee_debut" type="number" [readonly]="!isEditPmfu" />
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Type d'acte</mat-label>
-            <input matInput formControlName="pmfu_type_acte" [readonly]="!isEditPmfu" />
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Propriétaire</mat-label>
-            <input matInput formControlName="pmfu_proprietaire" [readonly]="!isEditPmfu" />
+            <input matInput formControlName="pmfu_annee_debut" type="number" [readonly]="!isEditPmfu" min="2025" max="2099" />
+            <mat-error *ngIf="pmfuForm.get('pmfu_annee_debut')?.hasError('min')">
+              L'année doit être supérieure ou égale à 2025.
+            </mat-error>
+            <mat-error *ngIf="pmfuForm.get('pmfu_annee_debut')?.hasError('max')">
+              L'année doit être inférieure à 2100.
+            </mat-error>
           </mat-form-field>
 
-            <mat-label>Mesures compensatoires</mat-label>
-            <mat-checkbox formControlName="pmfu_mes_comp" [disabled]="!isEditPmfu"></mat-checkbox>
+          <mat-form-field appearance="fill">
+            <mat-label>Année de signature</mat-label>
+            <input matInput formControlName="pmfu_annee_signature" type="number" [readonly]="!isEditPmfu" [min]="anneeSignatureMin" max="2099" />
+            <mat-error *ngIf="pmfuForm.get('pmfu_annee_signature')?.hasError('yearBeforeStart')">
+              L'année de signature doit être supérieure ou égale à l'année de début.
+            </mat-error>
+            <mat-error *ngIf="pmfuForm.get('pmfu_annee_signature')?.hasError('min')">
+              L'année doit être supérieure ou égale à 2025.
+            </mat-error>
+            <mat-error *ngIf="pmfuForm.get('pmfu_annee_signature')?.hasError('max')">
+              L'année doit être inférieure à 2100.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Type de propriétaire</mat-label>
+            <ng-container *ngIf="isEditPmfu; else proprioReadonly">
+              <mat-select formControlName="pmfu_proprietaire" multiple>
+                <mat-option *ngFor="let type of typeProprio" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_proprietaire')?.value?.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_proprietaire')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #proprioReadonly>
+              <textarea matInput [value]="getProprietairesLibelles()" readonly rows="2" class="readonly-textarea"></textarea>
+            </ng-template>
+          </mat-form-field>
+
+          
+
         </div>
         <div class="form-row">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Financements envisagés</mat-label>
+            <ng-container *ngIf="isEditPmfu; else financementsReadonly">
+              <mat-select formControlName="pmfu_financements" multiple>
+                <mat-option *ngFor="let type of typeFinancement" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_financements')?.value?.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_financements')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #financementsReadonly>
+              <textarea matInput [value]="getFinancementsLibelles()" readonly rows="2" class="textarea"></textarea>
+            </ng-template>
+          </mat-form-field>
+
           <mat-form-field appearance="fill">
             <mat-label>Coût estimé</mat-label>
             <input matInput formControlName="pmfu_cout" [readonly]="!isEditPmfu" />
+            <span matTextSuffix> €</span>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_cout')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_cout')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
           </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Financements envisagés</mat-label>
-            <input matInput formControlName="pmfu_financements" [readonly]="!isEditPmfu" />
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Validation bureau/CA</mat-label>
-            <input matInput formControlName="pmfu_validation" [readonly]="!isEditPmfu" />
-          </mat-form-field>
+
         </div>
+
         <div class="form-row">
+
           <mat-form-field appearance="fill">
             <mat-label>Besoin d'appui</mat-label>
-            <input matInput formControlName="pmfu_appui" [readonly]="!isEditPmfu" />
+            <ng-container *ngIf="isEditPmfu; else appuiReadonly">
+              <mat-select formControlName="pmfu_appui" multiple>
+                <mat-option *ngFor="let type of typebesoinAppuis" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_appui')?.value?.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_appui')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #appuiReadonly>
+              <textarea matInput [value]="getAppuisLibelles()" readonly rows="2" class="textarea"></textarea>
+            </ng-template>
           </mat-form-field>
-          <mat-form-field appearance="fill">
+
+          <mat-form-field appearance="fill" *ngIf="pmfuForm.get('pmfu_appui')?.value?.length > 0">
             <mat-label>Description appui</mat-label>
             <textarea matInput formControlName="pmfu_appui_desc" rows="3" [readonly]="!isEditPmfu"></textarea>
           </mat-form-field>
+
+        </div>
+
+        <div class="form-row">
+
           <mat-form-field appearance="fill">
             <mat-label>Priorité</mat-label>
-            <input matInput formControlName="pmfu_priorite" [readonly]="!isEditPmfu" />
+            <ng-container *ngIf="isEditPmfu; else prioriteReadonly">
+              <mat-select formControlName="pmfu_priorite">
+                <mat-option *ngFor="let type of typePriorite" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_priorite')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_priorite')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #prioriteReadonly>
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_priorite')?.value, typePriorite)" readonly />
+            </ng-template>
           </mat-form-field>
+
           <mat-form-field appearance="fill">
             <mat-label>Status</mat-label>
-            <input matInput formControlName="pmfu_status" [readonly]="!isEditPmfu" />
+            <ng-container *ngIf="isEditPmfu; else statusReadonly">
+              <mat-select formControlName="pmfu_status">
+                <mat-option *ngFor="let type of typeStatus" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_status')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_status')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #statusReadonly>
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_status')?.value, typeStatus)" readonly />
+            </ng-template>
           </mat-form-field>
+
         </div>
+
         <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Année de signature</mat-label>
-            <input matInput formControlName="pmfu_annee_signature" type="number" [readonly]="!isEditPmfu" />
-          </mat-form-field>
+          
           <mat-form-field appearance="fill">
             <mat-label>Échéances</mat-label>
-            <input matInput formControlName="pmfu_echeances" [readonly]="!isEditPmfu" />
+            <ng-container *ngIf="isEditPmfu; else echeancesReadonly">
+              <input matInput [matDatepicker]="echeancesPicker" formControlName="pmfu_echeances" />
+            </ng-container>
+            <ng-template #echeancesReadonly>
+              <input matInput [value]="pmfuForm.get('pmfu_echeances')?.value | date:'dd/MM/yyyy'" readonly />
+            </ng-template>
+            <mat-datepicker-toggle *ngIf="isEditPmfu" matSuffix [for]="echeancesPicker"></mat-datepicker-toggle>
+            <mat-datepicker #echeancesPicker></mat-datepicker>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_echeances')?.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_echeances')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Dernière MAJ</mat-label>
+            <input matInput [value]="pmfuForm.get('pmfu_derniere_maj')?.value | date:'dd/MM/yyyy'" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Création</mat-label>
+            <input matInput [value]="pmfuForm.get('pmfu_creation')?.value | date:'dd/MM/yyyy'" readonly />
           </mat-form-field>
         </div>
+
         <div class="form-row">
+          
           <mat-form-field appearance="fill">
             <mat-label>Prochaines étapes</mat-label>
-            <textarea matInput formControlName="pmfu_proch_etape" rows="3" [readonly]="!isEditPmfu"></textarea>
+            <ng-container *ngIf="isEditPmfu; else prochEtapesReadonly">
+              <mat-select formControlName="pmfu_proch_etape" multiple>
+                <mat-option *ngFor="let type of typeProchEtape" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_proch_etape')?.value?.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_proch_etape')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #prochEtapesReadonly>
+              <textarea matInput [value]="getEtapesLibelles()" readonly rows="2" class="textarea"></textarea>
+            </ng-template>
           </mat-form-field>
+        
+        </div>
+
+        <div class="form-row">
+
           <mat-form-field appearance="fill">
             <mat-label>Détails juridiques</mat-label>
-            <textarea matInput formControlName="pmfu_quest_juri" rows="3" [readonly]="!isEditPmfu"></textarea>
+            <textarea matInput formControlName="pmfu_quest_juri" rows="5" [readonly]="!isEditPmfu"></textarea>
           </mat-form-field>
+
         </div>
+
+
         <div *ngIf="isEditPmfu">
+
           <button mat-button matStepperNext>Suivant</button>
+
         </div>
+
       </form>
     </mat-step>
     
@@ -268,6 +492,7 @@
         {{ pmfuForm.get('pmfu_parc_list_array')?.value }}
       </div> -->
 
+      <!-- DEBUG -->
       <!-- <div>Parcelles selectionnées :
           <ng-container *ngFor="let parcelle of parcellesSelected; let i = index">
             Index : {{ i }} | idu : {{ parcelle.idu }}
@@ -297,6 +522,7 @@
           {{ entry.key }} : {{ entry.value }}
         </ng-container>
       </div> -->
+
 
       <!-- Contrôles pour les sites CENCA -->
       <!-- <div class="carte-controls">
@@ -340,7 +566,7 @@
           <mat-hint *ngIf="afficherSitesCenca">🌿 Sites CENCA autres dynamiques se chargent automatiquement !</mat-hint>
         </div> -->
 
-      <!-- <div class="map-container">
+      <div class="map-container">
         <app-map 
           [isEditMode]="isEditPmfu"
           [mapName]="'pmfu-' + (pmfu ? pmfu.pmfu_id : 'nouveau')"
@@ -356,7 +582,8 @@
           (parcelleRemoved)="onParcelleRemoved($event)"
           style="height: 500px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
         </app-map>
-      </div> -->
+      </div>
+
       <div class="step-actions">
         <button mat-button matStepperPrevious>Précédent</button>
         <button mat-button matStepperNext>Suivant</button>
@@ -433,6 +660,7 @@
     </mat-step>
   </mat-horizontal-stepper>
 </ng-template>
+
 <ng-template #loading>
   <div class="loading-container">
     <mat-spinner class="spinner-orange"></mat-spinner>

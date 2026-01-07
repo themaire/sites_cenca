@@ -11,6 +11,7 @@ import {
   FormControl,
   AbstractControl,
   ValidationErrors,
+  ValidatorFn,
   FormArray,
 } from '@angular/forms';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -419,7 +420,8 @@ export class FormService {
   }
 
   newPmfuForm(projet?: ProjetMfu, new_pmfu_id?: number): FormGroup {
-    return this.fb.group({
+    return this.fb.group(
+      {
       pmfu_id: [projet?.pmfu_id || new_pmfu_id],
       pmfu_nom: [projet?.pmfu_nom || ''],
       pmfu_responsable: [projet?.pmfu_responsable || null],
@@ -430,8 +432,9 @@ export class FormService {
       pmfu_dep: [projet?.pmfu_dep || ''],
       pmfu_territoire: [projet?.pmfu_territoire || null],
       pmfu_type_acte: [projet?.pmfu_type_acte || null],
-      pmfu_commune: [projet?.pmfu_commune || null, [Validators.required, inseeCommuneValidator()]],
-      pmfu_annee_debut: [projet?.pmfu_annee_debut || null],
+      pmfu_commune_insee: [projet?.pmfu_commune_insee || null, [Validators.required, inseeCommuneValidator()]],
+      pmfu_commune_nom: [projet?.pmfu_commune_nom || ''],
+      pmfu_annee_debut: [projet?.pmfu_annee_debut || null, [Validators.min(2025), Validators.max(2099)]],
       pmfu_proprietaire: [projet?.pmfu_proprietaire || ''],
       pmfu_appui: [projet?.pmfu_appui || null],
       pmfu_appui_desc: [projet?.pmfu_appui_desc || ''],
@@ -443,13 +446,60 @@ export class FormService {
       pmfu_superficie: [projet?.pmfu_superficie || null],
       pmfu_priorite: [projet?.pmfu_priorite || null],
       pmfu_status: [projet?.pmfu_status || null],
-      pmfu_annee_signature: [projet?.pmfu_annee_signature || null],
+      pmfu_annee_signature: [projet?.pmfu_annee_signature || null, [Validators.min(2025), Validators.max(2099)]],
       pmfu_echeances: [projet?.pmfu_echeances || null],
       pmfu_creation: [projet?.pmfu_creation || new Date()],
       pmfu_derniere_maj: [projet?.pmfu_derniere_maj || null],
       pmfu_parc_list_array: [projet?.pmfu_parc_list_array || []],
       pmfu_parc_list: [projet?.pmfu_parc_list || []],
-    });
+      },
+      { validators: [this.pmfuAnneeSignatureNotBeforeDebutValidator()] }
+    );
+  }
+
+  private pmfuAnneeSignatureNotBeforeDebutValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const debutCtrl = control.get('pmfu_annee_debut');
+      const signatureCtrl = control.get('pmfu_annee_signature');
+
+      if (!debutCtrl || !signatureCtrl) {
+        return null;
+      }
+
+      const debutValue = debutCtrl.value;
+      const signatureValue = signatureCtrl.value;
+
+      const debut = debutValue === null || debutValue === '' ? null : Number(debutValue);
+      const signature = signatureValue === null || signatureValue === '' ? null : Number(signatureValue);
+
+      const errorKey = 'yearBeforeStart';
+
+      const clearError = () => {
+        const current = signatureCtrl.errors;
+        if (!current || !current[errorKey]) return;
+        const { [errorKey]: _, ...rest } = current;
+        signatureCtrl.setErrors(Object.keys(rest).length ? rest : null);
+      };
+
+      if (debut === null || signature === null || Number.isNaN(debut) || Number.isNaN(signature)) {
+        clearError();
+        return null;
+      }
+
+      if (signature < debut) {
+        const current = signatureCtrl.errors ?? {};
+        if (!current[errorKey]) {
+          signatureCtrl.setErrors({
+            ...current,
+            [errorKey]: { debut, signature },
+          });
+        }
+        return { [errorKey]: true };
+      }
+
+      clearError();
+      return null;
+    };
   }
 
   newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {
@@ -677,7 +727,8 @@ export class FormService {
       pmfu_dep: formValue.pmfu_dep,
       pmfu_territoire: formValue.pmfu_territoire,
       pmfu_type_acte: formValue.pmfu_type_acte,
-      pmfu_commune: formValue.pmfu_commune,
+      pmfu_commune_insee: formValue.pmfu_commune_insee,
+      pmfu_commune_nom: formValue.pmfu_commune_nom,
       pmfu_annee_debut: formValue.pmfu_annee_debut,
       pmfu_proprietaire: formValue.pmfu_proprietaire,
       pmfu_appui: formValue.pmfu_appui,
@@ -913,8 +964,14 @@ export class FormService {
    * @param date
    * @returns annee-mois-jour
    */
-  formatDateToPostgres(date: any): string {
+  formatDateToPostgres(date: any): string | null {
     console.log('Valeur de date avant conversion :', date);
+
+    // Si la date est null ou undefined, retourner null pour Postgres
+    if (date === null || date === undefined || date === '') {
+      console.log('Date vide, retour de null');
+      return null;
+    }
 
     if (date?._isAMomentObject) {
       // Si c'est un objet Moment.js, utilisez ses méthodes pour extraire les informations
@@ -935,7 +992,7 @@ export class FormService {
     // Vérifiez à nouveau si c'est une date valide
     if (isNaN(date.getTime())) {
       console.error('La date fournie est invalide :', date);
-      return ''; // Retournez une chaîne vide ou gérez l'erreur selon vos besoins
+      return null; // Retourner null pour Postgres
     }
 
     const year = date.getFullYear();

@@ -3,5 +3,31 @@
 
 // Pour le bouton de suppression
 .suppression {
-    @include suppression-btn(#f1f5fc);
+    @include suppression-btn(#3079f8);
+}
+
+.dialog-title {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+}
+
+.same-line-flex {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.width-40-60 {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 10px;
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    @include align(center, center);
+    gap: 15px;
 }
