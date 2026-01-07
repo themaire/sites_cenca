@@ -38,7 +38,17 @@
   >
     <!-- 1er element -->
     <div class="buttons-container">
-      <div class="form-buttons">
+      <div class="form-buttons" *ngIf="
+                                projetLite.pmfu_id && (
+                                  pmfuForm.get('pmfu_responsable')?.value === cd_salarie 
+                                  ||
+                                  pmfuForm.get('pmfu_associe')?.value === cd_salarie
+                                  ||
+                                  pmfuForm.get('pmfu_createur')?.value === cd_salarie
+                                  )
+                                ||
+                                (gro_id !== null && gro_id > 2)
+                                ">
         <app-form-buttons
           [isEditActive]="isEditPmfu"
           icone="edit"
@@ -55,9 +65,19 @@
         ></ng-container>
       </div>
       
-      <div class="suppression" *ngIf="!isAddPmfu && !newPmfu">
+      <div class="suppression" *ngIf="
+                                projetLite.pmfu_id && (
+                                  pmfuForm.get('pmfu_responsable')?.value === cd_salarie 
+                                  ||
+                                  pmfuForm.get('pmfu_associe')?.value === cd_salarie
+                                  ||
+                                  pmfuForm.get('pmfu_createur')?.value === cd_salarie
+                                  )
+                                ||
+                                (gro_id !== null && gro_id > 2)
+                                ">
         <button mat-button (click)="deletePmfuConfirm()">
-          Supprimer le projet
+          Supprimer
         </button>
       </div>
     </div>

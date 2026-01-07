@@ -60,6 +60,7 @@ export class FileExploratorComponent {
   isDocxView = false;
   pdfUrl?: string;
   imageUrl?: string;
+  currentDocxUrl?: string;
   imagePathList?: string[];
   filesNames: string[][] = [];
   fileErrors: Record<string, string[]> = {};
@@ -124,6 +125,7 @@ export class FileExploratorComponent {
       })
     );
   }
+
   onFolderClick(folder: Folder): void {
     this.selectedFolder = folder.cd_type;
     // Ajouter la classe CSS 'selected' à l'élément cliqué
@@ -158,7 +160,7 @@ export class FileExploratorComponent {
     this.docfileService.docfiles.forEach((docfile: any) => {
       console.log('docfile:', docfile.doc_path);
       if (docfile.doc_path === doc_path) {
-        console.log('docfile:', docfile.doc_path);
+        // console.log('docfile:', docfile.doc_path);
         
         this.docfileService.deleteFile(docfile.doc_path).subscribe({
           next: (res) => {
@@ -240,6 +242,7 @@ export class FileExploratorComponent {
     this.previewUrl = undefined;
     this.pdfUrl = undefined;
     this.imageUrl = undefined;
+    this.currentDocxUrl = undefined;
     switch (ext) {
       case 'pdf':
         this.pdfUrl = url; // string pour vérification
@@ -249,6 +252,7 @@ export class FileExploratorComponent {
       case 'doc':
       case 'docx':
         this.isDocxView = true;
+        this.currentDocxUrl = url;
         this.renderDocx(url);
         break;
 
@@ -278,7 +282,6 @@ export class FileExploratorComponent {
       console.error('Erreur affichage DOCX :', err);
     }
   }
-
 
   getGalerie(filePathList: string[]) {
     filePathList.forEach((path) => {
@@ -316,7 +319,6 @@ export class FileExploratorComponent {
     });
   }
 
-
   deleteImage(imagePath: string) {
     console.log('imagePath:', imagePath);
     this.filePathList.forEach((docfile: any) => {
@@ -342,6 +344,7 @@ export class FileExploratorComponent {
       }
     });
   }
+
   colors = [
     '#f5fff7',
     '#e0de12',
@@ -373,7 +376,6 @@ export class FileExploratorComponent {
     return Math.abs(hash);
   }
 
-
   getColorForImage(image: string): string {
     const index = this.hashString(image) % this.colors.length;
     return this.colors[index];
@@ -387,5 +389,14 @@ export class FileExploratorComponent {
     const b = (rgb >> 0) & 0xff;
     const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
     return luminance > 150 ? '#000' : '#fff';
+  }
+
+  downloadDocx(): void {
+    if (!this.currentDocxUrl) return;
+    
+    const link = document.createElement('a');
+    link.href = this.currentDocxUrl;
+    link.download = this.currentDocxUrl.split(this.separator).pop() || 'document.docx';
+    link.click();
   }
 }

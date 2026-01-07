@@ -30,7 +30,8 @@ export class DocfileService {
   // Pour rappel activeUrl se termine par /
   // est en fonction si on est en dev Windows, dev Linux ou en prod Linux
   private activeUrl: string = environment.apiBaseUrl;
-  
+  private apiBaseDir: string = environment.apiBaseDir;
+
   hasFiles!: boolean;
   filesNames: string[][] = [];
   @ViewChildren('fileInput') fileInputs!: QueryList<
@@ -229,40 +230,14 @@ export class DocfileService {
    * @param doc_path - Chemin du document à supprimer
    * @returns 
    */
-  deleteDocfile(doc_path: string): Observable<ApiResponse> {
-    console.log(
-      'lien de suppression :',
-      `${this.activeUrl}delete/sitcenca.pmfu_docs?doc_path=${doc_path}`
-    );
-    console.log('doc_path envoyé :', doc_path);
-    return this.http
-      .delete<ApiResponse>(
-        `${this.activeUrl}delete/sitcenca.pmfu_docs?doc_path=${doc_path}`
-      )
-      .pipe(
-        map((response) => {
-          console.log('Réponse complète:', response);
-          return response; // ← Important : retourner la réponse
-        }),
-        catchError((error: HttpErrorResponse) => {
-          console.error('Erreur HTTP:', error);
-          return of({
-            success: false,
-            message: `Erreur ${error.status}: ${error.message}`,
-            code: error.status || -1,
-          } as ApiResponse);
-        })
-      );
-  }
+
   deleteFile(doc_path: string): Observable<ApiResponse> {
-    console.log(
-      'lien de suppression :',
-      `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`
-    );
+    const url = `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`;
+    console.log(`lien de suppression : ${url}`);
     console.log('doc_path envoyé :', doc_path);
     return this.http
       .delete<ApiResponse>(
-        `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`
+        url
       )
       .pipe(
         map((response) => {

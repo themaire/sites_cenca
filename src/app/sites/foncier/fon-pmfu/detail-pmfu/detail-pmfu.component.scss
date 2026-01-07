@@ -59,6 +59,12 @@ h2 {
   @include align(center, center);
   gap: 10px;
 }
+.title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 mat-dialog-content.dialogue {
   display: flex;
   flex-direction: column;

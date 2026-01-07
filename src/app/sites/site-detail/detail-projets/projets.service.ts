@@ -271,13 +271,11 @@ export class ProjetService {
     const url = `${this.activeUrl}put/table=docs`;
 
     // Log du contenu du FormData avant envoi
-    console.log(
-      'Contenu du FormData avant envoi depuis projetSerice.uploadDocfile():'
-    );
+    console.log('Contenu du FormData avant envoi depuis projetSerice.uploadDocfile():');
     for (let pair of (formData as any).entries()) {
       console.log(pair[0] + ': ' + pair[1]);
     }
-    console.log('FormData:', formData.get('noteBureau'));
+    // console.log('FormData:', formData.get('noteBureau'));
 
     return this.http.put<ApiResponse>(url, formData).pipe(
       catchError((error) => {
