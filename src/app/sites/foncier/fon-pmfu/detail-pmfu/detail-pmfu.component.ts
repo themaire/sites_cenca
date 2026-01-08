@@ -113,8 +113,8 @@ export class DetailPmfuComponent {
   get anneeSignatureMin(): number {
     const debutValue = this.pmfuForm?.get('pmfu_annee_debut')?.value;
     const debut = debutValue === null || debutValue === '' ? null : Number(debutValue);
-    if (debut === null || Number.isNaN(debut)) return 2025;
-    return Math.max(2025, debut);
+    if (debut === null || Number.isNaN(debut)) return 2024;
+    return Math.max(2024, debut);
   }
 
   getFinancementsLibelles(): string {
