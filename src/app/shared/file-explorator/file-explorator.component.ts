@@ -214,16 +214,11 @@ export class FileExploratorComponent {
   }
 
   getFileUrl(filename: string): string {
-    // this.docfileService.docfiles.forEach((file: any) => {
-    //   if (file.doc_path.split('\\').pop() === filename.split('\\').pop()) {
-    //     filename = file.doc_path.split('\\').slice(2).join('\\');
-    //   }
-    // });
     console.log('filename de getFileUrl :' + filename);
     this.docfileService.docfiles.forEach((file: any) => {
       if (file.doc_path.split('/').pop() === filename.split('/').pop()) {
         console.log('file.doc_path:', file.doc_path);
-        filename = 'files/' +file.doc_path;
+        filename = 'files/photos/' +file.doc_path;
       }
     });
     console.log('filename:', filename);
@@ -286,7 +281,8 @@ export class FileExploratorComponent {
   getGalerie(filePathList: string[]) {
     filePathList.forEach((path) => {
       // Url qui s'adapte en fonction de l'environnement Windows ou Linux
-      let url = `${this.activeUrl}picts/img?file=${path.split( environment.pathSep ).pop()}&width=200`;
+      // let url = `${this.activeUrl}picts/img?file=${path.split( environment.pathSep ).pop()}&width=200`;
+      let url = `${this.activeUrl}picts/img?file=${path}&width=200`;
       filePathList.push(url);
     });
     console.log('filePathList après ajout des miniatures:', filePathList);
@@ -302,6 +298,7 @@ export class FileExploratorComponent {
    * @param imagePath imagePath sans sous dossier !!!!!!
    */
   openImage(imagePath: string) {
+    console.log('openImage imagePath:', imagePath);
     const dialogRef = this.dialog.open(ImageViewComponent, {
       data: {
         images: this.imagePathList?.slice(0, this.imagePathList.length / 2),
