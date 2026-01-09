@@ -35,7 +35,7 @@ export class ImageViewComponent {
     private http: HttpClient,
     @Inject(MAT_DIALOG_DATA) public data: DialogData // Inject MAT_DIALOG_DATA to access the passed data
   ) {
-    const baseUrl = this.activeUrl + 'files/';
+    const baseUrl = this.activeUrl + 'files/photos/';
     // On adapte les chemins des images en fonction de l'environnement
     this.images = data.images.map((path) => baseUrl + path.split( environment.pathSep ).slice(-2).join( environment.pathSep )) || [];
     // Si une image est sélectionnée au départ
