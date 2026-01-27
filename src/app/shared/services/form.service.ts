@@ -506,7 +506,8 @@ export class FormService {
     return this.fb.group({
       uuid_ope: [uuid_ope || null, Validators.required],
       type_geometry: [type_geometry || null, Validators.required],
-      shapefile: [null, Validators.required],
+      file: [null, Validators.required],
+      type: [null, Validators.required],
     });
   }
   newDocForm(pmfu?: ProjetMfu): FormGroup {

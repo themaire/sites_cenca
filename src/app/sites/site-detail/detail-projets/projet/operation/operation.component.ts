@@ -15,7 +15,7 @@ import { SelectValue } from '../../../../../shared/interfaces/formValues';
 
 import { ProjetService, DeleteItemTypeEnum } from '../../projets.service';
 import { FormService } from '../../../../../shared/services/form.service';
-import { ShapefileService } from '../../../../../shared/services/shapefile.service';
+import { GeofilesService } from '../../../../../shared/services/geofiles.service';
 import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
 
 import { ApiResponse } from '../../../../../shared/interfaces/api';
@@ -259,7 +259,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   return this.form?.get('step5') as FormGroup;
   }
 
-  shapeForm?: FormGroup;
+  geoFileForm?: FormGroup;
 
   @Input() ref_uuid_proj!: String; // ID du projet parent 
   @Input() ref_uuid_objectif!: String; // ID de l'objectif parent 
@@ -276,7 +276,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private formService: FormService,
-    public shapefileService: ShapefileService,
+    public geofilesService: GeofilesService,
     private confirmationService: ConfirmationService,
     private fb: FormBuilder,
     private projetService: ProjetService,
@@ -501,7 +501,7 @@ export class OperationComponent implements OnInit, OnDestroy {
           ope_animal_paturage: ope_animal_paturage,
           liste_ope_animaux_paturage: this.liste_ope_animaux_paturage,
         };
-        const freshloca = await this.shapefileService.getLocalisation(operation.uuid_ope);
+        const freshloca = await this.geofilesService.getLocalisation(operation.uuid_ope);
         console.log('Localisations récupérées pour l\'opération :', freshloca);
         operation = {
           ...operation,
@@ -531,7 +531,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         }
 
         // Pré remplir le sous formulaire d'envoi du shapefile
-        this.shapeForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
+        this.geoFileForm = this.formService.newShapeForm(operation.uuid_ope, 'polygon');
 
         console.log('Opération après le fetch() :', operation);
         return operation;
@@ -890,30 +890,33 @@ export class OperationComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Gestion du shapefile envoyé par l'utilisateur
-  /** Méthode pour gérer le téléchargement du fichier shapefile modèle */
-  onFileSelected(event: any) {
-    this.shapefileService.onFileSelected(event, this.shapeForm!);
-  }
-  //
-  /** Soumettre le shapefile au backend */
-  submitShapefile(): Observable<ApiResponse> {
-    return this.shapefileService.submitShapefile(this.shapeForm!);
-  }
-  //
-  /** Méthode pour gérer la soumission du formulaire de shape
+  /** Méthode appelée lors de la sélection d'un fichier par l'utilisateur.
+   * Remplit le champ file du formulaire avec le fichier sélectionné
+   * @param event - L'événement de sélection de fichier contenant les informations du fichier sélectionné.
    */
-  handleShapefileSubmission() {
-    this.shapefileService.handleShapefileSubmission(
-      this.shapeForm!,
+  onFileSelected(event: any) {
+    this.geofilesService.onFileSelected(event, this.geoFileForm!);
+  }
+
+  //
+  /** Soumettre le fichier géographique au backend */
+  submitGeoFile(): Observable<ApiResponse> {
+    return this.geofilesService.submitGeoFile(this.geoFileForm!);
+  }
+  //
+  /** Méthode pour gérer la soumission du formulaire de fichier géographique
+   */
+  handleGeoFileSubmission() {
+    this.geofilesService.handleGeoFileSubmission(
+      this.geoFileForm!,
       this.fileInput,
       async (uuid: string) => {
         // Verifie que this.operation existe et que localisations est un tableau
         if (this.operation && Array.isArray(this.operation.localisations)) {
-          this.operation.localisations = await this.shapefileService.getLocalisation(uuid);
+          this.operation.localisations = await this.geofilesService.getLocalisation(uuid);
         } else if (this.operation) {
           // Si localisations est undefined, on l'initialise
-          this.operation.localisations = await this.shapefileService.getLocalisation(uuid);
+          this.operation.localisations = await this.geofilesService.getLocalisation(uuid);
         }
       }
     );
@@ -922,7 +925,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   /** Méthode pour télécharger le fichier shapefile d'exemple
    */
   downloadShapefileExample(type: 'polygone' | 'ligne' | 'point'): void {
-    this.shapefileService.downloadShapefileExample(type);
+    this.geofilesService.downloadShapefileExample(type);
   }
 
 /**

@@ -480,14 +480,14 @@ Variable (operation) form: {{ form }}<br>
         <button mat-button (click)="downloadShapefileExample('polygone')">Télécharger le modèle de fichier shapefile de type POLYGONE si necessaire</button>
         <button mat-button (click)="downloadShapefileExample('ligne')">Télécharger le modèle de fichier shapefile de type LIGNE si necessaire</button>
         <button mat-button (click)="downloadShapefileExample('point')">Télécharger le modèle de fichier shapefile de type POINT si necessaire</button>
-        <form [formGroup]="shapeForm!">
+        <form [formGroup]="geoFileForm!">
           <div class="file-upload-container">
-            <label for="shapefile">Fichier Shapefile (ZIP)</label>
+            <label for="shapefile">Fichier géographique (ZIP ou GeoJSON)</label>
             <input type="file"
-                id="shapefile"
-                (change)="onFileSelected($event)"
-                accept=".zip"
-                #fileInput>
+              id="shapefile"
+              (change)="onFileSelected($event)"
+              accept=".zip,.geojson"
+              #fileInput>
             <!-- <select formControlName="type_geometry" class="geometry-select">
               <option value="Point">Point</option>
               <option value="LineString">Ligne</option>
@@ -495,10 +495,11 @@ Variable (operation) form: {{ form }}<br>
             </select> -->
           </div>
           <input type="hidden" formControlName="uuid_ope">
+          <input type="hidden" formControlName="type">
           <button mat-button 
-            (click)="handleShapefileSubmission()"
-            [disabled]="!shapeForm?.get('shapefile')?.value">
-            <!-- Désactivé si le champ shapefile du formulaire est vide -->
+            (click)="handleGeoFileSubmission()"
+            [disabled]="!geoFileForm?.get('file')?.value">
+            <!-- Désactivé si le champ file du formulaire est vide -->
             Envoyer l'emprise
           </button>
         </form>

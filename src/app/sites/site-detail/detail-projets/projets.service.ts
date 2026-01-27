@@ -241,12 +241,27 @@ export class ProjetService {
 
   // Envoyer le fichier shapefile et le type de géométrie
   // Utilisé dans objectifs.component.ts
-  uploadShapefile(formData: FormData): Observable<ApiResponse> {
-    const url = `${this.activeUrl}put/ope_shapefile`;
+  uploadGeofile(formData: FormData): Observable<ApiResponse> {
+    if (!formData) {
+      return of({ success: false, message: 'FormData est null ou indéfini.' } as ApiResponse);
+    }
+
+    // Fabriquer l'URL d'upload en fonction du type de fichier
+    let url = `${this.activeUrl}put/ope_`;
+    // But : ajouter dynamiquement le type à l'URL en fonction du type de fichier
+    if (formData.get('type') !== null && formData.get('type') !== undefined) {
+      if (formData.get('type') === 'shapefile' || formData.get('type') === 'geojson') {
+        url = `${this.activeUrl}put/ope_${formData.get('type')}`;
+      } else {
+        return of({ success: false, message: 'Type de fichier inconnu pour l\'upload.' } as ApiResponse);
+      }
+    } else {
+      return of({ success: false, message: 'Type de fichier manquant pour l\'upload.' } as ApiResponse);
+    }
 
     // Log du contenu du FormData avant envoi
     console.log(
-      'Contenu du FormData avant envoi depuis projetSerice.uploadShapefile():'
+      'Contenu du FormData avant envoi depuis projetSerice.uploadGeofile():'
     );
     for (let pair of (formData as any).entries()) {
       console.log(pair[0] + ': ' + pair[1]);

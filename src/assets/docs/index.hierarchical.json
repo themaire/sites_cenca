@@ -73,13 +73,13 @@
       "accessLevel": 5,
       "sections": [
         {
-          "id": "traitement_fichiers_shapefile",
-          "title": "Traitement des fichiers Shapefile",
+          "id": "upload_fichiers_geo",
+          "title": "Fichiers géographiques",
           "path": null,
           "order": 1,
           "published": true,
           "requireAuth": true,
-          "backendUrl": "docs?file=traitement_fichiers/ope_shapefile.md&css=default",
+          "backendUrl": "docs?file=traitement_fichiers/ope_geofiles.md&css=default",
           "accessLevel": 5
         },
         {
