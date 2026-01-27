@@ -76,7 +76,7 @@
           "id": "traitement_fichiers_shapefile",
           "title": "Traitement des fichiers Shapefile",
           "path": null,
-          "order": 2,
+          "order": 1,
           "published": true,
           "requireAuth": true,
           "backendUrl": "docs?file=traitement_fichiers/ope_shapefile.md&css=default",
@@ -86,10 +86,20 @@
           "id": "auth_logic",
           "title": "Logique d'authentification",
           "path": "auth/appcomponent-auth.md",
-          "order": 3,
+          "order": 2,
           "published": true,
           "requireAuth": true,
           "backendUrl": null,
+          "accessLevel": 5
+        },
+        {
+          "id": "fichier_joints_logic",
+          "title": "Logique interne des fichiers joints",
+          "path": null,
+          "order": 3,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": "docs?file=traitement_fichiers/gestion_fichiers_uploads.md&css=default",
           "accessLevel": 5
         }
       ]

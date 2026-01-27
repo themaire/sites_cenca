@@ -220,6 +220,31 @@ defaultExtensions = {
 
 ## 🗺️ Intégration Cartographique
 
+### Synchronisation Parcelles (carte ↔ formulaire)
+
+Le flux de parcelles sélectionnées est désormais **synchronisé explicitement** avec le `FormGroup` avant la sauvegarde, afin d'assurer que l’update backend se déclenche même si seul le Step 2 (carte) change.
+
+Points clés :
+
+- **Synchronisation systématique** via `syncParcellesToForm()` à chaque sélection.
+- **Synchronisation forcée avant sauvegarde** dans `onSubmit()`.
+- **Détection de changement fiable** côté service via `getRawValue()`.
+
+```typescript
+// Avant l’appel à putBdd()
+this.syncParcellesToForm(this.parcellesSelected);
+```
+
+```typescript
+private syncParcellesToForm(parcelles: ParcellesSelected[]): void {
+    if (!this.pmfuForm) return;
+    const ids = parcelles.map(p => p.idu);
+    this.pmfuForm.patchValue({ pmfu_parc_list_array: ids });
+    this.pmfuForm.get('pmfu_parc_list_array')?.markAsDirty();
+    this.pmfuForm.get('pmfu_parc_list_array')?.updateValueAndValidity({ emitEvent: false });
+}
+```
+
 ### Synchronisation Map ↔ Toggles
 
 ```mermaid

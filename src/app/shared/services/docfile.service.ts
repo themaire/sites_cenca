@@ -77,6 +77,7 @@ export class DocfileService {
   getTypeNames() {
     return this.doc_types.map((t) => t.libelle);
   }
+
   getTypeFields() {
     return this.doc_types.map((t) => t.field);
   }
@@ -84,6 +85,7 @@ export class DocfileService {
   getTypeId(name: string): number | undefined {
     return this.doc_types.find((t) => t.libelle === name)?.cd_type;
   }
+
   onFileSelected(event: any, controlName: string, docForm: FormGroup) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -162,7 +164,7 @@ export class DocfileService {
         message: 'Formulaire introuvable.',
       } as ApiResponse);
     }
-    console.log('Dans submitDocfiles() avec docForm:', docForm.value);
+    // console.log('Dans submitDocfiles() avec docForm:', docForm.value);
 
     const formData = new FormData();
     formData.append('ref_id', ref_id.toString());
@@ -230,7 +232,6 @@ export class DocfileService {
    * @param doc_path - Chemin du document à supprimer
    * @returns 
    */
-
   deleteFile(doc_path: string): Observable<ApiResponse> {
     const url = `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`;
     console.log(`lien de suppression : ${url}`);

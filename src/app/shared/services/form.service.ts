@@ -550,9 +550,22 @@ export class FormService {
    */
   isFormChanged(form: FormGroup, initialFormValue: FormGroup): boolean {
     // Vérifie si le formulaire a été modifié
-    const CHANGED = JSON.stringify(form.value) !== JSON.stringify(initialFormValue);
+    const CHANGED = JSON.stringify(form.getRawValue()) !== JSON.stringify(initialFormValue);
     // console.log("isFormChanged retourne : " + CHANGED);
     return CHANGED;
+  }
+
+  private normalizePmfuParcelles(value: unknown): string[] {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+      return value.map(String).map(v => v.trim()).filter(Boolean).sort();
+    }
+    if (typeof value === 'string') {
+      const cleaned = value.replace(/^{|}$/g, '').trim();
+      if (!cleaned) return [];
+      return cleaned.split(',').map(v => v.trim()).filter(Boolean).sort();
+    }
+    return [];
   }
 
   // A verifier dans le code si snackbar est bien passé en parametre
@@ -775,7 +788,19 @@ export class FormService {
 
     // Si le formulaire n'a pas changé, on sort du mode édition sans faire d'appel
     if (mode === 'update' && initialFormValues != null) {
-      if (!this.isFormChanged(form, initialFormValues)) {
+      let hasChanged = this.isFormChanged(form, initialFormValues);
+
+      if (!hasChanged && table === 'projets_mfu') {
+        const currentIds = this.normalizePmfuParcelles(
+          form.getRawValue()?.pmfu_parc_list_array ?? form.value?.pmfu_parc_list_array
+        );
+        const initialIds = this.normalizePmfuParcelles(
+          (initialFormValues as any)?.pmfu_parc_list_array ?? (initialFormValues as any)?.pmfu_parc_list
+        );
+        hasChanged = JSON.stringify(currentIds) !== JSON.stringify(initialIds);
+      }
+
+      if (!hasChanged) {
         // Si pas changé
         this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
           duration: 3000,
@@ -864,6 +889,9 @@ export class FormService {
         console.log('formulaire avant nettoyage :', form.value);
 
         // Transformer l'objet de parcelles en string PostgreSQL
+        // DEBUG
+        console.log('valeur de pmfu_parc_list_array avant conversion :', workingForm.get('pmfu_parc_list_array')?.value);
+
         workingForm.patchValue({ pmfu_parc_list: this.toPostgresArrayString(workingForm.get('pmfu_parc_list_array')?.value  ) });
         console.log('valeur de pmfu_parc_list après conversion :', workingForm.get('pmfu_parc_list')?.value);
 

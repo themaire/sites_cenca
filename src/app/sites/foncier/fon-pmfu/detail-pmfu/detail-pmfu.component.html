@@ -39,7 +39,7 @@
     <!-- 1er element -->
     <div class="buttons-container">
       <div class="form-buttons" *ngIf="
-                                projetLite.pmfu_id && (
+                                projetLite?.pmfu_id && (
                                   pmfuForm.get('pmfu_responsable')?.value === cd_salarie 
                                   ||
                                   pmfuForm.get('pmfu_associe')?.value === cd_salarie
@@ -66,7 +66,7 @@
       </div>
       
       <div class="suppression" *ngIf="
-                                projetLite.pmfu_id && (
+                                projetLite?.pmfu_id && (
                                   pmfuForm.get('pmfu_responsable')?.value === cd_salarie 
                                   ||
                                   pmfuForm.get('pmfu_associe')?.value === cd_salarie
