@@ -77,7 +77,7 @@ export class DocfileService {
   getTypeNames() {
     return this.doc_types.map((t) => t.libelle);
   }
-  
+
   getTypeFields() {
     return this.doc_types.map((t) => t.field);
   }
@@ -232,7 +232,6 @@ export class DocfileService {
    * @param doc_path - Chemin du document à supprimer
    * @returns 
    */
-
   deleteFile(doc_path: string): Observable<ApiResponse> {
     const url = `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`;
     console.log(`lien de suppression : ${url}`);

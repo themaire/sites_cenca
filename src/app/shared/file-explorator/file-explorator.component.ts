@@ -318,6 +318,7 @@ export class FileExploratorComponent {
 
   deleteImage(imagePath: string) {
     console.log('imagePath:', imagePath);
+    
     this.filePathList.forEach((docfile: any) => {
       console.log('docfile:', docfile);
       if (docfile === imagePath) {

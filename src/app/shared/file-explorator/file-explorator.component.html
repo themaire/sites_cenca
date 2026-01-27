@@ -62,17 +62,15 @@
       [ngStyle]="{
         'background-color': getColorForImage(image),
         color: getTextColor(getColorForImage(image))
-      }"
-    >
-    image : {{image}}<br/>
+      }">
+      
       <img
         [src]="image"
-        (click)="
-          openImage(imagePathList ? imagePathList[galerie.indexOf(image)] : '')
-        "
-        class="galerie-img"
-      />
+        (click)="openImage(imagePathList ? imagePathList[galerie.indexOf(image)] : '')"
+        class="galerie-img"/>
+
       <div>
+        
         <p>
           {{
             (imagePathList ? imagePathList[galerie.indexOf(image)] : "")
@@ -81,18 +79,16 @@
               .pop()
           }}
         </p>
+
         <button
           mat-button
-          (click)="
-            deleteImage(
-              imagePathList ? imagePathList[galerie.indexOf(image)] : ''
-            )
-          "
-          [ngStyle]="{ color: getTextColor(getColorForImage(image)) }"
-        >
+          (click)="deleteImage(imagePathList ? imagePathList[galerie.indexOf(image)] : '')"
+          [ngStyle]="{ color: getTextColor(getColorForImage(image)) }">
           Supprimer la photo
         </button>
       </div>
+
     </div>
   </div>
 </div>
+  

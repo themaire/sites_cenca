@@ -117,6 +117,7 @@ export class DetailPmfuComponent {
     return Math.max(2024, debut);
   }
 
+  // Série de 6 getters pour obtenir les libellés des sélections multiples
   getFinancementsLibelles(): string {
     const values = this.pmfuForm?.get('pmfu_financements')?.value;
     if (!values || !Array.isArray(values) || values.length === 0) return '';
@@ -265,6 +266,14 @@ export class DetailPmfuComponent {
   selectParcellesMode: boolean = true;
   // Poubelle des parcelles supprimées
   trashParcelle: ParcellesSelected[] = [];
+
+  private snapshotFormValues<T>(values: T): T {
+    try {
+      return structuredClone(values);
+    } catch {
+      return JSON.parse(JSON.stringify(values));
+    }
+  }
   
   constructor(
     public docfileService: DocfileService,
@@ -486,7 +495,7 @@ export class DetailPmfuComponent {
           } else {
             // Défini un formulaire vide pour le projet MFU
             this.pmfuForm = this.formService.newPmfuForm();
-            this.initialFormValues = this.pmfuForm.value; // Garder une copie des valeurs initiales du formulaire
+            this.initialFormValues = this.snapshotFormValues(this.pmfuForm.getRawValue()); // Garder une copie des valeurs initiales du formulaire
             this.docForm = this.formService.newDocForm();
 
             // console.log(this.docForm);
@@ -734,7 +743,7 @@ export class DetailPmfuComponent {
           }
         }
       }
-      this.initialFormValues = this.pmfuForm.value;
+      this.initialFormValues = this.snapshotFormValues(this.pmfuForm.getRawValue());
       this.docForm = this.formService.newDocForm(this.pmfu);
       const typeToField: Record<string, number | undefined> = {
         '1': this.pmfu.photos_site_nb,
@@ -867,15 +876,18 @@ export class DetailPmfuComponent {
   /**
    * Gère la soumission du formulaire PMFU
    * Met à jour le formulaire, réinitialise les sélections de dossiers et de galerie
-   * En mode édition, envoie une requête PUT pour mettre à jour un projet existant
+   * Envoie une requête PUT pour mettre à jour un projet existant uniquement si le formulaire a été modifié
+   * ou si la liste de fichiers a changé
    */
   onSubmit(): void {
-    // Mettre à jour le formulaire
+
     this.selectedFolder = undefined;
     this.galerie = undefined;
     this.filePathList = [];
     this.filesNames = [];
-    if (!this.newPmfu) {
+    // S'assurer que les parcelles sélectionnées sont bien synchronisées avant la comparaison
+    this.syncParcellesToForm(this.parcellesSelected);
+    if (!this.newPmfu) { // Si on ouvre un projet existant
       this.isLoading = true;
       setTimeout(async () => {
         console.log(
@@ -916,7 +928,7 @@ export class DetailPmfuComponent {
               // Mettre à jour les valeurs du formulaire avec les nouvelles données
               this.pmfu = result.formValue;
               this.isEditPmfu = result.isEditMode;
-              this.initialFormValues = result.formValue;
+              this.initialFormValues = this.snapshotFormValues(result.formValue);
 
               // Nous venons de sauvegarder, les valeurs initiales deviennent les valeurs actuelles
               this.initialparcellesSelected = this.parcellesSelected.map(p => ({ ...p }));
@@ -974,7 +986,7 @@ export class DetailPmfuComponent {
         submitObservable.subscribe(
           (result) => {
             this.isEditPmfu = result.isEditMode;
-            this.initialFormValues = result.formValue;
+            this.initialFormValues = this.snapshotFormValues(result.formValue);
             this.newPmfu = false; // On n'est plus en mode création, donc maintenant le formulaire s'affiche normalement
             // Les steps du stepper sont affichés et apparaissent comme en mode consultation (edition)
             this.pmfu = result.formValue;
@@ -1340,7 +1352,11 @@ export class DetailPmfuComponent {
     const sorted = [...parcelles].sort((a, b) => a.idu.localeCompare(b.idu));
     // Vérifier si la sélection a changé
     if (JSON.stringify(this.parcellesSelected) === JSON.stringify(sorted)) {
-      return; // Ne rien faire si la sélection est identique
+      // Même si la sélection est identique, on synchronise le formulaire
+      // (utile si la carte a muté le tableau en place)
+      this.parcellesSelected = sorted.map(p => ({ ...p }));
+      this.syncParcellesToForm(this.parcellesSelected);
+      return;
     }
     // Initialisation des parcelles préchargées au premier appel
     if (this.initialparcellesSelected.length === 0) {
@@ -1348,6 +1364,7 @@ export class DetailPmfuComponent {
       this.initialparcellesSelected = sorted.map(p => ({ ...p })); // copie profonde
       this.parcellesAjoutees = [];
       this.parcellesSelected = this.initialparcellesSelected.map(p => ({ ...p })); // copie profonde
+      this.syncParcellesToForm(this.parcellesSelected);
       return;
     }
     // Ajout incrémental : ne prendre que les nouveaux idu non présents dans initiales ni dans ajouts
@@ -1362,9 +1379,7 @@ export class DetailPmfuComponent {
     this.parcellesAjoutees = this.parcellesAjoutees.filter(aj => sorted.some(p => p.idu === aj.idu));
     this.parcellesSelected = [...this.initialparcellesSelected, ...this.parcellesAjoutees];
     // Synchroniser avec le formulaire si besoin :
-    if (this.pmfuForm) {
-      this.pmfuForm.patchValue({ pmfu_parc_list_array: this.parcellesSelected.map(p => p.idu) });
-    }
+    this.syncParcellesToForm(this.parcellesSelected);
     // Synchroniser la sélection sur la carte uniquement si elle a changé
     if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
       this.mapComponent.setParcellesSelection(this.parcellesSelected);
@@ -1374,6 +1389,14 @@ export class DetailPmfuComponent {
     // console.log('Index historique :', this.historyIndex);
     // console.log('Poubelle des parcelles :', this.trashParcelle);
     // console.log('Historique des suppressions :', this.trashHistory);
+  }
+
+  private syncParcellesToForm(parcelles: ParcellesSelected[]): void {
+    if (!this.pmfuForm) return;
+    const ids = parcelles.map(p => p.idu);
+    this.pmfuForm.patchValue({ pmfu_parc_list_array: ids });
+    this.pmfuForm.get('pmfu_parc_list_array')?.markAsDirty();
+    this.pmfuForm.get('pmfu_parc_list_array')?.updateValueAndValidity({ emitEvent: false });
   }
 
   // Supprimer une parcelle et l'ajouter à la poubelle
