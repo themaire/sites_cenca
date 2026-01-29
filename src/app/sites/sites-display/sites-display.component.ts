@@ -11,7 +11,7 @@ import { BackToTopComponent } from '../../back-to-top/back-to-top.component';
 import { MatPaginator, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomMatPaginatorIntl } from '../../shared/costomMaterial/custom-matpaginator-intl';
 
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,7 +30,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     BackToTopComponent,
   ],
   templateUrl: './sites-display.component.html',
-  styleUrl: './sites-display.component.scss',
+  styleUrls: ['./sites-display.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
   ]
@@ -116,6 +116,7 @@ export class SitesDisplayComponent implements AfterViewInit {
           const fakeEvent = { target: { value: '' } } as unknown as Event;
           this.applyFilter(fakeEvent);
           this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
         });
 
         console.log('subroute : ' + subroute);
