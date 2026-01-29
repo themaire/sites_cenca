@@ -45,12 +45,14 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Output() parcellesSelected = new EventEmitter<ParcellesSelected[]>();
 
   private _parcellesSelectionnees: ParcellesSelected[] = [];
+  private hasZoomedToSelectedParcelles = false;
 
   @Input() chargerSitesSitesDynamiquement: boolean = false; // Active le chargement dynamique de la couche cenca_sites
   @Input() chargerParcellesDynamiquement: boolean = false; // Active le chargement dynamique des parcelles cadastrales
   @Input() parcellesSelectedInitiales?: ParcellesSelected[] = []; // Parcelles sélectionnées initiales
   @Input() selectParcellesMode: boolean = false; // Active le mode sélection de parcelles
   @Input() coucheSitesCenca: string = 'cenca_autres'; // Nom de la couche à charger
+  @Input() zoomOnParcelleAdd: boolean = false; // Zoom auto lors de l'ajout d'une parcelle
 
   @Input() isEditMode: boolean = false; // Mode édition du parent
 
@@ -118,7 +120,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     // console.log('Parcelles sélectionnées initiales dans ngOnChanges :', this.parcellesSelectedInitiales);
     if (this.parcellesSelectedInitiales && this.parcellesSelectedInitiales.length > 0) {
       this._parcellesSelectionnees = this.parcellesSelectedInitiales || [];
-      this.zoomToSelectedParcells(this._parcellesSelectionnees);
+      this.tryZoomToSelectedParcellesOnce();
     }
 
     console.log('Parcelles sélectionnées après initialisation dans ngOnChanges :', this._parcellesSelectionnees);
@@ -460,6 +462,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     this.resetMapView();
+    this.tryZoomToSelectedParcellesOnce();
 
     // Affichage des sites CENCA si fournis
     if (this.sitesCenca && this.sitesCenca.features.length > 0) {
@@ -710,6 +713,15 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   private zoomToBounds(bounds : any): void {
     if(bounds && bounds.isValid()) {
       this.map.fitBounds(bounds);
+    }
+  }
+
+  private tryZoomToSelectedParcellesOnce(): void {
+    if (this.hasZoomedToSelectedParcelles) return;
+    if (!this.map) return;
+    if (this._parcellesSelectionnees && this._parcellesSelectionnees.length > 0) {
+      this.zoomToSelectedParcells(this._parcellesSelectionnees);
+      this.hasZoomedToSelectedParcelles = true;
     }
   }
 
@@ -1421,6 +1433,9 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       this._parcellesSelectionnees.push({ idu, nom_com, section, numero, contenance, bbox });
       this.emitParcellesSelectionnees();
       console.log('✅ Parcelle ajoutée à la sélection:', idu, this._parcellesSelectionnees);
+      if (this.zoomOnParcelleAdd && this.map) {
+        this.zoomToSelectedParcells(this._parcellesSelectionnees);
+      }
       // Fermer la popup active
       if (this.map) {
         this.map.closePopup();
@@ -1705,6 +1720,9 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (nouvelleSelection === ancienneSelection) return; // Ne rien faire si identique
     this._parcellesSelectionnees = [...parcelles];
     this.emitParcellesSelectionnees();
+    if (this.zoomOnParcelleAdd && this.map) {
+      this.zoomToSelectedParcells(this._parcellesSelectionnees);
+    }
     this.reloadParcellesInCurrentView();
   }
 
