@@ -324,9 +324,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
           // Définir les valeurs par défaut pour créateur et responsable
           this.projetForm.patchValue({
-            createur: cd_salarie,
             step1: {
               responsable: cd_salarie,
+              createur: cd_salarie,
             }
           });
 

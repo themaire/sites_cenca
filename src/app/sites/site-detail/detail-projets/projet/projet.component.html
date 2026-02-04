@@ -101,6 +101,11 @@
           </mat-form-field>
           
           <mat-form-field class="custom-mat-form-field">
+            <mat-label>Créateur</mat-label>
+            <input matInput [value]="step1Form.get('createur')?.value || 'Non renseigné'" readonly>
+          </mat-form-field>
+          
+          <mat-form-field class="custom-mat-form-field">
             <mat-label>Maitre d'ouvrage</mat-label>
             <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
           </mat-form-field>

@@ -242,6 +242,7 @@ export class FormService {
 
         code: [projet?.code || ''],
         responsable: [projet?.responsable || null, Validators.required],
+        createur: [projet?.createur || null],
         pro_maitre_ouvrage: [projet?.pro_maitre_ouvrage || null],
         perspectives: [projet?.perspectives || ''],
 
