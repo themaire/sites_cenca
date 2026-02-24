@@ -8,6 +8,7 @@ import { ProjetLite, Projet } from '../projets';
 import { OperationLite } from './operation/operations';
 import { Objectif } from './objectif/objectifs';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
+
 import { ProjetService, DeleteItemTypeEnum } from '../projets.service';
 import { FormService } from '../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
@@ -251,11 +252,11 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   }
 
   get step1Form(): FormGroup {
-  return this.projetForm.get('step1') as FormGroup;
+    return this.projetForm.get('step1') as FormGroup;
   }
 
   get step2Form(): FormGroup {
-  return this.projetForm.get('step2') as FormGroup;
+    return this.projetForm.get('step2') as FormGroup;
   }
 
   async ngOnInit() {
