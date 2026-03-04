@@ -1,0 +1,157 @@
+<mat-dialog-content class="dialogue">
+  <div class="conteneur-acte-mfu">
+    <div class="gerer">Gérer</div>
+    <div class="acte-mfu">
+
+      <ng-container *ngTemplateOutlet="page"></ng-container>
+
+    </div>
+
+  </div>
+</mat-dialog-content>
+
+<!-- Formulaire avec les champs de l'acte MFU -->
+<ng-template #page>
+  <div class="button-title" [class.center-title]="
+      newMfu
+    ">
+    <!-- 1er element -->
+    <div class="form-buttons" *ngIf="mfuForm">
+      <app-form-buttons [isEditActive]="isEditMfu || newMfu" icone="edit" [theme]="'gerer'"
+        [isFormValid]="mfuForm ? mfuForm.valid : false" (toggleAction)="toggleEditMfu($event)"
+        (onSubmit)="onSubmit()"></app-form-buttons>
+    </div>
+
+    <!-- 2eme element -->
+    <div class="title-container">
+      <ng-container *ngTemplateOutlet=" newMfu ? newTitle : title "></ng-container>
+    </div>
+
+    <!-- 3eme element (optional) - only show for existing acts, not new ones -->
+    <div class="suppression" *ngIf="!newMfu">
+      <button mat-button (click)="deleteItemConfirm()">Supprimer l'acte</button>
+    </div>
+
+    <ng-template #title>
+
+      <div class="title-wrapper">
+        <h2 *ngIf="!isEditMfu">Consultation de l'acte MFU - {{ acteLite.nom }} </h2>
+        <h2 *ngIf="isEditMfu">Modification de l'acte MFU - {{ acteLite.nom }} </h2>
+      </div>
+
+    </ng-template>
+    <ng-template #newTitle>
+      <h2 *ngIf="newMfu">Création d'un nouvel acte MFU</h2>
+    </ng-template>
+  </div>
+
+  <!-- Variable (operation) isEditOperation: {{ isEditMfu }}<br>
+  Variable (operation) isAddOperation: {{ isAddMfu }}<br>
+  Variable (operation) form: {{ mfuForm }}<br>
+  <div *ngIf="mfuForm">
+    Variable (operation) form.get('uuid_acte'): {{ mfuForm.get('uuid_acte')?.value == undefined ? "Valeur undefined" :
+    mfuForm.get('uuid_acte')?.value }}<br>
+  </div> -->
+
+  <!-- Formulaire MFU -->
+  <div class="mfu-form-container" *ngIf="mfuForm">
+    <form [formGroup]="mfuForm" class="mfu-form">
+
+      <!-- Type MFU (select) -->
+      <mat-form-field appearance="outline">
+        <mat-label>Type d'acte</mat-label>
+        <ng-container *ngIf="isEditMfu; else typeActeReadonly">
+          <mat-select formControlName="typ_mfu">
+            <mat-option *ngFor="let type of typeActeList" [value]="type.cd_type">
+              {{ type.libelle }}
+            </mat-option>
+          </mat-select>
+        </ng-container>
+        <button *ngIf="isEditMfu && mfuForm.get('typ_mfu')?.value" matSuffix mat-icon-button aria-label="Effacer"
+          class="clear-btn" (click)="mfuForm.get('typ_mfu')?.setValue(null); $event.stopPropagation()">
+          <mat-icon>close</mat-icon>
+        </button>
+        <ng-template #typeActeReadonly>
+          <input matInput [value]="formService.getLibelleByCdType(mfuForm.get('typ_mfu')?.value, typeActeList)"
+            readonly>
+        </ng-template>
+      </mat-form-field>
+
+      <!-- Validité de l'acte -->
+      <div class="slide-toggle-field">
+        Acte valide : <mat-slide-toggle formControlName="validite"></mat-slide-toggle>
+      </div>
+
+      <!-- Date début -->
+      <mat-form-field appearance="outline">
+        <mat-label>Date de début</mat-label>
+        <input matInput [matDatepicker]="pickerDebut" formControlName="debut" placeholder="Date de début"
+          [readonly]="!isEditMfu">
+        <mat-datepicker-toggle matSuffix [for]="pickerDebut" *ngIf="isEditMfu || newMfu"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDebut></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Date fin -->
+      <mat-form-field appearance="outline">
+        <mat-label>Date de fin</mat-label>
+        <input matInput [matDatepicker]="pickerFin" formControlName="fin" placeholder="Date de fin"
+          [readonly]="!isEditMfu">
+        <mat-datepicker-toggle matSuffix [for]="pickerFin" *ngIf="isEditMfu || newMfu"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFin></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Tacite reconduction -->
+      <div class="slide-toggle-field">
+        Tacite reconduction : <mat-slide-toggle formControlName="tacit_rec"></mat-slide-toggle>
+      </div>
+
+      <!-- Detail reconduction -->
+      <mat-form-field appearance="outline">
+        <mat-label>Détail reconduction</mat-label>
+        <textarea matInput formControlName="detail_rec" placeholder="Détail sur la reconduction" rows="2"
+          [readonly]="!isEditMfu"></textarea>
+      </mat-form-field>
+
+      <!-- Notaire -->
+      <mat-form-field appearance="outline">
+        <mat-label>Notaire</mat-label>
+        <input matInput formControlName="notaire" placeholder="Nom du notaire" [readonly]="!isEditMfu">
+      </mat-form-field>
+
+      <!-- Cout -->
+      <mat-form-field appearance="outline">
+        <mat-label>Coût</mat-label>
+        <input matInput formControlName="cout" type="number" placeholder="Coût de l'acte" [readonly]="!isEditMfu">
+      </mat-form-field>
+
+      <!-- URL document - shown in modification and creation modes -->
+      <mat-form-field appearance="outline" *ngIf="isEditMfu || newMfu">
+        <mat-label>URL du document</mat-label>
+        <input matInput formControlName="url" placeholder="URL vers le document" [readonly]="!isEditMfu">
+      </mat-form-field>
+
+      <!-- Download link - shown in consultation and modification modes (not in creation mode) -->
+      <ng-container *ngIf="!newMfu && mfuForm.get('url')?.value">
+        Télécharger l'acte :
+        <a [href]="mfuForm.get('url')?.value" target="_blank">Télécharger</a>
+      </ng-container>
+
+      <!-- Remarque -->
+      <mat-form-field appearance="outline">
+        <mat-label>Remarque</mat-label>
+        <textarea matInput formControlName="remarque" placeholder="Remarques" rows="3"
+          [readonly]="!isEditMfu"></textarea>
+      </mat-form-field>
+
+    </form>
+  </div>
+  
+  
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement...</p>
+  </div>
+
+</ng-template>

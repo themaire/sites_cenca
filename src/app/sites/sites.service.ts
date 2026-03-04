@@ -10,7 +10,7 @@ import { ListSite } from './site'; // prototype d'un site
 import { Commune } from './site-detail/detail-infos/commune';
 import { DocPlan } from './site-detail/detail-gestion/docplan';
 import { MilNat } from './site-detail/detail-habitats/docmilnat';
-import { Acte } from './site-detail/detail-mfu/acte';
+import { ActeLite, Acte } from './site-detail/detail-mfu/acte';
 import { ProjetLite } from './site-detail/detail-projets/projets';
 import { Operation, OperationLite } from './site-detail/detail-projets/projet/operation/operations';
 import { DetailSite } from './site-detail';
@@ -69,7 +69,11 @@ export class SitesService {
     return this.getData<MilNat[]>(subroute);
   }
 
-  async getMfu(subroute: string): Promise<Acte[]> {
+  async getActe(subroute: string): Promise<ActeLite[]> {
+    return this.getData<ActeLite[]>(subroute);
+  }
+
+  async getActeFull(subroute: string): Promise<Acte[]> {
     return this.getData<Acte[]>(subroute);
   }
 
@@ -105,7 +109,7 @@ export class SitesService {
    * Récupère la liste des fichiers pour un type et une section donnés
    * @param cd_type - Id du type de document (ex: 1 pour photos)
    * @param section - Grande famille de document (de la table files.libelles_nom)
-   * @param ref_id - ID de référence (ex: pmfu_id ou uuid_site ...) optionnel
+   * @param ref_id - ID de référence (ex: pActe_id ou uuid_site ...) optionnel
    * @returns Observable<ApiResponse>
    */
   getFiles(cd_type: number, section: number, ref_id?: any): Observable<ApiResponse> {

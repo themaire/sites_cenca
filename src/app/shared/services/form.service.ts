@@ -17,7 +17,7 @@ import {
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, skip, tap } from 'rxjs/operators';
 
-
+import { Acte } from '../../sites/site-detail/detail-mfu/acte';
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
 import {
   Operation,
@@ -33,7 +33,7 @@ import { SitesService } from '../../sites/sites.service';
 import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
 // import { GeoService } from '../../shared/services/geo.service';
 import { DocfileService } from './docfile.service';
-import { v4 as uuidv4, validate } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 // import { now } from 'moment';
 
@@ -209,6 +209,30 @@ export class FormService {
       return selectedCount > max ? { maxSelected: true } : null;
     };
   }
+ 
+  // Créer un nouveau formulaire d'acte MFU
+
+  // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  // !!! Attention, acte.uuid_acte est généré automatiquement si non indiquer !!!
+  newMfuForm(acte?: Acte): FormGroup {
+    return this.fb.group({
+          uuid_acte: new FormControl(acte?.uuid_acte ? acte?.uuid_acte : uuidv4()),
+          debut: new FormControl(acte?.debut ? acte?.debut : null),
+          fin: new FormControl(acte?.fin ? acte?.fin : null),
+          tacit_rec: new FormControl({value: acte?.tacit_rec ? acte?.tacit_rec : false, disabled: true}),
+          detail_rec: new FormControl(acte?.detail_rec ? acte?.detail_rec : ''),
+          notaire: new FormControl(acte?.notaire ? acte?.notaire : ''),
+          cout: new FormControl(acte?.cout ? acte?.cout : null),
+          remarque: new FormControl(acte?.remarque ? acte?.remarque : ''),
+          date_crea: new FormControl(acte?.date_crea ? acte?.date_crea : null),
+          date_modif: new FormControl(acte?.date_modif ? acte?.date_modif : null),
+          typ_mfu: new FormControl(acte?.typ_mfu ? acte?.typ_mfu : null),
+          site: new FormControl(acte?.site ? acte?.site : null),
+          url: new FormControl(acte?.url ? acte?.url : ''),
+          actuel: new FormControl({value: acte?.actuel ? acte?.actuel : false, disabled: true}),
+          validite: new FormControl({value : acte?.validite ? acte?.validite : false, disabled: true}),
+        });
+      }
 
   // Créer un nouveau formulaire de projet
 

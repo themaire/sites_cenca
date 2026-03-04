@@ -66,7 +66,7 @@ export class FormButtonsComponent {
 
   onCancelAction(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onCancelAction dans le composant bouton');
-    this.toggleAction.emit(); // Le nom de l'icon determine quel booléen est modifié
+    this.toggleAction.emit('cancel'); // Émet 'cancel' pour restaurer les valeurs et fermer la dialog
   }
 
   onSave(): void {

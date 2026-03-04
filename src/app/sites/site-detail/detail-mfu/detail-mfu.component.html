@@ -1,12 +1,30 @@
-<div
-  *ngIf="actes.length > 0; then thenBlock; else elseBlock"
-  class="detail-mfu"
-></div>
-<!---->
+<div class="edition">
+  Ajouter un nouvel acte MFU :
+  <button mat-icon-button matTooltip="Ajouter un acte MFU" class="btn-edition" (click)="onSelect()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<!-- Filtres avec ngModel et mat-radio-group -->
+<div class="radio-buttons">
+  <mat-radio-group [(ngModel)]="filterValidite" (change)="applicationFiltre()">
+    <!-- Par défaut ,mettre le bouton tous les actes -->
+    <mat-radio-button value="tous" [checked]="true">Tous les actes ({{ActesTotal}})</mat-radio-button>
+    <mat-radio-button value="valide">Actes valides ({{ActesValides}})</mat-radio-button>
+    <mat-radio-button value="invalide">Actes invalides ({{ActesInvalides}})</mat-radio-button>
+
+
+
+  </mat-radio-group>
+</div>
+
+<div *ngIf="actes.length > 0; then thenBlock; else elseBlock" class="detail-mfu"></div>
+
 <ng-template #thenBlock>
-  <h2>Nb d'actes : {{ actes.length }}</h2>
+  <h2>Nb d'actes : {{ dataSource.filteredData.length }}</h2>
   <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-    <!-- code Column -->
+
+    <!-- Type MFU -->
     <ng-container matColumnDef="typ_mfu" class="typ_mfu">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="typ_mfu">
         Type
@@ -16,20 +34,32 @@
       </td>
     </ng-container>
 
+    <!-- Années -->
     <ng-container matColumnDef="debut" class="debut">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="debut">
-        Années début
+        Début
       </th>
       <td mat-cell *matCellDef="let acte" class="debut">{{ acte.debut }}</td>
     </ng-container>
 
     <ng-container matColumnDef="fin" class="fin">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="fin">
-        Année fin
+        Fin
       </th>
       <td mat-cell *matCellDef="let acte" class="fin">{{ acte.fin }}</td>
     </ng-container>
 
+    <!-- Surface totale -->
+    <ng-container matColumnDef="surf_totale" class="surf_totale">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="surf_totale">
+        Surface totale
+      </th>
+      <td mat-cell *matCellDef="let acte" class="surf_totale">
+        {{ acte.surf_totale }}
+      </td>
+    </ng-container>
+
+    <!-- Tacite.r -->
     <ng-container matColumnDef="tacit_rec" class="tacit_rec">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="tacit_rec">
         Tacite.r
@@ -39,15 +69,7 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="surface" class="surface">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header class="surface">
-        Surface totale
-      </th>
-      <td mat-cell *matCellDef="let acte" class="surface">
-        {{ acte.surface }} ha
-      </td>
-    </ng-container>
-
+    <!-- Type de propriétaire -->
     <ng-container matColumnDef="type_prop" class="type_prop">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="type_prop">
         Type prop.
@@ -57,61 +79,22 @@
       </td>
     </ng-container>
 
+    <!-- Pièce jointe -->
     <ng-container matColumnDef="url" class="url">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="url">
         Lien du document
       </th>
+
+      <!-- Téléchargement -->
       <td mat-cell *matCellDef="let acte" class="url">
         <a [href]="acte.url" target="_blank">Télécharger</a>
       </td>
     </ng-container>
+
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns" (click)="onSelect(row)">
+    </mat-row>
   </table>
 </ng-template>
 
 <ng-template #elseBlock> Il n'y a pas d'acte MFU sur ce site. </ng-template>
-
-<!-- <ng-template #thenBlock>
-  <ul>
-    <li *ngFor="let acte of actes">
-      Type : {{ acte.typ_mfu }}<br />
-      Année début : {{ acte.debut }}<br />
-      Année fin : {{ acte.fin }}<br />
-      Tacite.r : {{ acte.tacit_rec }}<br />
-      Surface totale : {{ acte.surface }} ha<br />
-      Type prop. : {{ acte.type_prop }}<br />
-
-      Lien du document :
-      <a [href]="acte.url" target="_blank">Télécharger</a>
-    </li>
-  </ul>
-</ng-template>
-
-<ng-template #elseBlock> Il n'y a pas d'acte MFU sur ce site. </ng-template>
-
-      <div *ngIf="Mfus !== undefined">
-    <table>
-        <tr>
-            <td colspan="2">
-                Actes du site :
-            </td>
-        </tr>
-
-        <tr>
-            <section>---Tableau à venir---</section>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                --
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                Actes obsolètes :
-            </td>
-        </tr>
-      </table>
-</div> -->
