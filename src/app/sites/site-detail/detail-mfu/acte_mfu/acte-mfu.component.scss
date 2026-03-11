@@ -3,12 +3,6 @@
 @import "../../../../styles/mixins.scss";
 @import "../../../../styles/variables.scss";
 
-// :host {
-//   background-color: $vertTC; 
-//   display: block; // Nécessaire pour que le fond s’applique sur tout le composant
-//   min-height: 100vh; // Pour couvrir toute la hauteur de la page
-// }
-
 // Créer un thème local avec ta palette
 $local-theme: mat.m2-define-light-theme((
   color: (
@@ -23,302 +17,120 @@ $local-theme: mat.m2-define-light-theme((
   @include mat.all-component-themes($local-theme);
 }
 
-// Ou si tu préfères cibler des éléments spécifiques
-// ::ng-deep .acte-mfu-container {
-//   @include mat.all-component-themes($local-theme);
-// }
-
-
-
-*,
-.mat-mdc-dialog-content,
-.mdc-dialog__content ng-star-inserted {
+// Reset de base
+* {
   padding: 0;
   margin: 0;
 }
 
-.custom-dialog-container {
-  max-width: 90vw; /* Ajuste la largeur maximale */
-  width: 90vw; /* Fixe la largeur */
-  height: 80vh; /* Fixe la hauteur */
-  margin: 0 auto; /* Centre la boîte de dialogue */
-  overflow: hidden; /* Empêche le débordement */
+// Style du dialogue - pas de bordure blanche
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
-.dialogue {
-  background-color: $vertTC; 
-  // min-height: 100vh;
-  // height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+::ng-deep .mat-mdc-dialog-container {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
-mat-dialog-content.dialogue {
-  height: 100%;
-  min-height: 100%;
-  max-height: 100%;
-  box-sizing: border-box;
+::ng-deep .mat-mdc-dialog-content {
+  padding: 0 !important;
+  max-height: none !important;
 }
 
+// Conteneur principal avec la sidebar "Gérer" verte
 .conteneur-acte-mfu {
-  background-color: $vertTC;
-  height: 100%;
-  min-height: 100%;
   display: flex;
   flex-direction: row;
-  align-items: stretch;
-  overflow: hidden; /* ou hidden si tu ne veux pas de scroll interne */
+  width: 100%;
+  height: 100%;
+  background-color: white;
 }
 
-// bande sur le coté
+// Bande sur le côté - Gérer en vert (comme les autres composants)
 .gerer {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 25px;
+  min-height: 100%;
+  z-index: 10;
   padding-bottom: 15px;
   @include bandeau($gerer);
 }
 
+// Contenu principal des onglets
 .acte-mfu {
   display: flex;
   flex-direction: column;
-  width: 1400px;
-
-  flex: 1 1 auto; // <-- prend toute la place disponible
-  min-height: 0;  // <-- évite les débordements
-  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: white;
 }
 
-.button-title {
+// Style du chargement - centré
+.loading-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin: 5px 0px 0px 5px;
-
-  &.center-title {
-    justify-content: center; /* Centre horizontalement si le 3ème élément est absent */
-
-    .form-buttons {
-      order: -1; /* Déplace les boutons au début */
-    }
-
-    .title-container {
-      text-align: center; /* Centre le texte à l'intérieur du conteneur */
-      margin: 0 auto; /* Ajout pour centrer le titre */
-    }
-
-    
-
-    .suppression {
-      display: none; /* Cache le bouton de suppression */
-    }
-  }
+  height: 100%;
+  min-height: 300px;
   
-  .title-wrapper {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center; /* Centre le titre verticalement */
-      width: 100%; /* Prend toute la largeur disponible */
-    }
-
-    h2 {
-      margin: 10px;
-      padding: 0;
-      // font-size: 24px; 
-      // color: $couleur-territoire;
-    }
+  p {
+    margin-top: 10px;
+    color: #666;
+  }
 }
-
-//boutons edit/save/cancel
-.form-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  margin: 10px 0px 0px 0px;
-}
-
-.title-border {
-  margin: 0 50px 0 20px;
-}
-
-
-.mat-mdc-dialog-container .mat-mdc-dialog-content {
-  padding: 0;
-}
-
-.nav-buttons {
-  @include nav-buttons();
-}
-
-
-// .mat-mdc-dialog-container,
-// .mat-mdc-dialog-content,
-.dialogue,
-::ng-deep .mat-mdc-stepper-horizontal,
-::ng-deep .mat-mdc-stepper-vertical,
-::ng-deep .mat-stepper-horizontal,
-::ng-deep .mat-stepper-vertical,
-::ng-deep .mat-mdc-stepper-content,
-::ng-deep .mat-stepper-content {
-  background-color: $vertTC !important;
-}
-
-// ::ng-deep .mat-mdc-dialog-container {
-//   background-color: $vertTC !important;
-// }
-
-// Forcer les couleurs du stepper
-// ::ng-deep .mat-mdc-stepper-content,
-// ::ng-deep .mat-stepper-content {
-//   background-color: green !important;
-// }
-// ::ng-deep .mat-mdc-step-header,
-// ::ng-deep .mat-step-header {
-//   background: $vertTC2 !important;
-// }
-// ::ng-deep .mat-mdc-step-icon,
-// ::ng-deep .mat-step-icon {
-//   background-color: $couleur-territoire !important; // Couleur de fond des icones
-//   color: white !important; // Couleur de l'icône ou du numéro
-//   border: none !important;
-// }
-
 
 // Pour le bouton de suppression
 .suppression {
   @include suppression-btn();
 }
 
-// Pour le bouton de téléchargement de la fiche TVX
-.download-fiche-tvx {
-  @include download-fiche-tvx-btn();
-}
-.disabled-download-fiche-tvx {
-  @include disabled-download-fiche-tvx-btn();
-}
-
-// Fond de la boîte de dialogue
-::ng-deep .mat-mdc-dialog-surface {
-  background-color: rgb(230, 230, 230) !important;
-  height: 100%;
+// Titre, boutons edit et suppression sur la même ligne
+.button-title {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-}
+  margin: 5px 0px 10px 0px;
+  gap: 10px;
+  flex-wrap: nowrap;
 
-// Pour les champs de saisie du formulaire
-// ::ng-deep .mat-mdc-form-field {
-//   background-color: $superRed !important;
-//   color: bisque !important;
-//   border-radius: 4px;
-//   padding: 10px;
-// }
+  .form-buttons {
+    display: flex;
+    flex-shrink: 0;
+  }
 
-// ::ng-deep .mat-mdc-form-field-ripple {
-//   background-color: bisque !important; /* Remplace $vertTC par la couleur verte de ton thème */
-// }
+  .title-container {
+    flex: 1 1 auto;
+    text-align: center;
+    min-width: 0;
 
-// ::ng-deep .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-//   color: $superRed !important; /* Change la couleur de la bordure si nécessaire */
-// }
+    .title-wrapper {
+      display: flex;
+      justify-content: center;
+      
+      h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
 
-// ::ng-deep .mat-mdc-form-field.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
-//   border-color: blue !important; /* Change la couleur de la bordure épaisse */
-// }
-
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-  background: transparent;
-}
-
-.spinner-vert {
-  --mdc-circular-progress-active-indicator-color: #{$couleur-territoire};
-}
-
-// Pour le bilan d'exécution de l'acte MFU
-
-.bilan-titre {
-  margin: 20px 0 10px 0;
-  text-align: center;
-
-  .bilan-titre-principal {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #ff6600; // Orange vif
-    letter-spacing: 1px;
-    background: none;
+  .suppression {
+    display: flex;
+    flex-shrink: 0;
+    padding: 0;
   }
 }
 
-.bilan-section {
-  margin: 25px 0 15px 0;
-  padding: 0;
-}
-
-.bilan-section-titre {
-  background: #1a397b; // Bleu foncé
-  color: #fff;
-  font-weight: bold;
-  padding: 6px 16px;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-  border-radius: 3px 3px 0 0;
-}
-
-.bilan-section > div {
-  margin-bottom: 6px;
-  font-size: 1rem;
-}
-
-.bilan-section b {
-  font-weight: bold;
-}
-
-.bilan-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: #eaf1fa;
-  font-size: 0.98rem;
-}
-
-.bilan-table th,
-.bilan-table td {
-  border: 1px solid #1a397b;
-  padding: 7px 10px;
-  text-align: left;
-}
-
-.bilan-table th {
-  background: #b6d0f7;
-  color: #1a397b;
-  font-weight: bold;
-  font-size: 1rem;
-}
-
-.bilan-table tr:nth-child(even) {
-  background: #f5faff;
-}
-
-.bilan-table tr:hover {
-  background: #e0eaff;
-}
-
-.nav-buttons {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-
-  button {
-    margin-left: 10px;
-  }
-}

@@ -18,6 +18,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, skip, tap } from 'rxjs/operators';
 
 import { Acte } from '../../sites/site-detail/detail-mfu/acte';
+import { Parcelle } from '../../sites/site-detail/detail-mfu/acte_mfu/parcelle-mfu/parcelle';
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
 import {
   Operation,
@@ -103,6 +104,16 @@ export class FormService {
       }
       const wordCount = control.value.trim().split(/\s+/).length;
       return wordCount >= minWords ? null : { minWords: true };
+    };
+  }
+
+  // Validation personnalisée pour limiter la longueur maximale d'un champ
+  maxLengthValidator(maxLength: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) {
+        return null; // Pas d'erreur si le champ est vide
+      }
+      return control.value.length <= maxLength ? null : { maxLength: { maxLength: maxLength, actualLength: control.value.length } };
     };
   }
 
@@ -233,6 +244,29 @@ export class FormService {
           validite: new FormControl({value : acte?.validite ? acte?.validite : false, disabled: true}),
         });
       }
+
+  // Créer un nouveau formulaire de parcelle MFU
+  // Le parametre est optionnel tout comme les données indiquées à l'intérieur
+  newParcelleForm(parcelle?: Parcelle): FormGroup {
+    return this.fb.group({
+      uuid_parcelle: new FormControl(parcelle?.uuid_parcelle ? parcelle?.uuid_parcelle : uuidv4()),
+      insee: new FormControl(parcelle?.insee ? parcelle?.insee : ''),
+      prefix: new FormControl(parcelle?.prefix ? parcelle?.prefix : ''),
+      section: new FormControl(parcelle?.section ? parcelle?.section : '', [this.maxLengthValidator(2)]),
+      numero: new FormControl(parcelle?.numero ? parcelle?.numero : null),
+      partie: new FormControl(parcelle?.partie ? parcelle?.partie : ''),
+      surface: new FormControl(parcelle?.surface ? parcelle?.surface : null),
+      validite: new FormControl(parcelle?.validite ? parcelle?.validite : true),
+      acte_mfu: new FormControl(parcelle?.acte_mfu ? parcelle?.acte_mfu : null),
+      remarque: new FormControl(parcelle?.remarque ? parcelle?.remarque : ''),
+      pour_partie: new FormControl(parcelle?.pour_partie ? parcelle?.pour_partie : false),
+      typ_proprietaire: new FormControl(parcelle?.typ_proprietaire ? parcelle?.typ_proprietaire : ''),
+      libelle_court: new FormControl(parcelle?.libelle_court ? parcelle?.libelle_court : ''),
+      libelle: new FormControl(parcelle?.libelle ? parcelle?.libelle : ''),
+      proprietaire: new FormControl(parcelle?.proprietaire ? parcelle?.proprietaire : ''),
+      code_parcelle: new FormControl(parcelle?.code_parcelle ? parcelle?.code_parcelle : ''),
+    });
+  }
 
   // Créer un nouveau formulaire de projet
 

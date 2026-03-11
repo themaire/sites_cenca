@@ -178,10 +178,10 @@ export class DetailMfuComponent {
 
     const dialogRef = this.dialog.open(ActeMfuComponent, {
       data: actelite,
-      minWidth: '50vw',
+      minWidth: '80vw',
       maxWidth: '95vw',
-      height: '70vh',
-      maxHeight: '90vh',
+      height: '85vh',
+      maxHeight: '95vh',
       hasBackdrop: true,
       backdropClass: 'custom-backdrop-gerer',
       enterAnimationDuration: '400ms',

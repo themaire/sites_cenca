@@ -33,3 +33,22 @@
   justify-content: center;
   gap: 50px; // espace entre les boutons, ajuste la valeur si besoin
 }
+
+// Style pour le conteneur de la boîte de dialogue de confirmation
+::ng-deep .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: white !important;
+  background-color: white !important;
+}
+
+// Centrer le contenu de la dialog
+::ng-deep .mat-mdc-dialog-content {
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+// Centrer le titre
+::ng-deep .mat-mdc-dialog-title {
+  text-align: center !important;
+  display: flex !important;
+  justify-content: center !important;
+}

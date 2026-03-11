@@ -18,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { AsyncPipe } from '@angular/common';
 import { map } from 'rxjs/operators';
@@ -35,6 +36,7 @@ import { FormService } from '../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
 import { LoginService } from '../../../../login/login.service';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
+import { ParcelleMfuComponent } from './parcelle-mfu/parcelle-mfu.component';
 
 import 'moment/locale/fr';
 
@@ -76,6 +78,7 @@ export const MY_DATE_FORMATS = {
     MatDialogContent,
     MatIconModule,
     MatStepperModule,
+    MatTabsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -85,6 +88,7 @@ export const MY_DATE_FORMATS = {
     MatButtonModule,
     MatProgressSpinnerModule,
     AsyncPipe,
+    ParcelleMfuComponent,
   ],
   templateUrl: './acte-mfu.component.html',
   styleUrl: './acte-mfu.component.scss'
@@ -173,7 +177,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     });
 
     // Charger les types de propriétaire
-    this.formService.getSelectValues$('sites/selectvalues=sitcenca.libelles/type_proprio').subscribe({
+    this.formService.getSelectValues$('sites/selectvalues=sitcenca.typ_proprietaires').subscribe({
       next: (values) => {
         this.typeProprioList = values || [];
       },
@@ -494,3 +498,4 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     });
   }
 }
+

@@ -2,29 +2,57 @@
   <div class="conteneur-acte-mfu">
     <div class="gerer">Gérer</div>
     <div class="acte-mfu">
+      
+      <!-- Loading spinner -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement...</p>
+      </div>
 
-      <ng-container *ngTemplateOutlet="page"></ng-container>
+      <!-- Onglets principaux : Acte et Parcelles -->
+      <mat-tab-group *ngIf="!isLoading" class="main-tabs" animationDuration="200ms">
+        
+        <!-- Tab 1: Acte MFU -->
+        <mat-tab label="Acte">
+          <div class="tab-content">
+            <ng-container *ngTemplateOutlet="acteContent"></ng-container>
+          </div>
+        </mat-tab>
+        
+        <!-- Tab 2: Parcelles (uniquement pour les actes existants) -->
+        <mat-tab label="Parcelles" *ngIf="!newMfu && acteLite?.uuid_acte">
+          <div class="tab-content">
+            <app-parcelle-mfu 
+              [uuidActe]="acteLite.uuid_acte" 
+              [isEditModeParent]="isEditMfu">
+            </app-parcelle-mfu>
+          </div>
+        </mat-tab>
+        
+      </mat-tab-group>
 
     </div>
-
   </div>
 </mat-dialog-content>
 
-<!-- Formulaire avec les champs de l'acte MFU -->
-<ng-template #page>
-  <div class="button-title" [class.center-title]="
-      newMfu
-    ">
+<!-- Contenu de l'onglet Acte -->
+<ng-template #acteContent>
+  <div class="button-title" [class.center-title]="newMfu">
     <!-- 1er element -->
     <div class="form-buttons" *ngIf="mfuForm">
-      <app-form-buttons [isEditActive]="isEditMfu || newMfu" icone="edit" [theme]="'gerer'"
-        [isFormValid]="mfuForm ? mfuForm.valid : false" (toggleAction)="toggleEditMfu($event)"
-        (onSubmit)="onSubmit()"></app-form-buttons>
+      <app-form-buttons 
+        [isEditActive]="isEditMfu || newMfu" 
+        icone="edit" 
+        [theme]="'gerer'"
+        [isFormValid]="mfuForm ? mfuForm.valid : false" 
+        (toggleAction)="toggleEditMfu($event)"
+        (onSubmit)="onSubmit()">
+      </app-form-buttons>
     </div>
 
     <!-- 2eme element -->
     <div class="title-container">
-      <ng-container *ngTemplateOutlet=" newMfu ? newTitle : title "></ng-container>
+      <ng-container *ngTemplateOutlet="newMfu ? newTitle : title"></ng-container>
     </div>
 
     <!-- 3eme element (optional) - only show for existing acts, not new ones -->
@@ -33,25 +61,16 @@
     </div>
 
     <ng-template #title>
-
       <div class="title-wrapper">
         <h2 *ngIf="!isEditMfu">Consultation de l'acte MFU - {{ acteLite.nom }} </h2>
         <h2 *ngIf="isEditMfu">Modification de l'acte MFU - {{ acteLite.nom }} </h2>
       </div>
-
     </ng-template>
+    
     <ng-template #newTitle>
       <h2 *ngIf="newMfu">Création d'un nouvel acte MFU</h2>
     </ng-template>
   </div>
-
-  <!-- Variable (operation) isEditOperation: {{ isEditMfu }}<br>
-  Variable (operation) isAddOperation: {{ isAddMfu }}<br>
-  Variable (operation) form: {{ mfuForm }}<br>
-  <div *ngIf="mfuForm">
-    Variable (operation) form.get('uuid_acte'): {{ mfuForm.get('uuid_acte')?.value == undefined ? "Valeur undefined" :
-    mfuForm.get('uuid_acte')?.value }}<br>
-  </div> -->
 
   <!-- Formulaire MFU -->
   <div class="mfu-form-container" *ngIf="mfuForm">
@@ -145,13 +164,5 @@
 
     </form>
   </div>
-  
-  
-
-  <!-- Loading spinner -->
-  <div *ngIf="isLoading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Chargement...</p>
-  </div>
-
 </ng-template>
+
