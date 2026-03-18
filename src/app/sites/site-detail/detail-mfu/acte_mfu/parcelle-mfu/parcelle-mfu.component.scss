@@ -3,8 +3,6 @@
 @import "../../../../../styles/mixins.scss";
 @import "../../../../../styles/variables.scss";
 
-
-// Créer un thème local avec ta palette
 $local-theme: mat.m2-define-light-theme((
   color: (
     primary: $gerer-palette,
@@ -37,6 +35,14 @@ $local-theme: mat.m2-define-light-theme((
   box-shadow: none !important;
 }
 
+// No scrollbars global
+::ng-deep .parcelles-container,
+::ng-deep .parcelles-table,
+::ng-deep .parcelle-edit-view {
+  overflow: hidden !important;
+  max-height: none !important;
+}
+
 .edition {
   display: flex;
   @include align(center, start);
@@ -66,13 +72,25 @@ $local-theme: mat.m2-define-light-theme((
   cursor: pointer;
   transition: background-color 0.2s ease;
   
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+  &.odd-row:hover {
+    background-color: darken(#f2f2f2, 5%);
+  }
+  
+  &.even-row:hover {
+    background-color: darken(white, 4%);
+  }
+
+  &.mat-mdc-row-selected,
+  &.mat-row-selected {
+    background-color: #e3f2fd;
   }
 }
 
 // Style pour la vue de modification d'une parcelle
 .parcelle-edit-view {
+  height: 100%;
+  overflow: hidden;
+  
   .edit-header {
     display: flex;
     align-items: center;
@@ -108,6 +126,109 @@ $local-theme: mat.m2-define-light-theme((
     padding: 16px;
     background-color: #fafafa;
     border-radius: 4px;
+    overflow: hidden;
+    height: calc(100% - 80px);
   }
 }
 
+.map-button-container {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 8px;
+  
+  button {
+    margin-left: 8px;
+  }
+}
+
+.clear-btn {
+  color: rgba(0, 0, 0, 0.54);
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #d32f2f;
+    
+    mat-icon {
+      color: #d32f2f;
+    }
+  }
+}
+
+.flex-grow-1 {
+  flex: 1 1 auto;
+}
+
+.validation-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  
+  mat-spinner {
+    flex-shrink: 0;
+  }
+  
+  mat-icon {
+    flex-shrink: 0;
+  }
+  
+  &.validating {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #1976d2;
+  }
+  
+  &.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #c62828;
+    
+    mat-icon {
+      color: #c62828;
+    }
+  }
+  
+  &.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+    
+    mat-icon {
+      color: #2e7d32;
+    }
+  }
+}
+
+// Lignes de fond mat-table
+.even-row {
+  background-color: white;
+}
+
+.odd-row {
+  background-color: #f2f2f2; /* Gris très clair */
+}
+
+
+
+
+/* Cascade 1 ligne complète - FORCE nowrap */
+.cascade-row {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: stretch !important;
+  flex-wrap: nowrap !important;
+  min-height: 68px;
+  
+  mat-form-field {
+    flex: 1 !important;
+    min-width: 100px !important;
+    max-width: 140px !important;
+  }
+  
+  .flex-2 {
+    flex: 1.5 !important;
+    max-width: 180px !important;
+  }
+}

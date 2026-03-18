@@ -14,6 +14,6 @@ export interface Parcelle {
     proprietaire: string;
     code_parcelle: string;
     libelle_court: string;
-    libelle:string;
+    libelle: string;
 }
     

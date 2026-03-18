@@ -4,6 +4,7 @@ import {
   inject,
   SimpleChanges,
   ChangeDetectorRef,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +16,8 @@ import { SitesService } from '../../sites.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+
 
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
@@ -40,6 +43,7 @@ import { Overlay } from '@angular/cdk/overlay';
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
+    MatSortModule,
     MatInputModule,
     MatRadioModule
   ],
@@ -47,6 +51,7 @@ import { Overlay } from '@angular/cdk/overlay';
   styleUrl: './detail-mfu.component.scss',
 })
 export class DetailMfuComponent {
+
   @Input() inputDetail?: DetailSite;
   public actes: ActeLite[] = [];
   public dataSource!: MatTableDataSource<ActeLite>;
@@ -60,6 +65,15 @@ export class DetailMfuComponent {
     'type_prop',
     'url',
   ];
+
+  @ViewChild(MatSort) sort: MatSort | undefined;
+
+  // Appliquer le tri après l'initialisation de la vue
+  ngAfterViewInit() {
+    if (this.dataSource) {
+      this.dataSource.sort = this.sort!;
+    }
+  }
 
   // Variable pour le filtre avec ngModel
   filterValidite: string = 'tous';
@@ -80,7 +94,9 @@ export class DetailMfuComponent {
         this.actes = await this.research.getActe(subroute);
         console.log('Données de this.actes après récupération :', this.actes);
         this.dataSource = new MatTableDataSource(this.actes);
-
+        if (this.sort) {
+          this.dataSource.sort = this.sort;
+        }
 
         // Configurer le filtre personnalisé
         this.dataSource.filterPredicate = (data: ActeLite, filter: string) => {
@@ -104,14 +120,6 @@ export class DetailMfuComponent {
     }
   }
 
-  onSelect(actelite?: ActeLite): void {
-    if (actelite !== undefined) {
-      this.openDialog(actelite);
-    } else {
-      this.openDialog();
-    }
-  }
-
   async refreshActes(): Promise<void> {
     if (this.inputDetail !== undefined) {
       const subroute = `mfu/uuid=${this.inputDetail.uuid_site}/lite`;
@@ -120,7 +128,6 @@ export class DetailMfuComponent {
       try {
         this.actes = await this.research.getActe(subroute);
         this.dataSource = new MatTableDataSource(this.actes);
-
 
         // Configurer le filtre personnalisé
         this.dataSource.filterPredicate = (data: ActeLite, filter: string) => {
@@ -160,11 +167,20 @@ export class DetailMfuComponent {
   }
 
   get ActesValides(): number {
-    return this.actes.filter(acte => this.dataSource.filterPredicate(acte, 'valide')).length;
+    return this.actes.filter(acte => acte.validite === 'true').length;
   }
   
   get ActesInvalides(): number {
-    return this.actes.filter(acte => this.dataSource.filterPredicate(acte, 'invalide')).length;
+    return this.actes.filter(acte => acte.validite === 'false').length;
+  }
+
+
+  onSelect(actelite?: ActeLite): void {
+    if (actelite !== undefined) {
+      this.openDialog(actelite);
+    } else {
+      this.openDialog();
+    }
   }
 
   openDialog(actelite?: ActeLite): void {

@@ -20,6 +20,34 @@
   }
 }
 
+// Style pour les lignes cliquables du tableau
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &.odd-row:hover {
+    background-color: darken(#f2f2f2, 5%);
+  }
+  
+  &.even-row:hover {
+    background-color: darken(white, 4%);
+  }
+
+  &.mat-mdc-row-selected,
+  &.mat-row-selected {
+    background-color: #e3f2fd;
+  }
+}
+
+// Lignes de fond mat-table (comme detail-projets)
+.even-row {
+  background-color: white;
+}
+
+.odd-row {
+  background-color: #f2f2f2; /* Gris très clair */
+}
+
 .detail-mfu {
   display: flex;
 }
@@ -40,8 +68,36 @@ h2 {
   border-bottom: 2px solid $couleur-faune;
 }
 
+// Colonne Type - largeur réduite responsive
+.typ_mfu {
+  width: 12% !important;
+  max-width: 120px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.debut, .fin {
+  width: 10% !important;
+}
+
+.surf_totale, .tacit_rec, .type_prop {
+  width: 13% !important;
+}
+
+.url {
+  width: 18% !important;
+}
+
+
+
 // Responsive
 @media screen and (max-width: $mobile) {
+  .typ_mfu {
+    flex: 1 1 80px;  // Plus flexible sur mobile
+    max-width: none;
+  }
+  
   .tacit_rec,
   .surf_totale,
   .url {

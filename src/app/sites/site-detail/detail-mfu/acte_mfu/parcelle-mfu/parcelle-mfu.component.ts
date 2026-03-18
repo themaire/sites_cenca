@@ -1,8 +1,12 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild, inject } from '@angular/core';
+
+
+
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
 
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,25 +16,31 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatAutocompleteModule, MatAutocomplete } from '@angular/material/autocomplete';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
 import { Overlay } from '@angular/cdk/overlay';
+
 
 import { Parcelle } from './parcelle';
 import { ParcelleService } from './parcelle.service';
 import { FormService } from '../../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
-import { ParcelleMfuDialogComponent } from './parcelle-mfu-dialog.component';
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
 @Component({
   selector: 'app-parcelle-mfu',
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatTableModule,
+    MatSortModule,
     MatTooltipModule,
     MatIconModule,
     MatButtonModule,
@@ -38,15 +48,28 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatAutocompleteModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     FormButtonsComponent,
   ],
+
+
+
   templateUrl: './parcelle-mfu.component.html',
   styleUrl: './parcelle-mfu.component.scss'
 })
-export class ParcelleMfuComponent implements OnInit {
+export class ParcelleMfuComponent implements OnInit, AfterViewInit {
+
+
+
+
+
+
+@ViewChild(MatSort) sort!: MatSort;
+
   @Input() uuidActe: string = '';
+
   @Input() isEditModeParent: boolean = false;
   @Input() showAddForm: boolean = false;
   @Output() parcellesUpdated = new EventEmitter<void>();
@@ -59,41 +82,196 @@ export class ParcelleMfuComponent implements OnInit {
   private dialog = inject(MatDialog);
   private overlay = inject(Overlay);
 
-  // Données des parcelles
   parcelles: Parcelle[] = [];
-  dataSource = new MatTableDataSource<Parcelle>();
+  dataSource = new MatTableDataSource<Parcelle>(this.parcelles);
+  sortData(sortState: any) {
+
+    if (sortState.direction) {
+      this.parcelles.sort((a, b) => {
+        const isAsc = sortState.direction === 'asc';
+        switch (sortState.active) {
+          case 'insee': return this.compare(a.insee || '', b.insee || '', isAsc);
+          case 'prefix': return this.compare(a.prefix || '', b.prefix || '', isAsc);
+          case 'section': return this.compare(a.section || '', b.section || '', isAsc);
+          case 'numero': return this.compare(a.numero || 0, b.numero || 0, isAsc);
+          case 'surface': return this.compare(a.surface || 0, b.surface || 0, isAsc);
+          default: return 0;
+        }
+      });
+      this.dataSource.data = this.parcelles;
+    }
+  }
+  compare(a: number | string, b: number | string, isAsc: boolean): number {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+  }
+
+
+
   
-  // Colonnes du tableau
   displayedColumns: string[] = ['insee', 'prefix', 'section', 'numero', 'surface', 'pour_partie', 'libelle_court', 'proprietaire', 'actions'];
 
-  // État du formulaire
-  isAddMode: boolean = false;
-  isEditModeLocal: boolean = false;
+  isAddMode = false;
+  isEditModeLocal = false;
   parcelleForm!: FormGroup;
   editingParcelle: Parcelle | null = null;
   initialFormValues: any;
 
-  // Listes de sélection
   typeProprioList: SelectValue[] = [];
+  isLoading = false;
 
-  // Loading
-  isLoading: boolean = false;
+  departements = [
+    { code: '08', nom: 'Ardennes' },
+    { code: '10', nom: 'Aube' },
+    { code: '51', nom: 'Marne' },
+    { code: '52', nom: 'Haute-Marne' }
+  ];
 
-  constructor() {}
+  isValidating = false;
+  validationError = '';
+  validationSuccess = '';
+
+  communes: any[] = [];
+  filteredCommunes: any[] = [];
+  sections: string[] = [];
+  numeros: any[] = [];
+  filteredNumeros: any[] = [];
+  codeParcelles: any[] = [];
+  filteredCodeParcelles: any[] = [];
+  codeParcelleFilter = '';
+
+  isLoadingCommunes = false;
+  isLoadingSections = false;
+  isLoadingNumeros = false;
+  isLoadingCodeParcelles = false;
+
+  selectedDepartement = '';
+  selectedCommune = '';
+  selectedSection = '';
+  
+  maxSurface: number | null = null;
+
+  communeMap: Map<string, string> = new Map();
+  isLoadingCommunesGlobal = false;
 
   async ngOnInit() {
-    // Charger les types de propriétaire
+    await this.preloadCommunes();
     this.loadSelectValues();
-    
-    // Charger les parcelles
     if (this.uuidActe) {
-      await this.loadParcelles();
+      this.loadParcelles();
     }
-    
-    // Si showAddForm est true, démarrer directement en mode ajout
     if (this.showAddForm) {
       this.startAddMode();
     }
+  }
+
+  private async preloadCommunes() {
+    this.isLoadingCommunesGlobal = true;
+    try {
+      const deptCodes = this.departements.map(dep => dep.code);
+      for (const deptCode of deptCodes) {
+        const communes = await this.parcelleService.getCommunesByDepartement(deptCode);
+        communes.forEach(commune => {
+          if (commune.code && commune.nom) {
+            this.communeMap.set(commune.code, commune.nom);
+          }
+        });
+      }
+      console.log(`[ParcelleMfu] Preloaded ${this.communeMap.size} communes`);
+    } catch (error) {
+      console.error('Error preloading communes:', error);
+    } finally {
+      this.isLoadingCommunesGlobal = false;
+    }
+  }
+
+getCommuneName(parcelle: any): string {
+    if (parcelle.insee) return parcelle.insee;
+    return '-';
+  }
+  
+  getCommuneNameFull(parcelle: any): string {
+    const insee = parcelle.insee || '';
+    if (this.communeMap.has(insee)) {
+      return this.communeMap.get(insee)!;
+    }
+    return insee || '-';
+  }
+
+  filterCommunes(event: any) {
+    const filterValue = event.target.value.toLowerCase();
+    this.filteredCommunes = this.communes.filter(com => 
+      com.code.toLowerCase().includes(filterValue) || 
+      (com.nom && com.nom.toLowerCase().includes(filterValue))
+    );
+    this.cdr.detectChanges();
+  }
+
+  filterNumeros(event: any) {
+    const filterValue = event.target.value.toLowerCase();
+    this.filteredNumeros = this.numeros.filter(num => 
+      String(num.numero).toLowerCase().includes(filterValue)
+    );
+    this.cdr.detectChanges();
+  }
+
+  async onDepartementChange(departementCode: string) {
+    this.selectedDepartement = departementCode;
+    this.resetCascadeBelow('commune');
+    
+    this.isLoadingCommunes = true;
+    this.communes = await this.parcelleService.getCommunesByDepartement(departementCode);
+    this.isLoadingCommunes = false;
+    this.cdr.detectChanges();
+  }
+
+
+
+  async onCommuneChange(communeCode: string) {
+    console.log('[DEBUG onCommuneChange] Setting commune:', communeCode);
+    this.selectedCommune = communeCode;
+    this.parcelleForm.patchValue({ insee: communeCode });
+    console.log('[DEBUG] Form INSEE après set:', this.parcelleForm.get('insee')?.value);
+    this.resetCascadeBelow('section');
+    
+    this.isLoadingSections = true;
+    await new Promise(resolve => setTimeout(resolve, 600));
+    this.sections = await this.parcelleService.getSectionsByCommune(communeCode);
+    this.isLoadingSections = false;
+    this.cdr.detectChanges();
+  }
+
+
+
+  async onSectionChange(section: string) {
+    this.selectedSection = section;
+    this.resetCascadeBelow('numero');
+    
+    await new Promise(resolve => setTimeout(resolve, 300));
+    this.isLoadingNumeros = true;
+    this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, section);
+    this.isLoadingNumeros = false;
+    this.cdr.detectChanges();
+  }
+
+
+  onNumeroChange(numero: string) {
+    const selectedParcelle = this.numeros.find(n => n.numero === numero);
+    
+    if (selectedParcelle && this.parcelleForm) {
+      this.maxSurface = selectedParcelle.contenance || null;
+      this.parcelleForm.patchValue({ 
+        numero: Number(selectedParcelle.numero),
+        surface: (selectedParcelle.contenance || 0) / 10000,  // m² → ha
+        code_parcelle: selectedParcelle.idu
+      });
+      this.validationSuccess = 'Parcelle sélectionnée';
+    }
+    this.cdr.detectChanges();
   }
 
   async loadParcelles() {
@@ -101,9 +279,8 @@ export class ParcelleMfuComponent implements OnInit {
     try {
       this.parcelles = await this.parcelleService.getParcellesByActe(this.uuidActe);
       this.dataSource.data = this.parcelles;
-      console.log('Parcelles MFU complètes après extraction :', this.parcelles);
     } catch (error) {
-      console.error('Erreur lors du chargement des parcelles:', error);
+      console.error('Erreur chargement parcelles:', error);
     } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
@@ -111,34 +288,27 @@ export class ParcelleMfuComponent implements OnInit {
   }
 
   loadSelectValues() {
-    // Charger les types de propriétaire
     this.formService.getSelectValues$('sites/selectvalues=sitcenca.typ_proprietaires').subscribe({
-      next: (values) => {
-        this.typeProprioList = values || [];
-      },
-      error: (err) => console.error('Erreur chargement type_proprio:', err)
+      next: (values) => this.typeProprioList = values || [],
+      error: (err) => console.error('Erreur type_proprio:', err)
     });
   }
 
-  onSelectParcelles() {
-    // Bascule entre afficher/masquer le formulaire d'ajout
-    if (!this.isAddMode) {
-      this.startAddMode();
-    } else {
-      this.cancelAddMode();
-    }
-  }
 
   startAddMode() {
     this.isAddMode = true;
     this.isEditModeLocal = false;
     this.editingParcelle = null;
-    // Créer un nouveau formulaire vide avec l'uuid de l'acte
     this.parcelleForm = this.formService.newParcelleForm();
-    this.parcelleForm.patchValue({ acte_mfu: this.uuidActe });
-    this.initialFormValues = JSON.parse(JSON.stringify(this.parcelleForm.getRawValue()));
+    this.resetCascade();
+    this.parcelleForm.patchValue({ acte_mfu: this.uuidActe, prefix: '000' });
+    this.initialFormValues = { ...this.parcelleForm.getRawValue() };
+    this.validationError = '';
+    this.validationSuccess = '';
+    this.isValidating = false;
     this.cdr.detectChanges();
   }
+
 
   cancelAddMode() {
     this.isAddMode = false;
@@ -146,140 +316,198 @@ export class ParcelleMfuComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  startEditMode(parcelle: Parcelle) {
+  async startEditMode(parcelle: Parcelle) {
     this.isEditModeLocal = true;
     this.isAddMode = false;
     this.editingParcelle = parcelle;
-    
-    // Créer un formulaire avec les données de la parcelle
-    // Le formulaire utilise directement typ_proprietaire
     this.parcelleForm = this.formService.newParcelleForm(parcelle);
+    this.initialFormValues = { ...this.parcelleForm.getRawValue() };
     
-    this.initialFormValues = JSON.parse(JSON.stringify(this.parcelleForm.getRawValue()));
+    // Cascade pour précharger les listes et sélectionner les bons éléments
+    await this.loadCascadeForEdit(parcelle);
+    
     this.cdr.detectChanges();
   }
+
+  private async loadCascadeForEdit(parcelle: Parcelle) {
+    if (!parcelle.insee) return;
+    
+    // Extraire dept de INSEE (2 premiers chars)
+    this.selectedDepartement = parcelle.insee.substring(0, 2);
+    
+    // Charger communes pour dept
+    this.isLoadingCommunes = true;
+    this.communes = await this.parcelleService.getCommunesByDepartement(this.selectedDepartement);
+    this.isLoadingCommunes = false;
+    
+    // Définir commune
+    this.selectedCommune = parcelle.insee;
+    this.parcelleForm.patchValue({ insee: parcelle.insee });
+    
+    // Charger sections
+    this.isLoadingSections = true;
+    await new Promise(resolve => setTimeout(resolve, 600));
+    this.sections = await this.parcelleService.getSectionsByCommune(this.selectedCommune);
+    this.isLoadingSections = false;
+    
+    // Définir section
+    this.selectedSection = parcelle.section || '';
+    this.parcelleForm.patchValue({ section: this.selectedSection });
+    
+    // Charger numeros si section
+    if (this.selectedSection) {
+      this.isLoadingNumeros = true;
+      this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, this.selectedSection);
+      this.isLoadingNumeros = false;
+      
+      // Filtrer pour numero actuel
+      const currentNumero = parcelle.numero;
+      const selectedNum = this.numeros.find(n => n.numero == currentNumero);
+      if (selectedNum) {
+        this.parcelleForm.patchValue({ 
+          numero: Number(selectedNum.numero),
+          code_parcelle: selectedNum.idu,
+          surface: (selectedNum.contenance || 0) / 10000
+        });
+      }
+    }
+    
+    this.cdr.detectChanges();
+  }
+
+
 
   cancelEditMode() {
     this.isEditModeLocal = false;
     this.editingParcelle = null;
     this.parcelleForm = null!;
+    this.validationError = '';
+    this.validationSuccess = '';
     this.cdr.detectChanges();
   }
 
-  onSubmit() {
-    if (!this.parcelleForm || !this.parcelleForm.valid) {
-      this.snackBar.open('Formulaire invalide', 'Fermer', {
-        duration: 3000,
-        panelClass: ['snackbar-error'],
-      });
-      return;
-    }
 
-    // Vérifier si le formulaire a été modifié
-    const currentValues = this.parcelleForm.getRawValue();
-    const hasChanges = JSON.stringify(currentValues) !== JSON.stringify(this.initialFormValues);
-    
-    if (!hasChanges) {
-      this.snackBar.open("Aucun changement n'a été effectué", 'Fermer', {
-        duration: 3000,
-        panelClass: ['snackbar-info'],
-      });
-      return;
-    }
-
+  async validateParcelle(): Promise<boolean> {
     const formValue = this.parcelleForm.getRawValue();
-    console.log('Données de la parcelle à soumettre:', formValue);
+    const { insee, section, numero } = formValue;
+    
+    console.log('[DEBUG validateParcelle] Raw form values:', formValue);
+    console.log('[DEBUG] insee:', insee, 'section:', section, 'numero:', numero);
+    
+    if (!insee || !section || !numero) {
+      this.validationError = `INSEE, section et numéro obligatoires (insee:"${insee}", section:"${section}", numero:${numero})`;
+      return false;
+    }
 
-    // Supprimer libelle et libelle_court car ces colonnes n'existent pas dans la table
-    // Le formulaire utilise directement typ_proprietaire
-    delete formValue.libelle;
-    delete formValue.libelle_court;
-
-    if (this.isAddMode) {
-      // Création d'une nouvelle parcelle
-      this.parcelleService.insertParcelle(formValue).subscribe({
-        next: (response) => {
-          if (response && response.success) {
-            this.snackBar.open('Parcelle créée avec succès', 'Fermer', {
-              duration: 3000,
-              panelClass: ['snackbar-success'],
-            });
-            this.loadParcelles();
-            this.cancelAddMode();
-            this.parcellesUpdated.emit();
-          } else {
-            this.snackBar.open(response?.message || 'Erreur lors de la création', 'Fermer', {
-              duration: 3000,
-              panelClass: ['snackbar-error'],
-            });
-          }
-        },
-        error: (error) => {
-          console.error('Erreur lors de la création de la parcelle', error);
-          this.snackBar.open('Erreur lors de la création', 'Fermer', {
-            duration: 3000,
-            panelClass: ['snackbar-error'],
-          });
+    
+    this.isValidating = true;
+    this.cdr.detectChanges();
+    
+    try {
+      const normalizedSection = section.toUpperCase().padStart(2, '0').substring(0, 2);
+      const normalizedNumero = String(numero).padStart(4, '0').substring(0, 4);
+      
+      const result = await this.parcelleService.validateParcelleExists(insee, normalizedSection, normalizedNumero);
+      
+      if (result?.exists) {
+        const props = result.properties || {};
+        if (!formValue.surface && props.contenance) {
+          this.parcelleForm.patchValue({ surface: props.contenance / 10000 });
+          this.validationSuccess = 'Surface du cadastre';
+        } else {
+          this.validationSuccess = 'Parcelle validée';
         }
-      });
-    } else if (this.isEditModeLocal && this.editingParcelle) {
-      // Mise à jour d'une parcelle existante
-      this.parcelleService.updateParcelle(this.editingParcelle.uuid_parcelle, formValue).subscribe({
-        next: (response) => {
-          if (response && response.success) {
-            this.snackBar.open('Parcelle mise à jour avec succès', 'Fermer', {
-              duration: 3000,
-              panelClass: ['snackbar-success'],
-            });
-            this.loadParcelles();
-            this.cancelEditMode();
-            this.parcellesUpdated.emit();
-          } else {
-            this.snackBar.open(response?.message || 'Erreur lors de la mise à jour', 'Fermer', {
-              duration: 3000,
-              panelClass: ['snackbar-error'],
-            });
-          }
-        },
-        error: (error) => {
-          console.error('Erreur lors de la mise à jour de la parcelle', error);
-          this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', {
-            duration: 3000,
-            panelClass: ['snackbar-error'],
-          });
+        if (!formValue.code_parcelle && props.idu) {
+          this.parcelleForm.patchValue({ code_parcelle: props.idu });
         }
-      });
+        this.isValidating = false;
+        return true;
+      } else {
+        this.validationError = "Parcelle inconnue au cadastre";
+        this.isValidating = false;
+        return false;
+      }
+    } catch (error: any) {
+      console.error('Erreur validation:', error);
+      this.validationError = 'Erreur validation';
+      this.isValidating = false;
+      return false;
     }
   }
 
-  deleteParcelle(parcelle: Parcelle) {
-    const message = `Voulez-vous vraiment supprimer cette parcelle?<br><strong>
-    </strong><br>Cette action est irréversible.`;
+  onSubmit() {
+    if (!this.parcelleForm?.valid) {
+      this.snackBar.open('Formulaire invalide', 'OK', { duration: 3000 });
+      return;
+    }
+
+
+    const typProprietaire = this.parcelleForm.get('typ_proprietaire')?.value;
+    console.log('[DEBUG] Type propriétaire sélectionné:', typProprietaire, 'Form valid:', this.parcelleForm.valid);
+
+    if (!typProprietaire) {
+      this.validationError = 'Type propriétaire obligatoire';
+      return;
+    }
+
+    const currentValues = this.parcelleForm.getRawValue();
+    if (JSON.stringify(currentValues) === JSON.stringify(this.initialFormValues)) {
+      this.snackBar.open('Aucun changement', 'OK', { duration: 3000 });
+      return;
+    }
+
+    this.validateParcelle().then((isValid: boolean) => {
+      if (isValid) {
+        this.submitParcelle(currentValues);
+      }
+    });
+  }
+
+  private submitParcelle(formValue: any) {
+    const dataToSubmit = { ...formValue };
+    delete dataToSubmit.libelle;
+    delete dataToSubmit.libelle_court;
+
+    const observable$ = this.isAddMode 
+      ? this.parcelleService.insertParcelle(dataToSubmit)
+      : this.parcelleService.updateParcelle(this.editingParcelle!.uuid_parcelle, dataToSubmit);
+
+    observable$.subscribe({
+      next: (response: any) => {
+        if (response?.success) {
+          this.snackBar.open('Parcelle sauvegardée', 'OK', { duration: 3000 });
+          this.loadParcelles();
+          this.isAddMode ? this.cancelAddMode() : this.cancelEditMode();
+          this.parcellesUpdated.emit();
+        } else {
+          this.snackBar.open(response?.message || 'Erreur sauvegarde', 'OK', { duration: 3000 });
+        }
+      },
+      error: (error: any) => {
+        console.error('Erreur sauvegarde:', error);
+        this.snackBar.open('Erreur sauvegarde', 'OK', { duration: 3000 });
+      }
+    });
+  }
+
+  deleteParcelle(parcelle: Parcelle): void {
+    const message = `Supprimer "${parcelle.code_parcelle || 'cette parcelle'}" ?`;
     
-    this.confirmationService.confirm('Confirmation de suppression', message, 'delete').subscribe(result => {
+    this.confirmationService.confirm('Supprimer parcelle', message, 'delete').subscribe(result => {
       if (result) {
         this.parcelleService.deleteParcelle(parcelle.uuid_parcelle).subscribe({
-          next: (response) => {
-            if (response && response.success) {
-              this.snackBar.open('Parcelle supprimée avec succès', 'Fermer', {
-                duration: 3000,
-                panelClass: ['snackbar-success'],
-              });
+          next: (response: any) => {
+            if (response?.success) {
+              this.snackBar.open('Parcelle supprimée', 'OK', { duration: 3000 });
               this.loadParcelles();
               this.parcellesUpdated.emit();
             } else {
-              this.snackBar.open(response?.message || 'Erreur lors de la suppression', 'Fermer', {
-                duration: 3000,
-                panelClass: ['snackbar-error'],
-              });
+              this.snackBar.open(response?.message || 'Erreur suppression', 'OK', { duration: 3000 });
             }
           },
-          error: (error) => {
-            console.error('Erreur lors de la suppression de la parcelle', error);
-            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
-              duration: 3000,
-              panelClass: ['snackbar-error'],
-            });
+          error: (error: any) => {
+            console.error('Erreur suppression:', error);
+            this.snackBar.open('Erreur suppression', 'OK', { duration: 3000 });
           }
         });
       }
@@ -288,84 +516,122 @@ export class ParcelleMfuComponent implements OnInit {
 
   getLibelle(cd_type: string, list: SelectValue[] | undefined): string {
     if (!list) return '';
-    const item = list.find(t => t.cd_type === cd_type);
-    return item ? item.libelle : cd_type;
+    const item = list.find((t: any) => t.cd_type === cd_type);
+    return item?.libelle || cd_type;
   }
 
   getTypeProprioList(): SelectValue[] {
     return this.typeProprioList;
   }
 
-  /**
-   * Gère les actions des boutons (edit, add, cancel, save)
-   * @param action L'action déclenchée par le bouton
-   */
+  clearCascade(level: 'departement' | 'commune' | 'section' | 'numero') {
+    switch (level) {
+      case 'departement':
+        this.selectedDepartement = '';
+        this.parcelleForm?.patchValue({ insee: '' });
+        this.resetCascade();
+        break;
+      case 'commune':
+        this.selectedCommune = '';
+        this.parcelleForm?.patchValue({ insee: '' });
+        this.resetSectionDown()
+        break;
+      case 'section':
+        this.selectedSection = '';
+        this.parcelleForm?.patchValue({ section: '', numero: null, code_parcelle: '', surface: null });
+        this.numeros = [];
+        break;
+      case 'numero':
+        this.parcelleForm?.patchValue({ numero: null, code_parcelle: '', surface: null });
+        break;
+    }
+    this.cdr.detectChanges();
+  }
+
+  private resetSectionDown() {
+    this.selectedSection = '';
+    this.sections = [];
+    this.numeros = [];
+    this.maxSurface = null;
+    if (this.parcelleForm) {
+      this.parcelleForm.patchValue({ section: '', numero: null, code_parcelle: '' });
+    }
+    console.log('[DEBUG resetSectionDown] Form INSEE après reset:', this.parcelleForm?.get('insee')?.value);
+  }
+
   toggleEditParcelle(action: String): void {
-    console.log('toggleEditParcelle action:', action);
+    console.log('toggleEditParcelle:', action);
     
     if (action === 'cancel') {
-      // Annuler - revenir à la liste
-      if (this.isAddMode) {
-        this.cancelAddMode();
-      } else if (this.isEditModeLocal) {
-        this.cancelEditMode();
-      }
+      this.isAddMode ? this.cancelAddMode() : this.cancelEditMode();
     } else if (action === 'add') {
-      // Ajouter une nouvelle parcelle
       this.startAddMode();
-    } else if (action === 'edit') {
-      // Modifier - déjà géré par startEditMode
     }
   }
 
-  /**
-   * Ouvre le dialogue de modification d'une parcelle
-   * @param parcelle La parcelle à modifier (optionnel - si non fourni, crée une nouvelle parcelle)
-   */
-  openParcelleDialog(parcelle?: Parcelle): void {
-    if (parcelle === undefined) {
-      // Nouvelle parcelle - préparer les données de base
-      console.log("Charge une parcelle vide");
-      parcelle = {
-        uuid_parcelle: '',
-        insee: '',
-        prefix: '',
-        section: '',
-        numero: 0,
-        partie: '',
-        surface: 0,
-        validite: 'true',
-        acte_mfu: this.uuidActe,
-        remarque: '',
-        pour_partie: false,
-        libelle_court: '',
-        proprietaire: '',
-        code_parcelle: ''
-      } as Parcelle;
-      console.log("--------------parcelle : ", parcelle);
-    }
 
-    const dialogRef = this.dialog.open(ParcelleMfuDialogComponent, {
-      data: parcelle,
-      minWidth: '60vw',
-      maxWidth: '90vw',
-      height: '85vh',
-      maxHeight: '95vh',
-      hasBackdrop: true,
-      backdropClass: 'custom-backdrop-gerer',
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '300ms',
-      scrollStrategy: this.overlay.scrollStrategies.close(),
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('Dialog parcelle MFU fermé avec résultat:', result);
-      if (result === true) {
-        // Rafraîchir les parcelles après modification
-        this.loadParcelles();
-        this.parcellesUpdated.emit();
-      }
-    });
+  private resetCascade() {
+    this.resetCascadeBelow('commune');
   }
+
+
+
+
+
+
+
+  private resetCascadeBelow(level: 'commune' | 'section' | 'numero') {
+    // Toujours reset les champs en aval vers vide/null quel que soit le mode
+    switch (level) {
+      case 'commune':
+        this.selectedCommune = '';
+        this.selectedSection = '';
+        this.communes = [];
+        this.sections = [];
+        this.numeros = [];
+        this.maxSurface = null;
+        if (this.parcelleForm) {
+          this.parcelleForm.patchValue({ 
+            insee: '', 
+            section: '', 
+            numero: null, 
+            code_parcelle: '', 
+            surface: null
+          });
+        }
+        break;
+      case 'section':
+        this.selectedSection = '';
+        this.sections = [];
+        this.numeros = [];
+        this.maxSurface = null;
+        if (this.parcelleForm) {
+          this.parcelleForm.patchValue({ 
+            section: '', 
+            numero: null, 
+            code_parcelle: '', 
+            surface: null
+          });
+        }
+        break;
+      case 'numero':
+        this.numeros = [];
+        this.maxSurface = null;
+        if (this.parcelleForm) {
+          this.parcelleForm.patchValue({ 
+            numero: null, 
+            code_parcelle: '' 
+          });
+        }
+        break;
+    }
+    this.cdr.detectChanges();
+  }
+
+
+
+
 }
+
+
 

@@ -22,12 +22,24 @@ export class ParcelleService {
    * @returns Promise avec la liste des parcelles
    */
   async getParcellesByActe(uuidActe: string): Promise<Parcelle[]> {
+    const apiUrl = this.activeUrl + `parcelles_mfu/uuid=${uuidActe}`;
+    console.log('[ParcelleService] 🔍 API URL:', apiUrl);
     try {
-      const response = await fetch(this.activeUrl + `parcelles_mfu/uuid=${uuidActe}`);
+      const response = await fetch(apiUrl);
+      console.log('[ParcelleService] 📡 Response status:', response.status, response.statusText);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       const data = await response.json();
+      console.log('[ParcelleService] 📦 Response data:', data);
+      console.log('[ParcelleService] 📊 Parcels count:', data?.length || 0);
       return data ?? [];
     } catch (error) {
-      console.error('Erreur lors de la récupération des parcelles:', error);
+      console.error('[ParcelleService] ❌ Full error details:', {
+        url: apiUrl,
+        message: String(error),
+        ...(error as any)
+      });
       return [];
     }
   }
@@ -98,6 +110,267 @@ export class ParcelleService {
         return of([]);
       })
     );
+  }
+
+  /**
+   * Valide qu'une parcelle existe dans le cadastre
+   * Utilise d'abord les données locales, puis l'API apicarto.ign.fr en fallback
+   * @param codeInsee Code INSEE de la commune (5 caractères)
+   * @param section Section de la parcelle (2 caractères)
+   * @param numero Numéro de la parcelle (4 caractères)
+   * @returns Promise avec les informations de la parcelle si elle existe, null sinon
+   */
+  async validateParcelleExists(codeInsee: string, section: string, numero: string): Promise<any | null> {
+    try {
+      // Normaliser les valeurs
+      const normalizedSection = section.toUpperCase().trim();
+      const normalizedNumero = String(numero).trim();
+
+      // D'abord, essayer de valider avec les données locales (plus fiable)
+      const localParcelles = await this.getNumerosBySection(codeInsee, normalizedSection);
+      
+      if (localParcelles && localParcelles.length > 0) {
+        // Chercher la parcelle dans les données locales
+        const found = localParcelles.find((p: any) => {
+          const pNumero = String(p.numero).trim();
+          const pSection = normalizedSection;
+          return pNumero === normalizedNumero || pNumero === normalizedNumero.replace(/^0+/, '') || String(p.numero).padStart(4, '0') === normalizedNumero;
+        });
+
+        if (found) {
+          console.log('[ParcelleService] Validation locale réussie:', found);
+          return {
+            exists: true,
+            properties: {
+              idu: found.idu,
+              contenance: found.contenance,
+              section: normalizedSection,
+              numero: found.numero
+            }
+          };
+        }
+      }
+
+      // Fallback: utiliser l'API apicarto.ign.fr
+      // Note: le format de l'API apicarto peut varier
+      const sectionForApi = normalizedSection.length === 1 ? '0' + normalizedSection : normalizedSection;
+      const numeroForApi = String(normalizedNumero).padStart(4, '0');
+      
+      const url = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&section=${sectionForApi}&numero=${numeroForApi}&_limit=1`;
+      console.log('[ParcelleService] URL validation API:', url);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error('Erreur lors de la validation de la parcelle:', response.status);
+        return null;
+      }
+      
+      const data = await response.json();
+      
+      // Vérifier si on a des résultats
+      if (!data || !data.features || data.features.length === 0) {
+        // Essayer avec un autre format
+        const altUrl = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&section=${normalizedSection}&numero=${normalizedNumero}&_limit=1`;
+        console.log('[ParcelleService] Essai avec format alternatif:', altUrl);
+        
+        const altResponse = await fetch(altUrl);
+        if (altResponse.ok) {
+          const altData = await altResponse.json();
+          if (altData && altData.features && altData.features.length > 0) {
+            const feature = altData.features[0];
+            return {
+              exists: true,
+              feature: feature,
+              properties: feature.properties
+            };
+          }
+        }
+        return null;
+      }
+      
+      const feature = data.features[0];
+      return {
+        exists: true,
+        feature: feature,
+        properties: feature.properties
+      };
+    } catch (error) {
+      console.error('Erreur lors de la validation de la parcelle:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Récupère les communes d'un département via le backend
+   * @param codeDepartement Code du département (2 caractères)
+   * @returns Promise avec la liste des communes
+   */
+  async getCommunesByDepartement(codeDepartement: string): Promise<any[]> {
+    try {
+      // Utiliser le backend pour les communes
+      const url = `${environment.apiBaseUrl}api-geo/communes?departements=${codeDepartement}`;
+      console.log('[ParcelleService] URL communes:', url);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération des communes:', response.status);
+        return [];
+      }
+      
+      const data = await response.json();
+      console.log('[ParcelleService] Données communes:', data);
+      
+      // Le backend retourne { success: true, data: [...] }
+      if (data && data.data && Array.isArray(data.data)) {
+        return data.data.map((commune: any) => ({
+          code: commune.code,
+          nom: commune.nom
+        }));
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Erreur lors de la récupération des communes:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Récupère les sections existantes pour une commune via le backend
+   * @param codeInsee Code INSEE de la commune (5 caractères)
+   * @returns Promise avec la liste des sections uniques
+   */
+  async getSectionsByCommune(codeInsee: string): Promise<string[]> {
+    try {
+      // Utiliser le backend pour récupérer les parcelles
+      const url = `${environment.apiBaseUrl}api-geo/parcelles/commune/${codeInsee}?maxFeatures=5000`;
+      console.log('[ParcelleService] URL sections:', url);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération des sections:', response.status);
+        return [];
+      }
+      
+      const data = await response.json();
+      console.log('[ParcelleService] Données sections:', data);
+      
+      if (!data || !data.features || data.features.length === 0) {
+        return [];
+      }
+      
+      // Extraire les sections uniques
+      const sections = new Set<string>();
+      data.features.forEach((feature: any) => {
+        if (feature.properties && feature.properties.section) {
+          sections.add(feature.properties.section);
+        }
+      });
+      
+      // Trier les sections
+      return Array.from(sections).sort();
+    } catch (error) {
+      console.error('Erreur lors de la récupération des sections:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Récupère les numéros de parcelles existants pour une commune et une section
+   * @param codeInsee Code INSEE de la commune (5 caractères)
+   * @param section Section de la parcelle
+   * @returns Promise avec la liste des numéros de parcelles
+   */
+
+
+  async getNumerosBySection(codeInsee: string, section: string): Promise<any[]> {
+    try {
+      // Utiliser le backend pour récupérer les parcelles
+      const url = `${environment.apiBaseUrl}api-geo/parcelles/commune/${codeInsee}?maxFeatures=5000`;
+      console.log('[ParcelleService] URL numeros:', url);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération des numéros:', response.status);
+        return [];
+      }
+      
+      const data = await response.json();
+      console.log('[ParcelleService] Données numeros:', data);
+      
+      if (!data || !data.features || data.features.length === 0) {
+        return [];
+      }
+      
+      // Filtrer par section et retourner les parcelles
+      const filteredFeatures = data.features.filter((feature: any) => {
+        return feature.properties && 
+               feature.properties.section && 
+               feature.properties.section.toUpperCase() === section.toUpperCase();
+      });
+      
+      return filteredFeatures.map((feature: any) => ({
+        numero: feature.properties.numero,
+        contenance: feature.properties.contenance,
+        idu: feature.properties.idu,
+        geojson: feature
+      })).sort((a: any, b: any) => {
+        const numA = parseInt(a.numero) || 0;
+        const numB = parseInt(b.numero) || 0;
+        return numA - numB;
+      });
+    } catch (error) {
+      console.error('Erreur lors de la récupération des numéros:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Récupère le GeoJSON d'une parcelle spécifique
+   * @param codeInsee Code INSEE de la commune (5 caractères)
+   * @param section Section de la parcelle
+   * @param numero Numéro de la parcelle
+   * @returns Promise avec le GeoJSON de la parcelle
+   */
+  async getParcelleGeoJson(codeInsee: string, section: string, numero: string): Promise<any | null> {
+    try {
+      const url = `${environment.apiBaseUrl}api-geo/parcelles/commune/${codeInsee}?maxFeatures=5000`;
+      console.log('[ParcelleService] URL geojson:', url);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération du GeoJSON:', response.status);
+        return null;
+      }
+      
+      const data = await response.json();
+      
+      if (!data || !data.features || data.features.length === 0) {
+        return null;
+      }
+      
+      // Filtrer par section et numéro
+      const normalizedSection = section.toUpperCase();
+      const normalizedNumero = String(numero).padStart(4, '0');
+      
+      const foundFeature = data.features.find((feature: any) => {
+        const props = feature.properties;
+        return props && 
+               props.section && 
+               props.section.toUpperCase() === normalizedSection &&
+               String(props.numero).padStart(4, '0') === normalizedNumero;
+      });
+      
+      return foundFeature || null;
+    } catch (error) {
+      console.error('Erreur lors de la récupération du GeoJSON:', error);
+      return null;
+    }
   }
 }
 

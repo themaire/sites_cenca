@@ -16,7 +16,8 @@ import { OperationLite } from '../../sites/site-detail/detail-projets/projet/ope
 export class FormButtonsComponent {
   @Input() icone!: string;
   @Input() theme!: string;
-  @Input() isFormValid!: boolean;
+  @Input() isFormValid: boolean = false;
+
   @Input() isAddActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
   @Input() isEditActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
   @Input() nbObjectifs?: number = -1  // Valeur par défaut pour voir si c'est vide

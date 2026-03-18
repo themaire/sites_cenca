@@ -1,65 +1,97 @@
 <div class="parcelles-container">
-  
+
   <!-- Mode modification ou ajout d'une parcelle -->
   <div *ngIf="isEditModeLocal || isAddMode" class="parcelle-edit-view">
     <!-- En-tête avec boutons en haut -->
     <div class="button-title">
       <div class="form-buttons" *ngIf="parcelleForm">
-        <app-form-buttons 
-          [isEditActive]="isEditModeLocal || isAddMode" 
-          icone="add" 
-          [theme]="'gerer'"
-          [isFormValid]="parcelleForm ? parcelleForm.valid : false" 
-          (toggleAction)="toggleEditParcelle($event)"
+        <app-form-buttons [isEditActive]="isEditModeLocal || isAddMode" icone="add" [theme]="'gerer'"
+          [isFormValid]="parcelleForm ? parcelleForm.valid : false" (toggleAction)="toggleEditParcelle($event)"
           (onSubmit)="onSubmit()">
         </app-form-buttons>
       </div>
-      
+
       <div class="title-container">
         <h3 *ngIf="isEditModeLocal">Modification de la parcelle</h3>
         <h3 *ngIf="isAddMode">Nouvelle parcelle</h3>
       </div>
     </div>
-    
+
     <form [formGroup]="parcelleForm" (ngSubmit)="onSubmit()" class="parcelle-form">
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Code Parcelle</mat-label>
-          <input matInput formControlName="code_parcelle" placeholder="Ex: 012 345 678 900">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Code INSEE</mat-label>
-          <input matInput formControlName="insee" placeholder="Ex: 01234">
-        </mat-form-field>
+      <!-- Messages de validation -->
+      <div *ngIf="isValidating" class="validation-message validating">
+        <mat-spinner diameter="20"></mat-spinner>
+        <span>Validation de la parcelle dans le cadastre...</span>
       </div>
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Préfixe</mat-label>
-          <input matInput formControlName="prefix" placeholder="Ex: 0">
+      <div *ngIf="validationError && !isValidating" class="validation-message error">
+        <mat-icon>error</mat-icon>
+        <span>{{ validationError }}</span>
+      </div>
+      <div *ngIf="validationSuccess && !isValidating" class="validation-message success">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ validationSuccess }}</span>
+      </div>
+
+  <!-- Cascade compact row -->
+      <div class="form-row-cascade" *ngIf="isAddMode || isEditModeLocal">
+        <mat-form-field class="cascade-field">
+          <mat-label>Département</mat-label>
+          <mat-select (selectionChange)="onDepartementChange($event.value)" [value]="selectedDepartement">
+            <mat-option *ngFor="let dep of departements" [value]="dep.code">
+              {{ dep.code }} - {{ dep.nom }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline">
+
+        <mat-form-field class="cascade-field" *ngIf="selectedDepartement">
+          <mat-label>Commune</mat-label>
+          <input matInput formControlName="insee" [matAutocomplete]="communeAuto" (input)="filterCommunes($event)">
+          <mat-autocomplete #communeAuto="matAutocomplete" (optionSelected)="onCommuneChange($event.option.value)">
+            <mat-option *ngFor="let com of filteredCommunes" [value]="com.code">
+              {{ com.code }} - {{ com.nom }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="cascade-field" *ngIf="selectedCommune">
           <mat-label>Section</mat-label>
-          <input matInput formControlName="section" placeholder="Ex: AB">
+          <mat-select [value]="selectedSection" (selectionChange)="onSectionChange($event.value)" formControlName="section">
+            <mat-option *ngFor="let sec of sections" [value]="sec">
+              {{ sec }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline">
+
+        <mat-form-field class="cascade-field" *ngIf="selectedSection">
           <mat-label>Numéro</mat-label>
-          <input matInput type="number" formControlName="numero" placeholder="Ex: 123">
+          <input matInput formControlName="numero" [matAutocomplete]="numeroAuto" (input)="filterNumeros($event)">
+          <mat-autocomplete #numeroAuto="matAutocomplete" (optionSelected)="onNumeroChange($event.option.value)">
+            <mat-option *ngFor="let num of filteredNumeros" [value]="num.numero">
+              {{ num.numero }} - {{ num.idu }} aires
+            </mat-option>
+          </mat-autocomplete>
         </mat-form-field>
       </div>
+
+
+
+
+      <!-- Autres champs -->
+
       <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>Partie</mat-label>
           <input matInput formControlName="partie" placeholder="Ex: A">
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Surface (m²)</mat-label>
-          <input matInput type="number" formControlName="surface" placeholder="Ex: 1500">
+          <mat-label>Surface (ha)</mat-label>
+          <input matInput type="number" formControlName="surface" placeholder="Ex: 0.15">
         </mat-form-field>
       </div>
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Propriétaire</mat-label>
-          <input matInput formControlName="proprietaire" placeholder="Nom du propriétaire">
+          <input matInput formControlName="proprietaire" placeholder="Nom">
         </mat-form-field>
       </div>
       <div class="form-row">
@@ -96,20 +128,17 @@
     <!-- En-tête avec bouton d'ajout -->
     <div class="button-title">
       <div class="form-buttons" *ngIf="parcelles.length > 0 || isAddMode">
-        <app-form-buttons 
-          [isEditActive]="false" 
-          icone="add" 
-          [theme]="'gerer'"
-          [isFormValid]="false" 
-          (toggleAction)="toggleEditParcelle($event)"
-          (onSubmit)="onSubmit()">
+        <app-form-buttons [isEditActive]="false" icone="add" [theme]="'gerer'" [isFormValid]="false"
+          (toggleAction)="toggleEditParcelle($event)" (onSubmit)="onSubmit()">
         </app-form-buttons>
       </div>
-      
+
       <div class="title-container">
         <h3>Parcelles</h3>
       </div>
     </div>
+
+
 
     <!-- Loading spinner -->
     <div *ngIf="isLoading" class="loading-container">
@@ -119,69 +148,113 @@
 
     <!-- Tableau des parcelles existantes -->
     <div *ngIf="!isLoading && parcelles.length > 0" class="parcelles-table">
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-        
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+
+
         <ng-container matColumnDef="insee">
-          <th mat-header-cell *matHeaderCellDef>INSEE</th>
-          <td mat-cell *matCellDef="let parcelle">{{ parcelle.insee || '-' }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="insee">Commune</th>
+
+          <td mat-cell *matCellDef="let parcelle">{{ getCommuneNameFull(parcelle) }}</td>
         </ng-container>
 
+
         <ng-container matColumnDef="prefix">
-          <th mat-header-cell *matHeaderCellDef>Préfixe</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="prefix">Préfixe</th>
+
+
+
+
+
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.prefix || '-' }}</td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="section">
           <th mat-header-cell *matHeaderCellDef>Section</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.section || '-' }}</td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="numero">
           <th mat-header-cell *matHeaderCellDef>Numéro</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.numero || '-' }}</td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="surface">
-          <th mat-header-cell *matHeaderCellDef>Surface (m²)</th>
+          <th mat-header-cell *matHeaderCellDef>Surface (ha)</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.surface || '-' }}</td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="pour_partie">
           <th mat-header-cell *matHeaderCellDef>Pour partie</th>
-          <td mat-cell *matCellDef="let parcelle">{{ parcelle.pour_partie === true || parcelle.pour_partie === 'true' ? 'Oui' : 'Non' }}</td>
+          <td mat-cell *matCellDef="let parcelle">{{ parcelle.pour_partie === true || parcelle.pour_partie === 'true' ?
+            'Oui' : 'Non' }}</td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="libelle_court">
           <th mat-header-cell *matHeaderCellDef>Type Proprio.</th>
           <td mat-cell *matCellDef="let parcelle">{{ getLibelle(parcelle.libelle_court, typeProprioList) || '-' }}</td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="proprietaire">
           <th mat-header-cell *matHeaderCellDef>Propriétaire</th>
-          <td mat-cell *matCellDef="let parcelle">{{ parcelle.proprietaire || '-' }}</td>
+          <td mat-cell *matCellDef="let parcelle">{{ parcelle.proprietaire || '-' }}
+          </td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let parcelle">
-            <button mat-icon-button matTooltip="Modifier" (click)="startEditMode(parcelle)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button matTooltip="Supprimer" (click)="deleteParcelle(parcelle)" class = "supprimer-btn">
+          <td mat-cell *matCellDef="let parcelle; let i = index"
+            (click)="startEditMode(parcelle); $event.stopPropagation()" class="clickable-row">
+            <button mat-icon-button matTooltip="Supprimer" (click)="deleteParcelle(parcelle); $event.stopPropagation()"
+              class="supprimer-btn">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
+          <mat-cell *matCellDef="let element; let i = index"
+            [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.date_deb }}
+          </mat-cell>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+<tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" class="clickable-row"
+  [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}"
+  (click)="startEditMode(row); $event.stopPropagation()" matTooltip="Modifier cette parcelle"></tr>
       </table>
     </div>
 
     <!-- Message si aucune parcelle -->
     <div *ngIf="!isLoading && parcelles.length === 0" class="no-parcelles">
+      <mat-icon color="warn">info</mat-icon>
       <p>Aucune parcelle liée à cet acte.</p>
     </div>
   </div>
 </div>
-
