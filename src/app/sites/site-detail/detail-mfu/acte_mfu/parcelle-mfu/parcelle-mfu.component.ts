@@ -9,6 +9,7 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -44,6 +45,7 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
     MatTooltipModule,
     MatIconModule,
     MatButtonModule,
+    MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -84,6 +86,11 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
 
   parcelles: Parcelle[] = [];
   dataSource = new MatTableDataSource<Parcelle>(this.parcelles);
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+  }
+
   sortData(sortState: any) {
 
     if (sortState.direction) {
@@ -105,15 +112,46 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+  // Variable pour le filtre avec ngModel
+  get ParcellesTotal(): number {
+    return this.parcelles.length;
   }
 
-
-
+  get ParcellesValides(): number {
+    return this.parcelles.filter(parcelle => String(parcelle.validite) === 'true').length;
+  }
   
-  displayedColumns: string[] = ['insee', 'prefix', 'section', 'numero', 'surface', 'pour_partie', 'libelle_court', 'proprietaire', 'actions'];
+  get ParcellesInvalides(): number {
+    return this.parcelles.filter(parcelle => String(parcelle.validite) === 'false').length;
+  }
+
+// Appliquer le filtre
+  applicationFiltre(): void {
+    console.log("Filtre appliqué : ", this.filterValidite);
+    // Toujours configurer filterPredicate avant d'appliquer le filtre
+    this.dataSource.filterPredicate = (data: Parcelle, filter: string) => {
+      const actuelValue = String(data.validite);
+      if (filter === 'tous') {
+        return true;
+      }
+      if (filter === 'valide') {
+        return actuelValue === 'true';
+      }
+      if (filter === 'invalide') {
+        return actuelValue === 'false';
+      }
+      return true;
+    };
+    this.dataSource.filter = this.filterValidite;
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  // Variable pour le filtre avec ngModel
+  filterValidite: string = 'tous';
+  
+  displayedColumns: string[] = ['insee', 'prefix', 'code_parcelle', 'section', 'numero', 'surface', 'pour_partie', 'libelle_court', 'proprietaire', 'actions'];
 
   isAddMode = false;
   isEditModeLocal = false;
@@ -148,6 +186,10 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
   isLoadingSections = false;
   isLoadingNumeros = false;
   isLoadingCodeParcelles = false;
+
+  get isCascadeLoading(): boolean {
+    return this.isLoadingSections || this.isLoadingNumeros;
+  }
 
   selectedDepartement = '';
   selectedCommune = '';
@@ -195,11 +237,13 @@ getCommuneName(parcelle: any): string {
   }
   
   getCommuneNameFull(parcelle: any): string {
-    const insee = parcelle.insee || '';
-    if (this.communeMap.has(insee)) {
-      return this.communeMap.get(insee)!;
-    }
-    return insee || '-';
+    const com: any = {};
+    com.nom = this.communeMap.get(parcelle.insee) || parcelle.insee || '-';
+    return com.nom;
+  }
+
+  displayCommuneFn(code: string): string {
+    return this.communeMap.get(code) || code || '';
   }
 
   filterCommunes(event: any) {
@@ -231,50 +275,148 @@ getCommuneName(parcelle: any): string {
 
 
 
-  async onCommuneChange(communeCode: string) {
-    console.log('[DEBUG onCommuneChange] Setting commune:', communeCode);
+async onCommuneChange(communeCode: string) {
+    console.log('[DEBUG] Commune:', communeCode);
     this.selectedCommune = communeCode;
     this.parcelleForm.patchValue({ insee: communeCode });
-    console.log('[DEBUG] Form INSEE après set:', this.parcelleForm.get('insee')?.value);
+    
+    // Mise a jour en direct du code parcelle
+    this.updateCodeParcelle();
+    
     this.resetCascadeBelow('section');
     
     this.isLoadingSections = true;
-    await new Promise(resolve => setTimeout(resolve, 600));
-    this.sections = await this.parcelleService.getSectionsByCommune(communeCode);
+    try {
+      this.sections = await this.parcelleService.getSectionsByCommune(communeCode);
+    } catch (error) {
+      console.error('Sections failed:', error);
+      this.sections = [];
+    }
     this.isLoadingSections = false;
     this.cdr.detectChanges();
   }
 
-
-
   async onSectionChange(section: string) {
+    if (this.isLoadingSections || !this.selectedCommune) return; // Evite les courses entre requetes
+    
     this.selectedSection = section;
+    
+    // Mise a jour en direct du code parcelle
+    this.updateCodeParcelle();
+    
     this.resetCascadeBelow('numero');
     
-    await new Promise(resolve => setTimeout(resolve, 300));
     this.isLoadingNumeros = true;
-    this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, section);
+    try {
+      this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, section);
+    } catch (error) {
+      console.error('Numeros failed:', error);
+      this.numeros = [];
+    }
     this.isLoadingNumeros = false;
     this.cdr.detectChanges();
   }
 
 
-  onNumeroChange(numero: string) {
-    const selectedParcelle = this.numeros.find(n => n.numero === numero);
+  async onNumeroChange(numeroStr: string) {
+    const numero = parseInt(numeroStr);
+    console.log('[DEBUG] Numero selected:', numeroStr, '→', numero);
     
-    if (selectedParcelle && this.parcelleForm) {
-      this.maxSurface = selectedParcelle.contenance || null;
-      this.parcelleForm.patchValue({ 
-        numero: Number(selectedParcelle.numero),
-        surface: (selectedParcelle.contenance || 0) / 10000,  // m² → ha
-        code_parcelle: selectedParcelle.idu
-      });
-      this.validationSuccess = 'Parcelle sélectionnée';
+    // Mettre a jour le champ numero
+    this.parcelleForm.patchValue({ numero });
+    
+    // Recuperer toutes les valeurs necessaires pour construire code_parcelle
+    const insee = this.parcelleForm.get('insee')?.value as string;
+    const prefix = this.parcelleForm.get('prefix')?.value as string || '000';
+    const section = this.parcelleForm.get('section')?.value as string;
+    
+    console.log('[DEBUG code_parcelle] Form values:', {insee, prefix, section, numero});
+    
+    // Tous les champs sont requis pour generer un code parcelle fiable
+    if (!insee || !prefix || !section || numero === undefined || Number.isNaN(numero)) {
+      console.warn('[DEBUG] Missing fields for code_parcelle');
+      this.validationError = 'Compléter INSEE + Préfixe + Section + Numéro';
+      return;
     }
+    
+    // Format attendu : INSEE + PREFIX + SECTION + NUMERO
+    const formattedNumero = String(numero).padStart(4, '0');
+    const formattedSection = section.padStart(2, '0').toUpperCase();
+    const codeParcelle = `${insee}${prefix}${formattedSection}${formattedNumero}`;
+    
+    console.log('[DEBUG] code_parcelle GENERATED:', codeParcelle);
+    
+    // Appliquer immediatement la valeur calculee
+    this.parcelleForm.patchValue({ code_parcelle: codeParcelle });
+    this.validationSuccess = `Code: ${codeParcelle}`;
+
+    // Pré-remplir immédiatement la surface depuis la parcelle chargée en cascade.
+    // Priorité: correspondance sur IDU/code parcelle, sinon section+numéro.
+    const selectedNumero = this.numeros.find((item: any) => {
+      const itemNumero = String(item?.numero ?? '').padStart(4, '0');
+      const itemSection = String(item?.geojson?.properties?.section ?? section)
+        .toUpperCase()
+        .padStart(2, '0');
+      const itemIdu = String(item?.idu ?? item?.geojson?.properties?.idu ?? '');
+      return itemIdu === codeParcelle || (itemSection === formattedSection && itemNumero === formattedNumero);
+    });
+
+    const surfaceHaFromCascade = this.extractSurfaceHa(
+      selectedNumero?.contenance,
+      selectedNumero?.geojson?.properties?.contenance,
+      selectedNumero?.geojson?.properties?.surface
+    );
+    if (surfaceHaFromCascade !== null) {
+      this.parcelleForm.patchValue({ surface: surfaceHaFromCascade });
+      this.validationSuccess = `Code: ${codeParcelle} | Surface: ${surfaceHaFromCascade.toFixed(4)} ha`;
+    } else {
+      const geojson = await this.parcelleService.getParcelleGeoJson(insee, formattedSection, formattedNumero);
+      const surfaceHaFromGeojson = this.extractSurfaceHa(
+        geojson?.properties?.contenance,
+        geojson?.properties?.surface
+      );
+      if (surfaceHaFromGeojson !== null) {
+        this.parcelleForm.patchValue({ surface: surfaceHaFromGeojson });
+        this.validationSuccess = `Code: ${codeParcelle} | Surface: ${surfaceHaFromGeojson.toFixed(4)} ha`;
+      }
+    }
+    
+    // Validation IGN optionnelle en arriere-plan (sans bloquer l'interface)
+    if (/^[0-9]{5}$/.test(insee)) {
+      this.parcelleService.validateParcelleExists(insee, formattedSection, formattedNumero)
+        .then(result => {
+          if (result?.exists) {
+            this.validationSuccess = `Code: ${codeParcelle} validé`;
+            const surfaceHaFromValidation = this.extractSurfaceHa(result?.properties?.contenance);
+            if (surfaceHaFromValidation !== null) {
+              this.parcelleForm.patchValue({ surface: surfaceHaFromValidation });
+            }
+          }
+        })
+        .catch(() => {
+          // En cas d'echec reseau, on conserve le code calcule localement
+        });
+    }
+    
     this.cdr.detectChanges();
   }
 
-  async loadParcelles() {
+  private extractSurfaceHa(...candidates: any[]): number | null {
+    for (const candidate of candidates) {
+      const value = Number(candidate);
+      if (!Number.isFinite(value) || value <= 0) {
+        continue;
+      }
+
+      // Valeurs cadastrales en m², conversion en hectares.
+      // Si valeur faible, on la considère déjà en hectares.
+      return value > 100 ? value / 10000 : value;
+    }
+
+    return null;
+  }
+
+async loadParcelles() {
     this.isLoading = true;
     try {
       this.parcelles = await this.parcelleService.getParcellesByActe(this.uuidActe);
@@ -284,6 +426,34 @@ getCommuneName(parcelle: any): string {
     } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
+    }
+  }
+
+async refreshParcelles(): Promise<void> {
+    if (this.uuidActe) {
+      const subroute = `parcelles/acte/${this.uuidActe}`;
+      console.log("Rafraîchissement de la liste des parcelles. UUID:", this.uuidActe);
+      try {
+        this.parcelles = await this.parcelleService.getParcellesByActe(this.uuidActe);
+        this.dataSource.data = this.parcelles;
+        // Configurer le filtre personnalisé
+        this.dataSource.filterPredicate = (data: Parcelle, filter: string) => {
+          const actuelValue = String(data.validite);
+          if (filter === 'tous') {
+            return true;
+          }
+          if (filter === 'valide') {
+            return actuelValue === 'true';
+          }
+          if (filter === 'invalide') {
+            return actuelValue === 'false';
+          }
+          return true;
+        };
+        this.cdr.detectChanges();
+      } catch (error) {
+        console.error('Erreur lors du rafraîchissement des parcelles', error);
+      }
     }
   }
 
@@ -314,14 +484,23 @@ getCommuneName(parcelle: any): string {
     this.isAddMode = false;
     this.parcelleForm = null!;
     this.cdr.detectChanges();
+    this.cdr.detectChanges();
   }
 
-  async startEditMode(parcelle: Parcelle) {
+async startEditMode(parcelle: Parcelle) {
     this.isEditModeLocal = true;
     this.isAddMode = false;
     this.editingParcelle = parcelle;
     this.parcelleForm = this.formService.newParcelleForm(parcelle);
+    if (!this.parcelleForm) {
+      console.error('Form creation failed!');
+      return;
+    }
     this.initialFormValues = { ...this.parcelleForm.getRawValue() };
+    
+    // Reinitialiser les messages de validation
+    this.validationError = '';
+    this.validationSuccess = '';
     
     // Cascade pour précharger les listes et sélectionner les bons éléments
     await this.loadCascadeForEdit(parcelle);
@@ -330,15 +509,27 @@ getCommuneName(parcelle: any): string {
   }
 
   private async loadCascadeForEdit(parcelle: Parcelle) {
-    if (!parcelle.insee) return;
+    if (!parcelle.insee || !this.parcelleForm) return;
+
+    // Réinitialiser les flags pour éviter de rester bloqué en "chargement"
+    this.isLoadingSections = false;
+    this.isLoadingNumeros = false;
     
     // Extraire dept de INSEE (2 premiers chars)
     this.selectedDepartement = parcelle.insee.substring(0, 2);
     
     // Charger communes pour dept
     this.isLoadingCommunes = true;
-    this.communes = await this.parcelleService.getCommunesByDepartement(this.selectedDepartement);
-    this.isLoadingCommunes = false;
+    try {
+      this.communes = await this.parcelleService.getCommunesByDepartement(this.selectedDepartement);
+      this.filteredCommunes = [...this.communes];
+    } catch (error) {
+      console.error('Chargement communes (edit) échoué:', error);
+      this.communes = [];
+      this.filteredCommunes = [];
+    } finally {
+      this.isLoadingCommunes = false;
+    }
     
     // Définir commune
     this.selectedCommune = parcelle.insee;
@@ -346,9 +537,15 @@ getCommuneName(parcelle: any): string {
     
     // Charger sections
     this.isLoadingSections = true;
-    await new Promise(resolve => setTimeout(resolve, 600));
-    this.sections = await this.parcelleService.getSectionsByCommune(this.selectedCommune);
-    this.isLoadingSections = false;
+    try {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      this.sections = await this.parcelleService.getSectionsByCommune(this.selectedCommune);
+    } catch (error) {
+      console.error('Chargement sections (edit) échoué:', error);
+      this.sections = [];
+    } finally {
+      this.isLoadingSections = false;
+    }
     
     // Définir section
     this.selectedSection = parcelle.section || '';
@@ -357,19 +554,32 @@ getCommuneName(parcelle: any): string {
     // Charger numeros si section
     if (this.selectedSection) {
       this.isLoadingNumeros = true;
-      this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, this.selectedSection);
-      this.isLoadingNumeros = false;
+      try {
+        this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, this.selectedSection);
+        this.filteredNumeros = [...this.numeros];
+      } catch (error) {
+        console.error('Chargement numéros (edit) échoué:', error);
+        this.numeros = [];
+        this.filteredNumeros = [];
+      } finally {
+        this.isLoadingNumeros = false;
+      }
       
       // Filtrer pour numero actuel
       const currentNumero = parcelle.numero;
       const selectedNum = this.numeros.find(n => n.numero == currentNumero);
       if (selectedNum) {
         this.parcelleForm.patchValue({ 
-          numero: Number(selectedNum.numero),
-          code_parcelle: selectedNum.idu,
-          surface: (selectedNum.contenance || 0) / 10000
+          numero: Number(selectedNum.numero)
+          // Ne pas ecraser automatiquement la surface en mode edition
         });
+      } else if (currentNumero) {
+        this.parcelleForm.patchValue({ numero: Number(currentNumero) });
       }
+    } else {
+      this.numeros = [];
+      this.filteredNumeros = [];
+      this.isLoadingNumeros = false;
     }
     
     this.cdr.detectChanges();
@@ -384,6 +594,7 @@ getCommuneName(parcelle: any): string {
     this.validationError = '';
     this.validationSuccess = '';
     this.cdr.detectChanges();
+    this.cdr.detectChanges(); // Force une double detection pour stabiliser les slide-toggle
   }
 
 
@@ -417,7 +628,9 @@ getCommuneName(parcelle: any): string {
         } else {
           this.validationSuccess = 'Parcelle validée';
         }
-        if (!formValue.code_parcelle && props.idu) {
+        // Ne pas ecraser un code_parcelle deja saisi.
+        // On le renseigne uniquement s'il est vide (mode ajout).
+        if (!this.parcelleForm.get('code_parcelle')?.value && props.idu) {
           this.parcelleForm.patchValue({ code_parcelle: props.idu });
         }
         this.isValidating = false;
@@ -441,10 +654,7 @@ getCommuneName(parcelle: any): string {
       return;
     }
 
-
     const typProprietaire = this.parcelleForm.get('typ_proprietaire')?.value;
-    console.log('[DEBUG] Type propriétaire sélectionné:', typProprietaire, 'Form valid:', this.parcelleForm.valid);
-
     if (!typProprietaire) {
       this.validationError = 'Type propriétaire obligatoire';
       return;
@@ -456,6 +666,13 @@ getCommuneName(parcelle: any): string {
       return;
     }
 
+    // En mode edition, on saute la validation cadastrale deja faite
+    if (this.isEditModeLocal) {
+      this.submitParcelle(currentValues);
+      return;
+    }
+
+    // En mode ajout uniquement : valider la parcelle dans le cadastre
     this.validateParcelle().then((isValid: boolean) => {
       if (isValid) {
         this.submitParcelle(currentValues);
@@ -477,8 +694,11 @@ getCommuneName(parcelle: any): string {
         if (response?.success) {
           this.snackBar.open('Parcelle sauvegardée', 'OK', { duration: 3000 });
           this.loadParcelles();
-          this.isAddMode ? this.cancelAddMode() : this.cancelEditMode();
+          setTimeout(() => {
+            this.isAddMode ? this.cancelAddMode() : this.cancelEditMode();
+          });
           this.parcellesUpdated.emit();
+          this.cdr.detectChanges();
         } else {
           this.snackBar.open(response?.message || 'Erreur sauvegarde', 'OK', { duration: 3000 });
         }
@@ -574,57 +794,51 @@ getCommuneName(parcelle: any): string {
     this.resetCascadeBelow('commune');
   }
 
-
-
-
-
-
+  private updateCodeParcelle() {
+    const insee = this.parcelleForm.get('insee')?.value as string || '';
+    const prefix = this.parcelleForm.get('prefix')?.value as string || '000';
+    const section = this.parcelleForm.get('section')?.value as string || '';
+    const numero = this.parcelleForm.get('numero')?.value as number;
+    
+    if (!insee || !prefix) return;
+    
+    let code = insee + prefix;
+    
+    if (section) code += section.padStart(2, '0').toUpperCase();
+    if (numero !== undefined && numero !== null) code += String(numero).padStart(4, '0');
+    
+    console.log('[LIVE] code_parcelle =', code);
+    this.parcelleForm.patchValue({ code_parcelle: code });
+    this.validationSuccess = `Live généré: ${code}`;
+    this.cdr.detectChanges();
+  }
 
   private resetCascadeBelow(level: 'commune' | 'section' | 'numero') {
-    // Toujours reset les champs en aval vers vide/null quel que soit le mode
+    console.log('[DEBUG] Reset level:', level);
+    
     switch (level) {
       case 'commune':
         this.selectedCommune = '';
         this.selectedSection = '';
-        this.communes = [];
         this.sections = [];
         this.numeros = [];
         this.maxSurface = null;
-        if (this.parcelleForm) {
-          this.parcelleForm.patchValue({ 
-            insee: '', 
-            section: '', 
-            numero: null, 
-            code_parcelle: '', 
-            surface: null
-          });
-        }
+        this.parcelleForm?.patchValue({ insee: '', section: '', numero: null, code_parcelle: '' });
         break;
       case 'section':
         this.selectedSection = '';
         this.sections = [];
         this.numeros = [];
         this.maxSurface = null;
-        if (this.parcelleForm) {
-          this.parcelleForm.patchValue({ 
-            section: '', 
-            numero: null, 
-            code_parcelle: '', 
-            surface: null
-          });
-        }
+        this.parcelleForm?.patchValue({ section: '', numero: null, code_parcelle: '' });
         break;
       case 'numero':
         this.numeros = [];
         this.maxSurface = null;
-        if (this.parcelleForm) {
-          this.parcelleForm.patchValue({ 
-            numero: null, 
-            code_parcelle: '' 
-          });
-        }
+        this.parcelleForm?.patchValue({ numero: null, code_parcelle: '' });
         break;
     }
+    this.validationSuccess = '';
     this.cdr.detectChanges();
   }
 

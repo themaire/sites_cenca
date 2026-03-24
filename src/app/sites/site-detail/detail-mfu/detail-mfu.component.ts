@@ -94,9 +94,6 @@ export class DetailMfuComponent {
         this.actes = await this.research.getActe(subroute);
         console.log('Données de this.actes après récupération :', this.actes);
         this.dataSource = new MatTableDataSource(this.actes);
-        if (this.sort) {
-          this.dataSource.sort = this.sort;
-        }
 
         // Configurer le filtre personnalisé
         this.dataSource.filterPredicate = (data: ActeLite, filter: string) => {
@@ -114,6 +111,10 @@ export class DetailMfuComponent {
         };
 
         this.cdr.detectChanges();
+        if (this.sort) {
+          this.dataSource.sort = this.sort;
+        }
+
       } catch (error) {
         console.error('Error fetching documents', error);
       }
@@ -167,11 +168,11 @@ export class DetailMfuComponent {
   }
 
   get ActesValides(): number {
-    return this.actes.filter(acte => acte.validite === 'true').length;
+    return this.actes.filter(acte => String(acte.validite) === 'true').length;
   }
   
   get ActesInvalides(): number {
-    return this.actes.filter(acte => acte.validite === 'false').length;
+    return this.actes.filter(acte => String(acte.validite) === 'false').length;
   }
 
 

@@ -230,7 +230,7 @@ export class FormService {
           uuid_acte: new FormControl(acte?.uuid_acte ? acte?.uuid_acte : uuidv4()),
           debut: new FormControl(acte?.debut ? acte?.debut : null),
           fin: new FormControl(acte?.fin ? acte?.fin : null),
-          tacit_rec: new FormControl({value: acte?.tacit_rec ? acte?.tacit_rec : false, disabled: true}),
+          tacit_rec: new FormControl(acte?.tacit_rec ?? false),
           detail_rec: new FormControl(acte?.detail_rec ? acte?.detail_rec : ''),
           notaire: new FormControl(acte?.notaire ? acte?.notaire : ''),
           cout: new FormControl(acte?.cout ? acte?.cout : null),
@@ -241,7 +241,7 @@ export class FormService {
           site: new FormControl(acte?.site ? acte?.site : null),
           url: new FormControl(acte?.url ? acte?.url : ''),
           actuel: new FormControl({value: acte?.actuel ? acte?.actuel : false, disabled: true}),
-          validite: new FormControl({value : acte?.validite ? acte?.validite : false, disabled: true}),
+          validite: new FormControl(acte?.validite ?? false),
         });
       }
 
@@ -256,7 +256,7 @@ export class FormService {
       numero: new FormControl(parcelle?.numero ? parcelle?.numero : null),
       partie: new FormControl(parcelle?.partie ? parcelle?.partie : ''),
       surface: new FormControl(parcelle?.surface ? parcelle?.surface : null),
-      validite: new FormControl(parcelle?.validite ? parcelle?.validite : true),
+      validite: new FormControl(parcelle?.validite ? parcelle?.validite : false),
       acte_mfu: new FormControl(parcelle?.acte_mfu ? parcelle?.acte_mfu : null),
       remarque: new FormControl(parcelle?.remarque ? parcelle?.remarque : ''),
       pour_partie: new FormControl(parcelle?.pour_partie ? parcelle?.pour_partie : false),

@@ -119,6 +119,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
             this.initialFormValues = { ...this.mfuForm.getRawValue() };
             this.originalFormValues = { ...this.initialFormValues };
             this.isEditMfu = false;
+            this.setBooleanControlsEnabled(false);
           }
           this.isLoading = false;
           this.cdr.detectChanges();
@@ -131,7 +132,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
       this.newMfu = true;
       this.isEditMfu = true;
       this.mfuForm = this.formService.newMfuForm(null as any);
-      this.mfuForm.patchValue({ site: this.acteLite.site, typ_mfu: 'MFU', validite: true });
+      this.mfuForm.patchValue({ site: this.acteLite.site, typ_mfu: 'MFU' });
       this.initialFormValues = { ...this.mfuForm.getRawValue() };
       this.originalFormValues = { ...this.initialFormValues };
       this.isLoading = false;
@@ -154,6 +155,23 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setBooleanControlsEnabled(enabled: boolean): void {
+    const tacitRecControl = this.mfuForm?.get('tacit_rec');
+    const validiteControl = this.mfuForm?.get('validite');
+
+    if (!tacitRecControl || !validiteControl) {
+      return;
+    }
+
+    if (enabled) {
+      tacitRecControl.enable({ emitEvent: false });
+      validiteControl.enable({ emitEvent: false });
+    } else {
+      tacitRecControl.disable({ emitEvent: false });
+      validiteControl.disable({ emitEvent: false });
+    }
+  }
+
   getLibelle(cd_type: string, list: SelectValue[]) {
     return list.find(t => t.cd_type === cd_type)?.libelle || '';
   }
@@ -166,31 +184,30 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     }
 
     if (event === 'cancel') {
-      // Enable temporairement pour patch
-      this.mfuForm.get('tacit_rec')?.enable();
-      this.mfuForm.get('validite')?.enable();
+      // Active temporairement les booleans pour reappliquer les valeurs
+      this.setBooleanControlsEnabled(true);
       
       this.mfuForm.patchValue(this.originalFormValues);
       
       this.isEditMfu = false;
       
-      // Disable slide toggles in consult mode
-      this.mfuForm.get('tacit_rec')?.disable();
-      this.mfuForm.get('validite')?.disable();
+      // Desactive les booleans en mode consultation
+          // Desactiver uniquement si ce n'est pas une creation
+          if (!this.newMfu) {
+            this.setBooleanControlsEnabled(false);
+          }
     } else {
       this.isEditMfu = !this.isEditMfu;
       if (this.isEditMfu) {
         this.mfuForm.enable();
       } else {
-        // Enable temp for patch
-        this.mfuForm.get('tacit_rec')?.enable();
-        this.mfuForm.get('validite')?.enable();
+        // Active temporairement pour reappliquer les valeurs initiales
+        this.setBooleanControlsEnabled(true);
         
         this.mfuForm.patchValue(this.originalFormValues);
         
-        // Disable
-        this.mfuForm.get('tacit_rec')?.disable();
-        this.mfuForm.get('validite')?.disable();
+        // Revenir en mode consultation
+        this.setBooleanControlsEnabled(false);
       }
     }
     this.cdr.detectChanges();

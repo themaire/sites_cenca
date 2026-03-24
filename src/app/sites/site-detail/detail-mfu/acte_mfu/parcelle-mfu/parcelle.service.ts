@@ -114,7 +114,7 @@ export class ParcelleService {
 
   /**
    * Valide qu'une parcelle existe dans le cadastre
-   * Utilise d'abord les données locales, puis l'API apicarto.ign.fr en fallback
+  * Utilise d'abord les donnees locales, puis l'API apicarto.ign.fr en solution de repli
    * @param codeInsee Code INSEE de la commune (5 caractères)
    * @param section Section de la parcelle (2 caractères)
    * @param numero Numéro de la parcelle (4 caractères)
@@ -151,8 +151,7 @@ export class ParcelleService {
         }
       }
 
-      // Fallback: utiliser l'API apicarto.ign.fr
-      // Note: le format de l'API apicarto peut varier
+      // Solution de repli : utiliser l'API apicarto.ign.fr
       const sectionForApi = normalizedSection.length === 1 ? '0' + normalizedSection : normalizedSection;
       const numeroForApi = String(normalizedNumero).padStart(4, '0');
       
@@ -242,38 +241,59 @@ export class ParcelleService {
    * @param codeInsee Code INSEE de la commune (5 caractères)
    * @returns Promise avec la liste des sections uniques
    */
+
   async getSectionsByCommune(codeInsee: string): Promise<string[]> {
+    // Validation INSEE : 5 chiffres obligatoires
+    if (!/^[0-9]{5}$/.test(codeInsee)) {
+      console.error('[ParcelleService] Code INSEE invalide:', codeInsee, '(doit être 5 chiffres)');
+      return [];
+    }
+
+    // Le endpoint `api-geo/sections` n'est pas disponible partout (404).
+    // On utilise directement la source fiable qui alimentait la cascade auparavant.
+    return await this.getSectionsFromParcelles(codeInsee);
+  }
+
+  private async getParcellesByCommune(codeInsee: string, maxFeatures: number = 5000): Promise<any[]> {
+    const ignUrl = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&_limit=${maxFeatures}`;
     try {
-      // Utiliser le backend pour récupérer les parcelles
-      const url = `${environment.apiBaseUrl}api-geo/parcelles/commune/${codeInsee}?maxFeatures=5000`;
-      console.log('[ParcelleService] URL sections:', url);
-      
-      const response = await fetch(url);
-      
+      console.log('[ParcelleService] URL parcelles (IGN direct):', ignUrl);
+      const response = await fetch(ignUrl);
       if (!response.ok) {
-        console.error('Erreur lors de la récupération des sections:', response.status);
+        console.error('[ParcelleService] Erreur parcelles IGN:', response.status);
         return [];
       }
-      
+
       const data = await response.json();
-      console.log('[ParcelleService] Données sections:', data);
-      
-      if (!data || !data.features || data.features.length === 0) {
-        return [];
+      if (data && Array.isArray(data.features)) {
+        return data.features;
       }
-      
-      // Extraire les sections uniques
+      return [];
+    } catch (error) {
+      console.error('[ParcelleService] Erreur fetch parcelles IGN:', error);
+      return [];
+    }
+  }
+
+  private async getSectionsFromParcelles(codeInsee: string): Promise<string[]> {
+    try {
+      const features = await this.getParcellesByCommune(codeInsee, 5000);
       const sections = new Set<string>();
-      data.features.forEach((feature: any) => {
-        if (feature.properties && feature.properties.section) {
-          sections.add(feature.properties.section);
+
+      features.forEach((feature: any) => {
+        const section = feature?.properties?.section;
+        if (section) {
+          sections.add(String(section).toUpperCase());
         }
       });
-      
-      // Trier les sections
+
+      if (sections.size === 0) {
+        return [];
+      }
+
       return Array.from(sections).sort();
     } catch (error) {
-      console.error('Erreur lors de la récupération des sections:', error);
+      console.error('Echec du fallback de sections:', error);
       return [];
     }
   }
@@ -287,27 +307,20 @@ export class ParcelleService {
 
 
   async getNumerosBySection(codeInsee: string, section: string): Promise<any[]> {
+    // Validation INSEE : 5 chiffres obligatoires
+    if (!/^[0-9]{5}$/.test(codeInsee)) {
+      console.error('[ParcelleService] ❌ Code INSEE invalide pour numeros:', codeInsee);
+      return [];
+    }
+    
     try {
-      // Utiliser le backend pour récupérer les parcelles
-      const url = `${environment.apiBaseUrl}api-geo/parcelles/commune/${codeInsee}?maxFeatures=5000`;
-      console.log('[ParcelleService] URL numeros:', url);
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        console.error('Erreur lors de la récupération des numéros:', response.status);
-        return [];
-      }
-      
-      const data = await response.json();
-      console.log('[ParcelleService] Données numeros:', data);
-      
-      if (!data || !data.features || data.features.length === 0) {
+      const features = await this.getParcellesByCommune(codeInsee, 5000);
+      if (!features || features.length === 0) {
         return [];
       }
       
       // Filtrer par section et retourner les parcelles
-      const filteredFeatures = data.features.filter((feature: any) => {
+      const filteredFeatures = features.filter((feature: any) => {
         return feature.properties && 
                feature.properties.section && 
                feature.properties.section.toUpperCase() === section.toUpperCase();
@@ -337,20 +350,15 @@ export class ParcelleService {
    * @returns Promise avec le GeoJSON de la parcelle
    */
   async getParcelleGeoJson(codeInsee: string, section: string, numero: string): Promise<any | null> {
+    // Validation INSEE : 5 chiffres obligatoires
+    if (!/^[0-9]{5}$/.test(codeInsee)) {
+      console.error('[ParcelleService] ❌ Code INSEE invalide pour geojson:', codeInsee);
+      return null;
+    }
+    
     try {
-      const url = `${environment.apiBaseUrl}api-geo/parcelles/commune/${codeInsee}?maxFeatures=5000`;
-      console.log('[ParcelleService] URL geojson:', url);
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        console.error('Erreur lors de la récupération du GeoJSON:', response.status);
-        return null;
-      }
-      
-      const data = await response.json();
-      
-      if (!data || !data.features || data.features.length === 0) {
+      const features = await this.getParcellesByCommune(codeInsee, 5000);
+      if (!features || features.length === 0) {
         return null;
       }
       
@@ -358,7 +366,7 @@ export class ParcelleService {
       const normalizedSection = section.toUpperCase();
       const normalizedNumero = String(numero).padStart(4, '0');
       
-      const foundFeature = data.features.find((feature: any) => {
+      const foundFeature = features.find((feature: any) => {
         const props = feature.properties;
         return props && 
                props.section && 

@@ -3,7 +3,7 @@
     <div class="gerer">Gérer</div>
     <div class="acte-mfu">
 
-      <!-- Loading spinner -->
+      <!-- Indicateur de chargement -->
       <div *ngIf="isLoading" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Chargement...</p>
@@ -12,14 +12,14 @@
       <!-- Onglets principaux : Acte et Parcelles -->
       <mat-tab-group *ngIf="!isLoading" class="main-tabs" animationDuration="200ms">
 
-        <!-- Tab 1: Acte MFU -->
+        <!-- Onglet 1 : Acte MFU -->
         <mat-tab label="Acte">
           <div class="tab-content">
             <ng-container *ngTemplateOutlet="acteContent"></ng-container>
           </div>
         </mat-tab>
 
-        <!-- Tab 2: Parcelles (uniquement pour les actes existants) -->
+        <!-- Onglet 2 : Parcelles (uniquement pour les actes existants) -->
         <mat-tab label="Parcelles" *ngIf="!newMfu && acteLite?.uuid_acte">
           <div class="tab-content">
             <app-parcelle-mfu [uuidActe]="acteLite.uuid_acte" [isEditModeParent]="isEditMfu">
@@ -49,7 +49,7 @@
       <ng-container *ngTemplateOutlet="newMfu ? newTitle : title"></ng-container>
     </div>
 
-    <!-- 3eme element (optional) - only show for existing acts, not new ones -->
+    <!-- 3eme element (optionnel) : visible uniquement pour un acte existant -->
     <div class="suppression" *ngIf="!newMfu">
       <button mat-button (click)="deleteItemConfirm()">Supprimer l'acte</button>
     </div>
@@ -74,7 +74,7 @@
 
         <!-- Ligne 1: Type | Notaire | Coût (3 colonnes) -->
         <div class="form-row-three">
-          <mat-form-field class="form-field-third" appearance="outline">
+          <mat-form-field class="form-field-third">
             <mat-label>Type</mat-label>
             <ng-container *ngIf="isEditMfu; else typeActeReadonly">
               <mat-select formControlName="typ_mfu">
@@ -94,26 +94,26 @@
           </mat-form-field>
 
           
-          <mat-form-field class="form-field-third" appearance="outline">
+          <mat-form-field class="form-field-third">
             <mat-label>Notaire</mat-label>
             <input matInput formControlName="notaire" placeholder="Notaire" [readonly]="!isEditMfu">
           </mat-form-field>
-          <mat-form-field class="form-field-third" appearance="outline">
+          <mat-form-field class="form-field-third">
             <mat-label>Coût</mat-label>
             <input matInput formControlName="cout" type="number" placeholder="Coût" [readonly]="!isEditMfu">
           </mat-form-field>
         </div>
 
-        <!-- Ligne 2: DATES + BOOLEANS + DÉTAIL RECONDUCTION (single line) -->
+        <!-- Ligne 2 : DATES + BOOLEANS + DETAIL RECONDUCTION (sur une ligne) -->
         <div class="form-row-dates-booleans-detail">
-          <mat-form-field class="date-field" appearance="outline">
+          <mat-form-field class="date-field">
             <mat-label>Date début</mat-label>
             <input matInput [matDatepicker]="pickerDebut" formControlName="debut" [readonly]="!isEditMfu">
             <mat-datepicker-toggle matSuffix [for]="pickerDebut" *ngIf="isEditMfu || newMfu"></mat-datepicker-toggle>
             <mat-datepicker #pickerDebut></mat-datepicker>
           </mat-form-field>
 
-          <mat-form-field class="date-field" appearance="outline">
+          <mat-form-field class="date-field">
             <mat-label>Date fin</mat-label>
             <input matInput [matDatepicker]="pickerFin" formControlName="fin" [readonly]="!isEditMfu">
             <mat-datepicker-toggle matSuffix [for]="pickerFin" *ngIf="isEditMfu || newMfu"></mat-datepicker-toggle>
@@ -121,34 +121,34 @@
           </mat-form-field>
 
           <div class="boolean-field acte-valide">
-            Acte valide : <mat-slide-toggle formControlName="validite"></mat-slide-toggle>
+            Acte valide : <mat-slide-toggle formControlName="validite" [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
           </div>
 
           <div class="boolean-field tacite">
-            Tacite reconduction : <mat-slide-toggle formControlName="tacit_rec"></mat-slide-toggle>
+            Tacite reconduction : <mat-slide-toggle formControlName="tacit_rec" [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
           </div>
 
-          <mat-form-field class="detail-rec-field" appearance="outline">
+          <mat-form-field class="detail-rec-field">
             <mat-label>Détail reconduction</mat-label>
             <input matInput formControlName="detail_rec" placeholder="Détail reconduction" [readonly]="!isEditMfu">
           </mat-form-field>
         </div>
 
-        <!-- Ligne 3: URL | Download link | Remarque (3 colonnes) -->
+        <!-- Ligne 3 : URL | Lien de telechargement | Remarque (3 colonnes) -->
         <div class="form-row-three url-row">
-          <!-- URL cell flex 0 -->
-          <mat-form-field class="url-cell" appearance="outline" *ngIf="isEditMfu || newMfu">
+          <!-- Cellule URL (flex 0) -->
+          <mat-form-field class="url-cell" *ngIf="isEditMfu || newMfu">
             <mat-label>URL document</mat-label>
             <input matInput formControlName="url" placeholder="URL vers le document" [readonly]="!isEditMfu">
           </mat-form-field>
 
-          <!-- Download cell flex 1 -->
+          <!-- Cellule telechargement (flex 1) -->
           <div class="download-cell" *ngIf="!newMfu && mfuForm.get('url')?.value">
             📎 <a [href]="mfuForm.get('url')?.value" target="_blank">Télécharger l'acte</a>
           </div>
 
-          <!-- Remarque cell flex 2 - 100% remaining -->
-          <mat-form-field class="remarque-cell" appearance="outline">
+          <!-- Cellule remarque (flex 2) : prend l'espace restant -->
+          <mat-form-field class="remarque-cell">
             <mat-label>Remarque</mat-label>
             <textarea matInput formControlName="remarque" rows="2" placeholder="Remarques" [readonly]="!isEditMfu"></textarea>
           </mat-form-field>

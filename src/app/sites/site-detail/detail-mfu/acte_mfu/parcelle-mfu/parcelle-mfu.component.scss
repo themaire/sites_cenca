@@ -3,232 +3,182 @@
 @import "../../../../../styles/mixins.scss";
 @import "../../../../../styles/variables.scss";
 
-$local-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $gerer-palette,
-    accent: mat.m2-define-palette(mat.$m2-amber-palette),
-    warn: mat.m2-define-palette(mat.$m2-red-palette),
-  )
-));
+$local-theme: mat.m2-define-light-theme((color: (primary: $gerer-palette, accent: mat.m2-define-palette(mat.$m2-amber-palette), warn: mat.m2-define-palette(mat.$m2-red-palette),)));
 
-// Appliquer le thème uniquement à ce composant et ses enfants
 :host {
   @include mat.all-component-themes($local-theme);
 }
 
-// Reset de base
-* {
-  padding: 0;
-  margin: 0;
-}
-
-// Style du dialogue - pas de bordure blanche
-::ng-deep .mat-mdc-dialog-surface {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
-// Pas de scroll bar dans le dialogue
-::ng-deep .mat-mdc-dialog-container {
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
-// No scrollbars global
-::ng-deep .parcelles-container,
-::ng-deep .parcelles-table,
-::ng-deep .parcelle-edit-view {
-  overflow: hidden !important;
-  max-height: none !important;
-}
-
-.edition {
+.parcelles-container {
   display: flex;
-  @include align(center, start);
-  margin-bottom: 20px;
-  gap: 15px;
-  color: black;
-  .btn-edition {
-    @include btn-icon($proteger, $orangeC);
-    @include icon(white, black);
-  }
-  .btn-sauvegarde {
-    @include btn-icon(white, $proteger);
-    @include icon($couleur-flore, white);
-  }
-  .btn-annulation {
-    @include btn-icon(white, red);
-    @include icon(red, white);
+  flex-direction: column;
+  flex: 1;
+  font-size: 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px;
+  background-color: white;
+}
+
+.button-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+
+    .title-container {
+      text-align: center;
+    }
+
+  .title-wrapper h2 {
+    margin: 0;
+    font-size: 1.2rem;
   }
 }
 
-.supprimer-btn:hover {
-  color: #f44336;
-}
+.parcelle-form {
+  .form-row-four {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
 
-// Style pour les lignes cliquables du tableau
-.clickable-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  
-  &.odd-row:hover {
-    background-color: darken(#f2f2f2, 5%);
-  }
-  
-  &.even-row:hover {
-    background-color: darken(white, 4%);
+    &.cascade-row {
+      mat-form-field .mat-mdc-form-field {
+        height: 56px;
+      }
+    }
   }
 
-  &.mat-mdc-row-selected,
-  &.mat-row-selected {
-    background-color: #e3f2fd;
+  .form-row-two {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
   }
-}
 
-// Style pour la vue de modification d'une parcelle
-.parcelle-edit-view {
-  height: 100%;
-  overflow: hidden;
-  
-  .edit-header {
+  .form-row-booleans-detail {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 12px;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    
-    .btn-back {
-      color: #666;
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.1);
+    gap: 8px;
+    align-items: stretch;
+
+    .boolean-field {
+      flex: 0 0 140px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border-left: 3px solid $gerer;
+      font-size: 0.9rem;
+      height: 80px;
+      box-sizing: border-box;
+
+      mat-slide-toggle {
+        margin-left: auto;
       }
     }
-    
-    h3 {
+
+    .detail-field {
       flex: 1;
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 500;
-    }
-    
-    .btn-delete {
-      color: #f44336;
-      &:hover {
-        background-color: rgba(244, 67, 54, 0.1);
-      }
+      min-width: 200px;
     }
   }
-  
-  .parcelle-form {
-    padding: 16px;
-    background-color: #fafafa;
-    border-radius: 4px;
-    overflow: hidden;
-    height: calc(100% - 80px);
-  }
-}
-
-.map-button-container {
-  display: flex;
-  align-items: flex-end;
-  padding-bottom: 8px;
-  
-  button {
-    margin-left: 8px;
-  }
-}
-
-.clear-btn {
-  color: rgba(0, 0, 0, 0.54);
-  transition: color 0.2s ease;
-  
-  &:hover {
-    color: #d32f2f;
-    
-    mat-icon {
-      color: #d32f2f;
-    }
-  }
-}
-
-.flex-grow-1 {
-  flex: 1 1 auto;
 }
 
 .validation-message {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 4px;
-  margin-bottom: 16px;
-  
-  mat-spinner {
-    flex-shrink: 0;
-  }
-  
-  mat-icon {
-    flex-shrink: 0;
-  }
-  
-  &.validating {
-    background-color: #e3f2fd;
-    color: #1976d2;
-    border: 1px solid #1976d2;
-  }
-  
-  &.error {
-    background-color: #ffebee;
-    color: #c62828;
-    border: 1px solid #c62828;
-    
-    mat-icon {
-      color: #c62828;
-    }
-  }
-  
-  &.success {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #2e7d32;
-    
-    mat-icon {
-      color: #2e7d32;
-    }
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.validation-message.validating {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-left: 4px solid #2196f3;
+  color: #1565c0;
+}
+
+.validation-message.success {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e8 100%);
+  border-left: 4px solid #4caf50;
+  color: #2e7d32;
+}
+
+.validation-message.error {
+  background: linear-gradient(135deg, #fce4ec 0%, #ffebee 100%);
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+.parcelles-table table {
+  width: 100%;
+}
+
+.clickable-row:hover {
+  background-color: #f5f5f5;
+}
+
+.even-row { background-color: white; }
+.odd-row { background-color: #f8f9fa; }
+
+.no-parcelles {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.parcelles-list-view .button-title.center-title {
+  position: relative;
+  justify-content: center;
+  gap: 0;
+}
+
+.parcelles-list-view .button-title.center-title .form-buttons {
+  position: absolute;
+  left: 0;
+}
+
+.parcelles-list-view .button-title.center-title .title-container {
+  flex: 1;
+  padding-left: 50%;
+  padding-right: 50%;
+  margin-left: -50%;
+  margin-right: -50%;
+}
+
+.parcelles-list-view .dummy-right {
+  display: none;
+}
+
+.supprimer-btn {
+  :hover {
+    color: red;
   }
 }
 
-// Lignes de fond mat-table
-.even-row {
-  background-color: white;
+.suppression {
+  @include suppression-btn();
 }
 
-.odd-row {
-  background-color: #f2f2f2; /* Gris très clair */
-}
-
-
-
-
-/* Cascade 1 ligne complète - FORCE nowrap */
-.cascade-row {
-  display: flex !important;
-  gap: 4px !important;
-  align-items: stretch !important;
-  flex-wrap: nowrap !important;
-  min-height: 68px;
-  
-  mat-form-field {
-    flex: 1 !important;
-    min-width: 100px !important;
-    max-width: 140px !important;
+@media (max-width: 768px) {
+  .form-row-four, .form-row-two {
+    grid-template-columns: 1fr !important;
   }
-  
-  .flex-2 {
-    flex: 1.5 !important;
-    max-width: 180px !important;
+
+  .form-row-booleans-detail {
+    flex-direction: column !important;
+  }
+
+  .boolean-field {
+    justify-content: flex-start;
   }
 }
+

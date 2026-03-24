@@ -6,7 +6,7 @@ export interface Parcelle {
     numero: number;
     partie: string;
     surface: number;
-    validite: string;
+    validite: boolean;
     acte_mfu: string;
     remarque: string;
     pour_partie: boolean;
