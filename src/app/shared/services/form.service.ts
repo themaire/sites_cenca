@@ -804,10 +804,11 @@ export class FormService {
 
       if (!hasChanged) {
         // Si pas changé
-        this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
-          duration: 3000,
-          panelClass: ['snackbar-info'],
-        });
+        this.snackBar.open('Aucune donnée modifiée', 
+                          'Fermer', {
+                          duration: 3000,
+                          panelClass: ['snackbar-info'],
+          });
         isEditMode = false; // Sortir du mode édition tout simplement
         return of({
           isEditMode: false,
