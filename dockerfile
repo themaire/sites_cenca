@@ -13,7 +13,7 @@ RUN chmod -R 755 /usr/local/apache2/htdocs
 COPY ./apache.conf /usr/local/apache2/conf/httpd.conf
 
 # Créer le répertoire pour les certificats SSL
-RUN mkdir -p /etc/ssl/certs/si-10.cen-champagne-ardenne.org
+RUN mkdir -p /etc/letsencrypt/live/si-10.cen-champagne-ardenne.org
 
 # Exposer les ports 80 et 443
 EXPOSE 443
