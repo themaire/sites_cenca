@@ -1,3 +1,35 @@
+@use '@angular/material' as mat;
+
+// Import des couleurs du thème global du projet.
+@import "../../../../styles/themes.scss";
+
+// Import des mixins partagés pour éviter de répéter les mêmes styles.
+@import "../../../../styles/mixins.scss";
+
+// Import des variables de couleurs et de tailles utilisées dans ce composant.
+@import "../../../../styles/variables.scss";
+
+:host {
+  // Force la couleur de focus Material en orange (Proteger).
+  --mdc-filled-text-field-active-indicator-color: #{$proteger};
+  --mdc-filled-text-field-focus-active-indicator-color: #{$proteger};
+  --mdc-filled-text-field-focus-label-text-color: #{$proteger};
+  --mdc-filled-text-field-caret-color: #{$proteger};
+
+  --mdc-outlined-text-field-focus-outline-color: #{$proteger};
+  --mdc-outlined-text-field-focus-label-text-color: #{$proteger};
+  --mdc-outlined-text-field-caret-color: #{$proteger};
+
+  --mat-select-focused-arrow-color: #{$proteger};
+  --mat-select-enabled-arrow-color: #{$proteger};
+}
+
+// Fond de survol/selection des options en orange clair.
+:host ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled),
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background-color: rgba($proteger, 0.16) !important;
+}
+
 .conteneur-parcelle-mfu {
   padding: 20px;
   min-width: 500px;
@@ -84,7 +116,7 @@
         padding: 8px 0;
         
         mat-label {
-          color: #666;
+          color: #d11717;
         }
         
         mat-slide-toggle {

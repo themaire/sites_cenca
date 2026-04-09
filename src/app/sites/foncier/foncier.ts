@@ -15,7 +15,7 @@ export interface ParcelleExtraction {
   parex_section: string;
   parex_numero: number;
 }
-  
+
 export interface ProjetMfu {
   pmfu_id: number;
   pmfu_nom: string;
@@ -77,4 +77,31 @@ export interface ParcellesSelected {
   numero: string;
   contenance: number;
   bbox?: number[]; // [minX, minY, maxX, maxY]
+}
+
+export interface ActeMultiSiteLite {
+  // Afficher la table des actes multi-sites
+  uuid_acte: string;
+  typ_mfu?: string;
+  typ_mfu_libelle?: string;
+  debut?: string | Date | null;
+  fin?: string | Date | null;
+  validite?: boolean | string | null;
+  site_principal_uuid?: string | null;
+  site_principal_nom?: string | null;
+  nb_sites: number;
+  sites_associes?: string;
+  sites_uuids?: string[];
+}
+
+export interface SiteLite {
+  uuid_site: string;
+  nom_site: string;
+}
+
+export interface ActeMultiSiteInsert {
+  // Créer un lien entre l'acte et le site 
+  ref_uuid_site: string;
+  ref_uuid_acte: string;
+  amm_date_crea?: string;
 }

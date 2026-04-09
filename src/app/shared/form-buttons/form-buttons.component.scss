@@ -7,6 +7,20 @@
     @include align(center, start);
     margin: 6px 0 15px 6px;
     gap: 15px;
+
+    // Ajuste la zone cliquable des icones pour avoir une taille stable.
+    :host ::ng-deep .mat-mdc-icon-button .mat-mdc-button-touch-target {
+      height: 40px !important;
+      width: 40px !important;
+    }
+
+    :host ::ng-deep .mat-mdc-icon-button {
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      min-height: 40px !important;
+      padding: 0 !important;
+    }
     
     // Theme proteger
     .btn-edition-proteger {

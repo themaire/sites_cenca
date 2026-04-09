@@ -19,6 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule, MatAutocomplete } from '@angular/material/autocomplete';
 import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatPaginatorModule, MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
@@ -32,6 +33,28 @@ import { ConfirmationService } from '../../../../../shared/services/confirmation
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
 
+function getFrenchPaginatorIntl(): MatPaginatorIntl {
+  const paginatorIntl = new MatPaginatorIntl();
+
+  paginatorIntl.itemsPerPageLabel = 'Elements par page';
+  paginatorIntl.nextPageLabel = 'Page suivante';
+  paginatorIntl.previousPageLabel = 'Page precedente';
+  paginatorIntl.firstPageLabel = 'Premiere page';
+  paginatorIntl.lastPageLabel = 'Derniere page';
+  paginatorIntl.getRangeLabel = (page: number, pageSize: number, length: number): string => {
+    if (length === 0 || pageSize === 0) {
+      return `0 sur ${length}`;
+    }
+
+    const startIndex = page * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, length);
+
+    return `${startIndex + 1} - ${endIndex} sur ${length}`;
+  };
+
+  return paginatorIntl;
+}
+
 @Component({
   selector: 'app-parcelle-mfu',
   standalone: true,
@@ -42,6 +65,7 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
     ReactiveFormsModule,
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
     MatTooltipModule,
     MatIconModule,
     MatButtonModule,
@@ -55,6 +79,7 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
     MatProgressSpinnerModule,
     FormButtonsComponent,
   ],
+  providers: [{ provide: MatPaginatorIntl, useFactory: getFrenchPaginatorIntl }],
 
 
 
@@ -63,14 +88,27 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
 })
 export class ParcelleMfuComponent implements OnInit, AfterViewInit {
 
+@ViewChild(MatSort)
+set sort(sort: MatSort) {
+  this.dataSource.sort = sort;
+}
 
+@ViewChild(MatPaginator)
+set paginator(paginator: MatPaginator) {
+  this.dataSource.paginator = paginator;
+}
 
-
-
-
-@ViewChild(MatSort) sort!: MatSort;
+  getParcellePageSizeOptions(): number[] {
+    // Ajoute dynamiquement le total filtre dans les tailles de page.
+    const totalFiltered = this.dataSource.filteredData.length;
+    const total = totalFiltered > 0 ? totalFiltered : this.dataSource.data.length;
+    const baseOptions = [10, 20, 50, 100, 200];
+    const options = total > 0 ? [...baseOptions, total] : baseOptions;
+    return Array.from(new Set(options)).sort((a, b) => a - b);
+  }
 
   @Input() uuidActe: string = '';
+  filterValue: string = '';
 
   @Input() isEditModeParent: boolean = false;
   @Input() showAddForm: boolean = false;
@@ -88,7 +126,31 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Parcelle>(this.parcelles);
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item: Parcelle, property: string): string | number => {
+      switch (property) {
+        case 'insee':
+          return (this.getCommuneNameFull(item) || '').toLowerCase();
+        case 'prefix':
+          return item.prefix || '';
+        case 'code_parcelle':
+          return item.code_parcelle || '';
+        case 'section':
+          return item.section || '';
+        case 'numero':
+          return Number(item.numero ?? 0);
+        case 'surface':
+          return Number(item.surface ?? 0);
+        case 'pour_partie':
+          return String(item.pour_partie) === 'true' ? 1 : 0;
+        case 'libelle_court':
+          return (this.getLibelle(item.libelle_court, this.typeProprioList) || '').toLowerCase();
+        case 'proprietaire':
+          return (item.proprietaire || '').toLowerCase();
+        default:
+          return (item as any)[property] ?? '';
+      }
+    };
+
   }
 
   sortData(sortState: any) {
@@ -128,24 +190,7 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
 // Appliquer le filtre
   applicationFiltre(): void {
     console.log("Filtre appliqué : ", this.filterValidite);
-    // Toujours configurer filterPredicate avant d'appliquer le filtre
-    this.dataSource.filterPredicate = (data: Parcelle, filter: string) => {
-      const actuelValue = String(data.validite);
-      if (filter === 'tous') {
-        return true;
-      }
-      if (filter === 'valide') {
-        return actuelValue === 'true';
-      }
-      if (filter === 'invalide') {
-        return actuelValue === 'false';
-      }
-      return true;
-    };
-    this.dataSource.filter = this.filterValidite;
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    this.updateTableFilter();
   }
 
   // Variable pour le filtre avec ngModel
@@ -209,6 +254,56 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
     if (this.showAddForm) {
       this.startAddMode();
     }
+  }
+
+  applyFilter(value: string): void {
+    this.filterValue = value;
+    this.updateTableFilter();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  private updateTableFilter(): void {
+    this.dataSource.filterPredicate = (data: Parcelle, filter: string) => {
+      const parsedFilter = JSON.parse(filter) as { validite: string; keyword: string };
+      const validiteValue = String(data.validite);
+      const keyword = parsedFilter.keyword || '';
+
+      const matchesValidite =
+        parsedFilter.validite === 'tous' ||
+        (parsedFilter.validite === 'valide' && validiteValue === 'true') ||
+        (parsedFilter.validite === 'invalide' && validiteValue === 'false');
+
+      if (!matchesValidite) {
+        return false;
+      }
+
+      if (!keyword) {
+        return true;
+      }
+
+      const searchableText = [
+        this.getCommuneNameFull(data),
+        data.code_parcelle,
+        data.prefix,
+        data.section,
+        data.numero,
+        data.surface,
+        data.proprietaire,
+        this.getLibelle(data.libelle_court, this.typeProprioList),
+        String(data.pour_partie) === 'true' ? 'oui' : 'non',
+      ]
+        .map((value) => String(value ?? '').toLowerCase())
+        .join(' ');
+
+      return searchableText.includes(keyword);
+    };
+
+    this.dataSource.filter = JSON.stringify({
+      validite: this.filterValidite,
+      keyword: this.filterValue.trim().toLowerCase(),
+    });
   }
 
   private async preloadCommunes() {

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { Subscription } from 'rxjs';
 
@@ -29,6 +30,7 @@ import { SelectValue } from '../../../../../shared/interfaces/formValues';
   imports: [
     FormButtonsComponent,
     CommonModule,
+    FormsModule,
     MatSlideToggleModule,
     MatDialogModule,
     MatTooltipModule,
@@ -40,6 +42,7 @@ import { SelectValue } from '../../../../../shared/interfaces/formValues';
     MatSelectModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatAutocompleteModule,
   ],
   templateUrl: './parcelle-mfu-dialog.component.html',
   styleUrl: './parcelle-mfu-dialog.component.scss'
@@ -64,6 +67,29 @@ export class ParcelleMfuDialogComponent implements OnInit, OnDestroy {
   
   // Liste de sélection pour le type de propriétaire
   typeProprioList: SelectValue[] = [];
+
+  // Cascade properties
+  departements: any[] = [
+    { code: '08', nom: 'Ardennes' },
+    { code: '10', nom: 'Aube' },
+    { code: '51', nom: 'Marne' },
+    { code: '52', nom: 'Haute-Marne' }
+  ];
+  communes: any[] = [];
+  sections: string[] = [];
+  numeros: any[] = [];
+
+  selectedDepartement: string = '';
+  selectedCommune: string = '';
+  selectedSection: string = '';
+
+  isLoadingCommunes = false;
+  isLoadingSections = false;
+  isLoadingNumeros = false;
+
+  get isCascadeLoading(): boolean {
+    return this.isLoadingSections || this.isLoadingNumeros;
+  }
 
   constructor(
       public formService: FormService,
@@ -147,6 +173,9 @@ export class ParcelleMfuDialogComponent implements OnInit, OnDestroy {
           
           // Enable temporairement pour capturer les valeurs des contrôles disabled
           this.parcelleForm.get('validite')?.enable();
+          
+          // Précharger la cascade avant de capturer les valeurs initiales
+          await this.loadCascadeForEdit(this.parcelle);
           
           // Créer une copie profonde des valeurs initiales pour la restauration (inclut les contrôles disabled)
           this.initialFormValues = JSON.parse(JSON.stringify(this.parcelleForm.getRawValue()));
@@ -341,6 +370,144 @@ export class ParcelleMfuDialogComponent implements OnInit, OnDestroy {
     exitAnimationDuration: '300ms'
   };
 
+  /**
+   * Charge les communes pour un département sélectionné
+   */
+  async onDepartementChange(deptCode: string) {
+    this.selectedDepartement = deptCode;
+    this.selectedCommune = '';
+    this.selectedSection = '';
+    this.communes = [];
+    this.sections = [];
+    this.numeros = [];
+
+    if (!deptCode) return;
+
+    this.isLoadingCommunes = true;
+    try {
+      this.communes = await this.parcelleService.getCommunesByDepartement(deptCode);
+    } catch (error) {
+      console.error('Erreur chargement communes (dialog):', error);
+      this.communes = [];
+    } finally {
+      this.isLoadingCommunes = false;
+    }
+  }
+
+  /**
+   * Recharge les sections quand la commune change et trigger change detection
+   */
+  async onCommuneChange(communeCode: string) {
+    this.selectedCommune = communeCode;
+    this.selectedSection = '';
+    this.sections = [];
+    this.numeros = [];
+    this.parcelleForm?.patchValue({ insee: communeCode, section: '', numero: null });
+
+    if (!communeCode) return;
+
+    this.isLoadingSections = true;
+    try {
+      this.sections = await this.parcelleService.getSectionsByCommune(communeCode);
+      console.log('[Dialog] Sections chargées:', this.sections);
+    } catch (error) {
+      console.error('Erreur sections (dialog):', error);
+      this.sections = [];
+    } finally {
+      this.isLoadingSections = false;
+      this.cdr.detectChanges(); // Force l'update du template
+    }
+  }
+
+  /**
+   * Recharge les numéros quand la section change
+   */
+  async onSectionChange(section: string) {
+    if (this.isCascadeLoading || !this.selectedCommune) return;
+
+    this.selectedSection = section;
+    this.numeros = [];
+    this.parcelleForm?.patchValue({ section });
+
+    if (!section) return;
+
+    this.isLoadingNumeros = true;
+    try {
+      this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, section);
+    } catch (error) {
+      console.error('Erreur numéros (dialog):', error);
+      this.numeros = [];
+    } finally {
+      this.isLoadingNumeros = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  /**
+   * Filtre les communes en fonction de la saisie
+   */
+  filterCommunes(event: any): void {
+    const filterValue = (event.target?.value || '').toLowerCase();
+    const allCommunes = this.communes;
+    // Les communes filtrées s'affichent dans l'autocomplete
+    if (filterValue.length > 0) {
+      // Garder la liste complète pour l'autocomplete
+    }
+  }
+
+  /**
+   * Précharge la cascade lors de l'édition d'une parcelle existante
+   */
+  private async loadCascadeForEdit(parcelle: Parcelle) {
+    if (!parcelle.insee) return;
+
+    // Extraire dept de INSEE (2 premiers chars)
+    this.selectedDepartement = parcelle.insee.substring(0, 2);
+
+    // Charger communes pour dept
+    this.isLoadingCommunes = true;
+    try {
+      this.communes = await this.parcelleService.getCommunesByDepartement(this.selectedDepartement);
+    } catch (error) {
+      console.error('Chargement communes (dialog edit):', error);
+      this.communes = [];
+    } finally {
+      this.isLoadingCommunes = false;
+    }
+
+    // Définir commune existante
+    this.selectedCommune = parcelle.insee;
+
+    // Charger sections
+    this.isLoadingSections = true;
+    try {
+      this.sections = await this.parcelleService.getSectionsByCommune(this.selectedCommune);
+      console.log('[Dialog] Sections pré-chargées:', this.sections);
+    } catch (error) {
+      console.error('Chargement sections (dialog edit):', error);
+      this.sections = [];
+    } finally {
+      this.isLoadingSections = false;
+    }
+
+    // Définir section existante
+    this.selectedSection = parcelle.section || '';
+
+    // Charger numéros si section existe
+    if (this.selectedSection) {
+      this.isLoadingNumeros = true;
+      try {
+        this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, this.selectedSection);
+      } catch (error) {
+        console.error('Chargement numéros (dialog edit):', error);
+        this.numeros = [];
+      } finally {
+        this.isLoadingNumeros = false;
+      }
+    }
+
+    this.cdr.detectChanges();
+  }
 
   /**
    * Affiche une boîte de dialogue de confirmation pour la suppression d'une parcelle.

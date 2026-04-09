@@ -1,6 +1,6 @@
 <mat-dialog-content class="dialogue">
   <div class="conteneur-acte-mfu">
-    <div class="gerer">Gérer</div>
+    <div class="proteger"><span class="proteger-text">Protéger</span></div>
     <div class="acte-mfu">
 
       <!-- Indicateur de chargement -->
@@ -20,9 +20,9 @@
         </mat-tab>
 
         <!-- Onglet 2 : Parcelles (uniquement pour les actes existants) -->
-        <mat-tab label="Parcelles" *ngIf="!newMfu && acteLite?.uuid_acte">
+        <mat-tab label="Parcelles" *ngIf="!newMfu && resolvedActeUuid">
           <div class="tab-content">
-            <app-parcelle-mfu [uuidActe]="acteLite.uuid_acte" [isEditModeParent]="isEditMfu">
+            <app-parcelle-mfu [uuidActe]="resolvedActeUuid" [isEditModeParent]="isEditMfu">
             </app-parcelle-mfu>
           </div>
         </mat-tab>
@@ -37,19 +37,26 @@
 <!-- Contenu de l'onglet Acte -->
 <ng-template #acteContent>
   <div class="button-title" [class.center-title]="newMfu">
-    <!-- 1er element -->
+    <!-- 1er élément -->
     <div class="form-buttons" *ngIf="mfuForm">
-      <app-form-buttons [isEditActive]="isEditMfu || newMfu" icone="edit" [theme]="'gerer'"
+      <app-form-buttons [isEditActive]="isEditMfu || newMfu" icone="edit" [theme]="'proteger'" label="Modifier cet acte"
         [isFormValid]="mfuForm ? mfuForm.valid : false" (toggleAction)="toggleEditMfu($event)" (onSubmit)="onSubmit()">
       </app-form-buttons>
     </div>
 
-    <!-- 2eme element -->
+    <!-- Bouton d'ajout d'un acte à un site -->
+    <div class="form-buttons" *ngIf="!newMfu">
+      <app-form-buttons [isEditActive]="false" [isAddActive]="false" [isFormValid]="true" icone="add" theme="proteger" label="Rattacher cet acte à un site"
+        (toggleAction)="openAttachSiteDialog()">
+      </app-form-buttons>
+    </div>
+
+    <!-- 2e élément -->
     <div class="title-container">
       <ng-container *ngTemplateOutlet="newMfu ? newTitle : title"></ng-container>
     </div>
 
-    <!-- 3eme element (optionnel) : visible uniquement pour un acte existant -->
+    <!-- 3e élément (optionnel) : visible uniquement pour un acte existant -->
     <div class="suppression" *ngIf="!newMfu">
       <button mat-button (click)="deleteItemConfirm()">Supprimer l'acte</button>
     </div>
@@ -93,7 +100,7 @@
             </ng-template>
           </mat-form-field>
 
-          
+
           <mat-form-field class="form-field-third">
             <mat-label>Notaire</mat-label>
             <input matInput formControlName="notaire" placeholder="Notaire" [readonly]="!isEditMfu">
@@ -121,11 +128,13 @@
           </mat-form-field>
 
           <div class="boolean-field acte-valide">
-            Acte valide : <mat-slide-toggle formControlName="validite" [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
+            Acte valide : <mat-slide-toggle formControlName="validite"
+              [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
           </div>
 
           <div class="boolean-field tacite">
-            Tacite reconduction : <mat-slide-toggle formControlName="tacit_rec" [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
+            Tacite reconduction : <mat-slide-toggle formControlName="tacit_rec"
+              [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
           </div>
 
           <mat-form-field class="detail-rec-field">
@@ -134,7 +143,7 @@
           </mat-form-field>
         </div>
 
-        <!-- Ligne 3 : URL | Lien de telechargement | Remarque (3 colonnes) -->
+        <!-- Ligne 3 : URL | Lien de téléchargement | Remarque (3 colonnes) -->
         <div class="form-row-three url-row">
           <!-- Cellule URL (flex 0) -->
           <mat-form-field class="url-cell" *ngIf="isEditMfu || newMfu">
@@ -142,7 +151,7 @@
             <input matInput formControlName="url" placeholder="URL vers le document" [readonly]="!isEditMfu">
           </mat-form-field>
 
-          <!-- Cellule telechargement (flex 1) -->
+          <!-- Cellule téléchargement (flex 1) -->
           <div class="download-cell" *ngIf="!newMfu && mfuForm.get('url')?.value">
             📎 <a [href]="mfuForm.get('url')?.value" target="_blank">Télécharger l'acte</a>
           </div>
@@ -150,9 +159,11 @@
           <!-- Cellule remarque (flex 2) : prend l'espace restant -->
           <mat-form-field class="remarque-cell">
             <mat-label>Remarque</mat-label>
-            <textarea matInput formControlName="remarque" rows="2" placeholder="Remarques" [readonly]="!isEditMfu"></textarea>
+            <textarea matInput formControlName="remarque" rows="2" placeholder="Remarques"
+              [readonly]="!isEditMfu"></textarea>
           </mat-form-field>
         </div>
+
 
 
 
@@ -160,5 +171,28 @@
       </div>
 
     </form>
+
+    <div class="attached-sites-block" *ngIf="!newMfu && !isEditMfu">
+      <h3>Sites rattachés à cet acte</h3>
+
+      <div class="chips-loading" *ngIf="isLoadingAttachedSites">
+        <mat-spinner diameter="26"></mat-spinner>
+        <span>Chargement des sites rattachés...</span>
+      </div>
+
+      <mat-chip-set *ngIf="!isLoadingAttachedSites" aria-label="Sites rattachés a l'acte">
+        <mat-chip
+          *ngFor="let chip of attachedSiteChips"
+          [removable]="chip.removable"
+          [class.removable-chip]="chip.removable"
+          (removed)="removeAttachedSite(chip)">
+          {{ chip.nom_site }}
+          <button matChipRemove *ngIf="chip.removable" aria-label="Supprimer le site rattaché">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-chip>
+        <mat-chip *ngIf="!attachedSiteChips.length" class="empty-chip">Aucun site rattaché à cet acte</mat-chip>
+      </mat-chip-set>
+    </div>
   </div>
 </ng-template>

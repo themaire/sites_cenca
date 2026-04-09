@@ -82,6 +82,8 @@ export class DetailMfuComponent {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   public dialog: MatDialog = inject(MatDialog);
   public overlay: Overlay = inject(Overlay);
+  // Garde la position de scroll pour figer l'arriere-plan pendant la modale.
+  private lockedScrollY: number | null = null;
 
   async ngOnChanges(changes: SimpleChanges) {
     let subroute: string = '';
@@ -170,13 +172,15 @@ export class DetailMfuComponent {
   get ActesValides(): number {
     return this.actes.filter(acte => String(acte.validite) === 'true').length;
   }
-  
+
   get ActesInvalides(): number {
     return this.actes.filter(acte => String(acte.validite) === 'false').length;
   }
 
 
-  onSelect(actelite?: ActeLite): void {
+  onSelect(actelite?: ActeLite, event?: Event): void {
+    event?.stopPropagation();
+
     if (actelite !== undefined) {
       this.openDialog(actelite);
     } else {
@@ -185,6 +189,16 @@ export class DetailMfuComponent {
   }
 
   openDialog(actelite?: ActeLite): void {
+    if (actelite !== undefined) {
+      const acteAny = actelite as any;
+      const resolvedUuid = acteAny?.uuid_acte || acteAny?.uuid || acteAny?.ref_uuid_acte || '';
+      if (!acteAny?.uuid_acte && resolvedUuid) {
+        actelite = { ...actelite, uuid_acte: resolvedUuid } as ActeLite;
+      }
+    }
+
+    this.lockBackgroundScroll();
+
     if (actelite === undefined) {
       console.log("Charge un MFU vide");
       actelite = {
@@ -203,15 +217,48 @@ export class DetailMfuComponent {
       backdropClass: 'custom-backdrop-gerer',
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
-      scrollStrategy: this.overlay.scrollStrategies.close(),
+      autoFocus: false,
+      restoreFocus: false,
+      scrollStrategy: this.overlay.scrollStrategies.noop(),
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      this.unlockBackgroundScroll();
       console.log('Dialog MFU fermé avec résultat:', result);
       if (result === true) {
         this.refreshActes();
       }
     });
+  }
+
+  private lockBackgroundScroll(): void {
+    if (this.lockedScrollY !== null) {
+      return;
+    }
+
+    this.lockedScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${this.lockedScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.style.overflowY = 'hidden';
+  }
+
+  private unlockBackgroundScroll(): void {
+    if (this.lockedScrollY === null) {
+      return;
+    }
+
+    const scrollY = this.lockedScrollY;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.overflowY = '';
+    this.lockedScrollY = null;
+    window.scrollTo(0, scrollY);
   }
 }
 

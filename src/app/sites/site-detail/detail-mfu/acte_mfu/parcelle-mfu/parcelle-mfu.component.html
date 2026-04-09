@@ -6,9 +6,9 @@
     <div class="button-title center-title">
       <!-- 1er element -->
       <div class="form-buttons" *ngIf="parcelleForm">
-        <app-form-buttons [isEditActive]="isEditModeLocal || isAddMode" icone="add" [theme]="'gerer'"
-          [isFormValid]="parcelleForm ? parcelleForm.valid : false" (toggleAction)="toggleEditParcelle($event)"
-          (onSubmit)="onSubmit()">
+        <app-form-buttons [isEditActive]="isEditModeLocal || isAddMode" icone="add" [theme]="'proteger'"
+          label="Ajouter une parcelle" [isFormValid]="parcelleForm ? parcelleForm.valid : false"
+          (toggleAction)="toggleEditParcelle($event)" (onSubmit)="onSubmit()">
         </app-form-buttons>
       </div>
 
@@ -91,8 +91,7 @@
             <mat-option *ngFor="let sec of sections" [value]="sec">{{ sec }}</mat-option>
           </mat-select>
           <button *ngIf="selectedSection" matSuffix mat-icon-button aria-label="Clear" class="clear-btn"
-            [disabled]="isCascadeLoading"
-            (click)="clearCascade('section'); $event.stopPropagation()">
+            [disabled]="isCascadeLoading" (click)="clearCascade('section'); $event.stopPropagation()">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -167,7 +166,7 @@
   <div *ngIf="!isEditModeLocal && !isAddMode" class="parcelles-list-view">
     <div class="button-title center-title">
       <div class="form-buttons">
-        <app-form-buttons [isEditActive]="false" icone="add" [theme]="'gerer'"
+        <app-form-buttons [isEditActive]="false" icone="add" [theme]="'proteger'"
           (toggleAction)="toggleEditParcelle($event)">
         </app-form-buttons>
       </div>
@@ -179,14 +178,18 @@
 
     <!-- Filtres avec ngModel et mat-radio-group -->
     <div class="radio-buttons">
+      <mat-form-field class="filtre" appearance="outline">
+        <mat-label>Mots-clés</mat-label>
+        <input matInput #filterInput [value]="filterValue" (input)="applyFilter(filterInput.value)"
+          placeholder="Commune, code, section, propriétaire..." />
+      </mat-form-field>
+      <mat-radio-group [(ngModel)]="filterValidite" (change)="applicationFiltre()">
+        <!-- Par defaut, afficher toutes les parcelles -->
+        <mat-radio-button value="tous" checked>Toutes les parcelles ({{ParcellesTotal}})</mat-radio-button>
+        <mat-radio-button value="valide">Parcelles valides ({{ParcellesValides}})</mat-radio-button>
+        <mat-radio-button value="invalide">Parcelles invalides ({{ParcellesInvalides}})</mat-radio-button>
 
-        <mat-radio-group [(ngModel)]="filterValidite" (change)="applicationFiltre()">
-          <!-- Par defaut, afficher toutes les parcelles -->
-          <mat-radio-button value="tous" checked>Toutes les parcelles ({{ParcellesTotal}})</mat-radio-button>
-          <mat-radio-button value="valide">Parcelles valides ({{ParcellesValides}})</mat-radio-button>
-          <mat-radio-button value="invalide">Parcelles invalides ({{ParcellesInvalides}})</mat-radio-button>
-
-        </mat-radio-group>
+      </mat-radio-group>
     </div>
 
     <div *ngIf="isLoading" class="loading-container">
@@ -205,32 +208,32 @@
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.prefix || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="code_parcelle">
-          <th mat-header-cell *matHeaderCellDef>Code Parcelle</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Code Parcelle</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.code_parcelle || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="section">
-          <th mat-header-cell *matHeaderCellDef>Section</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Section</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.section || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="numero">
-          <th mat-header-cell *matHeaderCellDef>Numéro</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.numero || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="surface">
-          <th mat-header-cell *matHeaderCellDef>Surface (ha)</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Surface (ha)</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.surface || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="pour_partie">
-          <th mat-header-cell *matHeaderCellDef>Pour partie</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Pour partie</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.pour_partie === true || parcelle.pour_partie === 'true' ?
             'Oui' : 'Non' }}</td>
         </ng-container>
         <ng-container matColumnDef="libelle_court">
-          <th mat-header-cell *matHeaderCellDef>Type Proprio.</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type Proprio.</th>
           <td mat-cell *matCellDef="let parcelle">{{ getLibelle(parcelle.libelle_court, typeProprioList) || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="proprietaire">
-          <th mat-header-cell *matHeaderCellDef>Propriétaire</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Propriétaire</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.proprietaire || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
@@ -247,10 +250,16 @@
           [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}"
           (click)="startEditMode(row); $event.stopPropagation()"></tr>
       </table>
+
+      <mat-paginator
+        [pageSize]="20"
+        [pageSizeOptions]="getParcellePageSizeOptions()"
+        showFirstLastButtons
+        class="paginator"
+      ></mat-paginator>
     </div>
 
     <div *ngIf="!isLoading && parcelles.length === 0" class="no-parcelles">
-      <mat-icon color="warn">info</mat-icon>
       <p>Aucune parcelle liée à cet acte.</p>
     </div>
   </div>

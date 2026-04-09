@@ -26,6 +26,19 @@ export class ActeService {
     return (await data.json()) ?? [];
   }
 
+  async getActesMultiSitesLite(subroute: string = 'mfu/multi-sites/lite'): Promise<any[]> {
+    // Lecture des rattachements multi-sites utilises dans les chips de l'acte.
+    const data = await fetch(this.activeUrl + subroute);
+    const json = await data.json();
+    
+    if (!data.ok || !Array.isArray(json)) {
+      console.warn(`Route ${subroute} error or non-array response:`, json);
+      return [];
+    }
+    
+    return json ?? [];
+  }
+
   insertActe(acte: any): Observable<ApiResponse> {
     const url = `${this.activeUrl}put/table=actes_mfu/insert`;
     return this.http.put<ApiResponse>(url, acte);
@@ -50,5 +63,19 @@ export class ActeService {
           } as ApiResponse);
         })
       );
+  }
+
+  detachActeFromSite(uuidActe: string, uuidSite: string): Observable<ApiResponse> {
+    // Suppression d'un lien acte-site (hors site principal).
+    const url = `${this.activeUrl}mfu/actes-multi/ref_uuid_acte=${uuidActe}/ref_uuid_site=${uuidSite}`;
+    return this.http.delete<ApiResponse>(url).pipe(
+      catchError((error) => {
+        console.error('Erreur lors du détachement du site de l\'acte MFU:', error);
+        return of({
+          success: false,
+          message: 'Erreur lors du détachement du site de l\'acte MFU',
+        } as ApiResponse);
+      })
+    );
   }
 }

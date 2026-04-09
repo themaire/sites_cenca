@@ -1,45 +1,70 @@
 @import "../../../styles/mixins.scss";
 @import "../../../styles/variables.scss";
 
+// Conteneur principal de la vue MFU côté actes.
+.site-parent {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+}
+
+// Bandeau vertical de la section Protéger.
+.proteger {
+  padding-bottom: 15px;
+  @include bandeau($couleur-faune);
+}
+
+// Barre des actions d'édition et d'enregistrement.
 .edition {
   display: flex;
   @include align(center, start);
   margin-bottom: 20px;
   gap: 15px;
+
+  // Bouton d'édition.
   .btn-edition {
     @include btn-icon($proteger, $orangeC);
     @include icon(white, black);
   }
+
+  // Bouton de sauvegarde.
   .btn-sauvegarde {
     @include btn-icon(white, $proteger);
     @include icon($couleur-flore, white);
   }
+
+  // Bouton d'annulation.
   .btn-annulation {
     @include btn-icon(white, red);
     @include icon(red, white);
   }
 }
 
-// Style pour les lignes cliquables du tableau
+// Ligne cliquable du tableau des actes.
 .clickable-row {
   cursor: pointer;
   transition: background-color 0.2s ease;
-  
+
+  // Survol sur les lignes impaires.
   &.odd-row:hover {
     background-color: darken(#f2f2f2, 5%);
   }
-  
+
+  // Survol sur les lignes paires.
   &.even-row:hover {
     background-color: darken(white, 4%);
   }
 
+  // Ligne sélectionnée dans la table Material.
   &.mat-mdc-row-selected,
   &.mat-row-selected {
     background-color: #e3f2fd;
   }
 }
 
-// Lignes de fond mat-table (comme detail-projets)
+// Alternance visuelle des lignes du tableau.
 .even-row {
   background-color: white;
 }
@@ -48,27 +73,29 @@
   background-color: #f2f2f2; /* Gris très clair */
 }
 
+// Bloc principal qui contient le tableau des actes.
 .detail-mfu {
   display: flex;
 }
 
+// Décalage léger du titre au-dessus du tableau.
 h2 {
   padding-top: 10px;
 }
 
-// Taille des colonnes
+// Taille commune des cellules et en-têtes de la table.
 .mat-mdc-cell,
 .mat-mdc-table .mat-mdc-header-cell {
   @include dim(100%, 100%);
   border: none;
 }
 
-// Ligne de titre
+// Bordure sous l'en-tête du tableau.
 .mat-mdc-table mat-header-row.mat-mdc-header-row {
   border-bottom: 2px solid $couleur-faune;
 }
 
-// Colonne Type - largeur réduite responsive
+// Colonne Type avec largeur réduite.
 .typ_mfu {
   width: 12% !important;
   max-width: 120px !important;
@@ -77,30 +104,33 @@ h2 {
   white-space: nowrap;
 }
 
+// Colonnes de dates.
 .debut, .fin {
   width: 10% !important;
 }
 
+// Colonnes de données intermédiaires plus larges.
 .surf_totale, .tacit_rec, .type_prop {
   width: 13% !important;
 }
 
+// Colonne URL plus large.
 .url {
   width: 18% !important;
 }
 
-
-
-// Responsive
+// Adaptation des colonnes sur écran étroit.
 @media screen and (max-width: $mobile) {
   .typ_mfu {
-    flex: 1 1 80px;  // Plus flexible sur mobile
+    flex: 1 1 80px;
     max-width: none;
   }
-  
+
+  // Colonnes jugées secondaires masquées sur mobile.
   .tacit_rec,
   .surf_totale,
   .url {
     display: none;
   }
+
 }

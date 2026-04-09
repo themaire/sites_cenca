@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
@@ -17,14 +17,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatChipsModule } from '@angular/material/chips';
 
-import { AsyncPipe } from '@angular/common';
 import { map } from 'rxjs/operators';
 import { Observable, Subscription } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
-import { MatDialogRef, MatDialogModule, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MatDialogModule, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AttachActeSiteDialogComponent } from './attach-acte-site-dialog.component';
 
 import { ActeLite } from '../acte';
 import { SitesService } from '../../../sites.service';
@@ -58,6 +59,7 @@ export const MY_DATE_FORMATS = {
     MatDialogContent,
     MatIconModule,
     MatTabsModule,
+    MatChipsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -66,7 +68,6 @@ export const MY_DATE_FORMATS = {
     MatNativeDateModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    AsyncPipe,
     ParcelleMfuComponent,
   ],
   templateUrl: './acte-mfu.component.html',
@@ -76,6 +77,8 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   private _adapter = inject(DateAdapter);
   private dialogData = inject(MAT_DIALOG_DATA);
   acteLite!: ActeLite;
+  // UUID resolu pour gerer les cas ou le dialogue est ouvert avec des donnees partielles.
+  resolvedActeUuid = '';
   isLoading = true;
   loadingDelay = 400;
   
@@ -87,6 +90,9 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   initialFormValues!: any;
   originalFormValues!: any;
   private formStatusSubscription: Subscription | null = null;
+  // Liste des sites rattaches affichee en chips sous le formulaire.
+  attachedSiteChips: Array<{ uuid_site: string; nom_site: string; removable: boolean }> = [];
+  isLoadingAttachedSites = false;
   
   typeActeList: SelectValue[] = [];
   typeProprioList: SelectValue[] = [];
@@ -95,6 +101,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
 
   constructor(
     public formService: FormService,
+    private dialog: MatDialog,
     private dialogRef: MatDialogRef<ActeMfuComponent>,
     private sitesService: SitesService,
     private acteService: ActeService,
@@ -105,6 +112,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     private loginService: LoginService
   ) {
     this.acteLite = this.dialogData;
+    this.resolvedActeUuid = this.acteLite?.uuid_acte || '';
   }
 
   async ngOnInit() {
@@ -116,10 +124,12 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
           const result = await this.fetch('mfu', this.acteLite.uuid_acte);
           if (result) {
             this.mfuForm = this.formService.newMfuForm(result);
+            this.resolvedActeUuid = result?.uuid_acte || this.acteLite?.uuid_acte || '';
             this.initialFormValues = { ...this.mfuForm.getRawValue() };
             this.originalFormValues = { ...this.initialFormValues };
             this.isEditMfu = false;
             this.setBooleanControlsEnabled(false);
+            await this.loadAttachedSites();
           }
           this.isLoading = false;
           this.cdr.detectChanges();
@@ -191,8 +201,8 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
       
       this.isEditMfu = false;
       
-      // Desactive les booleans en mode consultation
-          // Desactiver uniquement si ce n'est pas une creation
+        // Désactive les booléens en mode consultation
+          // Désactiver uniquement si ce n'est pas une création
           if (!this.newMfu) {
             this.setBooleanControlsEnabled(false);
           }
@@ -227,7 +237,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     }
 
     const formValue = this.mfuForm.getRawValue();
-    const obs = this.newMfu ? this.acteService.insertActe(formValue) : this.acteService.updateActe(this.acteLite.uuid_acte!, formValue);
+    const obs = this.newMfu ? this.acteService.insertActe(formValue) : this.acteService.updateActe(this.resolvedActeUuid, formValue);
 
     obs.subscribe({
       next: (res) => {
@@ -243,9 +253,9 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   }
 
   deleteItemConfirm() {
-    this.confirmationService.confirm('Suppression', 'Supprimer?', 'delete').subscribe(ok => {
+    this.confirmationService.confirm('Suppression', 'Supprimer ?', 'delete').subscribe(ok => {
       if (ok) {
-        this.acteService.deleteActe(this.acteLite.uuid_acte!).subscribe({
+        this.acteService.deleteActe(this.resolvedActeUuid).subscribe({
           next: (res) => {
             if (res?.success) {
               this.snackBar.open('Supprimé');
@@ -256,4 +266,95 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  openAttachSiteDialog(): void {
+    // Ouvre un dialogue pour rattacher l'acte courant a un autre site.
+    if (!this.resolvedActeUuid || this.newMfu) {
+      this.snackBar.open('Enregistrez d\'abord l\'acte avant de le rattacher.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(AttachActeSiteDialogComponent, {
+      width: '520px',
+      panelClass: 'attach-site-dialog-panel',
+      autoFocus: false,
+      restoreFocus: false,
+      data: {
+        acteUuid: this.resolvedActeUuid,
+        currentSiteUuid: this.mfuForm?.get('site')?.value || this.acteLite.site,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((linked) => {
+      if (linked) {
+        this.snackBar.open('Rattachement effectué.', 'OK', { duration: 2500 });
+        this.loadAttachedSites();
+      }
+    });
+  }
+
+  private async loadAttachedSites(): Promise<void> {
+    if (!this.resolvedActeUuid) {
+      this.attachedSiteChips = [];
+      return;
+    }
+
+    this.isLoadingAttachedSites = true;
+    try {
+      const rows = await this.acteService.getActesMultiSitesLite();
+      const current = rows.find((row: any) => row?.uuid_acte === this.resolvedActeUuid);
+      this.attachedSiteChips = this.extractSiteChips(current);
+    } catch (error) {
+      console.warn('Impossible de charger les sites rattaches de l\'acte.', error);
+      this.attachedSiteChips = [];
+    } finally {
+      this.isLoadingAttachedSites = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeAttachedSite(chip: { uuid_site: string; nom_site: string; removable: boolean }): void {
+    if (!chip?.removable || !chip?.uuid_site || !this.resolvedActeUuid) {
+      return;
+    }
+
+    this.acteService.detachActeFromSite(this.resolvedActeUuid, chip.uuid_site).subscribe({
+      next: (res) => {
+        if (res?.success) {
+          this.snackBar.open('Site détaché de l\'acte.', 'OK', { duration: 2500 });
+          this.loadAttachedSites();
+        } else {
+          this.snackBar.open(res?.message || 'Impossible de détacher le site.', 'OK', { duration: 3000 });
+        }
+      },
+      error: () => this.snackBar.open('Erreur lors du détachement.', 'OK', { duration: 3000 })
+    });
+  }
+
+  private extractSiteChips(row: any): Array<{ uuid_site: string; nom_site: string; removable: boolean }> {
+    const details = Array.isArray(row?.sites_associes_details) ? row.sites_associes_details : [];
+    const principalUuid = row?.site_principal_uuid || '';
+
+    if (details.length > 0) {
+      return details
+        .filter((site: any) => !!site?.uuid_site && !!site?.nom_site)
+        .map((site: any) => ({
+          uuid_site: String(site.uuid_site),
+          nom_site: String(site.nom_site),
+          removable: String(site.uuid_site) !== String(principalUuid),
+        }));
+    }
+
+    const names = String(row?.sites_associes ?? '')
+      .split('|')
+      .map((name: string) => name.trim())
+      .filter((name: string) => !!name);
+
+    return names.map((name) => ({
+      uuid_site: '',
+      nom_site: name,
+      removable: false,
+    }));
+  }
+
 }

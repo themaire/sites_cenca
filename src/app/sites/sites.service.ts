@@ -18,13 +18,25 @@ import { Localisation } from '../shared/interfaces/localisation';
 import { ApiResponse } from '../shared/interfaces/api';
 import { Selector } from '../shared/interfaces/selector';
 
+interface SiteLite {
+  // Listes courtes de sites
+  uuid_site: string;
+  nom_site: string;
+}
+
+interface ActeMultiSiteInsert {
+  ref_uuid_site: string;
+  ref_uuid_acte: string;
+  amm_date_crea?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class SitesService {
   private activeUrl: string = environment.apiUrl + 'sites/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // fonction modèle de base réutilisée partout pour les différentes methode de ce fichier
   async getData<T>(subroute: string): Promise<T> {
@@ -77,7 +89,19 @@ export class SitesService {
     return this.getData<Acte[]>(subroute);
   }
 
-    // Utilisé dans operation.component.ts
+  async getMfuSitesLite(subroute: string = 'mfu/sites/lite'): Promise<SiteLite[]> {
+    return this.getData<SiteLite[]>(subroute);
+  }
+
+  async getSitesLiteFallback(subroute: string = 'criteria/*/*/*/*/*/*'): Promise<SiteLite[]> {
+    const rows = await this.getData<any[]>(subroute);
+    return (rows || []).map((row: any) => ({
+      uuid_site: row.uuid_site,
+      nom_site: row.nom,
+    }));
+  }
+
+  // Utilisé dans operation.component.ts
   async getLocalisations_orig(subroute: string): Promise<Localisation[]> {
     const data = await fetch(this.activeUrl + subroute);
     return await data.json() ?? [];
@@ -134,7 +158,7 @@ export class SitesService {
   async getProjets(subroute: string): Promise<ProjetLite[]> {
     return this.getData<ProjetLite[]>(subroute);
   }
-  
+
   /**
    * Récupère la liste des sites
    * @param subroute - sous-route de l'API
@@ -180,7 +204,7 @@ export class SitesService {
   updateTable(tableName: String, uuid: String, formData: any): Observable<any> {
     const url = `${this.activeUrl}put/table=${tableName}/uuid=${uuid}`; // Construire l'URL avec le UUID du site
     console.log('Dans updateTable() avec ' + url);
-    
+
     return this.http.put<any>(url, formData).pipe(
       tap(response => {
         console.log('Mise à jour réussie:', response);
@@ -201,10 +225,21 @@ export class SitesService {
     return this.http.put<ApiResponse>(url, formData).pipe(
       tap(response => {
         console.log('Mise à jour réussie:', response);
-        return response.data; 
+        return response.data;
       }),
       catchError(error => {
         console.error('Erreur lors de la mise à jour', error);
+        throw error;
+      })
+    );
+  }
+
+  attachActeToSite(payload: ActeMultiSiteInsert): Observable<ApiResponse> {
+    // Cree un rattachement entre un acte et un site.
+    const url = `${this.activeUrl}put/table=actes_mfu_multi/insert`;
+    return this.http.put<ApiResponse>(url, payload).pipe(
+      catchError((error) => {
+        console.error('Erreur lors du rattachement multi-sites de l\'acte', error);
         throw error;
       })
     );
