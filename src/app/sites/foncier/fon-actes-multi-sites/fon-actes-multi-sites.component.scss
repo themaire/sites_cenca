@@ -1,0 +1,276 @@
+@import "../../../../app/styles/variables.scss";
+@import "../../../../app/styles/mixins.scss";
+
+// Conteneur principal de la vue foncier multisite.
+.site-parent {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100vh;
+
+  // Petit repère vertical fixé à gauche.
+  & > p {
+    writing-mode: vertical-lr;
+    text-orientation: sideways;
+    transform: rotate(180deg);
+    position: fixed;
+    top: 33%;
+    left: 0;
+    z-index: 10;
+    @include Typo($p16, $gras, white);
+  }
+}
+
+// Bandeau vertical de la section Protéger.
+.proteger {
+  top: 0;
+  width: 20px;
+  z-index: 10;
+  padding-bottom: 15px;
+  @include bandeau($couleur-faune);
+}
+
+// Zone principale qui empile les panneaux et les tableaux.
+.table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 24px;
+}
+
+.attach-button {
+  align-self: flex-start;
+  background-color: $proteger;
+  height: 56px;
+  color: #ffffff;
+}
+
+// Panneau de rattachement d'un acte à des sites.
+.attach-panel {
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+
+  // Titre du panneau.
+  h2 {
+    margin: 0 0 6px 0;
+    font-size: 1.2rem;
+  }
+
+  // Texte d'aide sous le titre.
+  p {
+    margin: 0 0 12px 0;
+    color: #555;
+    top: 85px;
+    left: 20px;
+    z-index: 10;
+  }
+}
+
+// Formulaire de rattachement organisé en grille.
+.attach-form {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+// Ajustements du menu déroulant avec recherche intégrée.
+::ng-deep .mat-mdc-option.search-option {
+  height: auto !important;
+}
+
+// Le texte principal de l'option prend toute la largeur.
+::ng-deep .mat-mdc-option.search-option .mdc-list-item__primary-text {
+  width: 100%;
+}
+
+// Le faux checkbox est masqué dans l'option de recherche.
+::ng-deep .mat-mdc-option.search-option .mat-pseudo-checkbox {
+  display: none !important;
+}
+
+// L'input interne du select garde la largeur disponible.
+::ng-deep .mat-mdc-option.search-option input {
+  width: 100%;
+}
+
+// Champ de recherche inline dans le select.
+::ng-deep .select-inline-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 2px 0;
+  font: inherit;
+}
+
+// Couleur du placeholder du champ de recherche.
+::ng-deep .select-inline-search-input::placeholder {
+  color: #8a8a8a;
+}
+
+// Champ générique pleine largeur.
+.field {
+  width: 100%;
+}
+
+// En-tête avec titre et filtre.
+.table-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+
+  // Titre de l'en-tête.
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+}
+
+// Largeur minimale du filtre pour éviter la compression.
+.filtre {
+  min-width: 260px;
+  width: 320px;
+  max-width: 100%;
+}
+
+.radio-buttons {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.radio-buttons mat-radio-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+// Couleur des radio buttons de filtrage des actes 
+:host ::ng-deep .radio-buttons .mat-mdc-radio-button {
+  --mdc-radio-selected-icon-color: #{$proteger} !important;
+  --mdc-radio-selected-hover-icon-color: #{$proteger} !important;
+  --mdc-radio-selected-focus-icon-color: #{$proteger} !important;
+  --mdc-radio-selected-pressed-icon-color: #{$proteger} !important;
+  --mat-radio-checked-ripple-color: #{rgba($proteger, 0.22)} !important;
+  --mat-radio-ripple-color: #{rgba($proteger, 0.14)} !important;
+}
+
+.radio-buttons .filtre {
+  flex: 0 0 320px;
+  max-width: 100%;
+}
+
+// Conteneur visuel du tableau principal.
+.table {
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+// Bloc secondaire avec les sites rattachés.
+.sites-section {
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+  padding: 14px;
+}
+
+// Séparation de l'en-tête secondaire.
+.table-header.secondary {
+  margin-bottom: 10px;
+}
+
+// Grille responsive des cartes de sites.
+.sites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+// Carte individuelle pour un site.
+.sites-card {
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fafafa;
+}
+
+// Ligne supérieure de la carte avec alignement titre/badge.
+.sites-card-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+// Sous-titre descriptif de la carte.
+.sites-card-subtitle {
+  font-size: 0.85rem;
+  color: #656565;
+  font-weight: 500;
+}
+
+// Conteneur des chips dans les cartes.
+:host ::ng-deep .sites-card .mat-mdc-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+// Chip discrète quand l'information est secondaire.
+.empty-chip {
+  opacity: 0.75;
+}
+
+// Message d'état vide si aucun élément n'est trouvé.
+.empty-state {
+  border: 1px dashed #d4d4d4;
+  border-radius: 8px;
+  padding: 12px;
+  color: #616161;
+}
+
+// Séparation visuelle au-dessus du paginator.
+.paginator {
+  border-top: 1px solid #ececec;
+}
+
+// Réorganisation de la grille sur écran plus étroit.
+@media screen and (max-width: 980px) {
+  .attach-form {
+    grid-template-columns: 1fr;
+  }
+
+  // L'en-tête passe en colonne pour garder l'espace.
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filtre {
+    width: 100%;
+  }
+
+  .radio-buttons {
+    align-items: flex-start;
+  }
+
+  .sites-card-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

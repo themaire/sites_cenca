@@ -1,0 +1,480 @@
+@use '@angular/material' as mat;
+
+// Import des couleurs du thème global du projet.
+@import "../../../../styles/themes.scss";
+
+// Import des mixins partagés pour éviter de répéter les mêmes styles.
+@import "../../../../styles/mixins.scss";
+
+// Import des variables de couleurs et de tailles utilisées dans ce composant.
+@import "../../../../styles/variables.scss";
+
+// Définition du thème local Angular Material pour ce dialogue.
+$local-theme: mat.m2-define-light-theme((color: (primary: $proteger-palette,
+        // Couleur secondaire du thème local.
+        accent: mat.m2-define-palette(mat.$m2-amber-palette),
+        // Couleur d'alerte du thème local.
+        warn: mat.m2-define-palette(mat.$m2-red-palette),
+      )));
+
+// Application du thème Material sur tout le composant hôte.
+:host {
+  @include mat.all-component-themes($local-theme);
+}
+
+// Remise à zéro des marges et paddings par défaut dans le composant.
+* {
+  padding: 0;
+  margin: 0;
+}
+
+// Suppression du fond Material du dialogue pour laisser le conteneur personnalisé.
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+// Même principe pour le conteneur du dialogue.
+::ng-deep .mat-mdc-dialog-container {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+// On enlève les contraintes de padding et de hauteur sur le contenu du dialogue.
+::ng-deep .mat-mdc-dialog-content {
+  padding: 0 !important;
+  max-height: none !important;
+}
+
+// Conteneur principal en deux colonnes : bandeau à gauche, contenu à droite.
+.conteneur-acte-mfu {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+}
+
+// Bandeau vertical de la section Protéger.
+.proteger {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 25px;
+  min-height: 100%;
+  z-index: 10;
+  background-color: $proteger;
+}
+
+.proteger-text {
+  display: block;
+  position: sticky;
+  top: 33vh;
+  width: 25px;
+  writing-mode: vertical-lr;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  text-align: end;
+  @include Typo($p16, $gras, white);
+}
+
+// Zone principale qui contient les onglets et le formulaire.
+.acte-mfu {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+// Thème des onglets principaux du dialogue.
+.main-tabs {
+  @include mat-tabs-theme($couleur-faune);
+}
+
+// Forçage direct de la couleur du soulignement actif des onglets.
+:host ::ng-deep .main-tabs .mdc-tab-indicator__content--underline {
+  border-color: $couleur-faune !important;
+}
+
+// Forçage direct de la couleur du label actif de l'onglet sélectionné.
+:host ::ng-deep .main-tabs .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: $couleur-faune !important;
+}
+
+// Bloc affiché pendant le chargement des données.
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+
+  // Texte sous le spinner.
+  p {
+    margin-top: 10px;
+    color: #666;
+  }
+}
+
+// Zone des boutons de suppression.
+.suppression {
+  @include suppression-btn();
+}
+
+// En-tête avec boutons, titre et suppression.
+.button-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0px 10px 0px;
+  gap: 10px;
+  flex-wrap: nowrap;
+
+  .left-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  // Bloc des boutons de formulaire à gauche.
+  .form-buttons {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  :host ::ng-deep .left-actions app-form-buttons .edition {
+    margin: 0;
+    gap: 10px;
+  }
+
+  // Bloc du titre centré au milieu.
+  .title-container {
+    flex: 1 1 auto;
+    text-align: center;
+    min-width: 0;
+
+    // Wrapper qui aligne le titre au centre.
+    .title-wrapper {
+      display: flex;
+      justify-content: center;
+
+      // Style du titre principal.
+      h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  // Bloc de suppression à droite.
+  .suppression {
+    display: flex;
+    flex-shrink: 0;
+    padding: 0;
+  }
+}
+
+// Conteneur du bouton d'édition ajouté à droite du titre.
+.edition {
+  display: flex;
+  flex-shrink: 0;
+}
+
+// Style du bouton rond d'édition.
+.btn-edition {
+  @include btn-icon($proteger, $orangeC);
+  @include icon(white, black);
+}
+
+// Bloc qui affiche les sites rattachés à l'acte.
+.attached-sites-block {
+  margin-top: 14px;
+  border-top: 1px solid #ececec;
+  padding-top: 12px;
+
+  // Titre de la section des sites rattachés.
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #2f2f2f;
+    font-weight: 600;
+  }
+}
+
+// Indication visuelle pendant le chargement des chips.
+.chips-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+}
+
+// Mise en page du conteneur de chips Material.
+:host ::ng-deep .attached-sites-block .mat-mdc-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+// Animation de transition lors du survol d'une chip supprimable.
+:host ::ng-deep .attached-sites-block .mat-mdc-chip.removable-chip {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+// Style de survol pour signaler la suppression.
+:host ::ng-deep .attached-sites-block .mat-mdc-chip.removable-chip:hover {
+  background-color: #fde8e8 !important;
+  color: #b91c1c !important;
+}
+
+// Couleur de l'icône de suppression sur la chip.
+:host ::ng-deep .attached-sites-block .mat-mdc-chip.removable-chip .mat-mdc-chip-remove {
+  color: #b91c1c !important;
+}
+
+// Couleur de l'icône Material contenue dans la chip.
+:host ::ng-deep .attached-sites-block .mat-mdc-chip.removable-chip .mat-icon {
+  color: #b91c1c !important;
+}
+
+// Style pour une chip vide ou inactive.
+.empty-chip {
+  opacity: 0.75;
+}
+
+// Bloc principal du formulaire MFU.
+.mfu-form-container {
+  // Section de formulaire séparée par blocs.
+  .form-section {
+    margin-bottom: 24px;
+
+    // Titre de chaque sous-section du formulaire.
+    h4 {
+      margin: 0 0 16px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $proteger;
+      padding-bottom: 8px;
+      border-bottom: 2px solid lighten($proteger, 40%);
+      margin-bottom: 16px;
+    }
+  }
+
+  // Ligne standard à deux colonnes.
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  // Ligne spéciale pour les champs URL, affichée en flex.
+  .form-row-three.url-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  // Ligne à trois colonnes quand ce n'est pas une ligne URL.
+  .form-row-three:not(.url-row) {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 0.5fr;
+    gap: 8px;
+  }
+
+  // Cellule dédiée à l'URL avec largeur fixe.
+  .url-cell {
+    flex: 0 0 500px;
+    min-width: 500px;
+  }
+
+  // Cellule de téléchargement mise en avant visuellement.
+  .download-cell {
+    background-color: #f8f9fa;
+    flex: 0 0 fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 3px solid $proteger;
+    color: $proteger !important;
+    transition: background-color 0.2s;
+    height: 56px;
+
+    // Effet de survol pour indiquer l'interactivité.
+    &:hover {
+      background-color: darken(#f8f9fa, 10%) !important;
+    }
+  }
+
+  // Lien dans la cellule de téléchargement.
+  .download-cell a {
+    color: $proteger !important;
+    text-decoration: none;
+  }
+
+  // Variante compacte de la cellule remarque.
+  .remarque-cell {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // Variante plus large de la cellule remarque.
+  .remarque-cell {
+    flex: 1 1 0;
+    min-width: 350px;
+  }
+
+  // Ligne qui aligne dates, booléens et champ de détail.
+  .form-row-dates-booleans-detail {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  // Champ de détail de reconduction.
+  .detail-rec-field {
+    flex: 1 1 200px;
+    min-width: 180px;
+  }
+
+  // Champ de date plus compact.
+  .date-field {
+    flex: 0 0 160px;
+  }
+
+  // Champ booléen de validation de l'acte.
+  .boolean-field.acte-valide {
+    flex: 0 0 145px;
+  }
+
+  // Ajustements spécifiques sur tablette et mobile.
+  @media (max-width: 768px) {
+    // Réduction de la largeur du champ date.
+    .date-field {
+      flex: 0 0 120px;
+    }
+
+    // Le booléen actif devient plus compact sur petit écran.
+    .boolean-field.acte-valide {
+      flex: 0 0 30px;
+      height: 10px
+    }
+  }
+
+  // Réaffirmation de la largeur du booléen d'acte validé.
+  .boolean-field.acte-valide {
+    flex: 0 0 145px;
+  }
+
+  // Style générique des blocs booléens.
+  .boolean-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid $proteger;
+    font-size: 0.95rem;
+    height: 33px;
+    width: fit-content;
+  }
+
+  // Ligne pleine largeur pour certains groupes de champs.
+  .form-row-full {
+    grid-template-columns: 1fr;
+    margin-bottom: 16px;
+  }
+
+  // Demi-largeur pour certains champs.
+  .form-field-half {
+    flex: 1;
+  }
+
+  // Largeur complète pour certains champs.
+  .form-field-full {
+    flex: 1;
+  }
+
+  // Le champ Material occupe toute la largeur disponible.
+  .form-row-full {
+    .mat-mdc-form-field {
+      width: 100%;
+    }
+  }
+
+  // Champ sur un tiers de la ligne.
+  .form-field-third {
+    flex: 1;
+  }
+
+  // Réorganisation générale sur mobile.
+  @media (max-width: 768px) {
+    // Les lignes à deux colonnes passent en une colonne.
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    // La ligne à trois colonnes devient verticale.
+    .form-row-three {
+      grid-template-columns: 1fr;
+      flex-direction: column;
+    }
+
+    // Les éléments de date et booléens s'empilent.
+    .form-row-dates-booleans-detail {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    // La cellule URL prend toute la largeur sur mobile.
+    .url-cell {
+      min-width: 100%;
+    }
+
+  }
+
+  // Bloc spécifique au slide toggle avec un aspect de carte légère.
+  .slide-toggle-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border-left: 3px solid $proteger;
+    font-size: 0.95rem;
+    height: 33px;
+    width: fit-content;
+  }
+
+  // Conteneur principal du formulaire en colonne.
+  .mfu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  // Dernier ajustement responsive pour les lignes.
+  @media (max-width: 768px) {
+    // Une seule colonne quand l'écran est étroit.
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+}

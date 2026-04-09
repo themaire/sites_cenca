@@ -9,8 +9,28 @@
   min-height: 100vh;
 }
 .proteger {
-  padding-bottom: 15px;
-  @include bandeau($couleur-faune);
+  background-color: $couleur-faune;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 25px;
+  min-height: 100vh;
+  z-index: 10;
+}
+
+.proteger-text {
+  // Texte vertical fixe pour garder le libelle visible pendant le scroll
+  display: block;
+  position: fixed;
+  top: 33vh;
+  left: 0;
+  width: 25px;
+  z-index: 11;
+  writing-mode: vertical-lr;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  text-align: end;
+  @include Typo($p16, $gras, white);
 }
 .sites-enfants {
   width: 100%;

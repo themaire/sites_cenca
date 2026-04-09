@@ -7,17 +7,12 @@
     nbObjectifs : {{ nbObjectifs }}<br/><br/> -->
 
     <!-- Affichage du bouton ajouter si inactif, sinon on affiche les boutons d'édition -->
-    <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive && nbObjectifs === 0">
-        <b>
-            Nouvel element :
-            <!-- <ng-container *ngTemplateOutlet="add"></ng-container> -->
-            <ng-container *ngIf="nbObjectifs === 0; then add"></ng-container>
-        </b>
-    </ng-container>
+    <ng-container *ngIf="icone === 'add' && !isEditActive && !isAddActive && nbObjectifs === 0; then add"></ng-container>
 
-    <ng-container *ngIf="nbObjectifs === -1 || isEditActive || isAddActive">
+<ng-container *ngIf="nbObjectifs === -1 || isEditActive || isAddActive || !isFormValid">
         <ng-container *ngTemplateOutlet="edit"></ng-container>
     </ng-container>
+
 
 
 </div>

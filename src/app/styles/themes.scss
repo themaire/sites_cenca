@@ -61,9 +61,44 @@ $custom-red: (
   )
 );
 
+// Palette orange pour "proteger" basée sur la couleur $couleur-faune
+$custom-proteger: (
+  50: lighten($orangeC, 15%),   // Très clair
+  100: $orangeC,                // #fec700 (clair)
+  200: lighten($orangeM, 5%),   // Moyennement clair
+  300: $orangeM,                // #b44917 (moyen)
+  400: darken($orangeM, 5%),    // Moyennement foncé
+  500: $proteger,               // #d77813 (principal - ton proteger)
+  600: darken($proteger, 10%),  // Foncé
+  700: darken($proteger, 20%),  // Très foncé
+  800: darken($proteger, 30%),  // Ultra foncé
+  900: darken($proteger, 40%),  // Le plus foncé
+  A100: $orangeC,               // #fec700 (accent clair)
+  A200: $orangeM,               // #b44917 (accent moyen)
+  A400: $proteger,              // #d77813 (accent foncé)
+  A700: darken($proteger, 15%), // Accent très foncé
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(white, 0.87),
+    400: rgba(white, 0.87),
+    500: white,                  // Texte blanc sur ton proteger
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: rgba(white, 0.87),
+    A400: white,
+    A700: white,
+  )
+);
+
 // Création des palettes
 $gerer-palette: mat.m2-define-palette($custom-gerer);
 $red-palette: mat.m2-define-palette($custom-red);
+$proteger-palette: mat.m2-define-palette($custom-proteger);
 
 // Thème associé à la palette gerer
 $gerer-theme: mat.m2-define-light-theme((
