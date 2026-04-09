@@ -16,6 +16,16 @@
   @include bandeau($couleur-faune);
 }
 
+// Couleur des radio buttons de filtrage des actes 
+:host ::ng-deep .radio-buttons .mat-mdc-radio-button {
+  --mdc-radio-selected-icon-color: #{$proteger} !important;
+  --mdc-radio-selected-hover-icon-color: #{$proteger} !important;
+  --mdc-radio-selected-focus-icon-color: #{$proteger} !important;
+  --mdc-radio-selected-pressed-icon-color: #{$proteger} !important;
+  --mat-radio-checked-ripple-color: #{rgba($proteger, 0.22)} !important;
+  --mat-radio-ripple-color: #{rgba($proteger, 0.14)} !important;
+}
+
 // Barre des actions d'édition et d'enregistrement.
 .edition {
   display: flex;
