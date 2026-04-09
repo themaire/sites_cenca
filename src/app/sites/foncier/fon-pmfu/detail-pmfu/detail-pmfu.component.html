@@ -188,7 +188,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label>Commune</mat-label>
+            <mat-label>Commune principale</mat-label>
             <ng-container *ngIf="isEditPmfu; else communeReadonly">
               <input type="text" matInput [formControl]="communeCtrl" [matAutocomplete]="auto" #trigger="matAutocompleteTrigger" (focus)="trigger.openPanel()" [disabled]="isCommuneDisabled" />
               <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCommune">
@@ -428,7 +428,7 @@
         <div class="form-row">
           
           <mat-form-field appearance="fill">
-            <mat-label>Échéances</mat-label>
+            <mat-label>Échéance prochaine étape</mat-label>
             <ng-container *ngIf="isEditPmfu; else echeancesReadonly">
               <input matInput [matDatepicker]="echeancesPicker" formControlName="pmfu_echeances" />
             </ng-container>

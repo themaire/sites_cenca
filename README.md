@@ -19,6 +19,12 @@ SiteCenca est une application Angular générée avec [Angular CLI](https://gith
   - [Contribuer](#contribuer)
   - [Support](#support)
   - [Ressources supplémentaires](#ressources-supplémentaires)
+  - [Faits marquants et enjeux du projet](#faits-marquants-et-enjeux-du-projet)
+    - [Interopérabilité](#interopérabilité)
+    - [Expérience utilisateur](#expérience-utilisateur)
+    - [MapComponent : un composant clé](#mapcomponent--un-composant-clé)
+    - [Extensibilité et modularité](#extensibilité-et-modularité)
+    - [Fonctionnalités phares et enjeux techniques](#fonctionnalités-phares-et-enjeux-techniques)
   - [Architecture des composants](#architecture-des-composants)
   - [Ci/Cd](#cicd)
 
@@ -142,6 +148,36 @@ Cypress Documentation
 
 ---
 
+
+---
+
+
+## Faits marquants et enjeux du projet
+
+### Interopérabilité
+
+L’interopérabilité est la contrainte numéro 1 du projet. L’application doit cohabiter avec l’interface historique sous MS Access, encore utilisée par les collègues tant que la migration n’est pas complète. Toute l’architecture frontend et backend a été pensée pour permettre une transition progressive, garantir la cohérence des données et faciliter l’intégration avec les outils existants.
+
+### Expérience utilisateur
+
+L’expérience utilisateur est au cœur du projet. L’interface a été conçue pour être la plus simple et intuitive possible, afin d’accompagner des utilisateurs peu familiers avec l’informatique. L’objectif est de rendre la saisie et la consultation des données agréables, fiables et rapides, là où l’ancienne solution générait de la frustration et des erreurs.
+
+### MapComponent : un composant clé
+
+Le composant MapComponent, initialement prévu pour afficher simplement le contour géographique d’un site, est devenu le module le plus complexe de l’application. Il gère désormais l’affichage dynamique de multiples couches cartographiques, la synchronisation avec d’autres modules (sélection, édition), et intègre de nombreuses optimisations de performance et de gestion d’état.
+
+### Extensibilité et modularité
+
+Le projet a été pensé comme une plateforme modulaire, capable d’accueillir de nouvelles fonctionnalités au fil de la migration et au-delà. Chaque module (authentification, administration, gestion de fichiers, cartographie, etc.) est indépendant et facilement extensible, ce qui permet d’ajouter ou de modifier des fonctionnalités sans remettre en cause l’ensemble.
+
+### Fonctionnalités phares et enjeux techniques
+
+- **Gestion avancée des fichiers** : explorateur multi-formats (PDF, DOCX, images…), suppression sécurisée, galerie d’images, rafraîchissement automatique.
+- **Synchronisation frontend-backend** : cohérence des données, gestion des droits, sécurité (JWT, intercepteurs HTTP).
+- **Performance** : optimisation des appels API, lazy loading, pagination côté serveur, gestion efficace des gros volumes de données.
+- **Gestion d’état réactive** : usage intensif d’Observables, BehaviorSubject, logique de rafraîchissement automatique.
+- **Sécurité et configuration** : adaptation dynamique aux environnements (Windows/Linux), configuration centralisée des endpoints.
+- **Bonnes pratiques** : séparation container/présentation, interfaces TypeScript, gestion d’erreurs, tests unitaires, documentation technique riche.
 
 ---
 
