@@ -1,0 +1,220 @@
+@use '@angular/material' as mat;
+@import "../../../../../styles/themes.scss";
+@import "../../../../../styles/mixins.scss";
+@import "../../../../../styles/variables.scss";
+
+// Thème Material local appliqué à la vue des parcelles.
+$local-theme: mat.m2-define-light-theme((color: (primary: $proteger-palette, accent: mat.m2-define-palette(mat.$m2-amber-palette), warn: mat.m2-define-palette(mat.$m2-red-palette),)));
+
+// Application du thème au composant racine.
+:host {
+  @include mat.all-component-themes($local-theme);
+}
+
+// Conteneur principal de la page parcelles.
+.parcelles-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-size: 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px;
+  background-color: white;
+}
+
+// En-tête avec le titre et les boutons d'action.
+.button-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+
+    // Centre visuellement le titre.
+    .title-container {
+      text-align: center;
+    }
+
+  // Titre principal de la vue.
+  .title-wrapper h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+}
+
+// Formulaire principal de saisie des parcelles.
+.parcelle-form {
+  // Ligne de quatre champs.
+  .form-row-four {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+
+    // Cas particulier de la ligne en cascade.
+    &.cascade-row {
+      mat-form-field .mat-mdc-form-field {
+        height: 56px;
+      }
+    }
+  }
+
+  // Ligne à deux colonnes pour le type et le propriétaire.
+  .form-row-two {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  // Ligne dédiée aux booléens et au champ de détail.
+  .form-row-booleans-detail {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+
+    // Bloc visuel d'un booléen.
+    .boolean-field {
+      flex: 0 0 140px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border-left: 3px solid $proteger;
+      font-size: 0.9rem;
+      height: 80px;
+      box-sizing: border-box;
+
+      // Le toggle se pousse à droite dans le bloc.
+      mat-slide-toggle {
+        margin-left: auto;
+      }
+    }
+
+    // Champ de détail qui prend le reste de la largeur.
+    .detail-field {
+      flex: 1;
+      min-width: 200px;
+    }
+  }
+}
+
+// Bloc générique des messages de validation.
+.validation-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.filtre {
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  width : 330px;
+}
+
+// Message affiché pendant la validation.
+.validation-message.validating {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-left: 4px solid #2196f3;
+  color: #1565c0;
+}
+
+// Message lorsque la validation est réussie.
+.validation-message.success {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e8 100%);
+  border-left: 4px solid #4caf50;
+  color: #2e7d32;
+}
+
+// Message lorsque la validation échoue.
+.validation-message.error {
+  background: linear-gradient(135deg, #fce4ec 0%, #ffebee 100%);
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+// Table pleine largeur.
+.parcelles-table table {
+  width: 100%;
+}
+
+// Survol des lignes cliquables.
+.clickable-row:hover {
+  background-color: #f5f5f5;
+}
+
+// Alternance de fond pour la lisibilité.
+.even-row { background-color: white; }
+.odd-row { background-color: #f8f9fa; }
+
+// Message d'absence de résultat.
+.no-parcelles {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+// Centrage du titre dans la vue liste.
+.parcelles-list-view .button-title.center-title {
+  position: relative;
+  justify-content: center;
+  gap: 0;
+}
+
+// Déplacement des boutons à gauche.
+.parcelles-list-view .button-title.center-title .form-buttons {
+  position: absolute;
+  left: 0;
+}
+
+// Astuce de centrage visuel du titre malgré les boutons.
+.parcelles-list-view .button-title.center-title .title-container {
+  flex: 1;
+  padding-left: 50%;
+  padding-right: 50%;
+  margin-left: -50%;
+  margin-right: -50%;
+}
+
+// Élément fantôme pour équilibrer la ligne.
+.parcelles-list-view .dummy-right {
+  display: none;
+}
+
+// Couleur du bouton de suppression au survol.
+.supprimer-btn {
+  :hover {
+    color: red;
+  }
+}
+
+// Boutons de suppression communs au composant.
+.suppression {
+  @include suppression-btn();
+}
+
+// Réorganisation des champs sur écran étroit.
+@media (max-width: 768px) {
+  .form-row-four, .form-row-two {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-row-booleans-detail {
+    flex-direction: column !important;
+  }
+
+  .boolean-field {
+    justify-content: flex-start;
+  }
+}
+

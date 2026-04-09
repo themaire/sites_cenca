@@ -1,0 +1,72 @@
+@use '@angular/material' as mat;
+@import "../../../../styles/themes.scss";
+@import "../../../../styles/mixins.scss";
+@import "../../../../styles/variables.scss";
+
+:host {
+  // Style de base du dialogue de rattachement multi-sites.
+  display: block;
+  color: #1f2a37;
+}
+
+:host ::ng-deep .mat-mdc-dialog-title {
+  margin: 0;
+  padding: 16px 20px 8px;
+  color: #1f2a37;
+  font-weight: 700;
+  border-bottom: 1px solid #e6ebf2;
+}
+
+:host ::ng-deep .mat-mdc-dialog-content {
+  margin: 0;
+  padding: 16px 20px;
+}
+
+:host ::ng-deep .mat-mdc-dialog-actions {
+  margin: 0;
+  padding: 10px 20px 16px;
+  border-top: 1px solid #e6ebf2;
+}
+
+:host ::ng-deep .mat-mdc-dialog-actions .mat-mdc-raised-button {
+  background-color: $proteger;
+  color: #ffffff;
+}
+
+:host ::ng-deep .mat-mdc-dialog-actions .mat-mdc-button {
+  color: #3e4a59;
+}
+
+.content {
+  min-width: 320px;
+  padding-top: 8px;
+}
+
+.site-field {
+  width: 100%;
+}
+
+:host ::ng-deep .site-field .mdc-text-field--outlined {
+  background-color: #ffffff;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.empty {
+  margin: 8px 0 0;
+  color: #666;
+}
+
+.titre {
+  color: #1f2a37;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}

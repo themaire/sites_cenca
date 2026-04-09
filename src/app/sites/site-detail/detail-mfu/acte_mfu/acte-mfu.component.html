@@ -1,0 +1,198 @@
+<mat-dialog-content class="dialogue">
+  <div class="conteneur-acte-mfu">
+    <div class="proteger"><span class="proteger-text">Protéger</span></div>
+    <div class="acte-mfu">
+
+      <!-- Indicateur de chargement -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement...</p>
+      </div>
+
+      <!-- Onglets principaux : Acte et Parcelles -->
+      <mat-tab-group *ngIf="!isLoading" class="main-tabs" animationDuration="200ms">
+
+        <!-- Onglet 1 : Acte MFU -->
+        <mat-tab label="Acte">
+          <div class="tab-content">
+            <ng-container *ngTemplateOutlet="acteContent"></ng-container>
+          </div>
+        </mat-tab>
+
+        <!-- Onglet 2 : Parcelles (uniquement pour les actes existants) -->
+        <mat-tab label="Parcelles" *ngIf="!newMfu && resolvedActeUuid">
+          <div class="tab-content">
+            <app-parcelle-mfu [uuidActe]="resolvedActeUuid" [isEditModeParent]="isEditMfu">
+            </app-parcelle-mfu>
+          </div>
+        </mat-tab>
+
+
+      </mat-tab-group>
+
+    </div>
+  </div>
+</mat-dialog-content>
+
+<!-- Contenu de l'onglet Acte -->
+<ng-template #acteContent>
+  <div class="button-title" [class.center-title]="newMfu">
+    <!-- 1er élément -->
+    <div class="form-buttons" *ngIf="mfuForm">
+      <app-form-buttons [isEditActive]="isEditMfu || newMfu" icone="edit" [theme]="'proteger'" label="Modifier cet acte"
+        [isFormValid]="mfuForm ? mfuForm.valid : false" (toggleAction)="toggleEditMfu($event)" (onSubmit)="onSubmit()">
+      </app-form-buttons>
+    </div>
+
+    <!-- Bouton d'ajout d'un acte à un site -->
+    <div class="form-buttons" *ngIf="!newMfu">
+      <app-form-buttons [isEditActive]="false" [isAddActive]="false" [isFormValid]="true" icone="add" theme="proteger" label="Rattacher cet acte à un site"
+        (toggleAction)="openAttachSiteDialog()">
+      </app-form-buttons>
+    </div>
+
+    <!-- 2e élément -->
+    <div class="title-container">
+      <ng-container *ngTemplateOutlet="newMfu ? newTitle : title"></ng-container>
+    </div>
+
+    <!-- 3e élément (optionnel) : visible uniquement pour un acte existant -->
+    <div class="suppression" *ngIf="!newMfu">
+      <button mat-button (click)="deleteItemConfirm()">Supprimer l'acte</button>
+    </div>
+
+    <ng-template #title>
+      <div class="title-wrapper">
+        <h2 *ngIf="!isEditMfu">Consultation de l'acte MFU - {{ acteLite.nom }} </h2>
+        <h2 *ngIf="isEditMfu">Modification de l'acte MFU - {{ acteLite.nom }} </h2>
+      </div>
+    </ng-template>
+
+    <ng-template #newTitle>
+      <h2 *ngIf="newMfu">Création d'un nouvel acte MFU</h2>
+    </ng-template>
+  </div>
+
+  <!-- Formulaire MFU - GROUPÉ PAR TYPE -->
+  <div class="mfu-form-container" *ngIf="mfuForm">
+    <form [formGroup]="mfuForm" class="mfu-form">
+
+      <div class="form-section">
+
+        <!-- Ligne 1: Type | Notaire | Coût (3 colonnes) -->
+        <div class="form-row-three">
+          <mat-form-field class="form-field-third">
+            <mat-label>Type</mat-label>
+            <ng-container *ngIf="isEditMfu; else typeActeReadonly">
+              <mat-select formControlName="typ_mfu">
+                <mat-option *ngFor="let type of typeActeList" [value]="type.cd_type">
+                  {{ type.libelle }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
+            <button *ngIf="isEditMfu && mfuForm.get('typ_mfu')?.value" matSuffix mat-icon-button aria-label="Effacer"
+              class="clear-btn" (click)="mfuForm.get('typ_mfu')?.setValue(null); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <ng-template #typeActeReadonly>
+              <input matInput [value]="formService.getLibelleByCdType(mfuForm.get('typ_mfu')?.value, typeActeList)"
+                readonly>
+            </ng-template>
+          </mat-form-field>
+
+
+          <mat-form-field class="form-field-third">
+            <mat-label>Notaire</mat-label>
+            <input matInput formControlName="notaire" placeholder="Notaire" [readonly]="!isEditMfu">
+          </mat-form-field>
+          <mat-form-field class="form-field-third">
+            <mat-label>Coût</mat-label>
+            <input matInput formControlName="cout" type="number" placeholder="Coût" [readonly]="!isEditMfu">
+          </mat-form-field>
+        </div>
+
+        <!-- Ligne 2 : DATES + BOOLEANS + DETAIL RECONDUCTION (sur une ligne) -->
+        <div class="form-row-dates-booleans-detail">
+          <mat-form-field class="date-field">
+            <mat-label>Date début</mat-label>
+            <input matInput [matDatepicker]="pickerDebut" formControlName="debut" [readonly]="!isEditMfu">
+            <mat-datepicker-toggle matSuffix [for]="pickerDebut" *ngIf="isEditMfu || newMfu"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDebut></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field class="date-field">
+            <mat-label>Date fin</mat-label>
+            <input matInput [matDatepicker]="pickerFin" formControlName="fin" [readonly]="!isEditMfu">
+            <mat-datepicker-toggle matSuffix [for]="pickerFin" *ngIf="isEditMfu || newMfu"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+          </mat-form-field>
+
+          <div class="boolean-field acte-valide">
+            Acte valide : <mat-slide-toggle formControlName="validite"
+              [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
+          </div>
+
+          <div class="boolean-field tacite">
+            Tacite reconduction : <mat-slide-toggle formControlName="tacit_rec"
+              [disabled]="!isEditMfu && !newMfu"></mat-slide-toggle>
+          </div>
+
+          <mat-form-field class="detail-rec-field">
+            <mat-label>Détail reconduction</mat-label>
+            <input matInput formControlName="detail_rec" placeholder="Détail reconduction" [readonly]="!isEditMfu">
+          </mat-form-field>
+        </div>
+
+        <!-- Ligne 3 : URL | Lien de téléchargement | Remarque (3 colonnes) -->
+        <div class="form-row-three url-row">
+          <!-- Cellule URL (flex 0) -->
+          <mat-form-field class="url-cell" *ngIf="isEditMfu || newMfu">
+            <mat-label>URL document</mat-label>
+            <input matInput formControlName="url" placeholder="URL vers le document" [readonly]="!isEditMfu">
+          </mat-form-field>
+
+          <!-- Cellule téléchargement (flex 1) -->
+          <div class="download-cell" *ngIf="!newMfu && mfuForm.get('url')?.value">
+            📎 <a [href]="mfuForm.get('url')?.value" target="_blank">Télécharger l'acte</a>
+          </div>
+
+          <!-- Cellule remarque (flex 2) : prend l'espace restant -->
+          <mat-form-field class="remarque-cell">
+            <mat-label>Remarque</mat-label>
+            <textarea matInput formControlName="remarque" rows="2" placeholder="Remarques"
+              [readonly]="!isEditMfu"></textarea>
+          </mat-form-field>
+        </div>
+
+
+
+
+
+      </div>
+
+    </form>
+
+    <div class="attached-sites-block" *ngIf="!newMfu && !isEditMfu">
+      <h3>Sites rattachés à cet acte</h3>
+
+      <div class="chips-loading" *ngIf="isLoadingAttachedSites">
+        <mat-spinner diameter="26"></mat-spinner>
+        <span>Chargement des sites rattachés...</span>
+      </div>
+
+      <mat-chip-set *ngIf="!isLoadingAttachedSites" aria-label="Sites rattachés a l'acte">
+        <mat-chip
+          *ngFor="let chip of attachedSiteChips"
+          [removable]="chip.removable"
+          [class.removable-chip]="chip.removable"
+          (removed)="removeAttachedSite(chip)">
+          {{ chip.nom_site }}
+          <button matChipRemove *ngIf="chip.removable" aria-label="Supprimer le site rattaché">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-chip>
+        <mat-chip *ngIf="!attachedSiteChips.length" class="empty-chip">Aucun site rattaché à cet acte</mat-chip>
+      </mat-chip-set>
+    </div>
+  </div>
+</ng-template>

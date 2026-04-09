@@ -1,0 +1,159 @@
+@use '@angular/material' as mat;
+
+// Import des couleurs du thème global du projet.
+@import "../../../../styles/themes.scss";
+
+// Import des mixins partagés pour éviter de répéter les mêmes styles.
+@import "../../../../styles/mixins.scss";
+
+// Import des variables de couleurs et de tailles utilisées dans ce composant.
+@import "../../../../styles/variables.scss";
+
+:host {
+  // Force la couleur de focus Material en orange (Proteger).
+  --mdc-filled-text-field-active-indicator-color: #{$proteger};
+  --mdc-filled-text-field-focus-active-indicator-color: #{$proteger};
+  --mdc-filled-text-field-focus-label-text-color: #{$proteger};
+  --mdc-filled-text-field-caret-color: #{$proteger};
+
+  --mdc-outlined-text-field-focus-outline-color: #{$proteger};
+  --mdc-outlined-text-field-focus-label-text-color: #{$proteger};
+  --mdc-outlined-text-field-caret-color: #{$proteger};
+
+  --mat-select-focused-arrow-color: #{$proteger};
+  --mat-select-enabled-arrow-color: #{$proteger};
+}
+
+// Fond de survol/selection des options en orange clair.
+:host ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled),
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background-color: rgba($proteger, 0.16) !important;
+}
+
+.conteneur-parcelle-mfu {
+  padding: 20px;
+  min-width: 500px;
+  max-width: 800px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  
+  p {
+    margin-top: 16px;
+    color: #666;
+  }
+}
+
+.parcelle-content {
+  .button-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+    
+    &.center-title {
+      justify-content: center;
+    }
+    
+    .form-buttons {
+      display: flex;
+      align-items: center;
+    }
+    
+    .title-container {
+      flex: 1;
+      min-width: 200px;
+      
+      .title-wrapper {
+        h2 {
+          margin: 0;
+          font-size: 1.25rem;
+          font-weight: 500;
+          color: #333;
+        }
+      }
+    }
+    
+    .suppression {
+      button {
+        color: #f44336;
+      }
+    }
+  }
+}
+
+.parcelle-form-container {
+  .parcelle-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      
+      mat-form-field {
+        flex: 1;
+        min-width: 150px;
+        
+        &.full-width {
+          flex: 1 1 100%;
+        }
+      }
+      
+      .slide-toggle-field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 0;
+        
+        mat-label {
+          color: #d11717;
+        }
+        
+        mat-slide-toggle {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+}
+
+// Styles pour mobile
+@media (max-width: 600px) {
+  .conteneur-parcelle-mfu {
+    min-width: auto;
+    padding: 12px;
+  }
+  
+  .parcelle-content .button-title {
+    flex-direction: column;
+    align-items: flex-start;
+    
+    .title-container {
+      order: -1;
+    }
+    
+    .suppression {
+      width: 100%;
+      text-align: right;
+    }
+  }
+  
+  .parcelle-form-container .parcelle-form .form-row {
+    flex-direction: column;
+    
+    mat-form-field {
+      width: 100%;
+    }
+  }
+}
+

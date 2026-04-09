@@ -1,0 +1,163 @@
+<div class="site-parent">
+  <div class="proteger"></div>
+  <p>Protéger</p>
+
+  <div class="table-container">
+    <!-- Bloc ajoute pour rattacher un acte existant a un ou plusieurs sites. -->
+    <div class="attach-panel">
+      <h2>Rattacher un acte à un site existant</h2>
+      <p>
+        Les actes restent attachés à leur site principal et peuvent maintenant être liés à plusieurs sites.
+      </p>
+
+      <div class="attach-form">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Acte</mat-label>
+          <mat-select
+            panelClass="acte-select-panel"
+            [(ngModel)]="selectedActeUuid"
+            (ngModelChange)="onActeSelectionChange($event)"
+            (openedChange)="onActeSelectOpened($event)"
+          >
+            <mat-option class="search-option" [value]="selectSearchOptionValue">
+              <input
+                #acteSearchInput
+                class="select-inline-search-input acte-select-search-input"
+                [value]="acteSearch"
+                (input)="acteSearch = acteSearchInput.value"
+                (keydown)="$event.stopPropagation()"
+                (click)="$event.stopPropagation()"
+                placeholder="Rechercher un acte..."
+              />
+            </mat-option>
+            <mat-option *ngFor="let acte of filteredActesForSelect" [value]="acte.uuid_acte">
+              {{ acte.typ_mfu_libelle || acte.typ_mfu || 'Acte' }} - {{ toDateString(acte.debut) }} - {{ acte.site_principal_nom || 'Site inconnu' }}
+            </mat-option>
+          </mat-select>
+          <button
+            *ngIf="selectedActeUuid"
+            matSuffix
+            mat-icon-button
+            aria-label="Effacer la sélection de l'acte"
+            class="clear-btn"
+            (click)="clearActeSelection(); $event.stopPropagation()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Site</mat-label>
+          <mat-select
+            panelClass="site-select-panel"
+            [(ngModel)]="selectedSiteUuids"
+            (ngModelChange)="onSiteSelectionChange($event)"
+            (openedChange)="onSiteSelectOpened($event)"
+            multiple
+          >
+            <mat-option class="search-option" [value]="selectSearchOptionValue">
+              <input
+                #siteSearchInput
+                class="select-inline-search-input site-select-search-input"
+                [value]="siteSearch"
+                (input)="siteSearch = siteSearchInput.value"
+                (keydown)="$event.stopPropagation()"
+                (click)="$event.stopPropagation()"
+                placeholder="Rechercher un site..."
+              />
+            </mat-option>
+            <mat-option *ngFor="let site of filteredSitesForSelect" [value]="site.uuid_site">
+              {{ site.nom_site }}
+            </mat-option>
+          </mat-select>
+          <button
+            *ngIf="selectedSiteUuids.length"
+            matSuffix
+            mat-icon-button
+            aria-label="Effacer la sélection des sites"
+            class="clear-btn"
+            (click)="clearSiteSelection(); $event.stopPropagation()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          class="attach-button"
+          (click)="attachSelectedActeToSite()"
+          [disabled]="isSubmitting"
+        >
+          <mat-icon>add_link</mat-icon>
+          Ajouter le rattachement
+        </button>
+      </div>
+    </div>
+
+
+      <!-- Bloc de filtre ajoute pour rechercher et filtrer la table des actes. -->
+      <div class="radio-buttons">
+        <mat-form-field class="filtre" appearance="outline">
+        <mat-label>Mots-clés</mat-label>
+        <input
+          matInput
+          #filterInput
+          [value]="filterValue"
+          (input)="applyFilter(filterInput.value)"
+          placeholder="Type, date, site..."
+        />
+      </mat-form-field>
+
+        <mat-radio-group [(ngModel)]="filterValidite" (change)="applicationFiltre()">
+          <mat-radio-button value="tous">Tous les actes ({{ actesTotal }})</mat-radio-button>
+          <mat-radio-button value="valide">Actes valides ({{ actesValides }})</mat-radio-button>
+          <mat-radio-button value="invalide">Actes invalides ({{ actesInvalides }})</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+    <div class="table">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+        <ng-container matColumnDef="typ_mfu">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type d'acte</th>
+          <td mat-cell *matCellDef="let element">{{ element.typ_mfu_libelle || element.typ_mfu || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="debut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Debut</th>
+          <td mat-cell *matCellDef="let element">{{ toDateString(element.debut) || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fin">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fin</th>
+          <td mat-cell *matCellDef="let element">{{ toDateString(element.fin) || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="site_principal_nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Site principal</th>
+          <td mat-cell *matCellDef="let element">{{ element.site_principal_nom || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nb_sites">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nb. sites lies</th>
+          <td mat-cell *matCellDef="let element">{{ element.nb_sites || 0 }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td [attr.colspan]="displayedColumns.length">
+            Aucun acte ne correspond au filtre actuel.
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator
+        [pageSize]="20"
+        [pageSizeOptions]="getActesPageSizeOptions()"
+        showFirstLastButtons
+        class="paginator"
+      ></mat-paginator>
+    </div>
+  </div>
+</div>

@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 import {
   MatDialog, 
@@ -29,8 +30,9 @@ import { Overlay } from '@angular/cdk/overlay';
             MatTableModule, 
             MatTooltipModule, 
             MatIconModule,
-
-            MatFormFieldModule, MatInputModule, 
+            MatButtonModule,
+            MatFormFieldModule, 
+            MatInputModule, 
   ],
   templateUrl: './detail-projets.component.html',
   styleUrls: ['./detail-projets.component.scss', '../../../shared/form-buttons/form-buttons.component.scss']

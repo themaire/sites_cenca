@@ -1,0 +1,202 @@
+<mat-dialog-content class="dialogue">
+  <div class="conteneur-parcelle-mfu">
+    
+    <!-- Loading spinner -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Chargement...</p>
+    </div>
+
+    <!-- Contenu du formulaire -->
+    <div *ngIf="!isLoading" class="parcelle-content">
+      
+      <!-- En-tête avec boutons et titre -->
+      <div class="button-title" [class.center-title]="newParcelle">
+        <!-- 1er element -->
+        <div class="form-buttons" *ngIf="parcelleForm">
+          <app-form-buttons 
+            [isEditActive]="isEditParcelle || newParcelle" 
+            icone="edit" 
+            [theme]="'gerer'"
+            [isFormValid]="parcelleForm ? parcelleForm.valid : false" 
+            (toggleAction)="toggleEditParcelle($event)"
+            (onSubmit)="onSubmit()">
+          </app-form-buttons>
+        </div>
+
+        <!-- 2eme element -->
+        <div class="title-container">
+          <ng-container *ngTemplateOutlet="newParcelle ? newTitle : title"></ng-container>
+        </div>
+
+        <!-- 3eme element (optional) - only show for existing parcels, not new ones -->
+        <div class="suppression" *ngIf="!newParcelle">
+          <button mat-button (click)="deleteItemConfirm()">Supprimer la parcelle</button>
+        </div>
+
+        <ng-template #title>
+          <div class="title-wrapper">
+            <h2 *ngIf="!isEditParcelle">Consultation de la parcelle - {{ getParcelleDisplayName() }}</h2>
+            <h2 *ngIf="isEditParcelle">Modification de la parcelle - {{ getParcelleDisplayName() }}</h2>
+          </div>
+        </ng-template>
+        
+        <ng-template #newTitle>
+          <h2 *ngIf="newParcelle">Création d'une nouvelle parcelle</h2>
+        </ng-template>
+      </div>
+
+      <!-- Formulaire parcelle -->
+      <div class="parcelle-form-container" *ngIf="parcelleForm">
+        <form [formGroup]="parcelleForm" class="parcelle-form">
+
+          <!-- Cascade: Département, Commune, Section, Numéro -->
+          <div class="form-row">
+            <!-- Département -->
+            <mat-form-field appearance="outline">
+              <mat-label>Département</mat-label>
+              <mat-select (selectionChange)="onDepartementChange($event.value)" [value]="selectedDepartement" [disabled]="!isEditParcelle && !newParcelle">
+                <mat-option *ngFor="let dep of departements" [value]="dep.code">
+                  {{ dep.nom }}
+                </mat-option>
+              </mat-select>
+              <button *ngIf="selectedDepartement && (isEditParcelle || newParcelle)" matSuffix mat-icon-button aria-label="Clear" class="clear-btn"
+                (click)="onDepartementChange(''); $event.stopPropagation()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <!-- Commune -->
+            <mat-form-field appearance="outline" *ngIf="selectedDepartement">
+              <mat-label>Commune{{ isLoadingCommunes ? ' (chargement...)' : '' }}</mat-label>
+              <ng-container *ngIf="isEditParcelle || newParcelle">
+                <input matInput [matAutocomplete]="communeAuto" [value]="selectedCommune" (input)="filterCommunes($event)">
+                <mat-autocomplete #communeAuto="matAutocomplete" (optionSelected)="onCommuneChange($event.option.value)">
+                  <mat-option *ngFor="let com of communes" [value]="com.code">
+                    {{ com.code }} - {{ com.nom }}
+                  </mat-option>
+                </mat-autocomplete>
+              </ng-container>
+              <ng-container *ngIf="!isEditParcelle && !newParcelle">
+                <input matInput [value]="selectedCommune" readonly>
+              </ng-container>
+              <button *ngIf="selectedCommune && (isEditParcelle || newParcelle)" matSuffix mat-icon-button aria-label="Clear" class="clear-btn"
+                (click)="onCommuneChange(''); $event.stopPropagation()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <!-- Section -->
+            <mat-form-field appearance="outline" *ngIf="selectedCommune">
+              <mat-label>Section{{ isLoadingSections ? ' (chargement...)' : '' }}</mat-label>
+              <mat-select [value]="selectedSection" (selectionChange)="onSectionChange($event.value)" formControlName="section" [disabled]="isLoadingSections || (!isEditParcelle && !newParcelle)">
+                <mat-option *ngFor="let sec of sections" [value]="sec">{{ sec }}</mat-option>
+              </mat-select>
+              <button *ngIf="selectedSection && (isEditParcelle || newParcelle) && !isLoadingSections" matSuffix mat-icon-button aria-label="Clear" class="clear-btn"
+                (click)="onSectionChange(''); $event.stopPropagation()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <!-- Numéro -->
+            <mat-form-field appearance="outline" *ngIf="selectedSection">
+              <mat-label>Numéro{{ isLoadingNumeros ? ' (chargement...)' : '' }}</mat-label>
+              <mat-select formControlName="numero" [disabled]="isLoadingNumeros || (!isEditParcelle && !newParcelle)">
+                <mat-option *ngFor="let num of numeros" [value]="num.numero">
+                  {{ num.numero }}{{ num.contenance ? ' (' + num.contenance + ' m²)' : '' }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <!-- Code Parcelle -->
+            <mat-form-field appearance="outline">
+              <mat-label>Code Parcelle</mat-label>
+              <input matInput formControlName="code_parcelle" placeholder="Ex: 012 345 678 900" [readonly]="!isEditParcelle && !newParcelle">
+            </mat-form-field>
+
+            <!-- INSEE -->
+            <mat-form-field appearance="outline">
+              <mat-label>Code INSEE</mat-label>
+              <input matInput formControlName="insee" placeholder="Ex: 01234" [readonly]="!isEditParcelle && !newParcelle">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <!-- Prefix -->
+            <mat-form-field appearance="outline">
+              <mat-label>Préfixe</mat-label>
+              <input matInput formControlName="prefix" placeholder="Ex: 0" [readonly]="!isEditParcelle && !newParcelle">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <!-- Partie -->
+            <mat-form-field appearance="outline">
+              <mat-label>Partie</mat-label>
+              <input matInput formControlName="partie" placeholder="Ex: A" [readonly]="!isEditParcelle && !newParcelle">
+            </mat-form-field>
+
+            <!-- Surface -->
+            <mat-form-field appearance="outline">
+              <mat-label>Surface (m²)</mat-label>
+              <input matInput type="number" formControlName="surface" placeholder="Ex: 1500" [readonly]="!isEditParcelle && !newParcelle">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <!-- Propriétaire -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Propriétaire</mat-label>
+              <input matInput formControlName="proprietaire" placeholder="Nom du propriétaire" [readonly]="!isEditParcelle && !newParcelle">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <!-- Type Propriétaire -->
+            <mat-form-field appearance="outline">
+              <mat-label>Type Propriétaire</mat-label>
+              <ng-container *ngIf="isEditParcelle || newParcelle; else typeProprioReadonly">
+                <mat-select formControlName="libelle">
+                  <mat-option *ngFor="let type of typeProprioList" [value]="type.cd_type">
+                    {{ type.libelle }}
+                  </mat-option>
+                </mat-select>
+              </ng-container>
+              <ng-template #typeProprioReadonly>
+                <input matInput [value]="getLibelle(parcelleForm.get('libelle')?.value, typeProprioList)" readonly>
+              </ng-template>
+            </mat-form-field>
+
+            <!-- Validité -->
+            <div class="slide-toggle-field">
+              <mat-label>Valide :</mat-label>
+              <mat-slide-toggle formControlName="validite" *ngIf="isEditParcelle || newParcelle"></mat-slide-toggle>
+              <span *ngIf="!isEditParcelle && !newParcelle">{{ parcelleForm.get('validite')?.value ? 'Oui' : 'Non' }}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- Pour partie -->
+            <div class="slide-toggle-field">
+              <mat-label>Pour partie :</mat-label>
+              <mat-slide-toggle formControlName="pour_partie" *ngIf="isEditParcelle || newParcelle"></mat-slide-toggle>
+              <span *ngIf="!isEditParcelle && !newParcelle">{{ parcelleForm.get('pour_partie')?.value ? 'Oui' : 'Non' }}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- Remarque -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Remarque</mat-label>
+              <textarea matInput formControlName="remarque" rows="2" placeholder="Remarques sur la parcelle" [readonly]="!isEditParcelle && !newParcelle"></textarea>
+            </mat-form-field>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+

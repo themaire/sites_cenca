@@ -105,6 +105,19 @@
     @include icon(red, white);
   }
 
+  .clear-btn {
+  color: rgba(0, 0, 0, 0.54);
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #d32f2f; /* rouge Material */
+    
+    mat-icon {
+      color: #d32f2f;
+    }
+  }
+}
+
   .btn-sauvegarde-disabled {
     // Couleur fond :  normal / hover
     @include btn-icon(grey, rgb(87, 87, 87));

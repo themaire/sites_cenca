@@ -8,7 +8,16 @@ import { from, Observable, of } from 'rxjs';
 import { ApiResponse } from '../../shared/interfaces/api';
 
 // interfaces utilisées dans la promise de la fonction
-import { Extraction, ProjetMfu, ProjetsMfu, DocPmfu } from './foncier';
+import {
+  Extraction,
+  ProjetMfu,
+  ProjetsMfu,
+  DocPmfu,
+  ActeMultiSiteLite,
+  SiteLite,
+  ActeMultiSiteInsert,
+} from './foncier';
+import { ActeLite } from '../site-detail/detail-mfu/acte';
 
 @Injectable({
   providedIn: 'root',
@@ -172,5 +181,59 @@ export class FoncierService {
     const data = await fetch(this.activeUrl + subroute);
     const pmfu = (await data.json()) ?? [];
     return pmfu;
+  }
+
+  async getActesMultiSites(subroute: string = 'mfu/multi-sites/lite'): Promise<ActeMultiSiteLite[]> {
+    // Nouvelle route: liste legere des actes avec leur rattachement multi-sites.
+    return this.fetchArray<ActeMultiSiteLite>(subroute, 'getActesMultiSites');
+  }
+
+  async getMfuSitesLite(subroute: string = 'mfu/sites/lite'): Promise<SiteLite[]> {
+    return this.fetchArray<SiteLite>(subroute, 'getMfuSitesLite');
+  }
+
+  async getSitesLiteFallback(subroute: string = 'criteria/*/*/*/*/*/*'): Promise<SiteLite[]> {
+    const rows = await this.fetchArray<any>(subroute, 'getSitesLiteFallback');
+    return rows.map((row: any) => ({
+      uuid_site: row.uuid_site,
+      nom_site: row.nom,
+    }));
+  }
+
+  async getActesBySiteLite(siteUuid: string): Promise<ActeLite[]> {
+    return this.fetchArray<ActeLite>(`mfu/uuid=${siteUuid}/lite`, 'getActesBySiteLite');
+  }
+
+  private async fetchArray<T>(subroute: string, context: string): Promise<T[]> {
+    // Helper commun pour centraliser les controles de reponse API.
+    const response = await fetch(this.activeUrl + subroute);
+    let payload: unknown = null;
+
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+
+    if (!response.ok) {
+      const details = typeof payload === 'object' && payload !== null ? JSON.stringify(payload) : String(payload ?? '');
+      throw new Error(`${context}: HTTP ${response.status} ${details}`);
+    }
+
+    if (!Array.isArray(payload)) {
+      throw new Error(`${context}: réponse non itérable`);
+    }
+
+    return payload as T[];
+  }
+
+  attachActeToSite(payload: ActeMultiSiteInsert): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=actes_mfu_multi/insert`;
+    return this.http.put<ApiResponse>(url, payload).pipe(
+      catchError((error) => {
+        console.error('Erreur lors du rattachement multi-sites de l\'acte', error);
+        throw error;
+      })
+    );
   }
 }
