@@ -2,8 +2,9 @@ import { environment } from '../../../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 
 import { ApiResponse } from '../../../shared/interfaces/api';
 import { Acte, ActeLite } from './acte';
@@ -50,10 +51,12 @@ export class ActeService {
   }
 
   deleteActe(uuid_acte: string): Observable<ApiResponse> {
+    const deleteLinksUrl = `${this.activeUrl}delete/sitcenca.actes_mfu_multi/ref_uuid_acte=${uuid_acte}`;
+    const deleteActeUrl = `${this.activeUrl}delete/sitcenca.actes_mfu/uuid_acte=${uuid_acte}`;
+
     return this.http
-      .delete<ApiResponse>(
-        `${this.activeUrl}delete/sitcenca.actes_mfu/uuid_acte=${uuid_acte}`
-      )
+      .delete<ApiResponse>(deleteLinksUrl)
+      .pipe(switchMap(() => this.http.delete<ApiResponse>(deleteActeUrl)))
       .pipe(
         catchError((error) => {
           console.error('Erreur lors de la suppression de l\'acte MFU:', error);
@@ -65,10 +68,12 @@ export class ActeService {
       );
   }
 
-  detachActeFromSite(uuidActe: string, uuidSite: string): Observable<ApiResponse> {
-    // Suppression d'un lien acte-site (hors site principal).
+  detachActeFromSite(uuidActe: string, uuidSite: string, currentSiteUuid?: string): Observable<ApiResponse> {
+    // Suppression d'un lien acte-site.
     const url = `${this.activeUrl}mfu/actes-multi/ref_uuid_acte=${uuidActe}/ref_uuid_site=${uuidSite}`;
-    return this.http.delete<ApiResponse>(url).pipe(
+    const params = currentSiteUuid ? new HttpParams().set('currentSiteUuid', currentSiteUuid) : undefined;
+
+    return this.http.delete<ApiResponse>(url, { params }).pipe(
       catchError((error) => {
         console.error('Erreur lors du détachement du site de l\'acte MFU:', error);
         return of({

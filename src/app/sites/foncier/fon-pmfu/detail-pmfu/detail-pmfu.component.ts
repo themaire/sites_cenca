@@ -43,7 +43,6 @@ import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
-import 'moment/locale/fr';
 
 import { Observable, BehaviorSubject } from 'rxjs';
 
@@ -1343,7 +1342,7 @@ export class DetailPmfuComponent {
           : [];
       this.mapComponent.zoomToBbox(bboxArray);
     } else {
-      this.snackBar.open('Impossible de zoomer : bbox non disponible.', 'Fermer', { duration: 2500 });
+      this.snackBar.open('Impossible de zoomer : bbox non disponible.', 'Fermer', { duration: 3000 });
     } 
   }
 

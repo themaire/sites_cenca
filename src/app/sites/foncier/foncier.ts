@@ -88,6 +88,7 @@ export interface ActeMultiSiteLite {
   fin?: string | Date | null;
   validite?: boolean | string | null;
   site_principal_uuid?: string | null;
+  site_principal_code?: string | null;
   site_principal_nom?: string | null;
   nb_sites: number;
   sites_associes?: string;
@@ -96,6 +97,7 @@ export interface ActeMultiSiteLite {
 
 export interface SiteLite {
   uuid_site: string;
+  code_site?: string;
   nom_site: string;
 }
 

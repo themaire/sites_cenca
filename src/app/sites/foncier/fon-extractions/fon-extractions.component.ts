@@ -1,9 +1,10 @@
 import { Component, ChangeDetectorRef, OnInit, OnDestroy, signal, ViewChild } from '@angular/core';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
 import { MatDialog } from '@angular/material/dialog';
+import { Overlay } from '@angular/cdk/overlay';
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 // import { MatCheckboxModule } from '@angular/material/checkbox'; // Importer MatCheckboxModule
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
@@ -35,7 +36,6 @@ import { Extraction } from '../foncier';
     MatInputModule,
     MatProgressSpinnerModule,
     MatTableModule,
-    AsyncPipe  // Ajouté pour le spinner
   ],
   templateUrl: './fon-extractions.component.html',
   styleUrl: './fon-extractions.component.scss'
@@ -66,7 +66,8 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
     private formService: FormService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private overlay: Overlay
   ) {
     this.extractionForm = fb.group({}); // Formulaire principal vide, sera rempi avec makeExtractionForm()
   }
@@ -231,7 +232,8 @@ export class FonExtractionComponent implements OnInit, OnDestroy {
 
   openDetailDialog(extraction: Extraction): void {
     this.dialog.open(DetailExtractionComponent, {
-        data: { extraction }
+      data: { extraction },
+      scrollStrategy: this.overlay.scrollStrategies.block(),
     });
 }
 

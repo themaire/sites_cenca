@@ -8,7 +8,6 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -27,7 +26,6 @@ import { effect } from '@angular/core';
   selector: 'app-header',
   standalone: true,
   imports: [
-    RouterOutlet,
     RouterModule,
     MatButtonModule,
     MatMenuModule,
@@ -38,7 +36,6 @@ import { effect } from '@angular/core';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  // Ajout: abonnement de menu enrichi pour injecter l'entree Foncier sous Proteger.
   public logoutSubscription: Subscription | null = null;
   initials: string | null = null;
 
@@ -81,10 +78,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
-// Menu foncier dans le header
-      this.menuService.menuItems$.subscribe((items) => {
+    this.menuService.menuItems$.subscribe((items) => {
       this.menuItems[0].children = items;
-      this.addFoncierOptionToProteger();
     });
 
     // Si ce n'est pas déjà fait, charger les données
@@ -99,39 +94,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe((result) => {
         this.isMobile = result.matches;
       });
-  }
-
-  private addFoncierOptionToProteger(): void {
-    const rootMenu = this.menuItems[0];
-    if (!rootMenu?.children) {
-      return;
-    }
-
-    const protegerItem = rootMenu.children.find((item) => {
-      const hasProtegerClass =
-        item.class_color?.toLowerCase().includes('proteger') ?? false;
-      const hasProtegerName = item.name.toLowerCase().includes('proteg');
-      return hasProtegerClass || hasProtegerName;
-    });
-
-    if (!protegerItem) {
-      return;
-    }
-
-    if (!protegerItem.children) {
-      protegerItem.children = [];
-    }
-
-    const hasFoncierEntry = protegerItem.children.some(
-      (child) => child.route === '/fonciers' || child.route === 'fonciers'
-    );
-
-    if (!hasFoncierEntry) {
-      protegerItem.children.push({
-        name: 'Foncier',
-        route: '/fonciers',
-      });
-    }
   }
 
   navigateToHome() {

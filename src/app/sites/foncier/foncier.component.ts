@@ -71,9 +71,9 @@ export class FoncierComponent implements OnInit {
 
         console.log('Route modifiée:', item.route); // ← Ajoute ce log ici
 
-        // Uniformiser la carte "Actes multi-sites" pour afficher le bandeau Protéger en marron.
-        if (item.route === 'actes' || item.route === 'actes-multi-sites') {
-          item.route = 'actes';
+        // Uniformiser la carte "Actes multi-sites" et forcer la route canonique AMFU.
+        if (item.route === 'actes' || item.route === 'actes-multi-sites' || item.route === 'amfu') {
+          item.route = 'amfu';
           item.parent_name = 'Protéger';
           item.class_color = 'c-proteger';
         }
@@ -81,22 +81,6 @@ export class FoncierComponent implements OnInit {
         console.log('Filtering item:', item.name, 'opened:', item.opened);
         return item.opened === true;
       });
-
-      const hasActesMultiSites = this.foncierItems.some(
-        (item) => item.route === 'actes'
-      );
-
-      // Ajoute une carte pour les Actes Multi Sites
-      if (!hasActesMultiSites) {
-        this.foncierItems.push({
-          name: 'Actes multi-sites',
-          parent_name: 'Protéger',
-          route: 'actes',
-          description: 'Lister tous les actes et rattacher un acte à un site existant.',
-          class_color: 'c-proteger',
-          opened: true,
-        });
-      }
 
       console.log("Sous-menus chargés uniquement opened :", this.foncierItems);
     });
