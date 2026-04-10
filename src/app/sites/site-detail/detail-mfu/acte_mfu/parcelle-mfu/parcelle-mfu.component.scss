@@ -175,6 +175,13 @@ $local-theme: mat.m2-define-light-theme((color: (primary: $proteger-palette, acc
 .parcelles-list-view .button-title.center-title .form-buttons {
   position: absolute;
   left: 0;
+  margin-top: 30px;
+}
+
+.parcelles-list-view .button-title.center-title .radio-buttons {
+  left: 0;
+  position: absolute;
+  margin-top: 95px;
 }
 
 // Astuce de centrage visuel du titre malgré les boutons.
@@ -201,6 +208,7 @@ $local-theme: mat.m2-define-light-theme((color: (primary: $proteger-palette, acc
 // Boutons de suppression communs au composant.
 .suppression {
   @include suppression-btn();
+  margin-right: -20px;
 }
 
 // Réorganisation des champs sur écran étroit.
@@ -218,3 +226,43 @@ $local-theme: mat.m2-define-light-theme((color: (primary: $proteger-palette, acc
   }
 }
 
+// Adaptation des colonnes sur écran étroit.
+@media screen and (max-width: $mobile) {
+  .parcelles-table .mat-column-section,
+  .parcelles-table .mat-column-prefix,
+  .parcelles-table .mat-column-numero,
+  .parcelles-table .mat-column-surface,
+  .parcelles-table .mat-column-pour_partie,
+  .parcelles-table .mat-column-libelle_court,
+  .parcelles-table .mat-column-proprietaire,
+  .parcelles-table .mat-column-actions {
+    display: none;
+  }
+
+  .parcelles-table .mat-column-insee,
+  .parcelles-table .mat-column-code_parcelle {
+    display: table-cell;
+    white-space: normal;
+  }
+
+  .parcelles-table .mat-column-insee {
+    width: 65%;
+  }
+
+  .parcelles-table .mat-column-code_parcelle {
+    width: 35%;
+    white-space: nowrap;
+  }
+
+  .typ_mfu {
+    flex: 1 1 80px;
+    max-width: none;
+  }
+
+  // Colonnes jugées secondaires masquées sur mobile.
+  .tacit_rec,
+  .surf_totale,
+  .url {
+    display: none;
+  }
+}

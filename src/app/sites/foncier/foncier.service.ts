@@ -196,6 +196,7 @@ export class FoncierService {
     const rows = await this.fetchArray<any>(subroute, 'getSitesLiteFallback');
     return rows.map((row: any) => ({
       uuid_site: row.uuid_site,
+      code_site: row.code,
       nom_site: row.nom,
     }));
   }

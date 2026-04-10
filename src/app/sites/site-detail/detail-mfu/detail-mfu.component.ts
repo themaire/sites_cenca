@@ -208,7 +208,10 @@ export class DetailMfuComponent {
     }
 
     const dialogRef = this.dialog.open(ActeMfuComponent, {
-      data: actelite,
+      data: {
+        ...actelite,
+        currentSiteUuid: this.inputDetail?.uuid_site || actelite?.site || '',
+      },
       minWidth: '80vw',
       maxWidth: '95vw',
       height: '85vh',
@@ -219,7 +222,7 @@ export class DetailMfuComponent {
       exitAnimationDuration: '300ms',
       autoFocus: false,
       restoreFocus: false,
-      scrollStrategy: this.overlay.scrollStrategies.noop(),
+      scrollStrategy: this.overlay.scrollStrategies.block(),
     });
 
     dialogRef.afterClosed().subscribe((result) => {

@@ -274,3 +274,23 @@
     align-items: flex-start;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .table .mat-column-debut,
+  .table .mat-column-fin {
+    display: none;
+  }
+
+  .table table {
+    min-width: 520px;
+  }
+
+  .radio-buttons {
+    align-items: flex-start;
+  }
+}

@@ -45,7 +45,7 @@
     </div>
 
     <!-- Bouton d'ajout d'un acte à un site -->
-    <div class="form-buttons" *ngIf="!newMfu">
+    <div class="form-buttons" *ngIf="!newMfu && !isEditMfu">
       <app-form-buttons [isEditActive]="false" [isAddActive]="false" [isFormValid]="true" icone="add" theme="proteger" label="Rattacher cet acte à un site"
         (toggleAction)="openAttachSiteDialog()">
       </app-form-buttons>
@@ -63,8 +63,8 @@
 
     <ng-template #title>
       <div class="title-wrapper">
-        <h2 *ngIf="!isEditMfu">Consultation de l'acte MFU - {{ acteLite.nom }} </h2>
-        <h2 *ngIf="isEditMfu">Modification de l'acte MFU - {{ acteLite.nom }} </h2>
+        <h2 *ngIf="!isEditMfu">Consultation de l'acte MFU - {{ getActeHeaderLabel() }}</h2>
+        <h2 *ngIf="isEditMfu">Modification de l'acte MFU - {{ getActeHeaderLabel() }}</h2>
       </div>
     </ng-template>
 
@@ -103,11 +103,11 @@
 
           <mat-form-field class="form-field-third">
             <mat-label>Notaire</mat-label>
-            <input matInput formControlName="notaire" placeholder="Notaire" [readonly]="!isEditMfu">
+            <input matInput formControlName="notaire" [readonly]="!isEditMfu">
           </mat-form-field>
           <mat-form-field class="form-field-third">
             <mat-label>Coût</mat-label>
-            <input matInput formControlName="cout" type="number" placeholder="Coût" [readonly]="!isEditMfu">
+            <input matInput formControlName="cout" type="number" min="0" [readonly]="!isEditMfu">
           </mat-form-field>
         </div>
 
@@ -139,7 +139,7 @@
 
           <mat-form-field class="detail-rec-field">
             <mat-label>Détail reconduction</mat-label>
-            <input matInput formControlName="detail_rec" placeholder="Détail reconduction" [readonly]="!isEditMfu">
+            <input matInput formControlName="detail_rec" [readonly]="!isEditMfu">
           </mat-form-field>
         </div>
 
@@ -148,7 +148,7 @@
           <!-- Cellule URL (flex 0) -->
           <mat-form-field class="url-cell" *ngIf="isEditMfu || newMfu">
             <mat-label>URL document</mat-label>
-            <input matInput formControlName="url" placeholder="URL vers le document" [readonly]="!isEditMfu">
+            <input matInput formControlName="url" [readonly]="!isEditMfu">
           </mat-form-field>
 
           <!-- Cellule téléchargement (flex 1) -->
@@ -158,8 +158,8 @@
 
           <!-- Cellule remarque (flex 2) : prend l'espace restant -->
           <mat-form-field class="remarque-cell">
-            <mat-label>Remarque</mat-label>
-            <textarea matInput formControlName="remarque" rows="2" placeholder="Remarques"
+            <mat-label>Remarques</mat-label>
+            <textarea matInput formControlName="remarque" rows="2"
               [readonly]="!isEditMfu"></textarea>
           </mat-form-field>
         </div>
