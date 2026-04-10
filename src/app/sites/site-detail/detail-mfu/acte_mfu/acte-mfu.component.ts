@@ -22,6 +22,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { map } from 'rxjs/operators';
 import { Observable, Subscription } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { Overlay } from '@angular/cdk/overlay';
 
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 import { MatDialog, MatDialogRef, MatDialogModule, MatDialogContent, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -76,6 +77,7 @@ export const MY_DATE_FORMATS = {
 export class ActeMfuComponent implements OnInit, OnDestroy {
   private _adapter = inject(DateAdapter);
   private dialogData = inject(MAT_DIALOG_DATA);
+  private readonly openedSiteUuid = String((this.dialogData as any)?.currentSiteUuid || '');
   acteLite!: ActeLite;
   // UUID resolu pour gerer les cas ou le dialogue est ouvert avec des donnees partielles.
   resolvedActeUuid = '';
@@ -109,7 +111,8 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private overlay: Overlay
   ) {
     this.acteLite = this.dialogData;
     this.resolvedActeUuid = this.acteLite?.uuid_acte || '';
@@ -232,7 +235,15 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
 
     const hasChanges = JSON.stringify(this.mfuForm.getRawValue()) !== JSON.stringify(this.originalFormValues);
     if (!hasChanges) {
-      this.snackBar.open('Aucun changement');
+      this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
+        duration: 3000,
+        panelClass: ['snackbar-info'],
+      });
+
+      // En edition, revenir simplement a la vue consultation.
+      if (this.isEditMfu && !this.newMfu) {
+        this.toggleEditMfu('cancel');
+      }
       return;
     }
 
@@ -242,13 +253,13 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     obs.subscribe({
       next: (res) => {
         if (res?.success) {
-          this.snackBar.open('Sauvegardé', 'OK');
+          this.snackBar.open('Sauvegardé', 'OK', { duration: 3000 });
           this.dialogRef.close(true);
         } else {
-          this.snackBar.open(res?.message || 'Erreur');
+          this.snackBar.open(res?.message || 'Erreur', 'OK', { duration: 3000 });
         }
       },
-      error: () => this.snackBar.open('Erreur')
+      error: () => this.snackBar.open('Erreur', 'OK', { duration: 3000 })
     });
   }
 
@@ -258,7 +269,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
         this.acteService.deleteActe(this.resolvedActeUuid).subscribe({
           next: (res) => {
             if (res?.success) {
-              this.snackBar.open('Supprimé');
+              this.snackBar.open('Supprimé', 'OK', { duration: 3000 });
               this.dialogRef.close(true);
             }
           }
@@ -279,6 +290,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
       panelClass: 'attach-site-dialog-panel',
       autoFocus: false,
       restoreFocus: false,
+      scrollStrategy: this.overlay.scrollStrategies.block(),
       data: {
         acteUuid: this.resolvedActeUuid,
         currentSiteUuid: this.mfuForm?.get('site')?.value || this.acteLite.site,
@@ -287,7 +299,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((linked) => {
       if (linked) {
-        this.snackBar.open('Rattachement effectué.', 'OK', { duration: 2500 });
+        this.snackBar.open('Rattachement effectué.', 'OK', { duration: 3000 });
         this.loadAttachedSites();
       }
     });
@@ -314,26 +326,50 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   }
 
   removeAttachedSite(chip: { uuid_site: string; nom_site: string; removable: boolean }): void {
-    if (!chip?.removable || !chip?.uuid_site || !this.resolvedActeUuid) {
+    if (!chip?.removable || !chip?.uuid_site || !this.resolvedActeUuid || this.sameUuid(chip.uuid_site, this.getCurrentSiteUuid())) {
       return;
     }
 
-    this.acteService.detachActeFromSite(this.resolvedActeUuid, chip.uuid_site).subscribe({
-      next: (res) => {
-        if (res?.success) {
-          this.snackBar.open('Site détaché de l\'acte.', 'OK', { duration: 2500 });
-          this.loadAttachedSites();
-        } else {
-          this.snackBar.open(res?.message || 'Impossible de détacher le site.', 'OK', { duration: 3000 });
+    this.confirmationService
+      .confirm('Détacher ce site', `Détacher le site "${chip.nom_site}" de cet acte ?`, 'delete')
+      .subscribe((ok) => {
+        if (!ok) {
+          return;
         }
-      },
-      error: () => this.snackBar.open('Erreur lors du détachement.', 'OK', { duration: 3000 })
-    });
+
+        this.acteService.detachActeFromSite(this.resolvedActeUuid, chip.uuid_site, this.getCurrentSiteUuid()).subscribe({
+          next: (res) => {
+            if (res?.success) {
+              this.snackBar.open('Site détaché de l\'acte.', 'OK', { duration: 3000 });
+              this.loadAttachedSites();
+            } else {
+              this.snackBar.open(res?.message || 'Impossible de détacher le site.', 'OK', { duration: 3000 });
+            }
+          },
+          error: () => this.snackBar.open('Erreur lors du détachement.', 'OK', { duration: 3000 })
+        });
+      });
+  }
+
+  getActeHeaderLabel(): string {
+    if (this.attachedSiteChips.length > 1) {
+      return 'Multi-sites';
+    }
+
+    return this.acteLite?.nom || '';
+  }
+
+  private getCurrentSiteUuid(): string {
+    return String(this.openedSiteUuid || this.mfuForm?.get('site')?.value || this.acteLite?.site || '');
+  }
+
+  private sameUuid(left: string, right: string): boolean {
+    return String(left || '').trim().toLowerCase() === String(right || '').trim().toLowerCase();
   }
 
   private extractSiteChips(row: any): Array<{ uuid_site: string; nom_site: string; removable: boolean }> {
     const details = Array.isArray(row?.sites_associes_details) ? row.sites_associes_details : [];
-    const principalUuid = row?.site_principal_uuid || '';
+    const currentSiteUuid = this.getCurrentSiteUuid();
 
     if (details.length > 0) {
       return details
@@ -341,7 +377,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
         .map((site: any) => ({
           uuid_site: String(site.uuid_site),
           nom_site: String(site.nom_site),
-          removable: String(site.uuid_site) !== String(principalUuid),
+          removable: details.length > 1 && !this.sameUuid(site.uuid_site, currentSiteUuid),
         }));
     }
 

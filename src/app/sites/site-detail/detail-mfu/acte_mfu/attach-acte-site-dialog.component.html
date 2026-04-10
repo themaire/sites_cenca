@@ -7,11 +7,18 @@
     <div class="content" *ngIf="!isLoading; else loadingTpl">
         <mat-form-field appearance="outline" class="site-field">
             <mat-label>Site</mat-label>
-            <mat-select [(ngModel)]="selectedSiteUuid">
-                <mat-option *ngFor="let site of sites" [value]="site.uuid_site" [disabled]="false">
-                    {{ site.nom_site }}
+            <input
+                matInput
+                type="text"
+                [formControl]="siteControl"
+                [matAutocomplete]="siteAuto"
+                placeholder="Code ou nom du site"
+            />
+            <mat-autocomplete #siteAuto="matAutocomplete" [displayWith]="displaySiteByUuid" (optionSelected)="onSiteOptionSelected($event.option.value)">
+                <mat-option *ngFor="let site of filteredSites" [value]="site.uuid_site">
+                    {{ formatSiteLabel(site) }}
                 </mat-option>
-            </mat-select>
+            </mat-autocomplete>
         </mat-form-field>
 
         <p class="empty" *ngIf="!sites.length">Aucun site disponible pour rattachement.</p>

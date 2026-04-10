@@ -21,6 +21,7 @@ import { Selector } from '../shared/interfaces/selector';
 interface SiteLite {
   // Listes courtes de sites
   uuid_site: string;
+  code_site?: string;
   nom_site: string;
 }
 
@@ -97,6 +98,7 @@ export class SitesService {
     const rows = await this.getData<any[]>(subroute);
     return (rows || []).map((row: any) => ({
       uuid_site: row.uuid_site,
+      code_site: row.code,
       nom_site: row.nom,
     }));
   }

@@ -88,15 +88,15 @@ function getFrenchPaginatorIntl(): MatPaginatorIntl {
 })
 export class ParcelleMfuComponent implements OnInit, AfterViewInit {
 
-@ViewChild(MatSort)
-set sort(sort: MatSort) {
-  this.dataSource.sort = sort;
-}
+  @ViewChild(MatSort)
+  set sort(sort: MatSort) {
+    this.dataSource.sort = sort;
+  }
 
-@ViewChild(MatPaginator)
-set paginator(paginator: MatPaginator) {
-  this.dataSource.paginator = paginator;
-}
+  @ViewChild(MatPaginator)
+  set paginator(paginator: MatPaginator) {
+    this.dataSource.paginator = paginator;
+  }
 
   getParcellePageSizeOptions(): number[] {
     // Ajoute dynamiquement le total filtre dans les tailles de page.
@@ -130,12 +130,12 @@ set paginator(paginator: MatPaginator) {
       switch (property) {
         case 'insee':
           return (this.getCommuneNameFull(item) || '').toLowerCase();
-        case 'prefix':
-          return item.prefix || '';
         case 'code_parcelle':
           return item.code_parcelle || '';
         case 'section':
           return item.section || '';
+        case 'prefix':
+          return item.prefix || '';
         case 'numero':
           return Number(item.numero ?? 0);
         case 'surface':
@@ -182,12 +182,12 @@ set paginator(paginator: MatPaginator) {
   get ParcellesValides(): number {
     return this.parcelles.filter(parcelle => String(parcelle.validite) === 'true').length;
   }
-  
+
   get ParcellesInvalides(): number {
     return this.parcelles.filter(parcelle => String(parcelle.validite) === 'false').length;
   }
 
-// Appliquer le filtre
+  // Appliquer le filtre
   applicationFiltre(): void {
     console.log("Filtre appliqué : ", this.filterValidite);
     this.updateTableFilter();
@@ -195,8 +195,8 @@ set paginator(paginator: MatPaginator) {
 
   // Variable pour le filtre avec ngModel
   filterValidite: string = 'tous';
-  
-  displayedColumns: string[] = ['insee', 'prefix', 'code_parcelle', 'section', 'numero', 'surface', 'pour_partie', 'libelle_court', 'proprietaire', 'actions'];
+
+  displayedColumns: string[] = ['insee', 'code_parcelle', 'section', 'prefix', 'numero', 'surface', 'pour_partie', 'libelle_court', 'proprietaire', 'actions'];
 
   isAddMode = false;
   isEditModeLocal = false;
@@ -239,7 +239,7 @@ set paginator(paginator: MatPaginator) {
   selectedDepartement = '';
   selectedCommune = '';
   selectedSection = '';
-  
+
   maxSurface: number | null = null;
 
   communeMap: Map<string, string> = new Map();
@@ -326,11 +326,11 @@ set paginator(paginator: MatPaginator) {
     }
   }
 
-getCommuneName(parcelle: any): string {
+  getCommuneName(parcelle: any): string {
     if (parcelle.insee) return parcelle.insee;
     return '-';
   }
-  
+
   getCommuneNameFull(parcelle: any): string {
     const com: any = {};
     com.nom = this.communeMap.get(parcelle.insee) || parcelle.insee || '-';
@@ -343,8 +343,8 @@ getCommuneName(parcelle: any): string {
 
   filterCommunes(event: any) {
     const filterValue = event.target.value.toLowerCase();
-    this.filteredCommunes = this.communes.filter(com => 
-      com.code.toLowerCase().includes(filterValue) || 
+    this.filteredCommunes = this.communes.filter(com =>
+      com.code.toLowerCase().includes(filterValue) ||
       (com.nom && com.nom.toLowerCase().includes(filterValue))
     );
     this.cdr.detectChanges();
@@ -352,7 +352,7 @@ getCommuneName(parcelle: any): string {
 
   filterNumeros(event: any) {
     const filterValue = event.target.value.toLowerCase();
-    this.filteredNumeros = this.numeros.filter(num => 
+    this.filteredNumeros = this.numeros.filter(num =>
       String(num.numero).toLowerCase().includes(filterValue)
     );
     this.cdr.detectChanges();
@@ -361,7 +361,7 @@ getCommuneName(parcelle: any): string {
   async onDepartementChange(departementCode: string) {
     this.selectedDepartement = departementCode;
     this.resetCascadeBelow('commune');
-    
+
     this.isLoadingCommunes = true;
     this.communes = await this.parcelleService.getCommunesByDepartement(departementCode);
     this.isLoadingCommunes = false;
@@ -370,16 +370,16 @@ getCommuneName(parcelle: any): string {
 
 
 
-async onCommuneChange(communeCode: string) {
+  async onCommuneChange(communeCode: string) {
     console.log('[DEBUG] Commune:', communeCode);
     this.selectedCommune = communeCode;
     this.parcelleForm.patchValue({ insee: communeCode });
-    
+
     // Mise a jour en direct du code parcelle
     this.updateCodeParcelle();
-    
+
     this.resetCascadeBelow('section');
-    
+
     this.isLoadingSections = true;
     try {
       this.sections = await this.parcelleService.getSectionsByCommune(communeCode);
@@ -393,14 +393,14 @@ async onCommuneChange(communeCode: string) {
 
   async onSectionChange(section: string) {
     if (this.isLoadingSections || !this.selectedCommune) return; // Evite les courses entre requetes
-    
+
     this.selectedSection = section;
-    
+
     // Mise a jour en direct du code parcelle
     this.updateCodeParcelle();
-    
+
     this.resetCascadeBelow('numero');
-    
+
     this.isLoadingNumeros = true;
     try {
       this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, section);
@@ -416,31 +416,31 @@ async onCommuneChange(communeCode: string) {
   async onNumeroChange(numeroStr: string) {
     const numero = parseInt(numeroStr);
     console.log('[DEBUG] Numero selected:', numeroStr, '→', numero);
-    
+
     // Mettre a jour le champ numero
     this.parcelleForm.patchValue({ numero });
-    
+
     // Recuperer toutes les valeurs necessaires pour construire code_parcelle
     const insee = this.parcelleForm.get('insee')?.value as string;
     const prefix = this.parcelleForm.get('prefix')?.value as string || '000';
     const section = this.parcelleForm.get('section')?.value as string;
-    
-    console.log('[DEBUG code_parcelle] Form values:', {insee, prefix, section, numero});
-    
+
+    console.log('[DEBUG code_parcelle] Form values:', { insee, prefix, section, numero });
+
     // Tous les champs sont requis pour generer un code parcelle fiable
     if (!insee || !prefix || !section || numero === undefined || Number.isNaN(numero)) {
       console.warn('[DEBUG] Missing fields for code_parcelle');
       this.validationError = 'Compléter INSEE + Préfixe + Section + Numéro';
       return;
     }
-    
+
     // Format attendu : INSEE + PREFIX + SECTION + NUMERO
     const formattedNumero = String(numero).padStart(4, '0');
     const formattedSection = section.padStart(2, '0').toUpperCase();
     const codeParcelle = `${insee}${prefix}${formattedSection}${formattedNumero}`;
-    
+
     console.log('[DEBUG] code_parcelle GENERATED:', codeParcelle);
-    
+
     // Appliquer immediatement la valeur calculee
     this.parcelleForm.patchValue({ code_parcelle: codeParcelle });
     this.validationSuccess = `Code: ${codeParcelle}`;
@@ -475,7 +475,7 @@ async onCommuneChange(communeCode: string) {
         this.validationSuccess = `Code: ${codeParcelle} | Surface: ${surfaceHaFromGeojson.toFixed(4)} ha`;
       }
     }
-    
+
     // Validation IGN optionnelle en arriere-plan (sans bloquer l'interface)
     if (/^[0-9]{5}$/.test(insee)) {
       this.parcelleService.validateParcelleExists(insee, formattedSection, formattedNumero)
@@ -492,7 +492,7 @@ async onCommuneChange(communeCode: string) {
           // En cas d'echec reseau, on conserve le code calcule localement
         });
     }
-    
+
     this.cdr.detectChanges();
   }
 
@@ -511,7 +511,7 @@ async onCommuneChange(communeCode: string) {
     return null;
   }
 
-async loadParcelles() {
+  async loadParcelles() {
     this.isLoading = true;
     try {
       this.parcelles = await this.parcelleService.getParcellesByActe(this.uuidActe);
@@ -524,7 +524,7 @@ async loadParcelles() {
     }
   }
 
-async refreshParcelles(): Promise<void> {
+  async refreshParcelles(): Promise<void> {
     if (this.uuidActe) {
       const subroute = `parcelles/acte/${this.uuidActe}`;
       console.log("Rafraîchissement de la liste des parcelles. UUID:", this.uuidActe);
@@ -582,7 +582,7 @@ async refreshParcelles(): Promise<void> {
     this.cdr.detectChanges();
   }
 
-async startEditMode(parcelle: Parcelle) {
+  async startEditMode(parcelle: Parcelle) {
     this.isEditModeLocal = true;
     this.isAddMode = false;
     this.editingParcelle = parcelle;
@@ -592,14 +592,14 @@ async startEditMode(parcelle: Parcelle) {
       return;
     }
     this.initialFormValues = { ...this.parcelleForm.getRawValue() };
-    
+
     // Reinitialiser les messages de validation
     this.validationError = '';
     this.validationSuccess = '';
-    
+
     // Cascade pour précharger les listes et sélectionner les bons éléments
     await this.loadCascadeForEdit(parcelle);
-    
+
     this.cdr.detectChanges();
   }
 
@@ -609,10 +609,10 @@ async startEditMode(parcelle: Parcelle) {
     // Réinitialiser les flags pour éviter de rester bloqué en "chargement"
     this.isLoadingSections = false;
     this.isLoadingNumeros = false;
-    
+
     // Extraire dept de INSEE (2 premiers chars)
     this.selectedDepartement = parcelle.insee.substring(0, 2);
-    
+
     // Charger communes pour dept
     this.isLoadingCommunes = true;
     try {
@@ -625,11 +625,11 @@ async startEditMode(parcelle: Parcelle) {
     } finally {
       this.isLoadingCommunes = false;
     }
-    
+
     // Définir commune
     this.selectedCommune = parcelle.insee;
     this.parcelleForm.patchValue({ insee: parcelle.insee });
-    
+
     // Charger sections
     this.isLoadingSections = true;
     try {
@@ -641,11 +641,11 @@ async startEditMode(parcelle: Parcelle) {
     } finally {
       this.isLoadingSections = false;
     }
-    
+
     // Définir section
     this.selectedSection = parcelle.section || '';
     this.parcelleForm.patchValue({ section: this.selectedSection });
-    
+
     // Charger numeros si section
     if (this.selectedSection) {
       this.isLoadingNumeros = true;
@@ -659,12 +659,12 @@ async startEditMode(parcelle: Parcelle) {
       } finally {
         this.isLoadingNumeros = false;
       }
-      
+
       // Filtrer pour numero actuel
       const currentNumero = parcelle.numero;
       const selectedNum = this.numeros.find(n => n.numero == currentNumero);
       if (selectedNum) {
-        this.parcelleForm.patchValue({ 
+        this.parcelleForm.patchValue({
           numero: Number(selectedNum.numero)
           // Ne pas ecraser automatiquement la surface en mode edition
         });
@@ -676,7 +676,7 @@ async startEditMode(parcelle: Parcelle) {
       this.filteredNumeros = [];
       this.isLoadingNumeros = false;
     }
-    
+
     this.cdr.detectChanges();
   }
 
@@ -696,25 +696,25 @@ async startEditMode(parcelle: Parcelle) {
   async validateParcelle(): Promise<boolean> {
     const formValue = this.parcelleForm.getRawValue();
     const { insee, section, numero } = formValue;
-    
+
     console.log('[DEBUG validateParcelle] Raw form values:', formValue);
     console.log('[DEBUG] insee:', insee, 'section:', section, 'numero:', numero);
-    
+
     if (!insee || !section || !numero) {
       this.validationError = `INSEE, section et numéro obligatoires (insee:"${insee}", section:"${section}", numero:${numero})`;
       return false;
     }
 
-    
+
     this.isValidating = true;
     this.cdr.detectChanges();
-    
+
     try {
       const normalizedSection = section.toUpperCase().padStart(2, '0').substring(0, 2);
       const normalizedNumero = String(numero).padStart(4, '0').substring(0, 4);
-      
+
       const result = await this.parcelleService.validateParcelleExists(insee, normalizedSection, normalizedNumero);
-      
+
       if (result?.exists) {
         const props = result.properties || {};
         if (!formValue.surface && props.contenance) {
@@ -757,7 +757,15 @@ async startEditMode(parcelle: Parcelle) {
 
     const currentValues = this.parcelleForm.getRawValue();
     if (JSON.stringify(currentValues) === JSON.stringify(this.initialFormValues)) {
-      this.snackBar.open('Aucun changement', 'OK', { duration: 3000 });
+      this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
+        duration: 3000,
+        panelClass: ['snackbar-info'],
+      });
+
+      // En édition, revenir simplement à la vue liste.
+      if (this.isEditModeLocal) {
+        this.cancelEditMode();
+      }
       return;
     }
 
@@ -780,7 +788,7 @@ async startEditMode(parcelle: Parcelle) {
     delete dataToSubmit.libelle;
     delete dataToSubmit.libelle_court;
 
-    const observable$ = this.isAddMode 
+    const observable$ = this.isAddMode
       ? this.parcelleService.insertParcelle(dataToSubmit)
       : this.parcelleService.updateParcelle(this.editingParcelle!.uuid_parcelle, dataToSubmit);
 
@@ -807,7 +815,7 @@ async startEditMode(parcelle: Parcelle) {
 
   deleteParcelle(parcelle: Parcelle): void {
     const message = `Supprimer "${parcelle.code_parcelle || 'cette parcelle'}" ?`;
-    
+
     this.confirmationService.confirm('Supprimer parcelle', message, 'delete').subscribe(result => {
       if (result) {
         this.parcelleService.deleteParcelle(parcelle.uuid_parcelle).subscribe({
@@ -876,7 +884,7 @@ async startEditMode(parcelle: Parcelle) {
 
   toggleEditParcelle(action: String): void {
     console.log('toggleEditParcelle:', action);
-    
+
     if (action === 'cancel') {
       this.isAddMode ? this.cancelAddMode() : this.cancelEditMode();
     } else if (action === 'add') {
@@ -894,14 +902,14 @@ async startEditMode(parcelle: Parcelle) {
     const prefix = this.parcelleForm.get('prefix')?.value as string || '000';
     const section = this.parcelleForm.get('section')?.value as string || '';
     const numero = this.parcelleForm.get('numero')?.value as number;
-    
+
     if (!insee || !prefix) return;
-    
+
     let code = insee + prefix;
-    
+
     if (section) code += section.padStart(2, '0').toUpperCase();
     if (numero !== undefined && numero !== null) code += String(numero).padStart(4, '0');
-    
+
     console.log('[LIVE] code_parcelle =', code);
     this.parcelleForm.patchValue({ code_parcelle: code });
     this.validationSuccess = `Live généré: ${code}`;
@@ -910,7 +918,7 @@ async startEditMode(parcelle: Parcelle) {
 
   private resetCascadeBelow(level: 'commune' | 'section' | 'numero') {
     console.log('[DEBUG] Reset level:', level);
-    
+
     switch (level) {
       case 'commune':
         this.selectedCommune = '';

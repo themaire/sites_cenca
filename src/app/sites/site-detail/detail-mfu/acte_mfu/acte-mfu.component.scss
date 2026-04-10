@@ -125,6 +125,7 @@ $local-theme: mat.m2-define-light-theme((color: (primary: $proteger-palette,
 // Zone des boutons de suppression.
 .suppression {
   @include suppression-btn();
+  margin-right: 10px;
 }
 
 // En-tête avec boutons, titre et suppression.

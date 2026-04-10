@@ -25,14 +25,19 @@ export const FONCIER_ROUTES: Route[] = [
   },
   {
     // Nouvelle page pour la gestion des actes multi-sites.
-    path: 'actes',
+    path: 'amfu',
     component: FonActesMultiSitesComponent,
     pathMatch: 'prefix',
     providers: [],
   },
   {
+    path: 'actes',
+    redirectTo: 'amfu',
+    pathMatch: 'full',
+  },
+  {
     path: 'actes-multi-sites',
-    redirectTo: 'actes',
+    redirectTo: 'amfu',
     pathMatch: 'full',
   }
 ];

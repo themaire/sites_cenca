@@ -13,11 +13,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { Overlay } from '@angular/cdk/overlay';
 import { firstValueFrom } from 'rxjs';
 
 import { FoncierService } from '../foncier.service';
 import { ActeMultiSiteLite, SiteLite } from '../foncier';
 import { ActeLite } from '../../site-detail/detail-mfu/acte';
+import { ActeMfuComponent } from '../../site-detail/detail-mfu/acte_mfu/acte-mfu.component';
 import { SnackbarService } from '../../../shared/services/snackbar.service';
 import { CustomMatPaginatorIntl } from '../../../shared/costomMaterial/custom-matpaginator-intl';
 
@@ -73,12 +76,15 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
 
   constructor(
     private foncierService: FoncierService,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
+    private dialog: MatDialog,
+    private overlay: Overlay
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.loadSites();
     await this.loadActes();
+    this.hydrateActesWithSiteCodes();
     this.sites = this.ensureArray<SiteLite>(this.sites);
     this.actes = this.ensureArray<ActeMultiSiteLite>(this.actes);
     this.initDataSource();
@@ -96,6 +102,8 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
       console.warn('Route mfu/multi-sites/lite indisponible, fallback actif.', error);
       await this.loadActesFallback();
     }
+
+    this.hydrateActesWithSiteCodes();
   }
 
   private async loadSites(): Promise<void> {
@@ -105,6 +113,66 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
       console.warn('Route mfu/sites/lite indisponible, fallback actif.', error);
       this.sites = this.ensureArray<SiteLite>(await this.foncierService.getSitesLiteFallback());
     }
+
+    this.sites = await this.enrichSiteCodes(this.sites);
+  }
+
+  private async enrichSiteCodes(sites: SiteLite[]): Promise<SiteLite[]> {
+    const missingCode = this.ensureArray<SiteLite>(sites).some((site) => !String(site?.code_site || '').trim());
+    if (!missingCode) {
+      return sites;
+    }
+
+    try {
+      const fallbackSites = this.ensureArray<SiteLite>(await this.foncierService.getSitesLiteFallback());
+      const codeByUuid = new Map(
+        fallbackSites.map((site) => [
+          String(site.uuid_site || '').trim().toLowerCase(),
+          String(site.code_site || '').trim(),
+        ])
+      );
+
+      return sites.map((site) => {
+        const currentCode = String(site?.code_site || '').trim();
+        if (currentCode) {
+          return site;
+        }
+
+        return {
+          ...site,
+          code_site: codeByUuid.get(String(site.uuid_site || '').trim().toLowerCase()) || '',
+        };
+      });
+    } catch (error) {
+      console.warn('Impossible de completer les codes sites sur /foncier/amfu.', error);
+      return sites;
+    }
+  }
+
+  private hydrateActesWithSiteCodes(): void {
+    if (!this.actes?.length || !this.sites?.length) {
+      return;
+    }
+
+    const codeByUuid = new Map(
+      this.sites.map((site) => [
+        String(site.uuid_site || '').trim().toLowerCase(),
+        String(site.code_site || '').trim(),
+      ])
+    );
+
+    this.actes = this.actes.map((acte) => {
+      const currentCode = String(acte?.site_principal_code || '').trim();
+      if (currentCode) {
+        return acte;
+      }
+
+      const siteCode = codeByUuid.get(String(acte?.site_principal_uuid || '').trim().toLowerCase()) || '';
+      return {
+        ...acte,
+        site_principal_code: siteCode,
+      };
+    });
   }
 
   private async loadActesFallback(): Promise<void> {
@@ -131,6 +199,7 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
                 fin: acte.fin,
                 validite: acte.validite,
                 site_principal_uuid: acte.site,
+                site_principal_code: site.code_site,
                 site_principal_nom: site.nom_site,
                 nb_sites: 1,
                 sites_associes: site.nom_site,
@@ -173,6 +242,23 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
     if (this.sort) {
       this.dataSource.sort = this.sort;
     }
+
+    this.dataSource.sortingDataAccessor = (item: ActeMultiSiteLite, property: string): string | number => {
+      switch (property) {
+        case 'typ_mfu':
+          return String(item.typ_mfu_libelle || item.typ_mfu || '').toLowerCase();
+        case 'debut':
+          return item.debut ? new Date(item.debut).getTime() : 0;
+        case 'fin':
+          return item.fin ? new Date(item.fin).getTime() : 0;
+        case 'site_principal_nom':
+          return String(item.site_principal_nom || '').toLowerCase();
+        case 'nb_sites':
+          return Number(item.nb_sites ?? 0);
+        default:
+          return String((item as any)[property] ?? '').toLowerCase();
+      }
+    };
 
     this.dataSource.filterPredicate = (data: ActeMultiSiteLite, filter: string): boolean => {
       const parsedFilter = JSON.parse(filter) as { validite: string; keyword: string };
@@ -260,7 +346,7 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
 
     return this.actes.filter((acte) => {
       const label = acte.typ_mfu_libelle || acte.typ_mfu || '';
-      const text = `${label} ${this.toDateString(acte.debut)} ${acte.site_principal_nom || ''}`.toLowerCase();
+      const text = `${label} ${this.toDateString(acte.debut)} ${acte.site_principal_code || ''} ${acte.site_principal_nom || ''}`.toLowerCase();
       return text.includes(query);
     });
   }
@@ -271,7 +357,26 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
       return this.sites;
     }
 
-    return this.sites.filter((site) => (site.nom_site || '').toLowerCase().includes(query));
+    return this.sites.filter((site) => {
+      const text = `${site.code_site || ''} ${site.nom_site || ''}`.toLowerCase();
+      return text.includes(query);
+    });
+  }
+
+  formatSiteLabel(site: SiteLite): string {
+    const code = String(site?.code_site || '').trim();
+    const name = String(site?.nom_site || '').trim();
+    return code ? `${code} - ${name}` : name;
+  }
+
+  getSitePrincipalLabel(acte: ActeMultiSiteLite): string {
+    const code = String(acte?.site_principal_code || '').trim();
+    const name = String(acte?.site_principal_nom || '').trim();
+    if (!code) {
+      return name || '-';
+    }
+
+    return name ? `${code} - ${name}` : code;
   }
 
   onActeSelectionChange(value: string | null): void {
@@ -323,6 +428,7 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
 
   async refreshActes(): Promise<void> {
     await this.loadActes();
+    this.hydrateActesWithSiteCodes();
     this.initDataSource();
     this.applyFilter(this.filterValue);
   }
@@ -412,5 +518,45 @@ export class FonActesMultiSitesComponent implements OnInit, AfterViewInit {
       .split('|')
       .map((name) => name.trim())
       .filter((name) => !!name);
+  }
+
+  onRowSelect(acte: ActeMultiSiteLite): void {
+    if (!acte?.uuid_acte) {
+      return;
+    }
+
+    const acteLite = {
+      uuid_acte: acte.uuid_acte,
+      site: acte.site_principal_uuid || '',
+      nom: acte.site_principal_nom || '',
+      typ_mfu: acte.typ_mfu || '',
+      debut: acte.debut as any,
+      fin: acte.fin as any,
+      validite: acte.validite as any,
+    } as ActeLite;
+
+    const dialogRef = this.dialog.open(ActeMfuComponent, {
+      data: {
+        ...acteLite,
+        currentSiteUuid: acte.site_principal_uuid || acteLite.site || '',
+      },
+      minWidth: '80vw',
+      maxWidth: '95vw',
+      height: '85vh',
+      maxHeight: '95vh',
+      hasBackdrop: true,
+      backdropClass: 'custom-backdrop-gerer',
+      enterAnimationDuration: '400ms',
+      exitAnimationDuration: '300ms',
+      autoFocus: false,
+      restoreFocus: false,
+      scrollStrategy: this.overlay.scrollStrategies.block(),
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.refreshActes();
+      }
+    });
   }
 }

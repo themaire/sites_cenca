@@ -233,7 +233,7 @@ export class FormService {
           tacit_rec: new FormControl(acte?.tacit_rec ?? false),
           detail_rec: new FormControl(acte?.detail_rec ? acte?.detail_rec : ''),
           notaire: new FormControl(acte?.notaire ? acte?.notaire : ''),
-          cout: new FormControl(acte?.cout ? acte?.cout : null),
+          cout: new FormControl(acte?.cout ?? null, [Validators.min(0)]),
           remarque: new FormControl(acte?.remarque ? acte?.remarque : ''),
           date_crea: new FormControl(acte?.date_crea ? acte?.date_crea : null),
           date_modif: new FormControl(acte?.date_modif ? acte?.date_modif : null),

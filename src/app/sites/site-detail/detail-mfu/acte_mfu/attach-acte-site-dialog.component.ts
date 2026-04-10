@@ -1,9 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -14,6 +15,7 @@ import { ActeService } from '../acte.service';
 
 interface SiteLite {
   uuid_site: string;
+  code_site?: string;
   nom_site: string;
 }
 
@@ -33,9 +35,11 @@ interface AttachedSiteRef {
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatSelectModule,
+    MatInputModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
@@ -47,8 +51,10 @@ export class AttachActeSiteDialogComponent implements OnInit {
   private dialogData = inject<AttachDialogData>(MAT_DIALOG_DATA);
 
   public sites: SiteLite[] = [];
+  public filteredSites: SiteLite[] = [];
   private attachedSites: AttachedSiteRef[] = [];
   selectedSiteUuid = '';
+  siteControl = new FormControl<string>('');
   public isLoading = true;
   public isSubmitting = false;
 
@@ -61,6 +67,17 @@ export class AttachActeSiteDialogComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.loadSites();
+    this.initAutocomplete();
+  }
+
+  private initAutocomplete(): void {
+    this.siteControl.valueChanges.subscribe((value) => {
+      const query = String(value || '');
+      this.filteredSites = this.filterSites(query);
+
+      const exact = this.sites.find((site) => this.sameUuid(site.uuid_site, query));
+      this.selectedSiteUuid = exact?.uuid_site || '';
+    });
   }
 
   private async loadSites(): Promise<void> {
@@ -69,9 +86,11 @@ export class AttachActeSiteDialogComponent implements OnInit {
       await this.loadAttachedSites();
       const rows = await this.sitesService.getMfuSitesLite();
       const currentSiteUuid = this.dialogData.currentSiteUuid;
-      this.sites = (rows || [])
+      const baseSites = (rows || [])
         .filter((site: SiteLite) => site.uuid_site !== currentSiteUuid)
         .sort((a: SiteLite, b: SiteLite) => (a.nom_site || '').localeCompare(b.nom_site || '', 'fr'));
+      this.sites = await this.enrichSiteCodes(baseSites);
+      this.filteredSites = [...this.sites];
     } catch (error) {
       console.warn('Route mfu/sites/lite indisponible, fallback actif.', error);
       const rows = await this.sitesService.getSitesLiteFallback();
@@ -79,9 +98,79 @@ export class AttachActeSiteDialogComponent implements OnInit {
       this.sites = (rows || [])
         .filter((site: SiteLite) => site.uuid_site !== currentSiteUuid)
         .sort((a: SiteLite, b: SiteLite) => (a.nom_site || '').localeCompare(b.nom_site || '', 'fr'));
+      this.filteredSites = [...this.sites];
     } finally {
       this.isLoading = false;
     }
+  }
+
+  private async enrichSiteCodes(sites: SiteLite[]): Promise<SiteLite[]> {
+    const missingCode = sites.some((site) => !String(site?.code_site || '').trim());
+    if (!missingCode) {
+      return sites;
+    }
+
+    try {
+      const fallbackSites = await this.sitesService.getSitesLiteFallback();
+      const codeByUuid = new Map(
+        (fallbackSites || []).map((site: SiteLite) => [
+          String(site.uuid_site || '').trim().toLowerCase(),
+          String(site.code_site || '').trim(),
+        ])
+      );
+
+      return sites.map((site) => {
+        const currentCode = String(site?.code_site || '').trim();
+        if (currentCode) {
+          return site;
+        }
+
+        const mergedCode = codeByUuid.get(String(site.uuid_site || '').trim().toLowerCase()) || '';
+        return {
+          ...site,
+          code_site: mergedCode,
+        };
+      });
+    } catch (error) {
+      console.warn('Impossible d\'enrichir les codes sites depuis le fallback.', error);
+      return sites;
+    }
+  }
+
+  formatSiteLabel(site: SiteLite): string {
+    const code = String(site?.code_site || '').trim();
+    const name = String(site?.nom_site || '').trim();
+    return code ? `${code} - ${name}` : name;
+  }
+
+  displaySiteByUuid = (value: string | null): string => {
+    const uuid = String(value || '').trim();
+    if (!uuid) {
+      return '';
+    }
+
+    const site = this.sites.find((row) => this.sameUuid(row.uuid_site, uuid));
+    return site ? this.formatSiteLabel(site) : uuid;
+  };
+
+  onSiteOptionSelected(siteUuid: string): void {
+    this.selectedSiteUuid = String(siteUuid || '');
+  }
+
+  private filterSites(queryValue: string): SiteLite[] {
+    const query = String(queryValue || '').trim().toLowerCase();
+    if (!query) {
+      return [...this.sites];
+    }
+
+    return this.sites.filter((site) => {
+      const text = `${site.code_site || ''} ${site.nom_site || ''}`.toLowerCase();
+      return text.includes(query);
+    });
+  }
+
+  private sameUuid(left: string, right: string): boolean {
+    return String(left || '').trim().toLowerCase() === String(right || '').trim().toLowerCase();
   }
 
   private async loadAttachedSites(): Promise<void> {
@@ -136,7 +225,7 @@ export class AttachActeSiteDialogComponent implements OnInit {
         })
       );
 
-      this.snackBar.open('Acte rattaché au site.', 'OK', { duration: 2500 });
+      this.snackBar.open('Acte rattaché au site.', 'OK', { duration: 3000 });
       this.dialogRef.close(true);
     } catch (error) {
       console.error('Erreur lors du rattachement de l\'acte', error);

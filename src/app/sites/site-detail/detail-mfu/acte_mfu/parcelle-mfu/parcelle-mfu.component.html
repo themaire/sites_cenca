@@ -119,7 +119,7 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>Partie</mat-label>
-          <input matInput formControlName="partie" placeholder="A">
+          <input matInput formControlName="partie" placeholder="Grange, jardin...">
         </mat-form-field>
         <mat-form-field>
           <mat-label>Surface (ha)</mat-label>
@@ -154,8 +154,8 @@
           Pour partie : <mat-slide-toggle formControlName="pour_partie"></mat-slide-toggle>
         </div>
         <mat-form-field class="detail-field">
-          <mat-label>Remarque</mat-label>
-          <textarea matInput formControlName="remarque" rows="2" placeholder="Remarque"></textarea>
+          <mat-label>Remarques</mat-label>
+          <textarea matInput formControlName="remarque" rows="2" ></textarea>
         </mat-form-field>
       </div>
 
@@ -166,16 +166,12 @@
   <div *ngIf="!isEditModeLocal && !isAddMode" class="parcelles-list-view">
     <div class="button-title center-title">
       <div class="form-buttons">
-        <app-form-buttons [isEditActive]="false" icone="add" [theme]="'proteger'"
-          (toggleAction)="toggleEditParcelle($event)">
+        <app-form-buttons [isEditActive]="false" icone="add" [theme]="'proteger'" label="Ajouter une parcelle"
+          [isFormValid]="true" (toggleAction)="toggleEditParcelle($event)">
         </app-form-buttons>
       </div>
-      <div class="title-container">
-        <h3>Liste des parcelles</h3>
-      </div>
-      <div class="dummy-right"></div>
     </div>
-
+    <br>
     <!-- Filtres avec ngModel et mat-radio-group -->
     <div class="radio-buttons">
       <mat-form-field class="filtre" appearance="outline">
@@ -201,11 +197,7 @@
       <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
         <ng-container matColumnDef="insee">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune</th>
-          <td mat-cell *matCellDef="let parcelle">{{ getCommuneNameFull(parcelle) }} ({{ parcelle.code_parcelle }})</td>
-        </ng-container>
-        <ng-container matColumnDef="prefix">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Préfixe</th>
-          <td mat-cell *matCellDef="let parcelle">{{ parcelle.prefix || '-' }}</td>
+          <td mat-cell *matCellDef="let parcelle">{{ getCommuneNameFull(parcelle) }} ({{ parcelle.insee }})</td>
         </ng-container>
         <ng-container matColumnDef="code_parcelle">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Code Parcelle</th>
@@ -214,6 +206,10 @@
         <ng-container matColumnDef="section">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Section</th>
           <td mat-cell *matCellDef="let parcelle">{{ parcelle.section || '-' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="prefix">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Préfixe</th>
+          <td mat-cell *matCellDef="let parcelle">{{ parcelle.prefix || '-' }}</td>
         </ng-container>
         <ng-container matColumnDef="numero">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro</th>
@@ -251,12 +247,8 @@
           (click)="startEditMode(row); $event.stopPropagation()"></tr>
       </table>
 
-      <mat-paginator
-        [pageSize]="20"
-        [pageSizeOptions]="getParcellePageSizeOptions()"
-        showFirstLastButtons
-        class="paginator"
-      ></mat-paginator>
+      <mat-paginator [pageSize]="20" [pageSizeOptions]="getParcellePageSizeOptions()" showFirstLastButtons
+        class="paginator"></mat-paginator>
     </div>
 
     <div *ngIf="!isLoading && parcelles.length === 0" class="no-parcelles">
