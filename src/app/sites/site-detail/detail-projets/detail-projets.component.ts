@@ -58,7 +58,7 @@ export class DetailProjetsComponent {
     
     if (this.siteDetailProjet !== undefined) {  // Si le site selectionné n'est pas vide
       console.log(this.siteDetailProjet);
-      subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite?`; // On récupère les projets du site selectionné
+      subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite?webapp=1`; // On récupère les projets du site selectionné
       console.log("Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" + this.siteDetailProjet["uuid_espace"]);
       
       // ChatGPT 19/07/2024
