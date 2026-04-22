@@ -695,13 +695,13 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
 
   async validateParcelle(): Promise<boolean> {
     const formValue = this.parcelleForm.getRawValue();
-    const { insee, section, numero } = formValue;
+    const { insee, section, prefix, numero } = formValue;
 
     console.log('[DEBUG validateParcelle] Raw form values:', formValue);
-    console.log('[DEBUG] insee:', insee, 'section:', section, 'numero:', numero);
+    console.log('[DEBUG] insee:', insee, 'section:', section, 'prefix:', prefix, 'numero:', numero);
 
-    if (!insee || !section || !numero) {
-      this.validationError = `INSEE, section et numéro obligatoires (insee:"${insee}", section:"${section}", numero:${numero})`;
+    if (!insee || !section || !prefix || !numero) {
+      this.validationError = `INSEE, section, prefix et numéro obligatoires (insee:"${insee}", section:"${section}", prefix:"${prefix}", numero:${numero})`;
       return false;
     }
 
