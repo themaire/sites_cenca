@@ -241,7 +241,7 @@ export class FormService {
           site: new FormControl(acte?.site ? acte?.site : null),
           url: new FormControl(acte?.url ? acte?.url : ''),
           actuel: new FormControl({value: acte?.actuel ? acte?.actuel : false, disabled: true}),
-          validite: new FormControl(acte?.validite ?? false),
+          validite: new FormControl(acte?.validite ?? true),
         });
       }
 
@@ -256,7 +256,7 @@ export class FormService {
       numero: new FormControl(parcelle?.numero ? parcelle?.numero : null),
       partie: new FormControl(parcelle?.partie ? parcelle?.partie : ''),
       surface: new FormControl(parcelle?.surface ? parcelle?.surface : null),
-      validite: new FormControl(parcelle?.validite ? parcelle?.validite : false),
+      validite: new FormControl(parcelle?.validite ? parcelle?.validite : true),
       acte_mfu: new FormControl(parcelle?.acte_mfu ? parcelle?.acte_mfu : null),
       remarque: new FormControl(parcelle?.remarque ? parcelle?.remarque : ''),
       pour_partie: new FormControl(parcelle?.pour_partie ? parcelle?.pour_partie : false),
