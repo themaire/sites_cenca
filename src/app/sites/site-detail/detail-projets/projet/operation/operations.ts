@@ -15,7 +15,8 @@ export interface OperationLite {
   quantite?: number;
   unite_str?: string;
   type?: string; // Concat des libelles de action et action_2
-  financeurs?: string[]; // Liste des financeurs associés
+  financeurs?: string[]; // Liste des financeurs associés;
+  financeur_description?: string; // Description du financeur (ex: "Opération non financée" ou "Opération financée par le programme X")
 }
 
 export interface Operation {

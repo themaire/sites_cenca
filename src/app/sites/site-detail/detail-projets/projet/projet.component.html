@@ -383,7 +383,7 @@
                   <td>{{ op.type ? (op.type.split(' / ')[1] || "") : "" }}</td>
                   <td>{{ op.nom_mo }}</td>
                   <td>{{ op.quantite }} - {{ op.unite_str?.toLowerCase() }}</td>
-                  <td>{{ op.financeurs?.join(' / ') }}</td>
+                  <td>{{ formatFinanceurs(op.financeurs, op.financeur_description) }}</td>
                 </tr>
               </tbody>
             </table>

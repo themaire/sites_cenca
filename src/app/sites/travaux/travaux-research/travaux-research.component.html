@@ -1,0 +1,34 @@
+<div class="conteneur">
+  <div class="recherche">
+    <mat-form-field
+      *ngFor="let selector of selectors"
+      appearance="fill"
+      [ngClass]="[
+        'selecteur',
+        selector.name === 'localisation' ? 'selecteur-localisation' : ''
+      ]"
+    >
+      <mat-label ngClass="label">{{ selector.title }} :</mat-label>
+      <mat-select
+        id="{{ selector.name }}"
+        (selectionChange)="selectionSelectors($event, selector.name)"
+      >
+        <mat-option [value]="{ id: selector.name, name: selector.name }" selected>
+          Selectionner {{ selector.name }}
+        </mat-option>
+        <mat-option
+          *ngFor="let value of selector.values"
+          [value]="{ id: value, name: value }"
+        >
+          {{ value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="btn">
+    <button mat-button-flat (click)="travauxSelection()">
+      Selection des projets
+    </button>
+  </div>
+</div>
