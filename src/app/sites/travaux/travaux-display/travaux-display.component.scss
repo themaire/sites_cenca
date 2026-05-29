@@ -1,0 +1,23 @@
+@import "../../../styles/variables.scss";
+
+.travaux-display {
+  width: 100%;
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+@media screen and (max-width: $mobile) {
+  .travaux-display {
+    .responsable,
+    .code_site,
+    .nb_ope {
+      display: none;
+    }
+  }
+}

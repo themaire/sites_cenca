@@ -41,6 +41,13 @@ export const routes: Routes = [
 
   // Lazy-load
   {
+    path: 'travaux',
+    loadChildren: () =>
+      import('./sites/travaux/travaux.routes').then((mod) => mod.TRAVAUX_ROUTES),
+  },
+
+  // Lazy-load
+  {
     path: 'parametres',
     loadChildren: () =>
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),

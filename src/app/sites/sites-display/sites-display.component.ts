@@ -54,6 +54,10 @@ export class SitesDisplayComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  research: SitesService = inject(SitesService);
+  
+  constructor(private route: ActivatedRoute, private router: Router) {}
+  
   ngAfterViewInit() {
     if (this.dataSource) {
       this.dataSource.paginator = this.paginator;
@@ -62,19 +66,19 @@ export class SitesDisplayComponent implements AfterViewInit {
     }
   }
 
-  research: SitesService = inject(SitesService);
-
-  constructor(private route: ActivatedRoute, private router: Router) {}
-
   private loadSites(params: Params): void {
     if (params['type'] !== undefined) {
       const subroute = 'criteria/' + params['type'] + '/' + params['code'] + '/' + 
         params['nom'] + '/' + params['commune'] + '/' + 
         params['milieux_naturels'] + '/' + params['responsable'];
   
+      console.log('subroute : ' + subroute);
+
       this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
         this.sites = sitesGuetted;
-        this.dataSource = new MatTableDataSource(this.sites);
+        this.dataSource = new MatTableDataSource(this.sites); // Pour le filtre du tableau mat-table. Mettre une valeur dans value et dans le filtre du mat input SELECTION DES SITES
+        const fakeEvent = { target: { value: '' } } as unknown as Event;
+        this.applyFilter(fakeEvent);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       });
@@ -86,44 +90,12 @@ export class SitesDisplayComponent implements AfterViewInit {
     this.route.params.subscribe((params: Params) => {
       console.log('Route param type : ' + params['type']);
       // console.log(this.route.params);
-      let subroute: string = '';
+      this.loadSites(params);
 
-      if (params['type'] !== undefined) {
-        // Cas d'une recherche sur critères
-        subroute =
-          'criteria/' +
-          params['type'] +
-          '/' +
-          params['code'] +
-          '/' +
-          params['nom'] +
-          '/' +
-          params['commune'] +
-          '/' +
-          params['milieux_naturels'] +
-          '/' +
-          params['responsable'];  
-
-        this.research.getSites(subroute).then((sitesGuetted: ListSite[]) => {
-          this.sites = sitesGuetted;
-
-          // console.log('sitesGuetted : ');
-          // console.log(sitesGuetted);
-
-          this.dataSource = new MatTableDataSource(this.sites);
-
-          // Pour le filtre du tableau mat-table. Mettre une valeur dans value et dans le filtre du mat input SELECTION DES SITES
-          const fakeEvent = { target: { value: '' } } as unknown as Event;
-          this.applyFilter(fakeEvent);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        });
-
-        console.log('subroute : ' + subroute);
-        console.log('Tableau sites : ');
-        console.log(this.sites);
+      // console.log('Tableau sites : ');
+      // console.log(this.sites);
       }
-    });
+    );
   }
 
   applyFilter(event: Event) {
