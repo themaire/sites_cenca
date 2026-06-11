@@ -70,7 +70,7 @@
             <mat-form-field appearance="outline" *ngIf="selectedDepartement">
               <mat-label>Commune{{ isLoadingCommunes ? ' (chargement...)' : '' }}</mat-label>
               <ng-container *ngIf="isEditParcelle || newParcelle">
-                <input matInput [matAutocomplete]="communeAuto" [value]="selectedCommune" (input)="filterCommunes($event)">
+                <input matInput [matAutocomplete]="communeAuto" #communeTrigger="matAutocompleteTrigger" [value]="selectedCommune" (focus)="communeTrigger.openPanel()" (input)="filterCommunes($event)">
                 <mat-autocomplete #communeAuto="matAutocomplete" (optionSelected)="onCommuneChange($event.option.value)">
                   <mat-option *ngFor="let com of communes" [value]="com.code">
                     {{ com.code }} - {{ com.nom }}

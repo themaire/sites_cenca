@@ -249,51 +249,43 @@ export class ParcelleService {
       return [];
     }
 
-    // Le endpoint `api-geo/sections` n'est pas disponible partout (404).
-    // On utilise directement la source fiable qui alimentait la cascade auparavant.
-    return await this.getSectionsFromParcelles(codeInsee);
-  }
-
-  private async getParcellesByCommune(codeInsee: string, maxFeatures: number = 5000): Promise<any[]> {
-    const ignUrl = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&_limit=${maxFeatures}`;
+    // Endpoint dédié IGN (feuilles PCI Express) : ne ramène que les sections, pas toutes les parcelles
     try {
-      console.log('[ParcelleService] URL parcelles (IGN direct):', ignUrl);
-      const response = await fetch(ignUrl);
+      const url = `https://apicarto.ign.fr/api/cadastre/feuille?code_insee=${codeInsee}&_limit=100`;
+      console.log('[ParcelleService] URL sections (IGN):', url);
+      const response = await fetch(url);
       if (!response.ok) {
-        console.error('[ParcelleService] Erreur parcelles IGN:', response.status);
+        console.error('[ParcelleService] Erreur sections IGN:', response.status);
         return [];
       }
-
       const data = await response.json();
-      if (data && Array.isArray(data.features)) {
-        return data.features;
+      if (data && Array.isArray(data.features) && data.features.length > 0) {
+        const sections = data.features
+          .map((f: any) => String(f?.properties?.section ?? '').toUpperCase())
+          .filter((s: string) => s.length > 0);
+        return [...new Set<string>(sections)].sort();
       }
       return [];
     } catch (error) {
-      console.error('[ParcelleService] Erreur fetch parcelles IGN:', error);
+      console.error('[ParcelleService] Erreur chargement sections:', error);
       return [];
     }
   }
 
-  private async getSectionsFromParcelles(codeInsee: string): Promise<string[]> {
+  private async getIgnParcelles(params: Record<string, string>, limit: number = 500): Promise<any[]> {
+    const query = new URLSearchParams({ ...params, _limit: String(limit) }).toString();
+    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?${query}`;
     try {
-      const features = await this.getParcellesByCommune(codeInsee, 5000);
-      const sections = new Set<string>();
-
-      features.forEach((feature: any) => {
-        const section = feature?.properties?.section;
-        if (section) {
-          sections.add(String(section).toUpperCase());
-        }
-      });
-
-      if (sections.size === 0) {
+      console.log('[ParcelleService] URL parcelles (IGN):', url);
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error('[ParcelleService] Erreur parcelles IGN:', response.status);
         return [];
       }
-
-      return Array.from(sections).sort();
+      const data = await response.json();
+      return (data && Array.isArray(data.features)) ? data.features : [];
     } catch (error) {
-      console.error('Echec du fallback de sections:', error);
+      console.error('[ParcelleService] Erreur fetch parcelles IGN:', error);
       return [];
     }
   }
@@ -312,30 +304,27 @@ export class ParcelleService {
       console.error('[ParcelleService] ❌ Code INSEE invalide pour numeros:', codeInsee);
       return [];
     }
-    
+
+    // Filtrage côté serveur IGN : on ne charge que les parcelles de la section demandée
+    const sectionForApi = section.toUpperCase().padStart(2, '0');
+    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&section=${sectionForApi}&_limit=500`;
+    console.log('[ParcelleService] URL numéros (IGN):', url);
     try {
-      const features = await this.getParcellesByCommune(codeInsee, 5000);
-      if (!features || features.length === 0) {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error('[ParcelleService] Erreur numéros IGN:', response.status);
         return [];
       }
-      
-      // Filtrer par section et retourner les parcelles
-      const filteredFeatures = features.filter((feature: any) => {
-        return feature.properties && 
-               feature.properties.section && 
-               feature.properties.section.toUpperCase() === section.toUpperCase();
-      });
-      
-      return filteredFeatures.map((feature: any) => ({
-        numero: feature.properties.numero,
-        contenance: feature.properties.contenance,
-        idu: feature.properties.idu,
-        geojson: feature
-      })).sort((a: any, b: any) => {
-        const numA = parseInt(a.numero) || 0;
-        const numB = parseInt(b.numero) || 0;
-        return numA - numB;
-      });
+      const data = await response.json();
+      const features: any[] = (data && Array.isArray(data.features)) ? data.features : [];
+      return features
+        .map((feature: any) => ({
+          numero: feature.properties.numero,
+          contenance: feature.properties.contenance,
+          idu: feature.properties.idu,
+          geojson: feature
+        }))
+        .sort((a: any, b: any) => (parseInt(a.numero) || 0) - (parseInt(b.numero) || 0));
     } catch (error) {
       console.error('Erreur lors de la récupération des numéros:', error);
       return [];
@@ -355,26 +344,17 @@ export class ParcelleService {
       console.error('[ParcelleService] ❌ Code INSEE invalide pour geojson:', codeInsee);
       return null;
     }
-    
+
+    // Filtrage côté serveur : section + numéro directement dans la requête IGN
+    const sectionForApi = section.toUpperCase().padStart(2, '0');
+    const numeroForApi = String(numero).padStart(4, '0');
     try {
-      const features = await this.getParcellesByCommune(codeInsee, 5000);
-      if (!features || features.length === 0) {
-        return null;
-      }
-      
-      // Filtrer par section et numéro
-      const normalizedSection = section.toUpperCase();
-      const normalizedNumero = String(numero).padStart(4, '0');
-      
-      const foundFeature = features.find((feature: any) => {
-        const props = feature.properties;
-        return props && 
-               props.section && 
-               props.section.toUpperCase() === normalizedSection &&
-               String(props.numero).padStart(4, '0') === normalizedNumero;
-      });
-      
-      return foundFeature || null;
+      const features = await this.getIgnParcelles({
+        code_insee: codeInsee,
+        section: sectionForApi,
+        numero: numeroForApi
+      }, 1);
+      return features.length > 0 ? features[0] : null;
     } catch (error) {
       console.error('Erreur lors de la récupération du GeoJSON:', error);
       return null;

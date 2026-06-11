@@ -22,7 +22,7 @@
         <!-- Onglet 2 : Parcelles (uniquement pour les actes existants) -->
         <mat-tab label="Parcelles" *ngIf="!newMfu && resolvedActeUuid">
           <div class="tab-content">
-            <app-parcelle-mfu [uuidActe]="resolvedActeUuid" [isEditModeParent]="isEditMfu">
+            <app-parcelle-mfu [uuidActe]="resolvedActeUuid" [isEditModeParent]="isEditMfu" [siteCode]="siteCode">
             </app-parcelle-mfu>
           </div>
         </mat-tab>

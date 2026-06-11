@@ -78,6 +78,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   private _adapter = inject(DateAdapter);
   private dialogData = inject(MAT_DIALOG_DATA);
   private readonly openedSiteUuid = String((this.dialogData as any)?.currentSiteUuid || '');
+  readonly siteCode = String((this.dialogData as any)?.siteCode || '');
   acteLite!: ActeLite;
   // UUID resolu pour gerer les cas ou le dialogue est ouvert avec des donnees partielles.
   resolvedActeUuid = '';

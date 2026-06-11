@@ -391,6 +391,7 @@ export class ParcelleMfuDialogComponent implements OnInit, OnDestroy {
       this.communes = [];
     } finally {
       this.isLoadingCommunes = false;
+      this.cdr.detectChanges(); // Force le rendu des mat-option avant que l'utilisateur clique sur le champ
     }
   }
 

@@ -108,6 +108,7 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
   }
 
   @Input() uuidActe: string = '';
+  @Input() siteCode: string = '';
   filterValue: string = '';
 
   @Input() isEditModeParent: boolean = false;
@@ -364,6 +365,7 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
 
     this.isLoadingCommunes = true;
     this.communes = await this.parcelleService.getCommunesByDepartement(departementCode);
+    this.filteredCommunes = [...this.communes];
     this.isLoadingCommunes = false;
     this.cdr.detectChanges();
   }
@@ -404,9 +406,11 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
     this.isLoadingNumeros = true;
     try {
       this.numeros = await this.parcelleService.getNumerosBySection(this.selectedCommune, section);
+      this.filteredNumeros = [...this.numeros];
     } catch (error) {
       console.error('Numeros failed:', error);
       this.numeros = [];
+      this.filteredNumeros = [];
     }
     this.isLoadingNumeros = false;
     this.cdr.detectChanges();
@@ -560,7 +564,7 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
   }
 
 
-  startAddMode() {
+  async startAddMode() {
     this.isAddMode = true;
     this.isEditModeLocal = false;
     this.editingParcelle = null;
@@ -571,7 +575,27 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
     this.validationError = '';
     this.validationSuccess = '';
     this.isValidating = false;
-    this.cdr.detectChanges();
+
+    // Auto-détecter le département depuis le code site (2 premiers chiffres)
+    if (this.siteCode && this.siteCode.length >= 2) {
+      const deptCode = this.siteCode.substring(0, 2);
+      this.selectedDepartement = deptCode;
+      this.isLoadingCommunes = true;
+      this.cdr.detectChanges();
+      try {
+        this.communes = await this.parcelleService.getCommunesByDepartement(deptCode);
+        this.filteredCommunes = [...this.communes];
+      } catch (error) {
+        console.error('Chargement communes (auto dépt):', error);
+        this.communes = [];
+        this.filteredCommunes = [];
+      } finally {
+        this.isLoadingCommunes = false;
+        this.cdr.detectChanges();
+      }
+    } else {
+      this.cdr.detectChanges();
+    }
   }
 
 

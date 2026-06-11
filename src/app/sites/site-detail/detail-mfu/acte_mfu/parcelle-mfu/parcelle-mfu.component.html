@@ -52,7 +52,8 @@
 
       <!-- Ligne 1: Cascade compact 4 cols -->
       <div class="form-row-four cascade-row">
-        <mat-form-field>
+        <!-- Département : masqué si le département est déduit automatiquement du code site -->
+        <mat-form-field *ngIf="!siteCode">
           <mat-label>Département</mat-label>
           <mat-select (selectionChange)="onDepartementChange($event.value)" [value]="selectedDepartement">
             <mat-option *ngFor="let dep of departements" [value]="dep.code">
@@ -71,7 +72,8 @@
             <input matInput [value]="selectedCommune" readonly>
           </ng-container>
           <ng-template #inseeInput>
-            <input matInput formControlName="insee" [matAutocomplete]="communeAuto" (input)="filterCommunes($event)">
+            <input matInput formControlName="insee" [matAutocomplete]="communeAuto" #communeTrigger="matAutocompleteTrigger"
+              (focus)="communeTrigger.openPanel()" (input)="filterCommunes($event)">
             <mat-autocomplete #communeAuto="matAutocomplete" (optionSelected)="onCommuneChange($event.option.value)">
               <mat-option *ngFor="let com of filteredCommunes" [value]="com.code">
                 {{ com.code }} - {{ com.nom }}
@@ -98,7 +100,8 @@
 
         <mat-form-field *ngIf="selectedSection">
           <mat-label>Numéro{{ isCascadeLoading ? ' (chargement...)' : '' }}</mat-label>
-          <input matInput formControlName="numero" [matAutocomplete]="numeroAuto" (input)="filterNumeros($event)"
+          <input matInput formControlName="numero" [matAutocomplete]="numeroAuto" #numeroTrigger="matAutocompleteTrigger"
+            (focus)="numeroTrigger.openPanel()" (input)="filterNumeros($event)"
             [readonly]="isCascadeLoading" [disabled]="isCascadeLoading">
           <button *ngIf="parcelleForm.get('numero')?.value" matSuffix mat-icon-button aria-label="Clear"
             class="clear-btn" [disabled]="isCascadeLoading" (click)="clearCascade('numero'); $event.stopPropagation()">

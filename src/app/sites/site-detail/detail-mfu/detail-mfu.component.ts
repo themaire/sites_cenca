@@ -211,6 +211,7 @@ export class DetailMfuComponent {
       data: {
         ...actelite,
         currentSiteUuid: this.inputDetail?.uuid_site || actelite?.site || '',
+        siteCode: this.inputDetail?.code || '',
       },
       minWidth: '80vw',
       maxWidth: '95vw',
