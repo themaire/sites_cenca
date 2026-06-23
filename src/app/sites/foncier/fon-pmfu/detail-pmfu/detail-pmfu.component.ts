@@ -29,7 +29,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, FormsModule, Form } from '
 
 import { Subscription, lastValueFrom } from 'rxjs';
 
-import { MatStepperModule, StepperOrientation,} from '@angular/material/stepper';
+import { MatStepperModule, MatStepper, StepperOrientation,} from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -213,6 +213,7 @@ export class DetailPmfuComponent {
   folders$ = this.foldersSubject.asObservable();
   @ViewChild(FileExploratorComponent) fileExplorator!: FileExploratorComponent;
   @ViewChild(MapComponent) mapComponent!: MapComponent;
+  @ViewChild('mfuStepper') mfuStepper!: MatStepper;
   
   communeInsee?: Commune; // Commune chargée dans le formulaire
   communes: Commune[] = [];
@@ -879,6 +880,7 @@ export class DetailPmfuComponent {
    * ou si la liste de fichiers a changé
    */
   onSubmit(): void {
+    const activeStepIndex = this.mfuStepper?.selectedIndex ?? 0;
 
     this.selectedFolder = undefined;
     this.galerie = undefined;
@@ -949,6 +951,7 @@ export class DetailPmfuComponent {
               }
               await this.setupPmfuForm();
               this.cdr.detectChanges();
+              this.mfuStepper.selectedIndex = activeStepIndex;
               this.isFormValid = true;
               console.log('Projet mis à jour avec succès:', result.formValue);
             },
