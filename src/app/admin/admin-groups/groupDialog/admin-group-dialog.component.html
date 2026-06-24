@@ -1,7 +1,7 @@
 <div mat-dialog-container>
   <div>
     <h2 mat-dialog-title>
-        Détail groupe code {{ group?.gro_id }} - {{ group?.gro_nom }}
+        {{ newGroup ? 'Nouveau groupe' : 'Groupe ' + group?.gro_id + ' – ' + group?.gro_nom }}
     </h2>
     <app-form-buttons
       *ngIf="!loading && !error"
@@ -23,9 +23,18 @@
     <div *ngIf="loading">Chargement...</div>
     <div *ngIf="error" class="error">{{ error }}</div>
 
-    <ng-container *ngIf="!loading && !error && group">
-      
+    <ng-container *ngIf="!loading && !error && (group || newGroup)">
+
       <form [formGroup]="groupForm">
+
+        <mat-form-field *ngIf="!newGroup" appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>ID du groupe</mat-label>
+          <input matInput formControlName="gro_id" type="number">
+          <mat-error *ngIf="groupForm.get('gro_id')?.hasError('required')">
+            L'ID est obligatoire
+          </mat-error>
+        </mat-form-field>
+
         <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
           <mat-label>Nom du groupe</mat-label>
           <input matInput formControlName="gro_nom">

@@ -96,7 +96,7 @@ export class FormAdmin {
       gro_id: [groupe?.gro_id || '', Validators.required],
       gro_nom: [groupe?.gro_nom || '', Validators.required],
       gro_description: [groupe?.gro_description || ''],
-      gro_statut: [groupe?.gro_statut || ''],
+      gro_statut: [groupe?.gro_statut ?? true],
       });
   }
 
@@ -157,14 +157,12 @@ export class FormAdmin {
       return rightMethod(valuesToUpdate, id).pipe(
         map((response) => {
           console.log(table + ' mis à jour avec succès:', response);
-          isEditMode = false; // Sortir du mode édition après la sauvegarde
+          isEditMode = false;
 
-          // Afficher le message dans le Snackbar
-          const message = String(response.message); // Conversion en string
+          const message = String(response.message);
           this.snackMessage(message, response.code, snackbar);
 
-          form.disable(); // Désactiver le formulaire après la sauvegarde
-          // Retourner l'objet avec isEditMode et formValue
+          form.disable();
           return {
             isEditMode: false,
             formValue: form.value,
@@ -180,7 +178,49 @@ export class FormAdmin {
         })
       );
     }
-  
+
+    if (mode === 'insert' && table === 'salaries') {
+      const { cd_salarie, ...userData } = valuesToUpdate as any;
+      return this.adminService.createUser(userData).pipe(
+        map((response) => {
+          console.log('Utilisateur créé avec succès:', response);
+          const message = String(response.message);
+          this.snackMessage(message, response.code, snackbar);
+          form.disable();
+          return {
+            isEditMode: false,
+            formValue: form.value,
+            isEdited: true,
+          };
+        }),
+        catchError((error) => {
+          console.error('Erreur lors de la création de l\'utilisateur', error);
+          throw error;
+        })
+      );
+    }
+
+    if (mode === 'insert' && table === 'groupes') {
+      const { gro_id, ...groupeData } = valuesToUpdate as any;
+      return this.adminService.createGroup(groupeData).pipe(
+        map((response) => {
+          console.log('Groupe créé avec succès:', response);
+          const message = String(response.message);
+          this.snackMessage(message, response.code, snackbar);
+          form.disable();
+          return {
+            isEditMode: false,
+            formValue: form.value,
+            isEdited: true,
+          };
+        }),
+        catchError((error) => {
+          console.error('Erreur lors de la création du groupe', error);
+          throw error;
+        })
+      );
+    }
+
   }
 
     // Return undefined if form is invalid or no other condition is met

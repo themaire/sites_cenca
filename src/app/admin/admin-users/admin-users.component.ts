@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { Overlay } from '@angular/cdk/overlay';
 import { AdminUserDialogComponent } from './userDialog/admin-user-dialog.component';
 
 @Component({
@@ -40,6 +41,7 @@ export class AdminUsersComponent implements OnInit {
   constructor(
     private adminService: AdminService,
     private dialog: MatDialog,
+    private overlay: Overlay,
     private confirmationService: ConfirmationService,
     private snackBar: MatSnackBar
   ) {}
@@ -65,12 +67,28 @@ export class AdminUsersComponent implements OnInit {
   openUserDialog(row: Salaries) {
     const dialogRef = this.dialog.open(AdminUserDialogComponent, {
       width: '840px',
-      data: { cd_salarie: row.cd_salarie }
+      data: { cd_salarie: row.cd_salarie },
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
     });
 
     dialogRef.afterClosed().subscribe({
       next: async () => {
         // Rafraîchir la liste après fermeture du dialogue
+        this.salaries = await this.fetch();
+        this.dataSource.data = this.salaries;
+      }
+    });
+  }
+
+  openNewUserDialog(): void {
+    const dialogRef = this.dialog.open(AdminUserDialogComponent, {
+      width: '840px',
+      data: { cd_salarie: null, isNew: true },
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: async () => {
         this.salaries = await this.fetch();
         this.dataSource.data = this.salaries;
       }

@@ -1,5 +1,13 @@
 <div class="admin-groups">
-	<h2>{{ groups.length }} groupes</h2>
+	<div style="display: flex; align-items: center; justify-content: space-between;">
+		<h2>{{ groups.length }} groupes</h2>
+		<div class="add-btn">
+			<button mat-button (click)="openNewGroupDialog()">
+				<mat-icon>add</mat-icon>
+				Ajouter un groupe
+			</button>
+		</div>
+	</div>
 
 	<mat-form-field appearance="outline" style="width: 320px; max-width: 100%;">
 		<mat-label>Rechercher</mat-label>
@@ -35,6 +43,9 @@
                 </button>
                 <button mat-icon-button color="primary" aria-label="Dupliquer le groupe" (click)="duplicateGroupConfirm(row)">
                     <mat-icon>content_copy</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" aria-label="Supprimer le groupe" (click)="deleteGroupConfirm(row)">
+                    <mat-icon>delete</mat-icon>
                 </button>
 			</td>
 		</ng-container>

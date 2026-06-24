@@ -6,19 +6,22 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 import 'moment/locale/fr';
 
 import { AdminService } from '../../admin.service';
 import { FormAdmin } from '../../form-admin'
 import { FormService } from '../../../shared/services/form.service';
-import { Salarie } from '../../admin';
+import { Salarie, SalarieGroupe, Groupes } from '../../admin';
 import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.component';
 import { ConfirmationService } from '../../../shared/services/confirmation.service';
 
@@ -54,6 +57,9 @@ export const MY_DATE_FORMATS = {
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatListModule,
     ReactiveFormsModule,
     FormButtonsComponent,
   ],
@@ -65,17 +71,28 @@ export class AdminUserDialogComponent implements OnInit {
   loading = true;
   error: string | null = null;
   user: Salarie | null = null;
-  
+
   // Formulaire réactif
   userForm!: FormGroup;
-  initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
-  
+  initialFormValues!: FormGroup;
+
   // Flags pour FormButtonsComponent
   isEditActive: boolean = false;
   isAddActive: boolean = false;
   isFormValid: boolean = false;
 
   newUser: boolean = false;
+
+  // Gestion des groupes
+  userGroups: SalarieGroupe[] = [];
+  allGroups: Groupes[] = [];
+  groupSelectControl = new FormControl<number | null>(null);
+  groupsLoading = false;
+
+  get availableGroups(): Groupes[] {
+    const assignedIds = new Set(this.userGroups.map(g => g.gro_id));
+    return this.allGroups.filter(g => !assignedIds.has(Number(g.gro_id)));
+  }
 
   constructor(
     private adminService: AdminService,
@@ -84,24 +101,29 @@ export class AdminUserDialogComponent implements OnInit {
     private formService: FormService,
     private dialogRef: MatDialogRef<AdminUserDialogComponent>,
     private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: { cd_salarie: string },
+    @Inject(MAT_DIALOG_DATA) public data: { cd_salarie: string | null, isNew?: boolean },
   ) {}
 
   async ngOnInit(): Promise<void> {
     try {
-      // console.log('Données reçues dans le dialog de la fiche utilisateur :', this.data);
-      // cd_salarie est une chaîne (ex: 'ES', 'JD', etc.)
-      const cd_salarie = String(this.data.cd_salarie);
-      this.user = await this.adminService.getUserById(cd_salarie);
-      
-      // Créer le formulaire avec les données de l'utilisateur
-      this.userForm = this.formAdmin.salarieForm(this.user || undefined);
-      this.userForm.disable(); // Désactivé par défaut (mode lecture)
-      
-      // Créer une copie des valeurs initiales du formulaire pour la comparaison ultérieure
-      this.initialFormValues = this.userForm.value;
+      if (this.data.isNew) {
+        this.newUser = true;
+        this.isAddActive = true;
+        this.userForm = this.formAdmin.salarieForm();
+        this.userForm.enable();
+        this.allGroups = await this.adminService.getAllGroups();
+      } else {
+        const cd_salarie = String(this.data.cd_salarie);
+        [this.user, this.userGroups, this.allGroups] = await Promise.all([
+          this.adminService.getUserById(cd_salarie),
+          this.adminService.getUserGroups(cd_salarie),
+          this.adminService.getAllGroups(),
+        ]);
+        this.userForm = this.formAdmin.salarieForm(this.user || undefined);
+        this.userForm.disable();
+      }
 
-      // S'abonner aux changements de validité du formulaire
+      this.initialFormValues = this.userForm.value;
       this.userForm.statusChanges.subscribe(() => {
         this.isFormValid = this.userForm.valid;
       });
@@ -111,6 +133,33 @@ export class AdminUserDialogComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  addGroup(): void {
+    const gro_id = this.groupSelectControl.value;
+    if (gro_id === null) return;
+
+    this.groupsLoading = true;
+    this.adminService.addGroupToUser(this.user!.cd_salarie, gro_id).subscribe({
+      next: async (response) => {
+        if (response.success) {
+          this.userGroups = await this.adminService.getUserGroups(this.user!.cd_salarie);
+          this.groupSelectControl.setValue(null);
+        }
+        this.groupsLoading = false;
+      },
+      error: () => { this.groupsLoading = false; }
+    });
+  }
+
+  removeGroup(salgro_id: number): void {
+    this.adminService.removeGroupFromUser(salgro_id).subscribe({
+      next: async (response) => {
+        if (response.success) {
+          this.userGroups = await this.adminService.getUserGroups(this.user!.cd_salarie);
+        }
+      }
+    });
   }
 
   toggleEdit(): void {
@@ -129,11 +178,21 @@ export class AdminUserDialogComponent implements OnInit {
     console.log("Modification d'un formulaire utilisateur :", this.userForm.value);
     console.log("this.newUser =", this.newUser);
 
-    if(this.newUser){
-      this.snackBar.open('Création d\'utilisateur non encore implémentée', 'Fermer', {
-        duration: 3000,
-        panelClass: ['snackbar-info'],
-      });
+    if (this.newUser) {
+      const submitObservable = this.formAdmin.putbdd('insert', 'salaries', this.userForm, this.isAddActive, this.snackBar);
+      if (submitObservable) {
+        submitObservable.subscribe({
+          next: () => {
+            this.dialogRef.close(true);
+          },
+          error: (error) => {
+            this.snackBar.open('Erreur lors de la création de l\'utilisateur. ' + error.message, 'Fermer', {
+              duration: 3000,
+              panelClass: ['snackbar-error'],
+            });
+          }
+        });
+      }
     } else {
       // Effectuer la création de l'utilisateur via le service adminService
       // Nous faisons cela au travers / dans l'observable retourné par putBdd()
