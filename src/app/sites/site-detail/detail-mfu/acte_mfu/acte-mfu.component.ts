@@ -87,6 +87,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   
   newMfu = false;
   isEditMfu = false;
+  gro_id: number | null = null;
   
   mfuForm!: FormGroup;
   isFormValid = false;
@@ -120,6 +121,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    this.gro_id = this.loginService.user()?.gro_id ?? null;
     await this.loadSelectValues();
 
     if (this.acteLite?.uuid_acte) {

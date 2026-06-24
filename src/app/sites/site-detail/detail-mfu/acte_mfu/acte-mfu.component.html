@@ -45,8 +45,8 @@
     </div>
 
     <!-- Bouton d'ajout d'un acte à un site -->
-    <div class="form-buttons" *ngIf="!newMfu && !isEditMfu">
-      <app-form-buttons [isEditActive]="false" [isAddActive]="false" [isFormValid]="true" icone="add" theme="proteger" label="Rattacher cet acte à un site"
+    <div class="form-buttons" *ngIf="isEditMfu && !newMfu">
+      <app-form-buttons [isEditActive]="false" [isAddActive]="false" [isFormValid]="true" icone="add" theme="proteger" label="Rattacher cet acte à un AUTRE site"
         (toggleAction)="openAttachSiteDialog()">
       </app-form-buttons>
     </div>
@@ -146,15 +146,18 @@
         <!-- Ligne 3 : URL | Lien de téléchargement | Remarque (3 colonnes) -->
         <div class="form-row-three url-row">
           <!-- Cellule URL (flex 0) -->
-          <mat-form-field class="url-cell" *ngIf="isEditMfu || newMfu">
+          <mat-form-field class="url-cell" *ngIf="(isEditMfu || newMfu) && gro_id !== null && gro_id > 2">
             <mat-label>URL document</mat-label>
             <input matInput formControlName="url" [readonly]="!isEditMfu">
           </mat-form-field>
 
           <!-- Cellule téléchargement (flex 1) -->
-          <div class="download-cell" *ngIf="!newMfu && mfuForm.get('url')?.value">
+          <div class="download-cell" *ngIf="!newMfu && mfuForm.get('url')?.value; else noActe">
             📎 <a [href]="mfuForm.get('url')?.value" target="_blank">Télécharger l'acte</a>
           </div>
+          <ng-template #noActe>
+            <div class="download-cell no-acte" *ngIf="!newMfu">Aucun acte disponible</div>
+          </ng-template>
 
           <!-- Cellule remarque (flex 2) : prend l'espace restant -->
           <mat-form-field class="remarque-cell">
