@@ -26,6 +26,7 @@ import {
 import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
 import { ProjetMfu } from '../../sites/foncier/foncier';
 import { SelectValue } from '../interfaces/formValues';
+import { DocPlanDetail } from '../../sites/site-detail/detail-gestion/docplan';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -501,6 +502,37 @@ export class FormService {
       clearError();
       return null;
     };
+  }
+
+  // ============================================================
+  // SECTION DOCPLAN — Documents planificateurs
+  // ============================================================
+
+  newDocPlanForm(doc?: DocPlanDetail, uuid_site?: string): FormGroup {
+    return this.fb.group({
+      uuid_doc: [doc?.uuid_doc || uuidv4()],
+      site: [uuid_site || doc?.site || null],
+      entite_coherente: [doc?.entite_coherente || null],
+      nom: [doc?.nom || '', Validators.required],
+      annee_deb: [doc?.annee_deb || null, [Validators.required, this.integerValidator()]],
+      annee_fin: [doc?.annee_fin || null, [this.integerValidator()]],
+      typ_document: [doc?.typ_document || null, Validators.required],
+      surface: [doc?.surface || null],
+      evaluation: [doc?.evaluation || null, [this.integerValidator()]],
+      actuel: [doc?.actuel || null, Validators.required],
+      url: [doc?.url || null],
+      validite: [doc?.validite !== undefined ? doc.validite : true],
+    });
+  }
+
+  newUniteGestionForm(uuid_doc: string): FormGroup {
+    return this.fb.group({
+      uuid_ug: [uuidv4()],
+      code: [''],
+      nom: [''],
+      surface: [null],
+      document: [uuid_doc],
+    });
   }
 
   newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {

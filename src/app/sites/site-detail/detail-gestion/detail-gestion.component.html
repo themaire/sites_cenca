@@ -1,64 +1,113 @@
-<div *ngIf="docPlan.length > 0; then thenBlock else elseBlock"></div>
+<div class="edition">
+  Ajouter un document planificateur :
+  <button mat-icon-button
+          matTooltip="Ajouter un document planificateur"
+          class="btn-edition"
+          (click)="openDialog()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
 
-<ng-template #thenBlock>
-    Nb de plans de gestion : {{ docPlan.length }}<br>
-    <ul>
-        <li *ngFor="let doc of docPlan">
-          Document : {{ doc.document }}<br>
-          Année début : {{ doc.annee_deb }}<br>
-          Année fin : {{ doc.annee_fin }}<br>
-          Surface : {{ doc.surface }}<br>
-          Doc. actuel : {{ doc.docactuel }}<br>
-          Lien du document : <a [href]="doc.url" target="_blank">Télécharger</a>
-        </li>
-      </ul>
-</ng-template>
+<div *ngIf="docPlan.length > 0; then thenBlock; else elseBlock"></div>
 
-<ng-template #elseBlock>
-    Il n'y a pas de plan de gestion sur ce site.
-</ng-template>
+<div class="detail-gestion">
+
+  <ng-template #thenBlock>
+    <h2>Documents planificateurs : {{ docPlan.length }}</h2>
+
+    <mat-form-field class="filter-field">
+      <mat-label>Rechercher</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Filtrer les documents...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+      <ng-container matColumnDef="document">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Nom du document</mat-header-cell>
+        <mat-cell *matCellDef="let element; let i = index"
+                  [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          {{ element.document }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="annee_deb">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="col-annee">Début</mat-header-cell>
+        <mat-cell *matCellDef="let element; let i = index" class="col-annee"
+                  [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          {{ element.annee_deb }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="annee_fin">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="col-annee">Fin</mat-header-cell>
+        <mat-cell *matCellDef="let element; let i = index" class="col-annee"
+                  [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          {{ element.annee_fin || '—' }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actuel">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="col-actuel">En cours</mat-header-cell>
+        <mat-cell *matCellDef="let element; let i = index" class="col-actuel"
+                  [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          {{ element.docactuel }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="pdf">
+        <mat-header-cell *matHeaderCellDef class="col-pdf">PDF</mat-header-cell>
+        <mat-cell *matCellDef="let element; let i = index" class="col-pdf"
+                  [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          <a *ngIf="element.url" [href]="element.url" target="_blank"
+             matTooltip="Ouvrir le PDF" (click)="$event.stopPropagation()">
+            <mat-icon class="pdf-icon">picture_as_pdf</mat-icon>
+          </a>
+          <span *ngIf="!element.url">—</span>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"
+               (click)="openDialog(row)"></mat-row>
+    </mat-table>
+  </ng-template>
+
+  <ng-template #elseBlock>
+    Il n'y a pas de document planificateur associé à ce site.
+  </ng-template>
+
+</div>
 
 <div *ngIf="inputDetail !== undefined">
-    <table>
-        <tbody>
-            <tr>
-                <td colspan="2">
-                    Agriculteurs/trices sous contrat ou convention : 
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <section>---Tableau à venir---</section>
-                </td>
-            </tr>
+  <table>
+    <tbody>
+      <tr>
+        <td colspan="2">Agriculteurs/trices sous contrat ou convention :</td>
+      </tr>
+      <tr>
+        <td colspan="2"><section>---Tableau à venir---</section></td>
+      </tr>
 
-            <tr>
-                <td colspan="2">
-                    Surfaces en libre évolution : 
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <section>---Tableau à venir---</section>
-                </td>
-            </tr>
+      <tr>
+        <td colspan="2">Surfaces en libre évolution :</td>
+      </tr>
+      <tr>
+        <td colspan="2"><section>---Tableau à venir---</section></td>
+      </tr>
 
-            <tr>
-                <td colspan="2">
-                    Conservateur/trice(s) bénévoles : 
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <section>---Tableau à venir---</section>
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="2">
-                    Pourcentage estimé du site dont la gestion est assurée : {{inputDetail.pourc_gere}}%
-                </td>
-            </tr>
-        </tbody>
-      </table>
+      <tr>
+        <td colspan="2">Conservateur/trice(s) bénévoles :</td>
+      </tr>
+      <tr>
+        <td colspan="2"><section>---Tableau à venir---</section></td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          Pourcentage estimé du site dont la gestion est assurée : {{inputDetail.pourc_gere}}%
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

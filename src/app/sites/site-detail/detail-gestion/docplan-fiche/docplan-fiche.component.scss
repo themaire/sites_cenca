@@ -1,0 +1,198 @@
+@use '@angular/material' as mat;
+@import "../../../../styles/themes.scss";
+@import "../../../../styles/mixins.scss";
+@import "../../../../styles/variables.scss";
+
+:host {
+  @include mat.all-component-themes(mat.m2-define-light-theme((
+    color: (
+      primary: $connaitre-palette,
+      accent:  mat.m2-define-palette(mat.$m2-amber-palette),
+      warn:    $red-palette,
+    )
+  )));
+}
+
+.dialogue {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+mat-dialog-content.dialogue {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.conteneur-docplan {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.connaitre {
+  padding-bottom: 15px;
+  @include bandeau($connaitre);
+}
+
+.docplan {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+.button-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .form-buttons {
+    flex-shrink: 0;
+  }
+
+  .title-container {
+    flex: 1;
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+  display: block;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1;
+    min-width: 140px;
+  }
+}
+
+.custom-mat-form-field {
+  display: inline-flex;
+  margin-right: 12px;
+  margin-bottom: 4px;
+}
+
+.note-info {
+  font-size: 0.8rem;
+  color: #555;
+  font-style: italic;
+  margin: 16px 0;
+  border-left: 3px solid #1565c0;
+  padding-left: 10px;
+  line-height: 1.4;
+}
+
+// --- Section Unités de gestion ---
+
+.ug-section {
+  margin-top: 16px;
+
+  .ug-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    h3 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+  }
+
+  mat-table {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .no-ug {
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+    margin: 4px 0 12px 0;
+  }
+}
+
+.ug-add-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-top: 8px;
+
+  .ug-field {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .ug-field-surface {
+    flex: 0 0 120px;
+  }
+}
+
+// --- Lien de téléchargement du document PDF ---
+
+.download-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 8px 0 4px 0;
+  background-color: #eaf4fb;
+  border-left: 3px solid $bleuM;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: $bleuM;
+
+  a {
+    color: $bleuM;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &.no-pdf {
+    color: #888;
+    border-left-color: #ccc;
+    background-color: #f5f5f5;
+    font-style: italic;
+  }
+}
+
+// --- Spinner ---
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 16px;
+
+  p {
+    color: #666;
+  }
+}
