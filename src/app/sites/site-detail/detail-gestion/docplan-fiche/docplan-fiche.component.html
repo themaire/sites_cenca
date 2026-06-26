@@ -70,7 +70,7 @@
     <div class="download-cell" *ngIf="docPlanForm.get('url')?.value">
       📎 <a [href]="docPlanForm.get('url')?.value" target="_blank">Télécharger le document planificateur</a>
     </div>
-    <div class="download-cell no-pdf" *ngIf="!isNewDoc && !docPlanForm.get('url')?.value">
+    <div download-cell no-pdf *ngIf="!isEditMode || !isNewDoc && !docPlanForm.get('url')?.value">
       Aucun document PDF disponible
     </div>
 
@@ -139,9 +139,6 @@
 
       <div class="download-cell" *ngIf="!isNewDoc && docPlanForm.get('url')?.value">
         📎 <a [href]="docPlanForm.get('url')?.value" target="_blank">Télécharger le document planificateur</a>
-      </div>
-      <div class="download-cell no-pdf" *ngIf="!isNewDoc && !docPlanForm.get('url')?.value">
-        Aucun document PDF disponible
       </div>
 
     </form>
