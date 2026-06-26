@@ -211,4 +211,28 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
     this.docPlanForm.patchValue({ entite_coherente: null });
     this.cdr.detectChanges();
   }
+
+  deleteItemConfirm(): void {
+    const nom = this.docPlanDetail?.nom || 'ce document planificateur';
+    this.confirmationService
+      .confirm(
+        'Confirmation de suppression',
+        `Voulez-vous vraiment supprimer "<strong>${nom}</strong>" ?<br><strong>Cette action est irréversible.</strong>`,
+        'delete'
+      )
+      .subscribe(result => {
+        if (result) {
+          this.sitesService.deleteDocPlan(this.docPlanDetail!.uuid_doc).subscribe({
+            next: () => {
+              this.snackBar.open('Document planificateur supprimé', 'Fermer', {
+                duration: 3000,
+                panelClass: ['snackbar-success'],
+              });
+              this.dialogRef.close(true);
+            },
+            error: (err) => console.error('Erreur suppression document planificateur', err),
+          });
+        }
+      });
+  }
 }
