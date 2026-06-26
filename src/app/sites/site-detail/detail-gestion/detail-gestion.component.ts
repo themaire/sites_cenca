@@ -1,4 +1,4 @@
-import { Component, Input, inject, SimpleChanges, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, inject, SimpleChanges, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DetailSite } from '../../site-detail';
@@ -30,11 +30,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
   templateUrl: './detail-gestion.component.html',
   styleUrls: ['./detail-gestion.component.scss']
 })
-export class DetailGestionComponent implements AfterViewInit {
+export class DetailGestionComponent {
   @Input() inputDetail?: DetailSite;
   @Input() inputUUIDsite?: String;
 
-  @ViewChild(MatSort) sort!: MatSort;
+  private _sort!: MatSort;
+  @ViewChild(MatSort) set sort(s: MatSort) {
+    this._sort = s;
+    if (this.dataSource) this.dataSource.sort = s;
+  }
 
   public docPlan: DocPlan[] = [];
   public dataSource!: MatTableDataSource<DocPlan>;
@@ -46,12 +50,6 @@ export class DetailGestionComponent implements AfterViewInit {
   constructor(
     private dialog: MatDialog,
   ) {}
-
-  ngAfterViewInit(): void {
-    if (this.dataSource) {
-      this.dataSource.sort = this.sort;
-    }
-  }
 
   get uuid_site(): string | undefined {
     return (this.inputDetail?.uuid_site || this.inputUUIDsite) as string | undefined;
@@ -74,7 +72,7 @@ export class DetailGestionComponent implements AfterViewInit {
     try {
       this.docPlan = await this.research.getDocPlan(subroute);
       this.dataSource = new MatTableDataSource(this.docPlan);
-      this.dataSource.sort = this.sort;
+      this.dataSource.sort = this._sort;
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Erreur lors du chargement des documents planificateurs', error);
@@ -94,8 +92,8 @@ export class DetailGestionComponent implements AfterViewInit {
       data: { uuid_doc: doc?.uuid_doc, uuid_site },
       minWidth: '50vw',
       maxWidth: '95vw',
-      height: '80vh',
-      maxHeight: '90vh',
+      height: '70vh',
+      maxHeight: '80vh',
       hasBackdrop: true,
       backdropClass: 'custom-backdrop-gerer',
       enterAnimationDuration: '400ms',
