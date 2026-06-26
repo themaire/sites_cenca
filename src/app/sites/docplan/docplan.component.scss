@@ -9,9 +9,9 @@
 	min-height: 100vh;
 }
 
-.proteger {
+.connaitre {
 	padding-bottom: 15px;
-	@include bandeau($couleur-flore);
+	@include bandeau($connaitre);
 }
 
 .sites-enfants {

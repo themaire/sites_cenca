@@ -33,3 +33,10 @@ export interface UniteGestion {
     surface: number | null;
     document: string;
 }
+
+// Entité cohérente de gestion (vue docplan.listecg)
+export interface EntiteCoherente {
+    uuid_ecg: string;
+    nom_ecg: string;
+    nom: string | null; // sites associés concaténés
+}

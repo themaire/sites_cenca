@@ -535,6 +535,13 @@ export class FormService {
     });
   }
 
+  newEntiteCoherenteForm(): FormGroup {
+    return this.fb.group({
+      uuid_ecg: [uuidv4()],
+      nom: ['', Validators.required],
+    });
+  }
+
   newShapeForm(uuid_ope: string, type_geometry: string): FormGroup {
     return this.fb.group({
       uuid_ope: [uuid_ope || null, Validators.required],
