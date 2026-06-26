@@ -8,7 +8,6 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -27,7 +26,6 @@ import { effect } from '@angular/core';
   selector: 'app-header',
   standalone: true,
   imports: [
-    RouterOutlet,
     RouterModule,
     MatButtonModule,
     MatMenuModule,

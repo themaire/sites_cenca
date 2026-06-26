@@ -11,8 +11,8 @@ import { CardComponent } from '../../home/card/card.component';
   selector: 'app-foncier',
   standalone: true,
   imports: [RouterModule,
-            CardComponent,
-            CommonModule
+    CardComponent,
+    CommonModule
   ],
   templateUrl: './foncier.component.html',
   styleUrls: ['./foncier.component.scss', '../../home/home.component.scss']
@@ -43,22 +43,22 @@ export class FoncierComponent implements OnInit {
     this.menuService.loadSubMenuItem(10).then((subMenuItems) => {
       console.log("subMenuItems de ngOnInit() du component foncier  : ");
       console.log(subMenuItems);
-      
+
       // Debug chaque élément
       subMenuItems.forEach((item, index) => {
         console.log(`Item ${index}:`, item);
         console.log(`Item ${index} opened:`, item.opened);
         console.log(`Item ${index} opened type:`, typeof item.opened);
       });
-    
+
       // Filtre directement les items qui ont opened: true
       this.foncierItems = subMenuItems.filter(item => {
         // Divise la route en segments
         const routeSegments = item.route?.split('/') || [];
-        
+
         // Retire les premiers segments selon subrouteLength
         const remainingSegments = routeSegments.slice(this.subrouteLength);
-        
+
         // Reconstruit la route
         item.route = remainingSegments.join('/');
 
@@ -68,12 +68,20 @@ export class FoncierComponent implements OnInit {
         } else if ((item.class_color?.split('-').length ?? 0) === 1) {
           item.parent_name = item.class_color?.replace(/^\w/, l => l.toUpperCase());
         }
-        
+
         console.log('Route modifiée:', item.route); // ← Ajoute ce log ici
+
+        // Uniformiser la carte "Actes multi-sites" et forcer la route canonique AMFU.
+        if (item.route === 'actes' || item.route === 'actes-multi-sites' || item.route === 'amfu') {
+          item.route = 'amfu';
+          item.parent_name = 'Protéger';
+          item.class_color = 'c-proteger';
+        }
+
         console.log('Filtering item:', item.name, 'opened:', item.opened);
         return item.opened === true;
       });
-      
+
       console.log("Sous-menus chargés uniquement opened :", this.foncierItems);
     });
 
@@ -81,5 +89,5 @@ export class FoncierComponent implements OnInit {
     console.log(this.foncierItems);
   }
 
-  
+
 }

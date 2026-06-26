@@ -38,6 +38,11 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./sites/foncier/foncier.routes').then((mod) => mod.FONCIER_ROUTES),
   },
+  {
+    path: 'fonciers',
+    redirectTo: 'foncier',
+    pathMatch: 'full',
+  },
 
   // Lazy-load
   {
@@ -69,6 +74,7 @@ export const routes: Routes = [
     path: 'aide/:section',
     component: AideComponent,
   },
+    // Redirection ajoutée pour accepter l'URL /fonciers
 
   {
     path: '**',

@@ -1,0 +1,41 @@
+<div class='titre'>
+    <!-- Dialogue de rattachement d'un site à l'acte existant. -->
+    Rattacher cet acte à un site
+</div>
+
+<mat-dialog-content>
+    <div class="content" *ngIf="!isLoading; else loadingTpl">
+        <mat-form-field appearance="outline" class="site-field">
+            <mat-label>Site</mat-label>
+            <input
+                matInput
+                type="text"
+                [formControl]="siteControl"
+                [matAutocomplete]="siteAuto"
+                placeholder="Code ou nom du site"
+            />
+            <mat-autocomplete #siteAuto="matAutocomplete" [displayWith]="displaySiteByUuid" (optionSelected)="onSiteOptionSelected($event.option.value)">
+                <mat-option *ngFor="let site of filteredSites" [value]="site.uuid_site">
+                    {{ formatSiteLabel(site) }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <p class="empty" *ngIf="!sites.length">Aucun site disponible pour rattachement.</p>
+    </div>
+
+    <ng-template #loadingTpl>
+        <div class="loading">
+            <mat-spinner diameter="36"></mat-spinner>
+            <span>Chargement des sites...</span>
+        </div>
+    </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()" [disabled]="isSubmitting">Annuler</button>
+    <button mat-raised-button color="primary" (click)="attach()"
+        [disabled]="isLoading || isSubmitting || !selectedSiteUuid">
+        Rattacher
+    </button>
+</mat-dialog-actions>
