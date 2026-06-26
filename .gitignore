@@ -138,3 +138,4 @@ dist
 
 .DS_Store
 *.orig
+src/app/sites/site-detail/detail-gestion/assets/

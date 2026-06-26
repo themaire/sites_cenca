@@ -1,0 +1,81 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/mixins.scss";
+
+.selectors-error {
+  color: $superRed;
+  font-size: $p12;
+  margin-bottom: 8px;
+}
+
+.conteneur {
+  @include dim(100%, auto);
+  display: grid;
+  grid-template-rows: 2fr 1fr;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  .recherche {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    flex-wrap: wrap;
+    gap: 31px;
+    padding-top: 20px;
+    @include dim(auto, auto);
+    @include align(center, space-between);
+  }
+  .selecteur {
+    @include dim(100%, auto);
+  }
+  .selecteur-localisation {
+    grid-column: span 2;
+  }
+  .label {
+    @include Typo($p14, $normal, $couleur-flore);
+  }
+  .btn {
+    display: flex;
+    @include align(center, center);
+    margin: 0 40px 0 19px;
+    button {
+      @include btn($couleur-flore, white, white, $couleur-territoire);
+      @include align(center, center);
+    }
+  }
+}
+
+@media screen and (max-width: $mobile) {
+  .conteneur {
+    grid-template-rows: 1fr 30%;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    .recherche {
+      grid-template-columns: 1fr 1fr;
+    }
+    .label {
+      font-size: $p12;
+    }
+
+    .btn {
+      padding: 20px;
+      height: 30%;
+    }
+  }
+}
+
+@media screen and (min-width: $mobile) and (max-width: $tablette) {
+  .conteneur {
+    grid-template-rows: 1fr 30%;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    .recherche {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .label {
+      font-size: $p12;
+    }
+
+    .btn {
+      height: 30%;
+    }
+  }
+}

@@ -1,0 +1,253 @@
+<mat-dialog-content class="dialogue" *ngIf="!isLoading; else loading">
+<div class="conteneur-docplan">
+  <div class="connaitre">Connaître</div>
+  <div class="docplan">
+
+  <!-- En-tête : boutons + titre -->
+  <div class="button-title">
+    <div class="form-buttons">
+      <app-form-buttons
+        [isEditActive]="isEditMode"
+        icone="edit"
+        [theme]="'connaitre'"
+        [isFormValid]="isFormValid"
+        (toggleAction)="toggleEdit()"
+        (onSubmit)="onSubmit()"
+      ></app-form-buttons>
+    </div>
+
+    <div class="title-container">
+      <h2 *ngIf="isNewDoc">Nouveau document planificateur</h2>
+      <h2 *ngIf="!isNewDoc && !isEditMode">Document planificateur</h2>
+      <h2 *ngIf="!isNewDoc && isEditMode">Modification du document planificateur</h2>
+    </div>
+  </div>
+
+  <!-- ==============================
+       MODE CONSULTATION
+  =============================== -->
+  <ng-container *ngIf="!isEditMode">
+
+    <mat-form-field class="custom-mat-form-field full-width">
+      <mat-label>Nom du document</mat-label>
+      <input matInput [value]="docPlanForm.get('nom')?.value || 'Non renseigné'" readonly>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field class="custom-mat-form-field">
+        <mat-label>Année début</mat-label>
+        <input matInput [value]="docPlanForm.get('annee_deb')?.value || 'Non renseigné'" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="custom-mat-form-field">
+        <mat-label>Année fin</mat-label>
+        <input matInput [value]="docPlanForm.get('annee_fin')?.value || '—'" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="custom-mat-form-field">
+        <mat-label>Type de document</mat-label>
+        <input matInput [value]="getTypDocLibelle(docPlanForm.get('typ_document')?.value)" readonly>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field class="custom-mat-form-field">
+        <mat-label>Surface du site concerné (ha)</mat-label>
+        <input matInput [value]="docPlanForm.get('surface')?.value ?? '—'" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="custom-mat-form-field">
+        <mat-label>Année d'évaluation</mat-label>
+        <input matInput [value]="docPlanForm.get('evaluation')?.value ?? '—'" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="custom-mat-form-field">
+        <mat-label>Document en cours de validité ?</mat-label>
+        <input matInput [value]="docPlanForm.get('actuel')?.value || 'Non renseigné'" readonly>
+      </mat-form-field>
+    </div>
+
+    <div class="download-cell" *ngIf="docPlanForm.get('url')?.value">
+      📎 <a [href]="docPlanForm.get('url')?.value" target="_blank">Télécharger le document planificateur</a>
+    </div>
+    <div class="download-cell no-pdf" *ngIf="!isNewDoc && !docPlanForm.get('url')?.value">
+      Aucun document PDF disponible
+    </div>
+
+  </ng-container>
+
+  <!-- ==============================
+       MODE ÉDITION
+  =============================== -->
+  <ng-container *ngIf="isEditMode">
+    <form [formGroup]="docPlanForm">
+
+      <mat-form-field class="full-width">
+        <mat-label>Nom du document *</mat-label>
+        <textarea matInput formControlName="nom" rows="2"></textarea>
+        <mat-error *ngIf="docPlanForm.get('nom')?.hasError('required')">Champ obligatoire</mat-error>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Année début *</mat-label>
+          <input matInput type="number" formControlName="annee_deb">
+          <mat-error *ngIf="docPlanForm.get('annee_deb')?.hasError('required')">Champ obligatoire</mat-error>
+          <mat-error *ngIf="docPlanForm.get('annee_deb')?.hasError('integer')">Doit être un entier</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Année fin</mat-label>
+          <input matInput type="number" formControlName="annee_fin">
+          <mat-error *ngIf="docPlanForm.get('annee_fin')?.hasError('integer')">Doit être un entier</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Type de document *</mat-label>
+          <mat-select formControlName="typ_document">
+            <mat-option *ngFor="let t of typesDocument" [value]="t.cd_type">{{ t.libelle }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="docPlanForm.get('typ_document')?.hasError('required')">Champ obligatoire</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Surface du site concerné (ha)</mat-label>
+          <input matInput type="number" step="0.0001" formControlName="surface">
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Année d'évaluation</mat-label>
+          <input matInput type="number" formControlName="evaluation">
+          <mat-error *ngIf="docPlanForm.get('evaluation')?.hasError('integer')">Doit être un entier</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Document en cours de validité ? *</mat-label>
+          <mat-select formControlName="actuel">
+            <mat-option *ngFor="let o of actuelOptions" [value]="o.cd_type">{{ o.libelle }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="docPlanForm.get('actuel')?.hasError('required')">Champ obligatoire</mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field class="full-width" *ngIf="isAdmin">
+        <mat-label>URL du PDF</mat-label>
+        <input matInput formControlName="url" placeholder="https://...">
+      </mat-form-field>
+
+      <div class="download-cell" *ngIf="!isNewDoc && docPlanForm.get('url')?.value">
+        📎 <a [href]="docPlanForm.get('url')?.value" target="_blank">Télécharger le document planificateur</a>
+      </div>
+      <div class="download-cell no-pdf" *ngIf="!isNewDoc && !docPlanForm.get('url')?.value">
+        Aucun document PDF disponible
+      </div>
+
+    </form>
+  </ng-container>
+
+  <!-- Note informative -->
+  <p class="note-info">
+    Un document planificateur peut être associé à un ou plusieurs sites. S'il concerne plusieurs sites,
+    on considère que ces sites constituent une entité cohérente de gestion (qu'ils soient nommés ainsi
+    sur le document ou non). Il ne faut donc pas créer plusieurs fois le même document, mais indiquer
+    dans le champ ci-dessous l'entité cohérente de gestion correspondante, après l'avoir créée.
+  </p>
+
+  <!-- ==============================
+       UNITÉS DE GESTION
+  =============================== -->
+  <div class="ug-section">
+
+    <div class="ug-header">
+      <h3>Unités de gestion</h3>
+      <button mat-icon-button type="button"
+              matTooltip="Ajouter une unité de gestion"
+              *ngIf="isEditMode && !isAddingUG"
+              (click)="startAddUG()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <mat-table [dataSource]="ugDataSource" class="mat-elevation-z2"
+               *ngIf="unitesGestion.length > 0 || isAddingUG">
+
+      <ng-container matColumnDef="code">
+        <mat-header-cell *matHeaderCellDef>Code UG</mat-header-cell>
+        <mat-cell *matCellDef="let ug">{{ ug.code }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="nom">
+        <mat-header-cell *matHeaderCellDef>Nom</mat-header-cell>
+        <mat-cell *matCellDef="let ug">{{ ug.nom }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="surface">
+        <mat-header-cell *matHeaderCellDef>Surface (ha)</mat-header-cell>
+        <mat-cell *matCellDef="let ug">{{ ug.surface }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let ug">
+          <button mat-icon-button color="warn"
+                  *ngIf="isEditMode"
+                  matTooltip="Supprimer cette unité de gestion"
+                  (click)="deleteUG(ug)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="ugColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: ugColumns"></mat-row>
+    </mat-table>
+
+    <p class="no-ug" *ngIf="unitesGestion.length === 0 && !isAddingUG">
+      Aucune unité de gestion enregistrée.
+    </p>
+
+    <!-- Formulaire d'ajout d'une UG -->
+    <div *ngIf="isAddingUG" class="ug-add-form" [formGroup]="ugForm">
+      <mat-form-field class="ug-field">
+        <mat-label>Code UG</mat-label>
+        <input matInput formControlName="code">
+      </mat-form-field>
+
+      <mat-form-field class="ug-field">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom">
+      </mat-form-field>
+
+      <mat-form-field class="ug-field-surface">
+        <mat-label>Surface (ha)</mat-label>
+        <input matInput type="number" step="0.0001" formControlName="surface">
+      </mat-form-field>
+
+      <button mat-icon-button color="primary" type="button"
+              matTooltip="Valider l'ajout"
+              (click)="saveUG()">
+        <mat-icon>check</mat-icon>
+      </button>
+
+      <button mat-icon-button type="button"
+              matTooltip="Annuler"
+              (click)="cancelAddUG()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+  </div>
+
+  </div>
+</div>
+</mat-dialog-content>
+
+<!-- Spinner de chargement -->
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner class="spinner-vert"></mat-spinner>
+    <p>Chargement...</p>
+  </div>
+</ng-template>

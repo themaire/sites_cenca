@@ -28,6 +28,16 @@
       @include icon($couleur-flore, white);
     }
 
+    // Theme connaitre
+    .btn-edition-connaitre {
+      @include btn-icon($bleuM, $bleuC);
+      @include icon(white, black);
+    }
+    .btn-sauvegarde-connaitre {
+      @include btn-icon(white, $bleuM);
+      @include icon($bleuF, white);
+    }
+
     // Theme preferences
     .btn-edition-preferences {
       @include btn-icon($parametres, $bleuC);

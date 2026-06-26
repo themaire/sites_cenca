@@ -1,0 +1,104 @@
+<div class="docplan-display">
+  <p>Liste des documents de plans de gestion sélectionnés :</p>
+
+  <p *ngIf="isLoading" class="status-msg">Chargement en cours…</p>
+  <p *ngIf="loadError" class="status-msg error">{{ loadError }}</p>
+
+  <ng-container *ngIf="dataSource">
+    <mat-form-field class="filtre">
+      <mat-label>Mots-clés</mat-label>
+      <input
+        matInput
+        (keyup)="applyFilter($event)"
+        placeholder="Document, site..."
+        #input
+      />
+    </mat-form-field>
+
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+      <ng-container matColumnDef="document">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="document">
+          Document
+        </th>
+        <td mat-cell *matCellDef="let element" class="document">
+          {{ element.document }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="code_site">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="code_site">
+          Code site
+        </th>
+        <td mat-cell *matCellDef="let element" class="code_site">
+          {{ element.code_site }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="annee_deb">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="annee_deb">
+          Année début
+        </th>
+        <td mat-cell *matCellDef="let element" class="annee_deb">
+          {{ element.annee_deb }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="annee_fin">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="annee_fin">
+          Année fin
+        </th>
+        <td mat-cell *matCellDef="let element" class="annee_fin">
+          {{ element.annee_fin }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="docactuel">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="docactuel">
+          Actuel
+        </th>
+        <td mat-cell *matCellDef="let element" class="docactuel">
+          {{ element.docactuel }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="typ_document">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="typ_document">
+          Type
+        </th>
+        <td mat-cell *matCellDef="let element" class="typ_document">
+          {{ element.typ_document }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="surface">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="surface">
+          Surface (ha)
+        </th>
+        <td mat-cell *matCellDef="let element" class="surface">
+          {{ element.surface }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"
+          (click)="onSelect(row)"
+          class="clickable-row"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="7">
+          Pas de donnée correspondante à votre filtre sur le mot clé :
+          "{{ input.value }}"
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [pageSize]="20"
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+      aria-label="Tableau de sélection des documents de plans de gestion."
+    >
+    </mat-paginator>
+  </ng-container>
+</div>

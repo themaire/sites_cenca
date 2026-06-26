@@ -8,7 +8,7 @@ import { of, from, Observable } from 'rxjs';
 // interfaces utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
 import { Commune } from './site-detail/detail-infos/commune';
-import { DocPlan } from './site-detail/detail-gestion/docplan';
+import { DocPlan, DocPlanDetail, UniteGestion } from './site-detail/detail-gestion/docplan';
 import { MilNat } from './site-detail/detail-habitats/docmilnat';
 import { Acte } from './site-detail/detail-mfu/acte';
 import { ProjetLite } from './site-detail/detail-projets/projets';
@@ -63,6 +63,24 @@ export class SitesService {
 
   async getDocPlan(subroute: string): Promise<DocPlan[]> {
     return this.getData<DocPlan[]>(subroute);
+  }
+
+  async getDocPlanDetail(uuid_doc: string): Promise<DocPlanDetail> {
+    return this.getData<DocPlanDetail>(`pgestion/doc/uuid=${uuid_doc}`);
+  }
+
+  async getDocPlanUG(uuid_doc: string): Promise<UniteGestion[]> {
+    return this.getData<UniteGestion[]>(`pgestion/doc/uuid=${uuid_doc}/ug`);
+  }
+
+  deleteDocPlanUG(uuid_ug: string): Observable<any> {
+    const url = `${this.activeUrl}delete/docplan_unites_gestion/uuid_ug=${uuid_ug}`;
+    return this.http.delete<any>(url).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression de l\'unité de gestion', error);
+        throw error;
+      })
+    );
   }
 
   async getMilNat(subroute: string): Promise<MilNat[]> {

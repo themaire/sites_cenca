@@ -1,0 +1,28 @@
+@import "../../../styles/variables.scss";
+
+.status-msg {
+  padding: 8px 0;
+  &.error { color: $superRed; }
+}
+
+.docplan-display {
+  width: 100%;
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+@media screen and (max-width: $mobile) {
+  .docplan-display {
+    .code_site,
+    .annee_fin,
+    .surface {
+      display: none;
+    }
+  }
+}
