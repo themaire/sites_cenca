@@ -28,7 +28,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-docplan-fiche',
@@ -75,7 +74,6 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
   constructor(
     private dialogRef: MatDialogRef<DocPlanFicheComponent>,
     private dialog: MatDialog,
-    private overlay: Overlay,
     private sitesService: SitesService,
     private formService: FormService,
     private confirmationService: ConfirmationService,
@@ -193,11 +191,10 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
 
   openEcgPicker(): void {
     const dialogRef = this.dialog.open(EcgPickerComponent, {
-      minWidth: '550px',
+      minWidth: '450px',
       maxWidth: '90vw',
       maxHeight: '80vh',
       hasBackdrop: true,
-      scrollStrategy: this.overlay.scrollStrategies.close(),
     });
 
     dialogRef.afterClosed().subscribe((ecg: EntiteCoherente | undefined) => {
@@ -207,5 +204,11 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  removeEcg(): void {
+    this.ecgCourante = undefined;
+    this.docPlanForm.patchValue({ entite_coherente: null });
+    this.cdr.detectChanges();
   }
 }

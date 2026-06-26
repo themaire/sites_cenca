@@ -4,10 +4,15 @@ import { Router } from '@angular/router';
 
 import { Selector } from '../../../shared/interfaces/selector';
 import { DocplanService } from '../docplan.service';
+import { EcgPickerComponent } from '../ecg-picker/ecg-picker.component';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-docplan-research',
@@ -18,6 +23,10 @@ import { MatSelectModule } from '@angular/material/select';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatDialogModule,
   ],
   templateUrl: './docplan-research.component.html',
   styleUrl: './docplan-research.component.scss',
@@ -32,6 +41,7 @@ export class DocplanResearchComponent implements OnInit {
 
   public selectors: Selector[] = [];
   private research: DocplanService = inject(DocplanService);
+  private dialog: MatDialog = inject(MatDialog);
 
   public selectorsError: boolean = false;
 
@@ -80,5 +90,14 @@ export class DocplanResearchComponent implements OnInit {
         },
       },
     ]);
+  }
+
+  openEcgManager(): void {
+    this.dialog.open(EcgPickerComponent, {
+      minWidth: '550px',
+      maxWidth: '90vw',
+      maxHeight: '80vh',
+      hasBackdrop: true,
+    });
   }
 }

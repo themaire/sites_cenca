@@ -13,7 +13,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-detail-gestion',
@@ -46,7 +45,6 @@ export class DetailGestionComponent implements AfterViewInit {
 
   constructor(
     private dialog: MatDialog,
-    private overlay: Overlay
   ) {}
 
   ngAfterViewInit(): void {
@@ -102,7 +100,6 @@ export class DetailGestionComponent implements AfterViewInit {
       backdropClass: 'custom-backdrop-gerer',
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
-      scrollStrategy: this.overlay.scrollStrategies.close(),
     });
 
     dialogRef.afterClosed().subscribe(() => {

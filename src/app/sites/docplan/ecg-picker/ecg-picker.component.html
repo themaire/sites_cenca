@@ -43,8 +43,25 @@
           <mat-cell *matCellDef="let ecg">
             <button mat-stroked-button color="primary"
                     type="button"
+                    *ngIf="isPickerMode"
                     (click)="select(ecg)">
               Définir
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let ecg">
+            <button mat-icon-button
+                    type="button"
+                    [color]="ecg.nom ? '' : 'warn'"
+                    [disabled]="!!ecg.nom"
+                    [matTooltip]="ecg.nom
+                      ? 'Suppression impossible — utilisée par : ' + ecg.nom
+                      : 'Supprimer cette entité cohérente'"
+                    (click)="deleteEcg(ecg)">
+              <mat-icon>delete</mat-icon>
             </button>
           </mat-cell>
         </ng-container>
