@@ -64,6 +64,16 @@
           "requireAuth": true,
           "backendUrl": null,
           "accessLevel": 0
+        },
+        {
+          "id": "plans-gestion",
+          "title": "Plans de gestion et ECG",
+          "path": "sites/gestion/plans-gestion.md",
+          "order": 6,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null,
+          "accessLevel": 0
         }
       ]
     },
