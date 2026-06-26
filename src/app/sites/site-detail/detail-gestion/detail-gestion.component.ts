@@ -5,6 +5,8 @@ import { DetailSite } from '../../site-detail';
 import { DocPlan } from './docplan';
 import { SitesService } from '../../sites.service';
 import { DocPlanFicheComponent } from './docplan-fiche/docplan-fiche.component';
+import { WipComponent } from '../../../wip/wip.component';
+import { environment } from '../../../../environments/environment';
 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -19,6 +21,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
   standalone: true,
   imports: [
     CommonModule,
+    WipComponent,
     MatTableModule,
     MatSortModule,
     MatFormFieldModule,
@@ -31,6 +34,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
   styleUrls: ['./detail-gestion.component.scss']
 })
 export class DetailGestionComponent {
+  cacheMisere = environment.cache_misere;
+
   @Input() inputDetail?: DetailSite;
   @Input() inputUUIDsite?: String;
 

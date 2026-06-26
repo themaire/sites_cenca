@@ -5,6 +5,8 @@ import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver qui donne les elements du menu au travers de la route
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
 import { AideComponent } from './aide/aide.component';
+import { WipComponent } from './wip/wip.component';
+import { environment } from '../environments/environment';
 
 export const routes: Routes = [
   {
@@ -51,12 +53,14 @@ export const routes: Routes = [
       import('./sites/travaux/travaux.routes').then((mod) => mod.TRAVAUX_ROUTES),
   },
 
-  // Lazy-load
-  {
-    path: 'docplan',
-    loadChildren: () =>
-      import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES),
-  },
+  ...(environment.cache_misere
+    ? [{ path: 'docplan', component: WipComponent }]
+    : [{
+        path: 'docplan',
+        loadChildren: () =>
+          import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES),
+      }]
+  ),
 
   // Lazy-load
   {

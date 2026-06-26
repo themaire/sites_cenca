@@ -1,6 +1,7 @@
 export const environment = {
     windows: false,
     production: false,
+    cache_misere: true,
 
     apiUrl: 'http://192.168.1.50:8887/',
     apiLocalUrl: 'http://192.168.1.50:8887/',

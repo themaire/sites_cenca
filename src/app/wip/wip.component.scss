@@ -1,0 +1,22 @@
+.wip-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  gap: 1rem;
+
+  .wip-image {
+    max-width: 300px;
+    border-radius: 8px;
+  }
+
+  h2 {
+    color: #555;
+  }
+
+  p {
+    color: #777;
+  }
+}
