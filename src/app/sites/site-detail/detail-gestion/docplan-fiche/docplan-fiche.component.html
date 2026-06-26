@@ -21,6 +21,14 @@
       <h2 *ngIf="!isNewDoc && !isEditMode">Document planificateur</h2>
       <h2 *ngIf="!isNewDoc && isEditMode">Modification du document planificateur</h2>
     </div>
+
+    <button mat-icon-button color="warn"
+            type="button"
+            *ngIf="!isNewDoc"
+            matTooltip="Supprimer ce document planificateur"
+            (click)="deleteItemConfirm()">
+      <mat-icon>delete</mat-icon>
+    </button>
   </div>
 
   <!-- ==============================

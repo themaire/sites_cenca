@@ -87,6 +87,16 @@ export class SitesService {
     );
   }
 
+  deleteDocPlan(uuid_doc: string): Observable<any> {
+    const url = `${this.activeUrl}delete/docplan_documents/uuid_doc=${uuid_doc}`;
+    return this.http.delete<any>(url).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression du document planificateur', error);
+        throw error;
+      })
+    );
+  }
+
   deleteEntiteCoherente(uuid_ecg: string): Observable<any> {
     const url = `${this.activeUrl}delete/docplan_entites_coherentes/uuid_ecg=${uuid_ecg}`;
     return this.http.delete<any>(url).pipe(

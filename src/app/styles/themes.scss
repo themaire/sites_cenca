@@ -61,6 +61,40 @@ $custom-red: (
   )
 );
 
+// Palette orange pour "proteger" basée sur la couleur $couleur-faune
+$custom-proteger: (
+  50: lighten($orangeC, 15%),
+  100: $orangeC,
+  200: lighten($orangeM, 5%),
+  300: $orangeM,
+  400: darken($orangeM, 5%),
+  500: $proteger,
+  600: darken($proteger, 10%),
+  700: darken($proteger, 20%),
+  800: darken($proteger, 30%),
+  900: darken($proteger, 40%),
+  A100: $orangeC,
+  A200: $orangeM,
+  A400: $proteger,
+  A700: darken($proteger, 15%),
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(white, 0.87),
+    400: rgba(white, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: rgba(white, 0.87),
+    A400: white,
+    A700: white,
+  )
+);
+
 // Palette bleue basée sur $connaitre ($bleuC / $bleuM / $bleuF)
 $custom-connaitre: (
   50:  lighten($bleuC, 18%),
@@ -91,6 +125,7 @@ $custom-connaitre: (
 $gerer-palette: mat.m2-define-palette($custom-gerer);
 $connaitre-palette: mat.m2-define-palette($custom-connaitre, 500, 300, 700);
 $red-palette: mat.m2-define-palette($custom-red);
+$proteger-palette: mat.m2-define-palette($custom-proteger);
 
 // Thème associé à la palette gerer
 $gerer-theme: mat.m2-define-light-theme((
