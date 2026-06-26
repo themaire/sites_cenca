@@ -8,7 +8,7 @@ import { of, from, Observable } from 'rxjs';
 // interfaces utilisés dans la promise de la fonction
 import { ListSite } from './site'; // prototype d'un site
 import { Commune } from './site-detail/detail-infos/commune';
-import { DocPlan } from './site-detail/detail-gestion/docplan';
+import { DocPlan, DocPlanDetail, UniteGestion, EntiteCoherente } from './site-detail/detail-gestion/docplan';
 import { MilNat } from './site-detail/detail-habitats/docmilnat';
 import { ActeLite, Acte } from './site-detail/detail-mfu/acte';
 import { ProjetLite } from './site-detail/detail-projets/projets';
@@ -76,6 +76,38 @@ export class SitesService {
 
   async getDocPlan(subroute: string): Promise<DocPlan[]> {
     return this.getData<DocPlan[]>(subroute);
+  }
+
+  async getDocPlanDetail(uuid_doc: string): Promise<DocPlanDetail> {
+    return this.getData<DocPlanDetail>(`pgestion/doc/uuid=${uuid_doc}`);
+  }
+
+  async getDocPlanUG(uuid_doc: string): Promise<UniteGestion[]> {
+    return this.getData<UniteGestion[]>(`pgestion/doc/uuid=${uuid_doc}/ug`);
+  }
+
+  async getEntitesCoherentes(): Promise<EntiteCoherente[]> {
+    return this.getData<EntiteCoherente[]>('pgestion/entites_coherentes');
+  }
+
+  deleteDocPlanUG(uuid_ug: string): Observable<any> {
+    const url = `${this.activeUrl}delete/docplan_unites_gestion/uuid_ug=${uuid_ug}`;
+    return this.http.delete<any>(url).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression de l\'unité de gestion', error);
+        throw error;
+      })
+    );
+  }
+
+  deleteEntiteCoherente(uuid_ecg: string): Observable<any> {
+    const url = `${this.activeUrl}delete/docplan_entites_coherentes/uuid_ecg=${uuid_ecg}`;
+    return this.http.delete<any>(url).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression de l\'entité cohérente', error);
+        throw error;
+      })
+    );
   }
 
   async getMilNat(subroute: string): Promise<MilNat[]> {

@@ -7,7 +7,7 @@ import { of, from, Observable } from 'rxjs';
 
 import { ApiResponse } from '../shared/interfaces/api';
 import { Selector } from '../shared/interfaces/selector';
-import { Salaries, Salarie, Groupes, Groupe } from './admin';
+import { Salaries, Salarie, Groupes, Groupe, SalarieGroupe } from './admin';
 import { SnackbarService } from '../shared/services/snackbar.service';
 
 @Injectable({
@@ -50,6 +50,47 @@ export class AdminService {
   // Récupérer la liste de tous les groupes
   async getAllGroups(): Promise<Groupes[]> {
     return this.getData<Groupes[]>('group/lite');
+  }
+
+  // Récupérer les groupes d'un salarié
+  async getUserGroups(cd_salarie: string): Promise<SalarieGroupe[]> {
+    return this.getData<SalarieGroupe[]>(`users/groups/${cd_salarie}`);
+  }
+
+  addGroupToUser(cd_salarie: string, gro_id: number): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.activeUrl}post/user/group/${cd_salarie}`, { gro_id }).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Groupe ajouté avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de l\'ajout du groupe');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de l\'ajout du groupe';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
+  removeGroupFromUser(salgro_id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/salarie_groupes/salgro_id=${salgro_id}`).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Groupe retiré avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la suppression du groupe');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la suppression du groupe';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
   }
 
   /**
@@ -123,6 +164,52 @@ export class AdminService {
   }
 
   /**
+   * Créer un nouvel utilisateur
+   * @param userData Les données de l'utilisateur à créer (sans cd_salarie, généré par la DB)
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  createUser(userData: Omit<Salarie, 'cd_salarie'>): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.activeUrl}post/user/create`, userData).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Utilisateur créé avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la création de l\'utilisateur');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la création de l\'utilisateur';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
+  /**
+   * Créer un nouveau groupe
+   * @param groupData Les données du groupe à créer (sans gro_id, généré par la DB)
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  createGroup(groupData: Omit<Groupe, 'gro_id'>): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.activeUrl}post/group/create`, groupData).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Groupe créé avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la création du groupe');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la création du groupe';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
+  /**
    * Modifier un groupe
    * @param groupData Les données du groupe à modifier
    * @returns Observable<ApiResponse> avec success true/false et message optionnel
@@ -140,6 +227,29 @@ export class AdminService {
       }),
       catchError(error => {
         const messageTxt = 'Erreur lors de la mise à jour du groupe';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
+  /**
+   * Supprimer un groupe par son gro_id
+   * @param gro_id L'ID du groupe à supprimer
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  deleteGroup(gro_id: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/admin.groupes/gro_id=${gro_id}`).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Groupe supprimé avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la suppression du groupe');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la suppression du groupe';
         console.error(messageTxt, error);
         this.snackbarService.error(messageTxt);
         return of({ success: false, message: messageTxt } as ApiResponse);

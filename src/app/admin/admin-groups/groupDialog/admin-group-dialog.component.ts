@@ -56,24 +56,29 @@ export class AdminGroupDialogComponent implements OnInit {
     private formAdmin: FormAdmin,
     private dialogRef: MatDialogRef<AdminGroupDialogComponent>,
     private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: { gro_id: string },
+    @Inject(MAT_DIALOG_DATA) public data: { gro_id: string | null, isNew?: boolean },
   ) {}
 
   async ngOnInit(): Promise<void> {
     try {
-    //   console.log('Données reçues dans le dialog de la fiche groupe :', this.data);
-      const gro_id = String(this.data.gro_id);
-      this.group = await this.adminService.getGroupById(gro_id);
-      
-      this.groupForm = this.formAdmin.groupForm(this.group || undefined);
-      this.groupForm.disable();
-      
-      this.initialFormValues = this.groupForm.value;
+      if (this.data.isNew) {
+        this.newGroup = true;
+        this.isAddActive = true;
+        this.groupForm = this.formAdmin.groupForm();
+        this.groupForm.get('gro_id')?.clearValidators();
+        this.groupForm.get('gro_id')?.updateValueAndValidity();
+        this.groupForm.enable();
+      } else {
+        const gro_id = String(this.data.gro_id);
+        this.group = await this.adminService.getGroupById(gro_id);
+        this.groupForm = this.formAdmin.groupForm(this.group || undefined);
+        this.groupForm.disable();
+      }
 
+      this.initialFormValues = this.groupForm.value;
       this.groupForm.statusChanges.subscribe(() => {
         this.isFormValid = this.groupForm.valid;
       });
-      
     } catch (e: any) {
       console.error(e);
       this.error = 'Impossible de charger le détail du groupe.';
@@ -97,11 +102,21 @@ export class AdminGroupDialogComponent implements OnInit {
     console.log("Modification d'un formulaire utilisateur :", this.groupForm.value);
     console.log("this.newGroup =", this.newGroup);
 
-    if(this.newGroup){
-      this.snackBar.open('Création de groupe non encore implémentée', 'Fermer', {
-        duration: 3000,
-        panelClass: ['snackbar-info'],
-      });
+    if (this.newGroup) {
+      const submitObservable = this.formAdmin.putbdd('insert', 'groupes', this.groupForm, this.isAddActive, this.snackBar);
+      if (submitObservable) {
+        submitObservable.subscribe({
+          next: () => {
+            this.dialogRef.close(true);
+          },
+          error: (error) => {
+            this.snackBar.open('Erreur lors de la création du groupe. ' + error.message, 'Fermer', {
+              duration: 3000,
+              panelClass: ['snackbar-error'],
+            });
+          }
+        });
+      }
     } else {
       // Effectuer la création de l'utilisateur via le service adminService
       // Nous faisons cela au travers / dans l'observable retourné par putBdd()
@@ -136,16 +151,14 @@ export class AdminGroupDialogComponent implements OnInit {
   deleteItemConfirm(): void {
     const libelle = `le groupe ${this.group?.gro_nom}`;
     const message = `Voulez-vous vraiment supprimer ${libelle}?\n<strong>Cette action est irréversible.</strong>`;
-    
+
     this.confirmationService.confirm('Confirmation de suppression', message, 'delete').subscribe(result => {
       if (result) {
-        // TODO: Implémenter la suppression de groupe
-        this.snackBar.open('Suppression des groupes non encore implémentée', 'Fermer', { duration: 3000 });
-        // this.adminService.deleteGroup(this.group?.gro_id || '').subscribe(success => {
-        //   if (success) {
-        //     this.close();
-        //   }
-        // });
+        this.adminService.deleteGroup(String(this.group?.gro_id)).subscribe(response => {
+          if (response.success) {
+            this.dialogRef.close(true);
+          }
+        });
       }
     });
   }

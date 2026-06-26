@@ -1,6 +1,9 @@
+@import "../../styles/mixins.scss";
+@import "../../styles/variables.scss";
+
 .green-button {
-  color: #4caf50 !important; // Vert Material
-  
+  color: #4caf50 !important;
+
   &:hover {
     background-color: rgba(76, 175, 80, 0.1);
   }
@@ -10,4 +13,14 @@
   width: 80% !important;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.add-btn {
+  display: flex;
+  @include align(center, center);
+  button {
+    @include btn(white, $couleur-flore, white, darken($couleur-flore, 10%));
+    @include align(center, center);
+    display: flex;
+  }
 }

@@ -372,7 +372,7 @@
             <table class="bilan-table">
               <thead>
                 <tr>
-                  <th>Type d'opération 1 / Type d'opération 2</th>
+                  <th>Type d'opération</th>
                   <th>Nom du maître d'œuvre</th>
                   <th>Quantité - Unité</th>
                   <th>Type Programme Finance</th>
@@ -380,10 +380,10 @@
               </thead>
               <tbody>
                 <tr *ngFor="let op of operations_bilan">
-                  <td>{{ op.type }}</td>
+                  <td>{{ op.type ? (op.type.split(' / ')[1] || "") : "" }}</td>
                   <td>{{ op.nom_mo }}</td>
                   <td>{{ op.quantite }} - {{ op.unite_str?.toLowerCase() }}</td>
-                  <td>{{ op.financeurs?.join(' / ') }}</td>
+                  <td>{{ formatFinanceurs(op.financeurs, op.financeur_description) }}</td>
                 </tr>
               </tbody>
             </table>

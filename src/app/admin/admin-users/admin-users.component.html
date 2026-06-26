@@ -1,5 +1,13 @@
 <div class="admin-users">
-	<h2>{{ salaries.length }} utilisateurs</h2>
+	<div style="display: flex; align-items: center; justify-content: space-between;">
+		<h2>{{ salaries.length }} utilisateurs</h2>
+		<div class="add-btn">
+			<button mat-button (click)="openNewUserDialog()">
+				<mat-icon>add</mat-icon>
+				Ajouter un utilisateur
+			</button>
+		</div>
+	</div>
 
 	<mat-form-field appearance="outline" style="width: 320px; max-width: 100%;">
 		<mat-label>Rechercher</mat-label>

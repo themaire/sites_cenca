@@ -1,0 +1,34 @@
+@import "../../styles/variables.scss";
+@import "../../styles/mixins.scss";
+
+.site-parent {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+	min-height: 100vh;
+}
+
+.proteger {
+	padding-bottom: 15px;
+	@include bandeau($couleur-faune);
+}
+
+.sites-enfants {
+	width: 100%;
+	margin: 0 50px 25px 29px;
+}
+
+@media screen and (max-width: $mobile) {
+	.sites-enfants {
+		width: 100%;
+		margin: 0 25px 25px 5px;
+	}
+}
+
+@media screen and (max-width: $tablette) {
+	.sites-enfants {
+		width: 100%;
+		margin: 0 25px 25px 5px;
+	}
+}

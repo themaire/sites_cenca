@@ -376,6 +376,12 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     console.log('Destruction du composant, on se désabonne.');
   }
 
+  public formatFinanceurs(financeurs: string[] | undefined, financeurDescription: string | undefined): string {
+    return (financeurs?.join(' / ') ?? '')
+      .replace(/_/g, ' ')
+      .replace('Autre (préciser dans Description)', financeurDescription || '');
+  }
+
   public getLibelle(cd_type: string, list: SelectValue[] | undefined): string {
     if (!list) {
       console.warn('La liste est undefined ou null dans getLibelleFromCd.');

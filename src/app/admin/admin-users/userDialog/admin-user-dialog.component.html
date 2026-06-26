@@ -14,10 +14,10 @@
       </app-form-buttons>
 
       <h2 mat-dialog-title class="dialog-title">
-        Détail utilisateur
+        {{ newUser ? 'Nouvel utilisateur' : 'Détail utilisateur' }}
       </h2>
 
-      <div class="suppression">
+      <div class="suppression" *ngIf="!newUser">
         <button mat-button (click)="deleteItemConfirm()">Supprimer</button>
       </div>
     </div>
@@ -108,8 +108,46 @@
             Actif
           </mat-checkbox>
         </div>
-        
+
       </form>
+
+      <mat-divider style="margin: 24px 0 16px;"></mat-divider>
+
+      <h3 style="margin: 0 0 12px;">Groupes</h3>
+
+      <mat-list dense *ngIf="userGroups.length > 0; else noGroups">
+        <mat-list-item *ngFor="let g of userGroups">
+          <span matListItemTitle>{{ g.gro_nom }}</span>
+          <span matListItemLine *ngIf="g.gro_description">{{ g.gro_description }}</span>
+          <button matListItemMeta mat-icon-button color="warn" aria-label="Retirer le groupe"
+            [disabled]="!isEditActive"
+            (click)="removeGroup(g.salgro_id)">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+
+      <ng-template #noGroups>
+        <p style="color: grey; font-style: italic; margin: 0 0 12px;">Aucun groupe assigné</p>
+      </ng-template>
+
+      <div class="same-line-flex" style="margin-top: 12px; align-items: center; gap: 8px;">
+        <mat-form-field appearance="outline" style="flex: 1; margin: 0;">
+          <mat-label>Ajouter un groupe</mat-label>
+          <mat-select [formControl]="groupSelectControl" [disabled]="!isEditActive">
+            <mat-option *ngFor="let g of availableGroups" [value]="+g.gro_id">
+              {{ g.gro_nom }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-flat-button color="primary"
+          [disabled]="!isEditActive || groupsLoading"
+          (click)="addGroup()"
+          style="margin-bottom: 22px;">
+          Ajouter
+        </button>
+      </div>
+
     </ng-container>
   </div>
 </div>

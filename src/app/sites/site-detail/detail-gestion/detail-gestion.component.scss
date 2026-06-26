@@ -1,0 +1,91 @@
+@import "../../../styles/mixins.scss";
+@import "../../../styles/variables.scss";
+
+.edition {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  gap: 15px;
+  .btn-edition {
+    @include btn-icon($proteger, $orangeC);
+    @include icon(white, black);
+  }
+}
+
+.detail-gestion {
+  margin-top: 8px;
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+  }
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 12px;
+
+  // Thème orange (couleur-faune) pour le champ de recherche
+  --mdc-filled-text-field-active-indicator-color: #{$couleur-faune};
+  --mdc-filled-text-field-focus-active-indicator-color: #{$couleur-faune};
+  --mdc-filled-text-field-focus-label-text-color: #{$couleur-faune};
+  --mat-form-field-focus-select-arrow-color: #{$couleur-faune};
+  --mat-select-focused-arrow-color: #{$couleur-faune};
+}
+
+mat-table {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+// Ligne de titre
+.mat-mdc-table mat-header-row.mat-mdc-header-row {
+  border-bottom: 2px solid $couleur-faune;
+}
+
+.col-annee {
+  max-width: 70px;
+  flex: 0 0 70px;
+}
+
+.col-actuel {
+  max-width: 90px;
+  flex: 0 0 90px;
+}
+
+.col-pdf {
+  max-width: 60px;
+  flex: 0 0 60px;
+  justify-content: center;
+}
+
+.pdf-icon {
+  color: #c62828;
+  font-size: 20px;
+}
+
+mat-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.even-row {
+  background-color: white;
+}
+
+.odd-row {
+  background-color: #f2f2f2;
+}
+
+// Responsive
+@media screen and (max-width: $mobile) {
+  .col-annee,
+  .col-actuel {
+    display: none;
+  }
+}

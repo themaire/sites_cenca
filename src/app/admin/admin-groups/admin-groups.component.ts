@@ -70,10 +70,39 @@ export class AdminGroupsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe({
       next: async () => {
-        // Rafraîchir la liste après fermeture du dialogue
         this.groups = await this.fetch();
         this.dataSource.data = this.groups;
       }
+    });
+  }
+
+  openNewGroupDialog(): void {
+    const dialogRef = this.dialog.open(AdminGroupDialogComponent, {
+      width: '840px',
+      data: { gro_id: null, isNew: true }
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: async () => {
+        this.groups = await this.fetch();
+        this.dataSource.data = this.groups;
+      }
+    });
+  }
+
+  deleteGroupConfirm(row: Groupes): void {
+    const libelle = `le groupe "${row.gro_nom}" (id: ${row.gro_id})`;
+    const message = `Voulez-vous vraiment supprimer ${libelle} ? Cette action est irréversible.`;
+
+    this.confirmationService.confirm('Confirmation de suppression', message, 'delete', 'group').subscribe(result => {
+      if (!result) return;
+
+      this.adminService.deleteGroup(String(row.gro_id)).subscribe(response => {
+        if (response.success) {
+          this.groups = this.groups.filter(g => g.gro_id !== row.gro_id);
+          this.dataSource.data = this.groups;
+        }
+      });
     });
   }
 

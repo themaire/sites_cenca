@@ -31,3 +31,10 @@ export interface Groupe {
     gro_description: string;
     gro_statut: boolean;
 }
+
+export interface SalarieGroupe {
+    salgro_id: number;
+    gro_id: number;
+    gro_nom: string;
+    gro_description?: string;
+}

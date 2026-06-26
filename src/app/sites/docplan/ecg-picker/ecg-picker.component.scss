@@ -1,0 +1,60 @@
+@import "../../../styles/variables.scss";
+
+.ecg-picker {
+  min-width: 500px;
+  padding: 16px;
+}
+
+.ecg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.sites-cell {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.85em;
+  white-space: normal;
+}
+
+button[disabled] mat-icon {
+  color: rgba(0, 0, 0, 0.26);
+}
+
+.no-data {
+  color: rgba(0, 0, 0, 0.5);
+  font-style: italic;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.creation-form {
+  margin-top: 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.creation-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  gap: 12px;
+}

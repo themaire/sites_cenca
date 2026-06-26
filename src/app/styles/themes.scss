@@ -84,6 +84,25 @@ $custom-proteger: (
     300: rgba(white, 0.87),
     400: rgba(white, 0.87),
     500: white,                  // Texte blanc sur ton proteger
+// Palette bleue basée sur $connaitre ($bleuC / $bleuM / $bleuF)
+$custom-connaitre: (
+  50:  lighten($bleuC, 18%),
+  100: lighten($bleuC, 12%),
+  200: lighten($bleuC, 6%),
+  300: $bleuC,
+  400: darken($bleuC, 6%),
+  500: $bleuM,
+  600: darken($bleuM, 5%),
+  700: darken($bleuM, 12%),
+  800: $bleuF,
+  900: darken($bleuF, 10%),
+  contrast: (
+    50:  rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
     600: white,
     700: white,
     800: white,
@@ -97,6 +116,7 @@ $custom-proteger: (
 
 // Création des palettes
 $gerer-palette: mat.m2-define-palette($custom-gerer);
+$connaitre-palette: mat.m2-define-palette($custom-connaitre, 500, 300, 700);
 $red-palette: mat.m2-define-palette($custom-red);
 $proteger-palette: mat.m2-define-palette($custom-proteger);
 
