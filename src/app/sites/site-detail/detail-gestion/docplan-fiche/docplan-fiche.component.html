@@ -178,6 +178,13 @@
         <span class="ecg-nom">{{ ecgCourante.nom_ecg }}</span>
         <span class="ecg-sites" *ngIf="ecgCourante.nom">Sites : {{ ecgCourante.nom }}</span>
       </div>
+      <button mat-icon-button color="warn"
+              type="button"
+              *ngIf="isEditMode"
+              matTooltip="Retirer l'entité cohérente de gestion"
+              (click)="removeEcg()">
+        <mat-icon>link_off</mat-icon>
+      </button>
     </div>
 
     <ng-template #noEcg>

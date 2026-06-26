@@ -1,12 +1,13 @@
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, Optional, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { EntiteCoherente } from '../../site-detail/detail-gestion/docplan';
 import { SitesService } from '../../sites.service';
 import { FormService } from '../../../shared/services/form.service';
+import { ConfirmationService } from '../../../shared/services/confirmation.service';
 
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -38,18 +39,28 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class EcgPickerComponent implements OnInit {
   entites: EntiteCoherente[] = [];
   dataSource!: MatTableDataSource<EntiteCoherente>;
-  displayedColumns: string[] = ['nom_ecg', 'sites', 'action'];
+  displayedColumns: string[] = ['nom_ecg', 'sites', 'action', 'delete'];
 
   isLoading = true;
   isCreating = false;
   ecgForm!: FormGroup;
 
+  // true = ouvert depuis une fiche PG pour sélectionner une ECG
+  // false = ouvert depuis /docplan pour gérer les ECG
+  isPickerMode: boolean;
+
   private sitesService = inject(SitesService);
   private formService = inject(FormService);
+  private confirmationService = inject(ConfirmationService);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
 
-  constructor(private dialogRef: MatDialogRef<EcgPickerComponent>) {}
+  constructor(
+    private dialogRef: MatDialogRef<EcgPickerComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) data: { uuid_doc: string } | null
+  ) {
+    this.isPickerMode = !!data?.uuid_doc;
+  }
 
   async ngOnInit() {
     try {
@@ -81,21 +92,53 @@ export class EcgPickerComponent implements OnInit {
     this.isCreating = false;
   }
 
+  deleteEcg(ecg: EntiteCoherente): void {
+    this.confirmationService
+      .confirm(
+        'Suppression',
+        `Supprimer l'entité cohérente de gestion "<strong>${ecg.nom_ecg}</strong>" ?<br><strong>Cette action est irréversible.</strong>`,
+        'delete'
+      )
+      .subscribe((ok) => {
+        if (!ok) return;
+        this.sitesService.deleteEntiteCoherente(ecg.uuid_ecg).subscribe({
+          next: () => {
+            this.entites = this.entites.filter(e => e.uuid_ecg !== ecg.uuid_ecg);
+            this.dataSource = new MatTableDataSource(this.entites);
+            this.snackBar.open('Entité cohérente supprimée', 'Fermer', {
+              duration: 3000,
+              panelClass: ['snackbar-success'],
+            });
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error('Erreur suppression ECG', err),
+        });
+      });
+  }
+
   saveCreate(): void {
     if (!this.ecgForm.valid) return;
 
+    const newEcg: EntiteCoherente = {
+      uuid_ecg: this.ecgForm.value.uuid_ecg,
+      nom_ecg: this.ecgForm.value.nom,
+      nom: null,
+    };
+
     this.sitesService.insertTable('docplan_entites_coherentes', this.ecgForm.value).subscribe({
       next: () => {
-        const newEcg: EntiteCoherente = {
-          uuid_ecg: this.ecgForm.value.uuid_ecg,
-          nom_ecg: this.ecgForm.value.nom,
-          nom: null,
-        };
         this.snackBar.open('Entité cohérente créée', 'Fermer', {
           duration: 3000,
           panelClass: ['snackbar-success'],
         });
-        this.dialogRef.close(newEcg);
+        if (this.isPickerMode) {
+          this.dialogRef.close(newEcg);
+        } else {
+          this.entites = [...this.entites, newEcg];
+          this.dataSource = new MatTableDataSource(this.entites);
+          this.isCreating = false;
+          this.cdr.detectChanges();
+        }
       },
       error: (err) => console.error('Erreur création ECG', err),
     });

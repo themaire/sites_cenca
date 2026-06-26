@@ -10,7 +10,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Overlay } from '@angular/cdk/overlay';
 
 import { DocPlanListe } from '../docplan';
 import { DocplanService } from '../docplan.service';
@@ -65,7 +64,6 @@ export class DocplanDisplayComponent {
   private research: DocplanService = inject(DocplanService);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private dialog: MatDialog = inject(MatDialog);
-  private overlay: Overlay = inject(Overlay);
 
   private loadDocplans(params: Params): void {
     const subroute =
@@ -131,7 +129,6 @@ export class DocplanDisplayComponent {
       backdropClass: 'custom-backdrop-gerer',
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
-      scrollStrategy: this.overlay.scrollStrategies.close(),
     });
 
     dialogRef.afterClosed().subscribe(() => {
