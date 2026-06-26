@@ -7,6 +7,11 @@ import { isLoggedInGuard } from './guards/is-logged-in.guard';
 import { AideComponent } from './aide/aide.component';
 import { WipComponent } from './wip/wip.component';
 import { environment } from '../environments/environment';
+import { Route } from '@angular/router';
+
+const docplanRoute: Route = environment.cache_misere
+  ? { path: 'docplan', component: WipComponent }
+  : { path: 'docplan', loadChildren: () => import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES) };
 
 export const routes: Routes = [
   {
@@ -53,14 +58,7 @@ export const routes: Routes = [
       import('./sites/travaux/travaux.routes').then((mod) => mod.TRAVAUX_ROUTES),
   },
 
-  ...(environment.cache_misere
-    ? [{ path: 'docplan', component: WipComponent }]
-    : [{
-        path: 'docplan',
-        loadChildren: () =>
-          import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES),
-      }]
-  ),
+  docplanRoute,
 
   // Lazy-load
   {
