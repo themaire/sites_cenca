@@ -190,6 +190,12 @@ mat-dialog-content.dialogue {
   }
 }
 
+// --- Bouton de suppression ---
+
+.suppression {
+  @include suppression-btn();
+}
+
 // --- Spinner ---
 
 .loading-container {

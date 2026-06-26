@@ -22,13 +22,6 @@
       <h2 *ngIf="!isNewDoc && isEditMode">Modification du document planificateur</h2>
     </div>
 
-    <button mat-icon-button color="warn"
-            type="button"
-            *ngIf="!isNewDoc"
-            matTooltip="Supprimer ce document planificateur"
-            (click)="deleteItemConfirm()">
-      <mat-icon>delete</mat-icon>
-    </button>
   </div>
 
   <!-- ==============================
@@ -196,6 +189,13 @@
       <p class="no-ecg">Aucune entité cohérente de gestion assignée.</p>
     </ng-template>
 
+  </div>
+
+  </div>
+
+  <!-- Bouton de suppression -->
+  <div class="suppression" *ngIf="!isNewDoc">
+    <button mat-button (click)="deleteItemConfirm()">Supprimer le document planificateur</button>
   </div>
 
   </div>
