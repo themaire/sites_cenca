@@ -16,11 +16,13 @@ import { OperationLite } from '../../sites/site-detail/detail-projets/projet/ope
 export class FormButtonsComponent {
   @Input() icone!: string;
   @Input() theme!: string;
-  @Input() isFormValid!: boolean;
+  @Input() isFormValid: boolean = false;
+  // Label personnalise ajoute pour surcharger le tooltip par defaut.
+  @Input() label?: string;
+
   @Input() isAddActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
   @Input() isEditActive: boolean = false;  // Valeur par défaut pour voir si c'est vide
   @Input() nbObjectifs?: number = -1  // Valeur par défaut pour voir si c'est vide
-
 
   @Output() makeObjectifForm = new EventEmitter<{ objectif?: Objectif; empty: boolean }>();
   @Output() makeOperationForm = new EventEmitter<{ operation?: OperationLite; empty: boolean }>();
@@ -32,10 +34,14 @@ export class FormButtonsComponent {
   public tooltip: string = '';
 
   ngOnInit(): void {
-    if (this.icone == 'add'){
-      this.tooltip = 'Ajouter';
-    } else if (this.icone == 'edit') {
-      this.tooltip = 'Modifier';
+   if (this.label) {
+      this.tooltip = this.label;
+    } else {
+      if (this.icone == 'add') {
+        this.tooltip = 'Ajouter';
+      } else if (this.icone == 'edit') {
+        this.tooltip = 'Modifier';
+      }
     }
   }
 
@@ -66,7 +72,7 @@ export class FormButtonsComponent {
 
   onCancelAction(): void {
     console.log('-----------------------!!!!!!!!!!!!--------onCancelAction dans le composant bouton');
-    this.toggleAction.emit(); // Le nom de l'icon determine quel booléen est modifié
+    this.toggleAction.emit('cancel'); // Émet 'cancel' pour restaurer les valeurs et fermer la dialog
   }
 
   onSave(): void {

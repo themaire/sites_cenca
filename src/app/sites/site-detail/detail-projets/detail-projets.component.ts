@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 import {
   MatDialog, 
@@ -29,8 +30,9 @@ import { Overlay } from '@angular/cdk/overlay';
             MatTableModule, 
             MatTooltipModule, 
             MatIconModule,
-
-            MatFormFieldModule, MatInputModule, 
+            MatButtonModule,
+            MatFormFieldModule, 
+            MatInputModule, 
   ],
   templateUrl: './detail-projets.component.html',
   styleUrls: ['./detail-projets.component.scss', '../../../shared/form-buttons/form-buttons.component.scss']
@@ -58,7 +60,7 @@ export class DetailProjetsComponent {
     
     if (this.siteDetailProjet !== undefined) {  // Si le site selectionné n'est pas vide
       console.log(this.siteDetailProjet);
-      subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite?webapp=1`; // On récupère les projets du site selectionné
+      subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite?webapp=1`; // On récupère les projets du site sélectionné
       console.log("Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" + this.siteDetailProjet["uuid_espace"]);
       
       // ChatGPT 19/07/2024

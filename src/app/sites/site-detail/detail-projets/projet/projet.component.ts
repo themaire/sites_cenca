@@ -39,7 +39,6 @@ import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } f
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
-import 'moment/locale/fr';
 
 import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackBar
 

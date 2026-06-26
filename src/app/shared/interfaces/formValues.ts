@@ -11,4 +11,5 @@ export interface SelectValue {
     coef_ugb?: number;
     niveau?: number;
     is_ope?: boolean;
+    insee?: string;
   }

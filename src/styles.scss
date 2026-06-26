@@ -146,3 +146,9 @@ body {
 .custom-backdrop-gerer {
   @include custom-backdrop($gererBackdrop);
 }
+
+// Fond blanc force pour la nouvelle modale de rattachement acte-site.
+.cdk-overlay-pane.attach-site-dialog-panel .mat-mdc-dialog-container,
+.cdk-overlay-pane.attach-site-dialog-panel .mat-mdc-dialog-surface {
+  background-color: #ffffff !important;
+}

@@ -5,70 +5,66 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm install          # Install dependencies (also runs scripts/fix-leaflet-fullscreen.js)
-ng serve             # Dev server at http://localhost:4200
-ng build --configuration production  # Production build → dist/
-ng test              # Unit tests via Karma/Jasmine (runs in browser)
-npm run compodoc     # Generate API docs → src/assets/documentation
+npm start          # Dev server at http://localhost:4200
+npm run build      # Production build (output: dist/site_cenca/)
+npm run watch      # Dev build with watch mode
+npm test           # Unit tests (Karma + Jasmine)
+npm run compodoc   # Generate API docs in src/assets/documentation/
 ```
 
-> This app requires a running backend. Without it, no business features work.
+To run a single test file:
 
-## Environment & Backend Configuration
+```bash
+ng test --include='**/my-component.spec.ts'
+```
 
-The backend URL is configured in `src/environments/`:
-- `environment.ts` — development (points to `192.168.1.50:8887` by default)
-- `environment.prod.ts` — production (`si-10.cen-champagne-ardenne.org:8889`)
+## Architecture Overview
 
-The `windows` boolean flag in these files switches between `apiUrl` (network) and `apiLocalUrl` (localhost) and also changes the path separator (`/` vs `\\`). Toggle it when developing locally on Windows.
+**Angular 18** app using **standalone components** (no NgModules). Functional routing (`provideRouter`), functional HTTP interceptors, and Angular Signals for modern state management.
 
-All HTTP calls use `environment.apiUrl` via `LoginService` and shared services — `src/app/backendAdress.ts` is a legacy file and is no longer used.
+The project works with a NODEJS / Express library backend server.
 
-## Architecture
+### Key Configuration Files
 
-**Angular 18 with standalone components throughout.** No NgModules.
+- **`src/app/backendAdress.ts`** — hardcoded production backend URL (`http://si-10.cen-champagne-ardenne.org:8887/`). Dev URL lives in `src/environments/environment.ts`.
+- **`src/app/app.config.ts`** — root providers: router, HTTP client with auth interceptor, animations.
+- **`src/app/app.routes.ts`** — root routing with lazy-loaded feature routes.
 
-### Routing (lazy-loaded)
+### Feature Modules (lazy-loaded)
 
-| URL prefix | Route file | Purpose |
-|---|---|---|
-| `/` | `app.routes.ts` | Home (guarded by `isLoggedInGuard`) |
-| `/sites` | `sites/sites.routes.ts` | Site list + detail |
-| `/foncier` | `sites/foncier/foncier.routes.ts` | Land management (extractions, PMFU) |
-| `/travaux` | `sites/travaux/travaux.routes.ts` | Works/projects |
-| `/parametres` | `admin/admin.routes.ts` | Admin (users, groups) |
-| `/aide` | inline | Help (public, no auth) |
+| Route | Feature |
+| --- | --- |
+| `/sites` | Main site management (CENCA sites) |
+| `/foncier` | Land/property management |
+| `/parametres` | Admin settings (users, groups) |
 
-The `/sites` and `/travaux` routes use a named router outlet (`liste`) for filter-driven list display.
+### Authentication
 
-### Auth
+- JWT stored in `localStorage`; `src/app/interceptor/auth-token.interceptor.ts` injects it on all requests.
+- `LoginService` exposes `user = signal<User | undefined | null>()` as the auth state source of truth.
+- `isLoggedInGuard` protects all routes except `login`, `reset-password`, and `aide`.
+- On app init/navigation, the guard calls `/auth/me` to rehydrate user state from the token.
 
-- `LoginService` (`src/app/login/login.service.ts`) manages auth state with an Angular **signal** (`user = signal<User>()`).
-- JWT token stored in `localStorage` under key `'token'`.
-- `authTokenInterceptor` (`src/app/interceptor/auth-token.interceptor.ts`) attaches `Authorization: Bearer <token>` to every HTTP request.
-- `isLoggedInGuard` protects routes that require login.
+### State Management Patterns
 
-### Key Components
+- **Angular Signals** — used in `LoginService` for user state and in components for local reactive state.
+- **RxJS BehaviorSubject** — used in `MenuService` (menu items) and `FormService` (form validity).
 
-**`MapComponent`** (`src/app/map/map.component.ts`) — the most complex component. Uses Leaflet + `leaflet.fullscreen` + Turf.js to display multiple cartographic layers. Supports dynamic loading of CENCA site layers and cadastral parcels, parcel selection mode, and edit mode. Communicates with parents via `@Input`/`@Output`. Uses `SiteCencaService` to fetch WFS data from the backend's Lizmap integration.
+### Shared Infrastructure
 
-**`SiteDetailComponent`** (`src/app/sites/site-detail/site-detail.component.ts`) — tabbed detail view for a site with 6 child components (infos, description, MFU, gestion, habitats, projets). Data is loaded via `ngOnChanges` when the `site` input changes.
+- **`src/app/shared/interfaces/`** — TypeScript interfaces for all API DTOs (`site-geojson.ts`, `geo.ts`, `localisation.ts`, `selector.ts`, etc.).
+- **`src/app/shared/services/`** — `GeoService`, `DocfileService`, `ConfirmationService` (modal dialogs).
+- **`src/app/shared/file-explorator/`** — multi-format file browser (PDF, DOCX via `docx-preview`, images).
+- **`src/app/map/`** — complex Leaflet (`@asymmetrik/ngx-leaflet`) + Turf.js component; handles dynamic tile layers, parcel selection, and GeoJSON rendering for sites, projects, and operations.
 
-**`shared/`** — Reusable components:
-- `file-explorator/` — multi-format file browser (PDF, DOCX, images)
-- `image-view/` — image gallery
-- `confirmation/` — confirmation dialog
-- `form-buttons/`, `form/select-field/` — shared form controls
-- `services/` — `GeoService`, `SiteCencaService`, `GeofilesService`, `ShapefileService`, `DocfileService`, `SnackbarService`, `ConfirmationService`
+### Styling
 
-### Data Flow Pattern
+- Global styles in `src/styles.scss`.
+- Angular Material with a custom indigo-pink theme (`src/app/styles/indigo-pink-custom.css`).
+- All components use SCSS (`.component.scss`).
 
-Components fetch data by calling services that wrap `HttpClient`. Services use Observables with RxJS operators (`tap`, `map`, `switchMap`, `catchError`). The `ApiResponse` interface (`src/app/shared/interfaces/api.ts`) is the standard backend response shape: `{ success, message, code, data[] }`.
+### Deployment
 
-## CI/CD
-
-Jenkins webhook triggers automatically:
-- Push to `main` → production build
-- Push to `dev` → pre-production build
-
-Contributions should target the `dev` branch via pull request; `main` is the production branch.
+- Docker support via `Dockerfile` in root.
+- Jenkins webhook: `main` branch → production, `dev` branch → staging.
+- A postinstall script (`scripts/fix-leaflet-fullscreen.js`) patches the Leaflet fullscreen plugin after `npm install`.

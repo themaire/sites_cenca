@@ -142,7 +142,7 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
         enterAnimationDuration: '400ms',
         exitAnimationDuration: '300ms',
 
-        scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
+        scrollStrategy: this.overlay.scrollStrategies.block(),
       });
       dialogRef.afterClosed().subscribe((result) => {
         console.log('La fenetre de dialogue vient de se fermer');
@@ -160,7 +160,7 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
         enterAnimationDuration: '400ms',
         exitAnimationDuration: '300ms',
 
-        scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
+        scrollStrategy: this.overlay.scrollStrategies.block(),
       });
       dialogRef.afterClosed().subscribe((result) => {
         console.log('La fenetre de dialogue vient de se fermer');

@@ -218,7 +218,7 @@ export class FileExploratorComponent {
     this.docfileService.docfiles.forEach((file: any) => {
       if (file.doc_path.split('/').pop() === filename.split('/').pop()) {
         console.log('file.doc_path:', file.doc_path);
-        filename = 'files/photos/' +file.doc_path;
+        filename = `files/${file.doc_path}`;
       }
     });
     console.log('filename:', filename);
@@ -278,19 +278,13 @@ export class FileExploratorComponent {
     }
   }
 
-  getGalerie(filePathList: string[]) {
-    filePathList.forEach((path) => {
-      // Url qui s'adapte en fonction de l'environnement Windows ou Linux
-      // let url = `${this.activeUrl}picts/img?file=${path.split( environment.pathSep ).pop()}&width=200`;
-      let url = `${this.activeUrl}picts/img?file=${path}&width=200`;
-      filePathList.push(url);
-    });
-    console.log('filePathList après ajout des miniatures:', filePathList);
-    this.galerie = filePathList.slice(filePathList.length / 2, undefined);
-    console.log('this.galerie:', this.galerie);
-
-    this.imagePathList = filePathList;
-    console.log('imagePathList:', this.imagePathList);
+  getGalerie(docPaths: string[]) {
+    this.imagePathList = [...docPaths];
+    this.galerie = docPaths.map(
+      (path) => `${this.activeUrl}picts/img?file=${path}&width=200`
+    );
+    console.log('imagePathList (doc_paths):', this.imagePathList);
+    console.log('galerie (thumbnail urls):', this.galerie);
   }
 
   /**
@@ -301,7 +295,7 @@ export class FileExploratorComponent {
     console.log('openImage imagePath:', imagePath);
     const dialogRef = this.dialog.open(ImageViewComponent, {
       data: {
-        images: this.imagePathList?.slice(0, this.imagePathList.length / 2),
+        images: this.imagePathList,
         selected: imagePath,
       }, // <---------------- données injectée au composant
       minWidth: '70vw',
@@ -317,29 +311,23 @@ export class FileExploratorComponent {
   }
 
   deleteImage(imagePath: string) {
-    console.log('imagePath:', imagePath);
-    
-    this.filePathList.forEach((docfile: any) => {
-      console.log('docfile:', docfile);
-      if (docfile === imagePath) {
-        this.docfileService.deleteFile(docfile).subscribe({
-          next: (res) => {
-            console.log('Suppression OK', res);
-            this.updateFolderCounts();
-            this.docfileService
-              .getFilesList(
-                this.selectedFolder as number,
-                this.section,
-                this.referenceId ? this.referenceId : undefined
-              )
-              .then(() => {
-                this.filePathList = this.docfileService.filePathList;
-                this.getGalerie(this.filePathList);
-              });
-          },
-          error: (err) => console.error('Erreur suppression', err),
-        });
-      }
+    console.log('deleteImage doc_path:', imagePath);
+    this.docfileService.deleteFile(imagePath).subscribe({
+      next: (res) => {
+        console.log('Suppression OK', res);
+        this.updateFolderCounts();
+        this.docfileService
+          .getFilesList(
+            this.selectedFolder as number,
+            this.section,
+            this.referenceId ? this.referenceId : undefined
+          )
+          .then(() => {
+            this.filePathList = this.docfileService.filePathList;
+            this.getGalerie(this.filePathList);
+          });
+      },
+      error: (err) => console.error('Erreur suppression', err),
     });
   }
 

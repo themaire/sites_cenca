@@ -8,7 +8,6 @@ import { SitesService } from '../../sites/sites.service';
 import { Localisation } from '../../shared/interfaces/localisation';
 import {
   HttpClient,
-  HttpParams,
   HttpErrorResponse,
 } from '@angular/common/http';
 
@@ -233,7 +232,7 @@ export class DocfileService {
    * @returns 
    */
   deleteFile(doc_path: string): Observable<ApiResponse> {
-    const url = `${this.activeUrl}sites/delete/files.docs?doc_path=${doc_path}`;
+    const url = `${this.activeUrl}sites/delete/files.docs?doc_path=${encodeURIComponent(doc_path)}`;
     console.log(`lien de suppression : ${url}`);
     console.log('doc_path envoyé :', doc_path);
     return this.http
