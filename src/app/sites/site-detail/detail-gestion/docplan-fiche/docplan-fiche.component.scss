@@ -99,16 +99,16 @@ mat-dialog-content.dialogue {
   line-height: 1.4;
 }
 
-// --- Section Unités de gestion ---
+// --- Section Entité cohérente de gestion ---
 
-.ug-section {
+.ecg-section {
   margin-top: 16px;
 
-  .ug-header {
+  .ecg-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    justify-content: space-between;
+    margin-bottom: 12px;
 
     h3 {
       margin: 0;
@@ -116,38 +116,45 @@ mat-dialog-content.dialogue {
       font-weight: 500;
     }
   }
+}
 
-  mat-table {
-    width: 100%;
-    margin-bottom: 8px;
+.ecg-courante {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #eaf4fb;
+  border-left: 3px solid $connaitre;
+  border-radius: 4px;
+
+  .ecg-icon {
+    color: $connaitre;
+    margin-top: 2px;
   }
 
-  .no-ug {
-    font-size: 0.85rem;
-    color: #888;
-    font-style: italic;
-    margin: 4px 0 12px 0;
+  .ecg-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .ecg-nom {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .ecg-sites {
+      font-size: 0.82rem;
+      color: #555;
+      font-style: italic;
+    }
   }
 }
 
-.ug-add-form {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding: 8px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  margin-top: 8px;
-
-  .ug-field {
-    flex: 1;
-    min-width: 120px;
-  }
-
-  .ug-field-surface {
-    flex: 0 0 120px;
-  }
+.no-ecg {
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+  margin: 4px 0;
 }
 
 // --- Lien de téléchargement du document PDF ---

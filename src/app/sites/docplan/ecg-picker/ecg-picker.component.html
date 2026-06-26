@@ -1,0 +1,91 @@
+<mat-dialog-content class="ecg-picker">
+
+  <ng-container *ngIf="!isCreating; else creationTemplate">
+
+    <div class="ecg-header">
+      <h2>Entités cohérentes de gestion</h2>
+      <button mat-mini-fab color="primary"
+              type="button"
+              matTooltip="Créer une nouvelle entité cohérente"
+              (click)="startCreate()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <ng-container *ngIf="!isLoading && dataSource">
+
+      <mat-form-field class="filter-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Nom, site...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+
+        <ng-container matColumnDef="nom_ecg">
+          <mat-header-cell *matHeaderCellDef>Entité cohérente</mat-header-cell>
+          <mat-cell *matCellDef="let ecg">{{ ecg.nom_ecg }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="sites">
+          <mat-header-cell *matHeaderCellDef>Sites concernés</mat-header-cell>
+          <mat-cell *matCellDef="let ecg" class="sites-cell">
+            {{ ecg.nom || '—' }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let ecg">
+            <button mat-stroked-button color="primary"
+                    type="button"
+                    (click)="select(ecg)">
+              Définir
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+
+      <p class="no-data" *ngIf="entites.length === 0">
+        Aucune entité cohérente de gestion enregistrée.
+      </p>
+
+    </ng-container>
+
+  </ng-container>
+
+  <ng-template #creationTemplate>
+
+    <div class="ecg-header">
+      <h2>Nouvelle entité cohérente de gestion</h2>
+    </div>
+
+    <form [formGroup]="ecgForm" class="creation-form">
+      <mat-form-field class="full-width">
+        <mat-label>Nom de l'entité cohérente *</mat-label>
+        <input matInput formControlName="nom">
+        <mat-error *ngIf="ecgForm.get('nom')?.hasError('required')">Champ obligatoire</mat-error>
+      </mat-form-field>
+    </form>
+
+    <div class="creation-actions">
+      <button mat-stroked-button type="button" (click)="cancelCreate()">
+        <mat-icon>arrow_back</mat-icon> Retour à la liste
+      </button>
+      <button mat-flat-button color="primary" type="button"
+              [disabled]="!ecgForm.valid"
+              (click)="saveCreate()">
+        <mat-icon>check</mat-icon> Créer et définir
+      </button>
+    </div>
+
+  </ng-template>
+
+</mat-dialog-content>
