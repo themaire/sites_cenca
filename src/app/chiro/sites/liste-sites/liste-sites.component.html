@@ -1,0 +1,68 @@
+<div class="liste-sites">
+  <div class="entete">
+    <h2>Sites chiroptères</h2>
+    <button mat-stroked-button (click)="retour()">
+      <mat-icon>arrow_back</mat-icon> Retour
+    </button>
+  </div>
+
+  <div class="layout">
+
+    <!-- Tableau -->
+    <div class="tableau-col">
+      <mat-form-field appearance="outline" class="filtre">
+        <mat-label>Recherche</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Nom, code, commune..." />
+      </mat-form-field>
+
+      <div *ngIf="loading" class="spinner-wrapper"><mat-spinner diameter="36"></mat-spinner></div>
+
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2" *ngIf="!loading">
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
+          <td mat-cell *matCellDef="let s">{{ s.code }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+          <td mat-cell *matCellDef="let s">{{ s.nom }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type_site">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let s">{{ s.type_site }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="commune">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune</th>
+          <td mat-cell *matCellDef="let s">{{ s.commune }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nbrel">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Relevés</th>
+          <td mat-cell *matCellDef="let s" class="num">{{ s.nbrel }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nbobs">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Individus</th>
+          <td mat-cell *matCellDef="let s" class="num">{{ s.nbobs }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)" class="clickable"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="6">Aucun site trouvé.</td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+    </div>
+
+    <!-- Carte -->
+    <div class="carte-col">
+      <div id="chiro-sites-map"></div>
+    </div>
+
+  </div>
+</div>

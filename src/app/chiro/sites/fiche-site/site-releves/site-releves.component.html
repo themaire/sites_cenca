@@ -1,0 +1,32 @@
+<div class="site-releves">
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+    <ng-container matColumnDef="date_releve">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+      <td mat-cell *matCellDef="let r">{{ r.date_releve | date:'dd/MM/yyyy' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="orga">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Opérateur(s)</th>
+      <td mat-cell *matCellDef="let r">{{ r.orga }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="nbesp">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nb espèces</th>
+      <td mat-cell *matCellDef="let r" class="num">{{ r.nbesp }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="nbobs">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nb individus</th>
+      <td mat-cell *matCellDef="let r" class="num">{{ r.nbobs }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)" class="clickable"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">Aucun relevé pour ce site.</td>
+    </tr>
+  </table>
+
+  <mat-paginator [pageSize]="20" [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
+</div>

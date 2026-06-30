@@ -62,6 +62,13 @@ export const routes: Routes = [
 
   // Lazy-load
   {
+    path: 'chiro',
+    loadChildren: () =>
+      import('./chiro/chiro.routes').then((mod) => mod.CHIRO_ROUTES),
+  },
+
+  // Lazy-load
+  {
     path: 'parametres',
     loadChildren: () =>
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),
