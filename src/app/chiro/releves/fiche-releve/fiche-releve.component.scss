@@ -1,0 +1,29 @@
+.fiche-releve {
+  padding: 1.5rem;
+
+  .entete {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h2 { margin: 0; font-size: 1.2rem; }
+  }
+
+  .spinner-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .erreur {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #c62828;
+    padding: 1rem;
+    background: #ffebee;
+    border-radius: 4px;
+    mat-icon { font-size: 20px; }
+  }
+}
