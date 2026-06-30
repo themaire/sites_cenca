@@ -80,9 +80,11 @@ export class ListeSitesComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!s.wgs84_x || !s.wgs84_y) return;
       const latlng = L.latLng(s.wgs84_y, s.wgs84_x);
       bounds.push(latlng);
+      const label = `${s.code} - ${s.nom}`;
       L.circleMarker(latlng, {
         radius: 6, color: '#1a6e3c', fillColor: '#2e7d32', fillOpacity: 0.8, weight: 1,
       })
+        .bindTooltip(label, { direction: 'top', sticky: false })
         .bindPopup(
           `<strong>${s.nom}</strong><br>Code : ${s.code}<br>` +
           `${s.nbrel ?? 0} relevé(s) — ${s.nbobs ?? 0} individu(s)`
