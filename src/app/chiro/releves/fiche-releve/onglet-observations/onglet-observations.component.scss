@@ -1,0 +1,28 @@
+.onglet-observations {
+  padding: 1rem;
+
+  table { width: 100%; }
+
+  .num { text-align: right; }
+
+  .code-espece {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #2e7d32;
+    margin-right: 0.4rem;
+  }
+
+  .nom-espece {
+    font-size: 0.85rem;
+    color: #555;
+    font-style: italic;
+  }
+
+  .extras {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+
+    mat-icon { font-size: 1.1rem; height: 1.1rem; width: 1.1rem; cursor: help; }
+  }
+}

@@ -1,0 +1,29 @@
+.onglet-releve {
+  padding: 1rem;
+
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+
+    .full-width { grid-column: 1 / -1; }
+  }
+
+  mat-card-content { padding-top: 0.5rem !important; }
+
+  .champ {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child { border-bottom: none; }
+
+    .label {
+      font-weight: 500;
+      color: #555;
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+  }
+}
