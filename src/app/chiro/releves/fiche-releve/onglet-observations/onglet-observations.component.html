@@ -17,17 +17,17 @@
 
     <ng-container matColumnDef="denombrement">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Dénombrement</th>
-      <td mat-cell *matCellDef="let o">{{ o.denombrement_libelle || o.type_denombrement }}</td>
+      <td mat-cell *matCellDef="let o">{{ o.denombrement_libelle || o.denombrement }}</td>
     </ng-container>
 
     <ng-container matColumnDef="methode">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Méthode</th>
-      <td mat-cell *matCellDef="let o">{{ o.methode_libelle || o.cd_methode }}</td>
+      <td mat-cell *matCellDef="let o">{{ o.methode_libelle || o.methode }}</td>
     </ng-container>
 
     <ng-container matColumnDef="statut_bio">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut bio.</th>
-      <td mat-cell *matCellDef="let o">{{ o.statut_bio_libelle || o.cd_statut_biologique }}</td>
+      <td mat-cell *matCellDef="let o">{{ o.statut_bio_libelle || o.statut_biologique }}</td>
     </ng-container>
 
     <ng-container matColumnDef="stade">
@@ -42,7 +42,7 @@
 
     <ng-container matColumnDef="etat_bio">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Etat bio.</th>
-      <td mat-cell *matCellDef="let o">{{ o.etat_bio_libelle || o.etat_biologique }}</td>
+      <td mat-cell *matCellDef="let o">{{ o.etat_bio_libelle || o.etat_bio }}</td>
     </ng-container>
 
     <ng-container matColumnDef="extras">
