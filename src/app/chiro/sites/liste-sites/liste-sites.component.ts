@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -32,10 +32,10 @@ import { ListSiteChiro } from '../../interfaces/site-chiro';
 export class ListeSitesComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource = new MatTableDataSource<ListSiteChiro>();
   displayedColumns = ['code', 'nom', 'type_site', 'commune', 'nbrel', 'nbobs'];
-  loading = false;
+  loading = true;
 
   private map?: L.Map;
-  private markersLayer?: L.GeoJSON;
+  private markersLayer = L.layerGroup();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -43,55 +43,63 @@ export class ListeSitesComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private chiroService: ChiroService, private router: Router) {}
 
   ngOnInit() {
-    this.loading = true;
     this.chiroService.getSites().then(sites => {
       this.dataSource.data = sites;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.loading = false;
+      this.updateMap(sites);
     });
   }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    setTimeout(() => this.initMap(), 0);
+    this.dataSource.sortingDataAccessor = (item, property) =>
+      (item as any)[property] ?? '';
+    // Délai pour que le DOM soit rendu avant l'init Leaflet
+    setTimeout(() => this.initMap(), 50);
   }
 
   private initMap() {
     this.map = L.map('chiro-sites-map', { center: [48.8, 4.5], zoom: 8 });
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       maxZoom: 19,
     }).addTo(this.map);
+    this.markersLayer.addTo(this.map);
+  }
 
-    this.chiroService.getSitesGeoJSON().then(geojson => {
-      if (!geojson?.features?.length) return;
+  updateMap(sites: ListSiteChiro[]) {
+    this.markersLayer.clearLayers();
 
-      this.markersLayer = L.geoJSON(geojson, {
-        pointToLayer: (_, latlng) => L.circleMarker(latlng, {
-          radius: 6, color: '#1a6e3c', fillColor: '#2e7d32', fillOpacity: 0.8, weight: 1,
-        }),
-        onEachFeature: (feature, layer) => {
-          const p = feature.properties;
-          layer.bindPopup(
-            `<strong>${p.nom}</strong><br>Code : ${p.code}<br>` +
-            `${p.nbrel ?? 0} relevé(s) — ${p.nbobs ?? 0} observation(s)` +
-            `<br><a href="/chiro/site/${p.id_site}" style="color:#2e7d32">Voir la fiche</a>`
-          );
-          layer.on('click', () => this.router.navigate(['/chiro/site', p.id_site]));
-        },
-      }).addTo(this.map!);
+    const bounds: L.LatLng[] = [];
 
-      this.map!.fitBounds(this.markersLayer.getBounds(), { padding: [20, 20] });
+    sites.forEach(s => {
+      if (!s.wgs84_x || !s.wgs84_y) return;
+      const latlng = L.latLng(s.wgs84_y, s.wgs84_x);
+      bounds.push(latlng);
+      L.circleMarker(latlng, {
+        radius: 6, color: '#1a6e3c', fillColor: '#2e7d32', fillOpacity: 0.8, weight: 1,
+      })
+        .bindPopup(
+          `<strong>${s.nom}</strong><br>Code : ${s.code}<br>` +
+          `${s.nbrel ?? 0} relevé(s) — ${s.nbobs ?? 0} individu(s)`
+        )
+        .on('click', () => this.router.navigate(['/chiro/site', s.id_site]))
+        .addTo(this.markersLayer);
     });
+
+    if (this.map && bounds.length) {
+      this.map.fitBounds(L.latLngBounds(bounds), { padding: [20, 20] });
+    }
   }
 
   applyFilter(event: Event) {
     const val = (event.target as HTMLInputElement).value;
     this.dataSource.filter = val.trim().toLowerCase();
     if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
+    this.updateMap(this.dataSource.filteredData);
   }
 
   onRowClick(site: ListSiteChiro) {

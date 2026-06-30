@@ -8,6 +8,8 @@ export interface ListSiteChiro {
   nom: string;
   nbrel: number;
   nbobs: number;
+  wgs84_x?: number;
+  wgs84_y?: number;
 }
 
 export interface DetailSiteChiro {

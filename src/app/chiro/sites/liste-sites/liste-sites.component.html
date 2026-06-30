@@ -17,7 +17,7 @@
 
       <div *ngIf="loading" class="spinner-wrapper"><mat-spinner diameter="36"></mat-spinner></div>
 
-      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2" *ngIf="!loading">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2" [hidden]="loading">
         <ng-container matColumnDef="code">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
           <td mat-cell *matCellDef="let s">{{ s.code }}</td>
@@ -59,7 +59,7 @@
       <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
     </div>
 
-    <!-- Carte -->
+    <!-- Carte — toujours dans le DOM -->
     <div class="carte-col">
       <div id="chiro-sites-map"></div>
     </div>

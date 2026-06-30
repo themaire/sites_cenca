@@ -58,6 +58,10 @@ export class ListeRelevesComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      if (property === 'date_releve') return new Date(item.date_releve).getTime();
+      return (item as any)[property] ?? '';
+    };
   }
 
   chargerReleves() {
