@@ -48,11 +48,23 @@
           <td mat-cell *matCellDef="let s" class="num">{{ s.nbobs }}</td>
         </ng-container>
 
+        <ng-container matColumnDef="zoom">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let s" class="zoom-col">
+            <button mat-icon-button
+              [disabled]="!s.wgs84_x"
+              [matTooltip]="s.wgs84_x ? 'Zoomer sur la carte' : 'Pas de coordonnées'"
+              (click)="zoomToSite($event, s)">
+              <mat-icon>search</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)" class="clickable"></tr>
 
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="6">Aucun site trouvé.</td>
+          <td class="mat-cell" colspan="7">Aucun site trouvé.</td>
         </tr>
       </table>
 

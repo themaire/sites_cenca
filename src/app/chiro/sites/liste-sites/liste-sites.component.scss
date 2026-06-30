@@ -27,6 +27,12 @@
 
     .num { text-align: right; }
 
+    .zoom-col {
+      width: 48px;
+      padding: 0 4px;
+      text-align: center;
+    }
+
     tr.clickable {
       cursor: pointer;
       &:hover { background: #f5f5f5; }
