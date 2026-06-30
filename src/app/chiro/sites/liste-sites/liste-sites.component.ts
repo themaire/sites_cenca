@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import * as L from 'leaflet';
 import { CustomMatPaginatorIntl } from '../../../shared/costomMaterial/custom-matpaginator-intl';
@@ -23,7 +24,7 @@ import { ListSiteChiro } from '../../interfaces/site-chiro';
     CommonModule,
     MatTableModule, MatPaginatorModule, MatSortModule,
     MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatProgressSpinnerModule,
+    MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule,
   ],
   templateUrl: './liste-sites.component.html',
   styleUrl: './liste-sites.component.scss',
@@ -31,7 +32,7 @@ import { ListSiteChiro } from '../../interfaces/site-chiro';
 })
 export class ListeSitesComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource = new MatTableDataSource<ListSiteChiro>();
-  displayedColumns = ['code', 'nom', 'type_site', 'commune', 'nbrel', 'nbobs'];
+  displayedColumns = ['code', 'nom', 'type_site', 'commune', 'nbrel', 'nbobs', 'zoom'];
   loading = true;
 
   private map?: L.Map;
@@ -100,6 +101,12 @@ export class ListeSitesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dataSource.filter = val.trim().toLowerCase();
     if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
     this.updateMap(this.dataSource.filteredData);
+  }
+
+  zoomToSite(event: Event, site: ListSiteChiro) {
+    event.stopPropagation();
+    if (!this.map || !site.wgs84_x || !site.wgs84_y) return;
+    this.map.flyTo([site.wgs84_y, site.wgs84_x], 15, { animate: true, duration: 0.8 });
   }
 
   onRowClick(site: ListSiteChiro) {
