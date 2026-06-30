@@ -26,7 +26,12 @@ export class ChiroService {
   private baseUrl = environment.apiUrl + 'chiro/';
 
   private async get<T>(subroute: string): Promise<T> {
-    const response = await fetch(this.baseUrl + subroute);
+    const url = this.baseUrl + subroute;
+    console.log('[ChiroService] GET', url);
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`[ChiroService] ${response.status} ${response.statusText} — ${url}`);
+    }
     return (await response.json()) ?? [];
   }
 

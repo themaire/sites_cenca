@@ -15,4 +15,15 @@
     justify-content: center;
     padding: 2rem;
   }
+
+  .erreur {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #c62828;
+    padding: 1rem;
+    background: #ffebee;
+    border-radius: 4px;
+    mat-icon { font-size: 20px; }
+  }
 }

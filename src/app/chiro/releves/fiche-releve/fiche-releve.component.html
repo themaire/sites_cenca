@@ -13,7 +13,12 @@
     <mat-spinner diameter="40"></mat-spinner>
   </div>
 
-  <mat-tab-group *ngIf="!loading && releve" animationDuration="200ms">
+  <div *ngIf="erreur" class="erreur">
+    <mat-icon>error_outline</mat-icon>
+    {{ erreur }}
+  </div>
+
+  <mat-tab-group *ngIf="!loading && !erreur && releve" animationDuration="200ms">
     <mat-tab label="Relevé">
       <app-onglet-releve [releve]="releve"></app-onglet-releve>
     </mat-tab>

@@ -28,6 +28,7 @@ export class FicheReleveComponent implements OnInit {
   releve?: DetailReleve;
   observations: ObservationDetail[] = [];
   loading = true;
+  erreur?: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,13 +37,22 @@ export class FicheReleveComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const uuid = this.route.snapshot.paramMap.get('uuid')!;
+    const uuid = this.route.snapshot.paramMap.get('uuid');
+    if (!uuid) {
+      this.erreur = 'Identifiant de relevé manquant dans l\'URL.';
+      this.loading = false;
+      return;
+    }
     Promise.all([
       this.chiroService.getReleve(uuid),
       this.chiroService.getObservations(uuid),
     ]).then(([releve, observations]) => {
       this.releve = releve;
       this.observations = observations;
+      this.loading = false;
+    }).catch((err: Error) => {
+      console.error('[FicheReleve]', err);
+      this.erreur = err.message ?? 'Erreur lors du chargement du relevé.';
       this.loading = false;
     });
   }
