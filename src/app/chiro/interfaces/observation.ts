@@ -21,8 +21,7 @@ export interface ObservationDetail {
   etat_bio_libelle: string;
   commentaire?: string;
   mortalite_cause?: string;
-  mortalite_detail?: string;
-  test_rabique?: string;
+  test_rabique?: boolean;
   resultat_test?: string;
   nb_biometries: number;
 }
