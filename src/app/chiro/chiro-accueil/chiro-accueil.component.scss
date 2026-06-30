@@ -1,0 +1,36 @@
+.chiro-accueil {
+  padding: 2rem;
+
+  .titre {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .version {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: normal;
+    }
+  }
+
+  .blocs {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  mat-card {
+    min-width: 220px;
+
+    &.disabled { opacity: 0.5; }
+  }
+
+  .boutons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+
+    button { width: 100%; }
+  }
+}
