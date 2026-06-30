@@ -1,0 +1,52 @@
+.liste-sites {
+  padding: 1.5rem;
+
+  .entete {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h2 { margin: 0; }
+  }
+
+  .layout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .tableau-col {
+    flex: 1 1 480px;
+    min-width: 0;
+
+    .filtre { width: 100%; margin-bottom: 0.5rem; }
+
+    table { width: 100%; }
+
+    .num { text-align: right; }
+
+    tr.clickable {
+      cursor: pointer;
+      &:hover { background: #f5f5f5; }
+    }
+  }
+
+  .carte-col {
+    flex: 1 1 400px;
+    min-width: 0;
+
+    #chiro-sites-map {
+      height: 520px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+  }
+
+  .spinner-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+}
