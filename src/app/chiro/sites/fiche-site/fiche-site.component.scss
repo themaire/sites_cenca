@@ -1,0 +1,45 @@
+.fiche-site {
+  padding: 1.5rem;
+
+  .entete {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h2 { margin: 0; font-size: 1.2rem; }
+  }
+
+  .spinner-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .infos-grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+
+    .full-width { grid-column: 1 / -1; }
+  }
+
+  mat-card-content { padding-top: 0.5rem !important; }
+
+  .champ {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child { border-bottom: none; }
+
+    .label {
+      font-weight: 500;
+      color: #555;
+      min-width: 130px;
+      flex-shrink: 0;
+    }
+  }
+}
