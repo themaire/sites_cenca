@@ -19,23 +19,13 @@
     </mat-card>
 
     <mat-card>
-      <mat-card-header><mat-card-title>Protocole</mat-card-title></mat-card-header>
-      <mat-card-content>
-        <div class="champ"><span class="label">Type</span><span>{{ releve.protocole_libelle || releve.cd_protocole || '—' }}</span></div>
-        <div class="champ"><span class="label">Période</span><span>{{ releve.periode_libelle || releve.periode || '—' }}</span></div>
-        <div class="champ"><span class="label">Durée</span><span>{{ releve.duree || '—' }}</span></div>
-        <div class="champ" *ngIf="releve.detail"><span class="label">Détail</span><span>{{ releve.detail }}</span></div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card>
       <mat-card-header><mat-card-title>Localisation</mat-card-title></mat-card-header>
       <mat-card-content>
         <div class="champ"><span class="label">Commune</span><span>{{ releve.commune_nom || releve.insee || '—' }}</span></div>
         <div class="champ"><span class="label">Site</span><span>{{ releve.nom_site || '—' }}</span></div>
         <div class="champ" *ngIf="releve.precision_loc"><span class="label">Précision</span><span>{{ releve.precision_loc }}</span></div>
         <div class="champ" *ngIf="releve.x"><span class="label">Coordonnées (L93)</span><span>X : {{ releve.x }} — Y : {{ releve.y }}</span></div>
-        <div class="champ" *ngIf="releve.habitat_libelle"><span class="label">Habitat</span><span>{{ releve.habitat_libelle }}</span></div>
+        <div class="champ" *ngIf="releve.habitat"><span class="label">Habitat</span><span>{{ releve.habitat }}</span></div>
       </mat-card-content>
     </mat-card>
 
