@@ -1422,6 +1422,13 @@ export class DetailPmfuComponent {
     const ajoutee = this.parcellesAjoutees.find(p => p.idu === parcelle.idu);
     if (ajoutee) ajoutee.pour_partie = checked;
     this.syncParcellesToForm(this.parcellesSelected);
+    // Recolorer la parcelle sur la carte (jaune <-> violet) sans rechargement
+    if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
+      this.mapComponent.setParcellesSelection(this.parcellesSelected);
+    }
+    if (this.mapComponent && typeof this.mapComponent.restyleParcellesSelection === 'function') {
+      this.mapComponent.restyleParcellesSelection();
+    }
   }
 
   // Supprimer une parcelle et l'ajouter à la poubelle

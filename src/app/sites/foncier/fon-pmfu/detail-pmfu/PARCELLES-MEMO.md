@@ -125,7 +125,7 @@ Après succès : `parcellesInitialesBackup` et `initialFormValues` sont réactua
 ## Côté carte (pour mémoire)
 
 - **Chargement dynamique** : à chaque `moveend`/`zoomend`, appel backend `api-geo/parcelles/bbox?bbox=...` avec la bbox visible. Débounce, cache de la dernière bbox, **zoom minimum 14** (en dessous la couche se vide), suspendu popup ouverte (`hasOpenPopup`).
-- **Styles** : sélectionnée vs normale, highlight au survol, zoom au double-clic.
+- **Styles** : non sélectionnée = orange (`#ff6b35`), sélectionnée = jaune (`#ffd600` / fond `#fffde7`), sélectionnée **pour partie** = violet (`#8e24aa` / fond `#f3e5f5`). Choix centralisé dans `getStyleForParcelle(idu)` ; le toggle de la checkbox recolore en place via `restyleParcellesSelection()` (sans rechargement réseau). Highlight rouge au survol, zoom au double-clic.
 - **Contrôle de surface** (haut droite) : somme des `contenance` de la sélection en ha.
 - **Zoom initial unique** sur la sélection préchargée (`tryZoomToSelectedParcellesOnce`).
 - `refreshParcellesPopups()` est appelé par le parent au toggle édition pour re-render les popups avec/sans boutons caddie.
