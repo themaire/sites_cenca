@@ -74,6 +74,16 @@
           "requireAuth": true,
           "backendUrl": null,
           "accessLevel": 0
+        },
+        {
+          "id": "projets-mfu",
+          "title": "Projets de maîtrise foncière et d'usage",
+          "path": "sites/foncier/projets-mfu.md",
+          "order": 7,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null,
+          "accessLevel": 0
         }
       ]
     },

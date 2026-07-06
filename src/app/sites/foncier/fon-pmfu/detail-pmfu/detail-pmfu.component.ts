@@ -7,6 +7,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { TooltipPosition, MatTooltipModule } from '@angular/material/tooltip';
 
 import { FilterByPipe } from '../../../../shared/pipes/filter-by.pipe';
 
@@ -91,6 +92,7 @@ export interface Section {
     FormsModule,
     MatCheckboxModule,
     MatIconModule,
+    MatTooltipModule,
     MatStepperModule,
     MatInputModule,
     MatSelectModule,
@@ -797,16 +799,24 @@ export class DetailPmfuComponent {
     console.log('Données du projet récupérées :', pmfu);
 
     // Transformation du format PostgreSQL en tableau provenant de la base de données
+    // Chaque élément est un idu éventuellement suffixé du flag pour-partie : "idu" ou "idu:1"
     pmfu.pmfu_parc_list_array = this.postgresArrayStringToArray(pmfu.pmfu_parc_list);
     // Récupérer les infos complètes des parcelles
     if (pmfu.pmfu_parc_list_array && pmfu.pmfu_parc_list_array.length > 0) {
-      this.foncierService.getParcellesInfosByIdus(pmfu.pmfu_parc_list_array).subscribe(
+      const pourPartieByIdu = new Map<string, boolean>();
+      const idus = pmfu.pmfu_parc_list_array.map(entry => {
+        const [idu, flag] = entry.split(':');
+        pourPartieByIdu.set(idu, flag === '1');
+        return idu; // Le backend attend des idus nus
+      });
+      this.foncierService.getParcellesInfosByIdus(idus).subscribe(
         (response) => {
           let selection: ParcellesSelected[] = [];
           if (response.success && Array.isArray(response.data)) {
             selection = response.data.map((p: ParcellesSelected) => ({
               ...p,
-              bbox: typeof p.bbox === 'string' ? String(p.bbox).split(',').map(Number) : p.bbox
+              bbox: typeof p.bbox === 'string' ? String(p.bbox).split(',').map(Number) : p.bbox,
+              pour_partie: pourPartieByIdu.get(p.idu) ?? false
             }));
           }
           console.log('--------------------------->>>>');
@@ -1101,10 +1111,6 @@ export class DetailPmfuComponent {
    */
   onFileSelected(event: any, controlName: string) {
     const files: File[] = Array.from(event.target.files);
-      // Mettre à jour le formulaire avec la liste des idu
-      if (this.pmfuForm) {
-        this.pmfuForm.patchValue({ pmfu_parc_list_array: this.parcellesSelected.map(p => p.idu) });
-      }
 
     files.forEach((file) => {
       if (!this.isFileTypeAllowed(file, controlName)) {
@@ -1118,10 +1124,6 @@ export class DetailPmfuComponent {
         this.docForm!
       );
 
-    // Mettre à jour le formulaire avec la liste des idu
-    if (this.pmfuForm) {
-      this.pmfuForm.patchValue({ pmfu_parc_list_array: this.parcellesSelected.map(p => p.idu) });
-    }
       this.filesNames.push([file.name, controlName]);
     });
 
@@ -1393,12 +1395,40 @@ export class DetailPmfuComponent {
     // console.log('Historique des suppressions :', this.trashHistory);
   }
 
+  /** Encode une parcelle pour le champ pmfu_parc_list : "idu:1" si pour-partie, sinon l'idu nu.
+   * L'absence de suffixe vaut false, ce qui garde les données existantes valides telles quelles. */
+  private encodeParcelleEntry(parcelle: ParcellesSelected): string {
+    return parcelle.pour_partie ? `${parcelle.idu}:1` : parcelle.idu;
+  }
+
   private syncParcellesToForm(parcelles: ParcellesSelected[]): void {
     if (!this.pmfuForm) return;
-    const ids = parcelles.map(p => p.idu);
+    const ids = parcelles.map(p => this.encodeParcelleEntry(p));
     this.pmfuForm.patchValue({ pmfu_parc_list_array: ids });
     this.pmfuForm.get('pmfu_parc_list_array')?.markAsDirty();
     this.pmfuForm.get('pmfu_parc_list_array')?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  /**
+   * Coche/décoche le flag "pour partie" d'une parcelle sélectionnée.
+   * Le flag est propagé aux listes initiales/ajoutées car leurs éléments sont des
+   * copies distinctes : sans cela, la recomposition [...initiales, ...ajoutées]
+   * effectuée au prochain événement carte écraserait le changement.
+   */
+  onPourPartieChange(parcelle: ParcellesSelected, checked: boolean): void {
+    parcelle.pour_partie = checked;
+    const initiale = this.initialparcellesSelected.find(p => p.idu === parcelle.idu);
+    if (initiale) initiale.pour_partie = checked;
+    const ajoutee = this.parcellesAjoutees.find(p => p.idu === parcelle.idu);
+    if (ajoutee) ajoutee.pour_partie = checked;
+    this.syncParcellesToForm(this.parcellesSelected);
+    // Recolorer la parcelle sur la carte (jaune <-> violet) sans rechargement
+    if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
+      this.mapComponent.setParcellesSelection(this.parcellesSelected);
+    }
+    if (this.mapComponent && typeof this.mapComponent.restyleParcellesSelection === 'function') {
+      this.mapComponent.restyleParcellesSelection();
+    }
   }
 
   // Supprimer une parcelle et l'ajouter à la poubelle
@@ -1436,9 +1466,7 @@ export class DetailPmfuComponent {
       parcelleObj
     });
     // Synchroniser avec le formulaire
-    if (this.pmfuForm) {
-      this.pmfuForm.patchValue({ pmfu_parc_list_array: this.parcellesSelected.map(p => p.idu) });
-    }
+    this.syncParcellesToForm(this.parcellesSelected);
     // Synchroniser la sélection sur la carte
     if (this.mapComponent && typeof this.mapComponent.setParcellesSelection === 'function') {
       this.mapComponent.setParcellesSelection(this.parcellesSelected);

@@ -46,6 +46,50 @@
   display: flex;
   @include align(center, space-between);
 }
+.filtres {
+  display: flex;
+  @include align(center, flex-end);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.filtre-select {
+  min-width: 150px;
+  max-width: 200px;
+}
+.btn-reset-filtres {
+  margin-bottom: 15px; // Aligné avec les champs qui ont une marge de hint en bas
+}
+
+// Bouton Aide — même style que .aide-button/.btn-aide de app-header
+.aide-button {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px; // Aligné avec les champs qui ont une marge de hint en bas
+
+  .btn-aide {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    border: 1px solid #4CAF50 !important;
+    font-weight: 500 !important;
+    min-height: 36px !important;
+    padding: 0 16px !important;
+
+    &.mat-mdc-button {
+      background-color: #4CAF50 !important;
+      color: white !important;
+    }
+
+    &:hover {
+      background-color: #45a049 !important;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3) !important;
+    }
+
+    mat-icon {
+      margin-right: 8px !important;
+      color: white !important;
+    }
+  }
+}
 .table {
   width: 80%;
 }

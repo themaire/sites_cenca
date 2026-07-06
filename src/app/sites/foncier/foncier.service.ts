@@ -6,6 +6,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { from, Observable, of } from 'rxjs';
 
 import { ApiResponse } from '../../shared/interfaces/api';
+import { Selector } from '../../shared/interfaces/selector';
 
 // interfaces utilisées dans la promise de la fonction
 import {
@@ -37,6 +38,19 @@ export class FoncierService {
     const data = await fetch(this.activeUrl + subroute);
     const pmfu = (await data.json()) ?? [];
     return pmfu;
+  }
+
+  /**
+   * Récupère les listes de valeurs des filtres de la liste des projets MFU
+   * (responsable, commune, type d'acte, statut)
+   * @returns Promise avec les sélecteurs
+   */
+  async getSelectorsPmfu(): Promise<Selector[]> {
+    const response = await fetch(this.activeUrl + 'selectors_pmfu');
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} sur selectors_pmfu`);
+    }
+    return (await response.json()) ?? [];
   }
 
   /** Récupère les infos détaillées du projet MFU sélectionné (pour la page détail d'un seul projet MFU)

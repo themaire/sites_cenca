@@ -7,7 +7,7 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
-// import { RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -20,6 +20,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { FoncierService } from '../foncier.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ProjetMfu, ProjetsMfu } from '../foncier';
+import { Selector } from '../../../shared/interfaces/selector';
 import { DetailPmfuComponent } from './detail-pmfu/detail-pmfu.component';
 import { FormService } from '../../../services/form.service';
 import { ViewChild, AfterViewInit } from '@angular/core';
@@ -32,6 +33,7 @@ import {
 } from '@angular/material/paginator';
 import { CustomMatPaginatorIntl } from '../../../shared/costomMaterial/custom-matpaginator-intl';
 import { MatInput, MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -56,12 +58,14 @@ export class HighlightPipe implements PipeTransform {
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     MatTableModule,
     MatIconModule,
     MatFormFieldModule,
     MatPaginatorModule,
     MatSortModule,
     MatInputModule,
+    MatSelectModule,
     MatIcon,
     MatButtonModule,
     MatTooltipModule,
@@ -75,6 +79,12 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
   public isAddPmfu: boolean = false;
   public isEditPmfu: boolean = false;
   public filterValue: string = '';
+
+  // Filtres par menus déroulants, alimentés par la route selectors_pmfu
+  public selectors: Selector[] = [];
+  public selectorsError: boolean = false;
+  // name du sélecteur -> valeur choisie (absence de clé = "Tous")
+  public selectorFilters: Record<string, string> = {};
 
   pmfuLite!: ProjetsMfu[];
   pmfu?: ProjetMfu;
@@ -101,6 +111,23 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    // Charger les listes de valeurs des filtres (sans bloquer l'affichage de la table)
+    this.foncierService.getSelectorsPmfu()
+      .then((selectors: Selector[]) => {
+        const order = ['pmfu_responsable', 'pmfu_commune_nom', 'type_acte', 'statut'];
+        this.selectors = selectors.slice().sort((a, b) => {
+          const aIndex = order.indexOf(a.name);
+          const bIndex = order.indexOf(b.name);
+          const safeA = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+          const safeB = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+          return safeA - safeB;
+        });
+      })
+      .catch((err) => {
+        console.error('Impossible de charger les sélecteurs pmfu (selectors_pmfu)', err);
+        this.selectorsError = true;
+      });
+
     const subroute = 'pmfu/id=0/lite';
     const data = await this.foncierService.getProjetsMfu(subroute);
     this.pmfuLite = data;
@@ -202,13 +229,64 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
           return '';
       }
     };
-    if (this.filterValue) {
-      // setTimeout pour s'assurer que sort/paginator sont attachés avant l'application du filtre
-      setTimeout(() => {
-        this.dataSource.filter = this.filterValue;
-        if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
-      }, 0);
+    // Filtrage combiné : mots-clés ET menus déroulants.
+    // Le paramètre filter de MatTableDataSource ne sert que de déclencheur,
+    // les critères sont lus directement dans l'état du composant.
+    this.dataSource.filterPredicate = (row: ProjetsMfu) => this.matchesFilters(row);
+    // setTimeout pour s'assurer que sort/paginator sont attachés avant l'application du filtre
+    setTimeout(() => this.refreshFilter(), 0);
+  }
+
+  /** Vrai si la ligne passe le filtre mots-clés ET tous les menus déroulants actifs */
+  private matchesFilters(row: ProjetsMfu): boolean {
+    for (const [name, selected] of Object.entries(this.selectorFilters)) {
+      const rowValue = this.cleanString(String((row as any)[name] ?? ''));
+      if (rowValue !== this.cleanString(selected)) return false;
     }
+    if (this.filterValue) {
+      const haystack = Object.values(row)
+        .filter((v) => v !== null && v !== undefined)
+        .join(' ')
+        .toLowerCase();
+      if (!haystack.includes(this.filterValue)) return false;
+    }
+    return true;
+  }
+
+  /**
+   * Réapplique le filtrage sur la table.
+   * MatTableDataSource ne filtre pas quand filter est une chaîne vide,
+   * d'où le déclencheur JSON dès qu'au moins un critère est actif.
+   */
+  private refreshFilter(): void {
+    if (!this.dataSource) return;
+    const hasCriteria = !!this.filterValue || Object.keys(this.selectorFilters).length > 0;
+    this.dataSource.filter = hasCriteria
+      ? JSON.stringify({ kw: this.filterValue, sel: this.selectorFilters })
+      : '';
+    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
+  }
+
+  /** Choix dans un menu déroulant de filtre ('' = Tous) */
+  onSelectorChange(name: string, value: string): void {
+    if (value) {
+      this.selectorFilters[name] = value;
+    } else {
+      delete this.selectorFilters[name];
+    }
+    this.refreshFilter();
+  }
+
+  /** Réinitialise mots-clés et menus déroulants */
+  resetFilters(input?: HTMLInputElement): void {
+    this.filterValue = '';
+    this.selectorFilters = {};
+    if (input) input.value = '';
+    this.refreshFilter();
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!this.filterValue || Object.keys(this.selectorFilters).length > 0;
   }
 
   toggleEditPmfu(mode: string): void {
@@ -281,11 +359,7 @@ applyFilter(event: Event | string) {
       : (event.target as HTMLInputElement).value;
 
   this.filterValue = value.trim().toLowerCase();
-
-  if (this.dataSource) {
-    this.dataSource.filter = this.filterValue;
-    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
-  }
+  this.refreshFilter();
 }
 
 }
