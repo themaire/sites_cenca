@@ -1,0 +1,147 @@
+<div class="formulaire-releve">
+
+  <div class="entete">
+    <button mat-stroked-button (click)="annuler()">
+      <mat-icon>arrow_back</mat-icon> Retour
+    </button>
+    <h2>Nouveau relevé</h2>
+  </div>
+
+  <div *ngIf="loading" class="spinner-wrapper">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <!-- Date -->
+    <mat-card>
+      <mat-card-header><mat-card-title>Date</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+          <mat-label>Date du relevé *</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="date_releve">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error>Date obligatoire</mat-error>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Commune + Site -->
+    <mat-card>
+      <mat-card-header><mat-card-title>Localisation administrative</mat-card-title></mat-card-header>
+      <mat-card-content class="grille-form">
+
+        <mat-form-field>
+          <mat-label>Département</mat-label>
+          <mat-select [value]="selectedDepartement" (selectionChange)="onDepartementChange($event.value)">
+            <mat-option value="">—</mat-option>
+            <mat-option *ngFor="let d of departements" [value]="d.code">{{ d.code }} – {{ d.nom }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Commune *</mat-label>
+          <mat-select formControlName="insee" [disabled]="!selectedDepartement || loadingCommunes">
+            <mat-option *ngIf="loadingCommunes" disabled>Chargement…</mat-option>
+            <mat-option *ngFor="let c of communesIGN" [value]="c.code">{{ c.nom }} ({{ c.code }})</mat-option>
+          </mat-select>
+          <mat-error>Commune obligatoire</mat-error>
+        </mat-form-field>
+
+        <!-- Site : bouton + libellé du site sélectionné -->
+        <div class="site-select full-width">
+          <button mat-stroked-button type="button" (click)="ouvrirDialogSite()">
+            <mat-icon>place</mat-icon>
+            {{ selectedSite ? 'Changer de site' : 'Choisir un site' }}
+          </button>
+          <span *ngIf="selectedSite" class="site-label">
+            <mat-icon>check_circle</mat-icon>
+            {{ selectedSite.code }} — {{ selectedSite.nom }}
+          </span>
+          <span *ngIf="!selectedSite" class="site-aucun">Aucun site associé</span>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Observateurs -->
+    <mat-card>
+      <mat-card-header><mat-card-title>Observateur(s)</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Liste des observateurs</mat-label>
+          <textarea matInput formControlName="observateur_cite" rows="2"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Localisation géographique -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Localisation géographique</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+
+        <div *ngIf="!showLocalisation" class="localisation-absente">
+          <p>Ce relevé n'a pas de localisation définie.</p>
+          <button mat-stroked-button type="button" (click)="toggleLocalisation()">
+            <mat-icon>add_location</mat-icon> Saisir des coordonnées
+          </button>
+        </div>
+
+        <ng-container *ngIf="showLocalisation">
+          <div class="grille-form">
+            <mat-form-field>
+              <mat-label>X (Lambert 93)</mat-label>
+              <input matInput type="number" formControlName="x">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Y (Lambert 93)</mat-label>
+              <input matInput type="number" formControlName="y">
+            </mat-form-field>
+            <p class="xy-note full-width">
+              Si vous définissez un emplacement sur la carte <em>et</em> des coordonnées X/Y, la carte est prioritaire.
+            </p>
+          </div>
+
+          <div class="carte-picking">
+            <p class="carte-hint">Cliquez sur la carte pour positionner le relevé.</p>
+            <app-map
+              [pointPickingMode]="true"
+              [initialMarker]="initialMarker"
+              (pointPicked)="onPointPicked($event)">
+            </app-map>
+            <p *ngIf="pickedPoint" class="coords-info">
+              Point sélectionné — Lat : {{ pickedPoint.lat | number:'1.5-5' }}, Lng : {{ pickedPoint.lng | number:'1.5-5' }}
+            </p>
+          </div>
+
+          <button mat-button type="button" color="warn" (click)="toggleLocalisation()" style="margin-top:0.5rem">
+            <mat-icon>cancel</mat-icon> Retirer la localisation
+          </button>
+        </ng-container>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Commentaire -->
+    <mat-card>
+      <mat-card-header><mat-card-title>Commentaire</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <textarea matInput formControlName="commentaire" rows="3"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="annuler()">Annuler</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving">
+        <mat-icon>save</mat-icon>
+        {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+    </div>
+
+  </form>
+</div>

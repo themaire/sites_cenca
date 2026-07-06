@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ElementRef, AfterViewInit, OnDestroy, Renderer2, input, OnChanges } from '@angular/core';
+﻿import { Component, Input, Output, EventEmitter, ElementRef, AfterViewInit, OnDestroy, Renderer2, input, OnChanges, SimpleChanges } from '@angular/core';
 import { environment } from '../../environments/environment';
 
 import * as L from 'leaflet'; // Import de Leaflet
@@ -61,7 +61,18 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Output() sitesCencaSitesToggled = new EventEmitter<boolean>();
   @Output() parcellesToggled = new EventEmitter<boolean>();
 
+  private _pointPickingMode = false;
+  @Input() set pointPickingMode(val: boolean) {
+    this._pointPickingMode = val;
+    if (this.map) { val ? this.enablePointPicking() : this.disablePointPicking(); }
+  }
+  get pointPickingMode(): boolean { return this._pointPickingMode; }
+  @Output() pointPicked = new EventEmitter<{ lat: number; lng: number }>();
+  @Input() initialMarker?: { lat: number; lng: number; label?: string };
+
   lastColorIndex = -1;
+  private pickingMarker?: L.Marker;
+  private initialMarkerLayer?: L.CircleMarker;
   usedColors: number[] = [];
 
   // Propriété pour suivre l'état des popups et éviter les rechargements intempestifs
@@ -114,7 +125,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   // Quand une des propriétés d'entrée change. C'est a dire par exemple ici ce qui nous interresse : quand les inputs changent
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     console.log('Initialisation de la carte :', this.mapName);
     
     // console.log('Parcelles sélectionnées initiales dans ngOnChanges :', this.parcellesSelectedInitiales);
@@ -463,6 +474,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     this.resetMapView();
     this.tryZoomToSelectedParcellesOnce();
+    if (this._pointPickingMode) { this.enablePointPicking(); }
+    if (this.initialMarker) { this.addInitialMarker(); }
 
     // Affichage des sites CENCA si fournis
     if (this.sitesCenca && this.sitesCenca.features.length > 0) {
@@ -700,6 +713,22 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
         layer.addTo(this.map);
       }
     });
+  }
+
+  private addInitialMarker(): void {
+    if (!this.initialMarker) return;
+    const { lat, lng, label } = this.initialMarker;
+    this.initialMarkerLayer = L.circleMarker([lat, lng], {
+      radius: 9,
+      color: '#4e342e',
+      fillColor: '#6d4c41',
+      fillOpacity: 0.9,
+      weight: 2,
+    }).addTo(this.map);
+    if (label) {
+      this.initialMarkerLayer.bindTooltip(label, { permanent: true, direction: 'top', offset: [0, -6] });
+    }
+    this.map.setView([lat, lng], 13);
   }
 
   private zoomToGeoJson(): void {
@@ -1789,6 +1818,50 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
           this.map.fitBounds(globalBounds);
         }
     }
+  }
+
+  // ── Point picking ──────────────────────────────────────────────────────────
+
+  private enablePointPicking() {
+    this.map.getContainer().style.cursor = 'crosshair';
+    this.map.on('click', this.onPickingClick, this);
+  }
+
+  private disablePointPicking() {
+    if (!this.map) return;
+    this.map.getContainer().style.cursor = '';
+    this.map.off('click', this.onPickingClick, this);
+    if (this.pickingMarker) {
+      this.map.removeLayer(this.pickingMarker);
+      this.pickingMarker = undefined;
+    }
+  }
+
+  private onPickingClick(e: L.LeafletMouseEvent) {
+    const { lat, lng } = e.latlng;
+    if (this.pickingMarker) {
+      this.pickingMarker.setLatLng([lat, lng]);
+    } else {
+      const redIcon = L.divIcon({
+        className: '',
+        html: `<div style="
+          width:18px;height:18px;
+          background:#e74c3c;
+          border:2px solid #922b21;
+          border-radius:50%;
+          cursor:grab;
+        "></div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9],
+      });
+      this.pickingMarker = L.marker([lat, lng], { draggable: true, icon: redIcon }).addTo(this.map);
+      this.pickingMarker.bindTooltip('Nouvel emplacement', { permanent: true, direction: 'top', offset: [0, -12] });
+      this.pickingMarker.on('dragend', () => {
+        const pos = this.pickingMarker!.getLatLng();
+        this.pointPicked.emit({ lat: pos.lat, lng: pos.lng });
+      });
+    }
+    this.pointPicked.emit({ lat, lng });
   }
 
 }

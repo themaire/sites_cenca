@@ -1,5 +1,5 @@
 <div class="chiro-accueil">
-  <h1 class="titre">Chiroptères <span class="version">Phase 1</span></h1>
+  <h1 class="titre">Chiroptères</h1>
 
   <div class="blocs">
     <mat-card class="bloc">
@@ -18,15 +18,18 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="bloc disabled">
+    <mat-card class="bloc">
       <mat-card-header>
         <mat-card-title>Saisir</mat-card-title>
-        <mat-card-subtitle>Disponible en Phase 2</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         <div class="boutons">
-          <button mat-raised-button disabled>Nouveau relevé</button>
-          <button mat-raised-button disabled>Nouveau site</button>
+          <button mat-raised-button color="accent" (click)="nouveauReleve()">
+            <mat-icon>add</mat-icon> Nouveau relevé
+          </button>
+          <button mat-raised-button color="accent" (click)="nouveauSite()">
+            <mat-icon>add_location</mat-icon> Nouveau site
+          </button>
         </div>
       </mat-card-content>
     </mat-card>

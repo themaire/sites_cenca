@@ -1,3 +1,10 @@
+<div class="site-releves-header">
+  Ajouter un nouveau relevé :
+  <button mat-icon-button matTooltip="Nouveau relevé" (click)="nouveauReleve()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
 <div class="site-releves">
   <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
     <ng-container matColumnDef="date_releve">

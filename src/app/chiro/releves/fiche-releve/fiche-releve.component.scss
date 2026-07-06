@@ -6,8 +6,15 @@
     align-items: center;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 
-    h2 { margin: 0; font-size: 1.2rem; }
+    h2 { margin: 0; font-size: 1.2rem; flex: 1; }
+
+    .actions-entete {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
   }
 
   .spinner-wrapper {

@@ -7,6 +7,15 @@
       Relevé du {{ releve.date_releve | date:'dd/MM/yyyy' }}
       <span *ngIf="releve.nom_site"> — {{ releve.nom_site }}</span>
     </h2>
+    <div class="actions-entete" *ngIf="!loading && !erreur && releve">
+      <button mat-stroked-button (click)="toggleEdit()" [color]="isEditMode ? '' : 'primary'">
+        <mat-icon>{{ isEditMode ? 'close' : 'edit' }}</mat-icon>
+        {{ isEditMode ? 'Annuler édition' : 'Modifier' }}
+      </button>
+      <button mat-stroked-button color="warn" (click)="supprimerReleve()">
+        <mat-icon>delete</mat-icon> Supprimer
+      </button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="spinner-wrapper">
@@ -20,10 +29,21 @@
 
   <mat-tab-group *ngIf="!loading && !erreur && releve" animationDuration="200ms">
     <mat-tab label="Relevé">
-      <app-onglet-releve [releve]="releve"></app-onglet-releve>
+      <app-onglet-releve
+        [releve]="releve"
+        [isEditMode]="isEditMode"
+        [typologies]="typologies"
+        (saved)="onReleveSaved()"
+        (cancelled)="toggleEdit()">
+      </app-onglet-releve>
     </mat-tab>
     <mat-tab [label]="'Observations (' + observations.length + ')'">
-      <app-onglet-observations [observations]="observations"></app-onglet-observations>
+      <app-onglet-observations
+        [observations]="observations"
+        [uuidReleve]="uuid!"
+        [typologies]="typologies"
+        (changed)="onObservationsChanged()">
+      </app-onglet-observations>
     </mat-tab>
   </mat-tab-group>
 </div>

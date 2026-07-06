@@ -1,5 +1,11 @@
 <div class="onglet-observations">
 
+  <div class="barre-outils">
+    <button mat-raised-button color="accent" (click)="ouvrirDialogNouveauObs()" [disabled]="!typologies">
+      <mat-icon>add</mat-icon> Nouvelle observation
+    </button>
+  </div>
+
   <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
 
     <ng-container matColumnDef="espece">
@@ -57,11 +63,23 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let o" class="col-actions">
+        <button mat-icon-button matTooltip="Modifier" (click)="ouvrirDialogEdition(o)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Supprimer" color="warn" (click)="supprimerObs(o)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
     <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" colspan="9">Aucune observation pour ce relevé.</td>
+      <td class="mat-cell" colspan="10">Aucune observation pour ce relevé.</td>
     </tr>
   </table>
 

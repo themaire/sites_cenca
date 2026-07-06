@@ -38,5 +38,44 @@ export interface DetailSiteChiro {
   suivi_prc?: boolean;
   date_creation?: string;
   communes?: string[];
+  insees?: string[];
+  wgs84_x?: number;
+  wgs84_y?: number;
+  x_lambert?: number;
+  y_lambert?: number;
+  type_localisation?: number;
+  pointage_loc?: number;
+  precision_loc?: number;
   priorisation?: boolean;
 }
+
+export interface CreateSite {
+  code: string;
+  nom: string;
+  insee: string;
+  nature?: string;
+  definition?: string;
+  configuration?: string;
+  habitat?: number;
+  periode?: string;
+  localisation?: string;
+  contact?: string;
+  proprietaire?: string;
+  type_proprietaire?: string;
+  description?: string;
+  interet?: string;
+  accessibilite?: boolean;
+  protection?: boolean;
+  date_protection?: string;
+  suivi_prc?: boolean;
+  priorisation?: boolean;
+  lat?: number;
+  lng?: number;
+  x_lambert?: number;
+  y_lambert?: number;
+  type_localisation?: number;
+  pointage_loc?: number;
+  precision_loc?: number;
+}
+
+export type UpdateSite = Partial<CreateSite>;

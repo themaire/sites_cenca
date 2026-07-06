@@ -16,4 +16,6 @@ export class ChiroAccueilComponent {
 
   consulterReleves() { this.router.navigate(['/chiro/releves']); }
   consulterSites() { this.router.navigate(['/chiro/sites']); }
+  nouveauReleve() { this.router.navigate(['/chiro/releve/nouveau']); }
+  nouveauSite() { this.router.navigate(['/chiro/site/nouveau']); }
 }

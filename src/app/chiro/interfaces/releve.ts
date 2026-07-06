@@ -33,3 +33,18 @@ export interface DetailReleve {
   compte_saisie?: string;
   date_saisie?: string;
 }
+
+export interface CreateReleve {
+  date_releve: string;
+  insee: string;
+  site?: number;
+  observateur_cite?: string;
+  habitat?: number;
+  programme?: string;
+  precision_loc?: string;
+  x?: number;
+  y?: number;
+  commentaire?: string;
+}
+
+export type UpdateReleve = Partial<CreateReleve>;

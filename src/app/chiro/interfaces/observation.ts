@@ -1,3 +1,31 @@
+export interface Typologie {
+  code: string;
+  libelle: string;
+}
+
+export interface Typologies {
+  [groupe: string]: Typologie[];
+}
+
+export interface CreateObservation {
+  espece: string;
+  nombre: number;
+  type_observation?: string;
+  denombrement?: string;
+  objet?: string;
+  methode?: string;
+  statut_biologique?: string;
+  stade?: string;
+  sexe?: string;
+  etat_bio?: string;
+  commentaire?: string;
+  mortalite_cause?: string;
+  test_rabique?: boolean;
+  resultat_test?: string;
+}
+
+export type UpdateObservation = Partial<CreateObservation>;
+
 export interface ObservationDetail {
   uuid_observation: string;
   cd_espece: string;

@@ -11,68 +11,16 @@
   <mat-tab-group *ngIf="!loading && site" animationDuration="200ms">
 
     <mat-tab label="Informations">
-      <div class="infos-grille">
-
-        <mat-card>
-          <mat-card-header><mat-card-title>Identification</mat-card-title></mat-card-header>
-          <mat-card-content>
-            <div class="champ"><span class="label">Code</span><span>{{ site.code }}</span></div>
-            <div class="champ"><span class="label">Nom</span><span>{{ site.nom }}</span></div>
-            <div class="champ"><span class="label">Type</span><span>{{ site.definition_libelle || site.definition || '—' }}</span></div>
-            <div class="champ"><span class="label">Nature</span><span>{{ site.nature_libelle || site.nature || '—' }}</span></div>
-            <div class="champ"><span class="label">Configuration</span><span>{{ site.configuration_libelle || site.configuration || '—' }}</span></div>
-            <div class="champ"><span class="label">Habitat</span><span>{{ site.habitat_libelle || site.habitat || '—' }}</span></div>
-            <div class="champ"><span class="label">Période</span><span>{{ site.periode_libelle || site.periode || '—' }}</span></div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-header><mat-card-title>Localisation</mat-card-title></mat-card-header>
-          <mat-card-content>
-            <div class="champ"><span class="label">Commune(s)</span>
-              <span *ngIf="site.communes?.length">{{ site.communes!.join(', ') }}</span>
-              <span *ngIf="!site.communes?.length">—</span>
-            </div>
-            <div class="champ" *ngIf="site.localisation"><span class="label">Localisation</span><span>{{ site.localisation }}</span></div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-header><mat-card-title>Propriété et accès</mat-card-title></mat-card-header>
-          <mat-card-content>
-            <div class="champ"><span class="label">Propriétaire</span><span>{{ site.proprietaire || '—' }}</span></div>
-            <div class="champ"><span class="label">Type propriétaire</span><span>{{ site.type_proprietaire || '—' }}</span></div>
-            <div class="champ"><span class="label">Contact</span><span>{{ site.contact || '—' }}</span></div>
-            <div class="champ"><span class="label">Accessible</span><span>{{ site.accessibilite ? 'Oui' : 'Non' }}</span></div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-header><mat-card-title>Statuts</mat-card-title></mat-card-header>
-          <mat-card-content>
-            <div class="champ"><span class="label">Protection</span><span>{{ site.protection ? 'Oui' : 'Non' }}</span></div>
-            <div class="champ" *ngIf="site.date_protection"><span class="label">Date protection</span><span>{{ site.date_protection }}</span></div>
-            <div class="champ"><span class="label">Suivi PRC</span><span>{{ site.suivi_prc ? 'Oui' : 'Non' }}</span></div>
-            <div class="champ"><span class="label">Priorisation</span><span>{{ site.priorisation ? 'Oui' : 'Non' }}</span></div>
-            <div class="champ" *ngIf="site.date_creation"><span class="label">Créé le</span><span>{{ site.date_creation | date:'dd/MM/yyyy' }}</span></div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="full-width" *ngIf="site.description">
-          <mat-card-header><mat-card-title>Description</mat-card-title></mat-card-header>
-          <mat-card-content><p>{{ site.description }}</p></mat-card-content>
-        </mat-card>
-
-        <mat-card class="full-width" *ngIf="site.interet">
-          <mat-card-header><mat-card-title>Intérêt</mat-card-title></mat-card-header>
-          <mat-card-content><p>{{ site.interet }}</p></mat-card-content>
-        </mat-card>
-
-      </div>
+      <app-onglet-infos-site
+        [site]="site"
+        [typologies]="typologies"
+        (saved)="onSiteSaved()"
+        (deleteRequested)="supprimerSite()">
+      </app-onglet-infos-site>
     </mat-tab>
 
     <mat-tab [label]="'Relevés (' + releves.length + ')'">
-      <app-site-releves [releves]="releves"></app-site-releves>
+      <app-site-releves [releves]="releves" [siteId]="siteId"></app-site-releves>
     </mat-tab>
 
   </mat-tab-group>

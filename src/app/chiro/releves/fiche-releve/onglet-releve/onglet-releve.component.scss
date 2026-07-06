@@ -26,4 +26,36 @@
       flex-shrink: 0;
     }
   }
+
+  .mode-edition {
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 800px;
+    }
+
+    mat-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      mat-form-field { width: 100%; }
+    }
+
+    .row-coords {
+      display: flex;
+      gap: 16px;
+      mat-form-field { flex: 1; }
+    }
+
+    .full-width { width: 100%; }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 8px;
+    }
+  }
 }

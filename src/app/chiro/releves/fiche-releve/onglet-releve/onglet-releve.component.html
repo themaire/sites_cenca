@@ -1,6 +1,85 @@
 <div class="onglet-releve" *ngIf="releve">
 
-  <div class="grille">
+  <!-- MODE ÉDITION -->
+  <div *ngIf="isEditMode && form" class="mode-edition">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <mat-card>
+        <mat-card-header><mat-card-title>Date d'observation</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <mat-form-field>
+            <mat-label>Date *</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date_releve">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error>Date obligatoire</mat-error>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header><mat-card-title>Localisation</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <mat-form-field>
+            <mat-label>Commune *</mat-label>
+            <mat-select formControlName="insee">
+              <mat-option *ngFor="let c of communes" [value]="c.insee">{{ c.nom }}</mat-option>
+            </mat-select>
+            <mat-error>Commune obligatoire</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Précision localisation</mat-label>
+            <input matInput formControlName="precision_loc">
+          </mat-form-field>
+          <div class="row-coords">
+            <mat-form-field>
+              <mat-label>X (Lambert 93)</mat-label>
+              <input matInput type="number" formControlName="x">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Y (Lambert 93)</mat-label>
+              <input matInput type="number" formControlName="y">
+            </mat-form-field>
+          </div>
+          <mat-form-field>
+            <mat-label>Code habitat</mat-label>
+            <input matInput type="number" formControlName="habitat">
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header><mat-card-title>Observateur(s)</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <mat-form-field class="full-width">
+            <mat-label>Liste</mat-label>
+            <textarea matInput formControlName="observateur_cite" rows="2"></textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header><mat-card-title>Commentaire</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <mat-form-field class="full-width">
+            <mat-label>Commentaire</mat-label>
+            <textarea matInput formControlName="commentaire" rows="3"></textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="onCancel()">Annuler</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving">
+          <mat-icon>save</mat-icon>
+          {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODE CONSULTATION -->
+  <div *ngIf="!isEditMode" class="grille">
 
     <mat-card>
       <mat-card-header><mat-card-title>Administration</mat-card-title></mat-card-header>
