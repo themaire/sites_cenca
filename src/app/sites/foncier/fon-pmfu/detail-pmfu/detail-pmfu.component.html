@@ -278,8 +278,17 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label>Superficie (ha)</mat-label>
-            <input matInput formControlName="pmfu_superficie" type="number" [readonly]="!isEditPmfu" />
+            <mat-label>Surface cadastrale (ha)
+              <mat-icon matTooltip="Somme des surfaces des parcelles figurant sur l'acte" class="info-icon">info</mat-icon>
+            </mat-label>
+            <input matInput formControlName="pmfu_surf_cadastrale" type="number" [readonly]="!isEditPmfu" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Surface MFU (ha)
+              <mat-icon matTooltip="Sommes des parcelles effective ou pour-partie" class="info-icon">info</mat-icon>
+            </mat-label>
+            <input matInput formControlName="pmfu_surf_mfu" type="number" [readonly]="!isEditPmfu" />
           </mat-form-field>
 
         </div>
@@ -327,8 +336,6 @@
               <textarea matInput [value]="getProprietairesLibelles()" readonly rows="2" class="readonly-textarea"></textarea>
             </ng-template>
           </mat-form-field>
-
-          
 
         </div>
         <div class="form-row">
@@ -495,7 +502,7 @@
     
     <!-- Étape 2: Localisation -->
     <mat-step>
-      <ng-template matStepLabel>Localisation</ng-template>
+      <ng-template matStepLabel>Parcelles cadastrales concernées</ng-template>
 
       <!-- <div>
         <ng-container *ngFor="let parcelle of parcellesSelected">

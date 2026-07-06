@@ -37,7 +37,8 @@ export interface ProjetMfu {
   pmfu_mes_comp?: boolean;
   pmfu_cout?: number;
   pmfu_financements?: number[];
-  pmfu_superficie?: number;
+  pmfu_surf_cadastrale?: number;
+  pmfu_surf_mfu?: number;
   pmfu_priorite?: number;
   pmfu_status?: number;
   pmfu_annee_signature?: number;

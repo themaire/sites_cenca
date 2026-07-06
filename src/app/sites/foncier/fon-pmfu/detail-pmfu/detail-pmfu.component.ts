@@ -7,6 +7,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { TooltipPosition, MatTooltipModule } from '@angular/material/tooltip';
 
 import { FilterByPipe } from '../../../../shared/pipes/filter-by.pipe';
 
@@ -91,6 +92,7 @@ export interface Section {
     FormsModule,
     MatCheckboxModule,
     MatIconModule,
+    MatTooltipModule,
     MatStepperModule,
     MatInputModule,
     MatSelectModule,
