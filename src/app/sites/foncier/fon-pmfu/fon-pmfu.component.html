@@ -41,6 +41,19 @@
           (click)="resetFilters(input)">
           <mat-icon>filter_alt_off</mat-icon>
         </button>
+
+        <div class="aide-button">
+          <a
+            mat-button
+            class="btn-aide"
+            routerLink="/aide/projets-mfu"
+            target="_blank"
+            [ngStyle]="{ 'border-radius': '20px' }"
+          >
+            <mat-icon>help</mat-icon>
+            Aide
+          </a>
+        </div>
       </div>
     </div>
     <div class="table">

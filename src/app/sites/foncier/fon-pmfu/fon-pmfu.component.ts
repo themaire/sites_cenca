@@ -7,7 +7,7 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
-// import { RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -58,6 +58,7 @@ export class HighlightPipe implements PipeTransform {
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     MatTableModule,
     MatIconModule,
     MatFormFieldModule,
