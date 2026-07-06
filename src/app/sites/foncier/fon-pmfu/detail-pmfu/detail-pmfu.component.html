@@ -578,6 +578,14 @@
                 <mat-icon class="zoom-icon" color="primary">zoom_in</mat-icon>
               </div>
               {{ parcelle.nom_com }} {{ parcelle.section }} - {{ parcelle.numero }} - {{ parcelle.idu }}
+              <mat-checkbox
+                [checked]="parcelle.pour_partie"
+                [disabled]="!isEditPmfu"
+                (change)="onPourPartieChange(parcelle, $event.checked)"
+                matTooltip="La parcelle n'est concernée qu'en partie par le projet MFU"
+                style="margin-left: 8px;">
+                Pour partie
+              </mat-checkbox>
               <div class="delete-wrapper" (click)="removeParcelle(parcelle)" title="Supprimer cette parcelle">
                 <mat-icon *ngIf="isEditPmfu" class="delete-icon">delete</mat-icon>
               </div>

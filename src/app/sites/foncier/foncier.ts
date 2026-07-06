@@ -78,6 +78,8 @@ export interface ParcellesSelected {
   numero: string;
   contenance: number;
   bbox?: number[]; // [minX, minY, maxX, maxY]
+  // Stocké en base dans pmfu_parc_list sous la forme "idu:1" (absence de suffixe = false)
+  pour_partie?: boolean;
 }
 
 export interface ActeMultiSiteLite {
