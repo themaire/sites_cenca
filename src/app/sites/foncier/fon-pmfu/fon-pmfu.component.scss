@@ -46,6 +46,19 @@
   display: flex;
   @include align(center, space-between);
 }
+.filtres {
+  display: flex;
+  @include align(center, flex-end);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.filtre-select {
+  min-width: 150px;
+  max-width: 200px;
+}
+.btn-reset-filtres {
+  margin-bottom: 15px; // Aligné avec les champs qui ont une marge de hint en bas
+}
 .table {
   width: 80%;
 }

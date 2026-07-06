@@ -61,6 +61,8 @@ export interface ProjetsMfu {
   pmfu_responsable?: string;
   pmfu_commune_insee?: string;
   pmfu_commune_nom?: string;
+  type_acte?: string;
+  statut?: string;
 }
 
 export interface DocPmfu {
