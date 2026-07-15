@@ -1,0 +1,14 @@
+.idea-box-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  padding: 24px;
+
+  .airtable-embed {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: 1px solid #ccc;
+  }
+}
