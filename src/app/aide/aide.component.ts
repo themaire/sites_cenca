@@ -205,7 +205,7 @@ export class AideComponent implements OnInit {
     private router: Router,
     private loginService: LoginService
   ) {
-    this.userGroupId = this.loginService.user()?.gro_id ?? 0;
+    this.userGroupId = Math.max(0, ...(this.loginService.user()?.groups ?? [0]));
   }
   
   toggleSidenav() {

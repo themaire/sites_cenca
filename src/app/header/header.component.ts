@@ -41,6 +41,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   userGroId: number | null = null;
 
+  readonly CHIRO_GROUPS = [3, 5, 6];
+
+  get hasChiroAccess(): boolean {
+    const user = this.loginService.user();
+    return !!user && this.CHIRO_GROUPS.some(g => user.groups.includes(g));
+  }
+
+  get parametresMenuItem() {
+    return this.menuItems[0]?.children?.find(i => i.id === 28);
+  }
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -50,8 +61,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     effect(() => {
       const user = this.loginService.user();
       if (user) {
-        // console.log('Utilisateur chargé dans HeaderComponent :', user);
-        this.userGroId = user.gro_id ?? null;
+        this.userGroId = user.groups[0] ?? 0;
         this.menuService.loadMenuItems(this.userGroId ?? 0);
       }
     });

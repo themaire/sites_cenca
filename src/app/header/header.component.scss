@@ -127,6 +127,10 @@ header {
   ); // Inclut les styles de base comme padding et border-radius
 }
 
+.c-chiro {
+  @include btn-menu($chiro);
+}
+
 .c-parametres, .c-parametres_hover {
   @include btn-menu(
     $parametres

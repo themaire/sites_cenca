@@ -465,7 +465,7 @@ export class DetailPmfuComponent {
     this.initializeAllowedTypes();
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     this.cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
-    this.gro_id = this.loginService.user()?.gro_id || null; // Groupe de l'utilisateur connecté
+    this.gro_id = Math.max(0, ...(this.loginService.user()?.groups ?? [0])) || null;
 
     // Récupérer les valeurs pour les selects
     // Récupérer les salariés pour créateur et responsable

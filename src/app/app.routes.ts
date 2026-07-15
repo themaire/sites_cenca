@@ -4,6 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du Resolver qui donne les elements du menu au travers de la route
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
+import { isChiroGuard } from './guards/is-chiro.guard';
 import { AideComponent } from './aide/aide.component';
 import { WipComponent } from './wip/wip.component';
 import { environment } from '../environments/environment';
@@ -65,6 +66,7 @@ export const routes: Routes = [
     path: 'chiro',
     loadChildren: () =>
       import('./chiro/chiro.routes').then((mod) => mod.CHIRO_ROUTES),
+    canActivate: [isChiroGuard],
   },
 
   // Lazy-load
