@@ -213,21 +213,7 @@ export class AideComponent implements OnInit {
   }
 
   ngOnInit() {
-    const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
-    // Charger les catégories et sections dynamiquement
-    this.documentationService.getHierarchicalSections(isAuthenticated).subscribe(categories => {
-      this.categories = categories;
-      // Si on est sur /aide sans section, charger la section 'index' de la première catégorie
-      const currentUrl = this.router.url;
-      if (currentUrl === '/aide' && categories.length > 0 && categories[0].sections.length > 0) {
-        this.loadSection(categories[0].sections[0].id);
-      }
-      // Recharger la section si un paramètre section est présent dans l'URL
-      const sectionId = this.route.snapshot.params['section'];
-      if (sectionId) {
-        this.loadSection(sectionId);
-      }
-    });
+    this.loadCategoriesAndSection();
     // Écouter les changements de route
     this.route.params.subscribe(params => {
       const sectionId = params['section'];
@@ -235,6 +221,44 @@ export class AideComponent implements OnInit {
         this.loadSection(sectionId);
       }
     });
+  }
+
+  /**
+   * Charge les catégories/sections, réservées aux utilisateurs connectés incluses.
+   *
+   * /aide n'est pas protégée par isLoggedInGuard (documentation publique) : c'est
+   * ce guard qui réhydrate normalement loginService.user() depuis le token via
+   * getUsers(). Sans lui, arriver directement sur /aide/:section (nouvel onglet,
+   * F5) laisse user() à `undefined` pour toujours, ce qui masque à tort les
+   * sections requireAuth. On tente donc ici une réhydratation silencieuse,
+   * sans redirection en cas d'échec, pour ne pas casser l'accès public.
+   */
+  private loadCategoriesAndSection(): void {
+    const proceed = () => {
+      const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
+      this.documentationService.getHierarchicalSections(isAuthenticated).subscribe(categories => {
+        this.categories = categories;
+        // Si on est sur /aide sans section, charger la section 'index' de la première catégorie
+        const currentUrl = this.router.url;
+        if (currentUrl === '/aide' && categories.length > 0 && categories[0].sections.length > 0) {
+          this.loadSection(categories[0].sections[0].id);
+        }
+        // Charger la section si un paramètre section est présent dans l'URL
+        const sectionId = this.route.snapshot.params['section'];
+        if (sectionId) {
+          this.loadSection(sectionId);
+        }
+      });
+    };
+
+    if (this.loginService.user() === undefined) {
+      this.loginService.getUsers().subscribe({
+        next: proceed,
+        error: proceed, // Utilisateur anonyme ou token invalide : sections publiques quand même
+      });
+    } else {
+      proceed();
+    }
   }
 
   loadSection(sectionId: string) {

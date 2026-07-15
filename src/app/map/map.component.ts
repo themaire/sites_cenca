@@ -1259,10 +1259,9 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (!this.parcellesLayer || !parcellesCollection.features || parcellesCollection.features.length === 0) return;
 
     parcellesCollection.features.forEach((feature: any) => {
-      // Vérifier si la parcelle est sélectionnée
+      // Style selon l'état de sélection (et le flag pour-partie)
       const idu = feature.properties?.idu;
-      const isSelected = this._parcellesSelectionnees.some(p => p.idu === idu);
-      const style = isSelected ? this.getParcelleSelectedStyle() : this.getParcelleStyle();
+      const style = this.getStyleForParcelle(idu);
       const layer = L.geoJSON(feature, {
         style,
         onEachFeature: (feature, layer) => {
@@ -1298,6 +1297,46 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       fillOpacity: 0.25,
       fillColor: '#fffde7'
     };
+  }
+
+  /**
+   * Retourne le style pour les parcelles sélectionnées "pour partie" (violet)
+   */
+  private getParcellePourPartieStyle() {
+    return {
+      color: '#8e24aa', // Violet
+      weight: 2.5,
+      opacity: 1,
+      fillOpacity: 0.25,
+      fillColor: '#f3e5f5' // Violet très clair
+    };
+  }
+
+  /**
+   * Style d'une parcelle selon son état : sélectionnée pour-partie (violet),
+   * sélectionnée (jaune) ou non sélectionnée (orange par défaut)
+   */
+  private getStyleForParcelle(idu?: string) {
+    const selectionnee = idu ? this._parcellesSelectionnees.find(p => p.idu === idu) : undefined;
+    if (!selectionnee) return this.getParcelleStyle();
+    return selectionnee.pour_partie ? this.getParcellePourPartieStyle() : this.getParcelleSelectedStyle();
+  }
+
+  /**
+   * Réapplique les styles de sélection aux parcelles déjà affichées, sans rechargement réseau.
+   * À appeler depuis le parent quand un flag (ex. pour-partie) change sur une parcelle sélectionnée.
+   */
+  public restyleParcellesSelection(): void {
+    if (!this.parcellesLayer) return;
+    this.parcellesLayer.eachLayer((group: any) => {
+      if (typeof group.eachLayer !== 'function') return;
+      group.eachLayer((layer: any) => {
+        const idu = layer.feature?.properties?.idu;
+        if (idu && typeof layer.setStyle === 'function') {
+          layer.setStyle(this.getStyleForParcelle(idu));
+        }
+      });
+    });
   }
 
   /**
@@ -1483,16 +1522,10 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
    */
   private resetParcelleHighlight(e: any): void {
     const layer = e.target;
-    const props = layer.feature?.properties;
-    const idu = props?.idu;
-    const isSelected = this._parcellesSelectionnees.some(p => p.idu === idu);
+    const idu = layer.feature?.properties?.idu;
 
-    // Restaurer le style selon sélection
-    if (isSelected) {
-      layer.setStyle(this.getParcelleSelectedStyle());
-    } else {
-      layer.setStyle(this.getParcelleStyle());
-    }
+    // Restaurer le style selon l'état de sélection (pour-partie inclus)
+    layer.setStyle(this.getStyleForParcelle(idu));
 
     // Fermer le tooltip
     layer.closeTooltip();

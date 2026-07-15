@@ -37,7 +37,8 @@ export interface ProjetMfu {
   pmfu_mes_comp?: boolean;
   pmfu_cout?: number;
   pmfu_financements?: number[];
-  pmfu_superficie?: number;
+  pmfu_surf_cadastrale?: number;
+  pmfu_surf_mfu?: number;
   pmfu_priorite?: number;
   pmfu_status?: number;
   pmfu_annee_signature?: number;
@@ -60,6 +61,8 @@ export interface ProjetsMfu {
   pmfu_responsable?: string;
   pmfu_commune_insee?: string;
   pmfu_commune_nom?: string;
+  type_acte?: string;
+  statut?: string;
 }
 
 export interface DocPmfu {
@@ -77,6 +80,8 @@ export interface ParcellesSelected {
   numero: string;
   contenance: number;
   bbox?: number[]; // [minX, minY, maxX, maxY]
+  // Stocké en base dans pmfu_parc_list sous la forme "idu:1" (absence de suffixe = false)
+  pour_partie?: boolean;
 }
 
 export interface ActeMultiSiteLite {

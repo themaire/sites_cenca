@@ -15,10 +15,46 @@
         </button>
         <p>Ajouter un Projet MFU</p>
       </div>
-      <mat-form-field class="filtre">
-        <mat-label>Mots-clés</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="" #input />
-      </mat-form-field>
+      <div class="filtres">
+        <mat-form-field class="filtre-select" *ngFor="let selector of selectors">
+          <mat-label>{{ selector.title }}</mat-label>
+          <mat-select
+            [value]="selectorFilters[selector.name] || ''"
+            (selectionChange)="onSelectorChange(selector.name, $event.value)">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let value of selector.values" [value]="value">
+              {{ value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="filtre">
+          <mat-label>Mots-clés</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="" #input />
+        </mat-form-field>
+
+        <button
+          mat-icon-button
+          *ngIf="hasActiveFilters"
+          matTooltip="Réinitialiser les filtres"
+          class="btn-reset-filtres"
+          (click)="resetFilters(input)">
+          <mat-icon>filter_alt_off</mat-icon>
+        </button>
+
+        <div class="aide-button">
+          <a
+            mat-button
+            class="btn-aide"
+            routerLink="/aide/projets-mfu"
+            target="_blank"
+            [ngStyle]="{ 'border-radius': '20px' }"
+          >
+            <mat-icon>help</mat-icon>
+            Aide
+          </a>
+        </div>
+      </div>
     </div>
     <div class="table">
       <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
@@ -70,9 +106,8 @@
         ></tr>
         <tr class="mat-row" *matNoDataRow>
           <td>
-            Pas de donnée correspondante à votre filtre sur le mot clé : "{{
-              input.value
-            }}"
+            Pas de donnée correspondante à vos filtres<ng-container *ngIf="input.value">
+              (mot clé : "{{ input.value }}")</ng-container>.
           </td>
         </tr>
       </table>

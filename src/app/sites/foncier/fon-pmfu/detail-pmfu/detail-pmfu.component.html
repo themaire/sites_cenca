@@ -278,8 +278,17 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label>Superficie (ha)</mat-label>
-            <input matInput formControlName="pmfu_superficie" type="number" [readonly]="!isEditPmfu" />
+            <mat-label>Surface cadastrale (ha)
+              <mat-icon matTooltip="Somme des surfaces des parcelles figurant sur l'acte" class="info-icon">info</mat-icon>
+            </mat-label>
+            <input matInput formControlName="pmfu_surf_cadastrale" type="number" [readonly]="!isEditPmfu" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Surface MFU (ha)
+              <mat-icon matTooltip="Sommes des parcelles effective ou pour-partie" class="info-icon">info</mat-icon>
+            </mat-label>
+            <input matInput formControlName="pmfu_surf_mfu" type="number" [readonly]="!isEditPmfu" />
           </mat-form-field>
 
         </div>
@@ -327,8 +336,6 @@
               <textarea matInput [value]="getProprietairesLibelles()" readonly rows="2" class="readonly-textarea"></textarea>
             </ng-template>
           </mat-form-field>
-
-          
 
         </div>
         <div class="form-row">
@@ -495,7 +502,7 @@
     
     <!-- Étape 2: Localisation -->
     <mat-step>
-      <ng-template matStepLabel>Localisation</ng-template>
+      <ng-template matStepLabel>Parcelles cadastrales concernées</ng-template>
 
       <!-- <div>
         <ng-container *ngFor="let parcelle of parcellesSelected">
@@ -571,6 +578,14 @@
                 <mat-icon class="zoom-icon" color="primary">zoom_in</mat-icon>
               </div>
               {{ parcelle.nom_com }} {{ parcelle.section }} - {{ parcelle.numero }} - {{ parcelle.idu }}
+              <mat-checkbox
+                [checked]="parcelle.pour_partie"
+                [disabled]="!isEditPmfu"
+                (change)="onPourPartieChange(parcelle, $event.checked)"
+                matTooltip="La parcelle n'est concernée qu'en partie par le projet MFU"
+                style="margin-left: 8px;">
+                Pour partie
+              </mat-checkbox>
               <div class="delete-wrapper" (click)="removeParcelle(parcelle)" title="Supprimer cette parcelle">
                 <mat-icon *ngIf="isEditPmfu" class="delete-icon">delete</mat-icon>
               </div>
