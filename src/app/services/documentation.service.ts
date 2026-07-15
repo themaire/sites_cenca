@@ -55,7 +55,7 @@ export class DocumentationService {
   getHierarchicalSections(isAuthenticated: boolean = false): Observable<DocCategory[]> {
     return this.loadHierarchicalIndex().pipe(
       map(index => {
-        const userGroId = this.loginService.user()?.gro_id ?? 0;
+        const userGroId = Math.max(0, ...(this.loginService.user()?.groups ?? [0]));
         // Filtrer les catégories accessibles
         const filteredCategories = index.categories
           .filter(cat => cat.accessLevel <= userGroId)
@@ -97,7 +97,7 @@ export class DocumentationService {
   getSections(isAuthenticated: boolean = false): Observable<DocSection[]> {
     return this.loadSectionsIndex().pipe(
       map(index => {
-        const userGroId = this.loginService.user()?.gro_id ?? 0;
+        const userGroId = Math.max(0, ...(this.loginService.user()?.groups ?? [0]));
         const filteredSections = index.sections
           .filter(section => section.published)
           .filter(section => !section.requireAuth || isAuthenticated)

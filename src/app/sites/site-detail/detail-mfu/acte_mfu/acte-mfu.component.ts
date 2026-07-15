@@ -121,7 +121,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.gro_id = this.loginService.user()?.gro_id ?? null;
+    this.gro_id = Math.max(0, ...(this.loginService.user()?.groups ?? [0])) || null;
     await this.loadSelectValues();
 
     if (this.acteLite?.uuid_acte) {

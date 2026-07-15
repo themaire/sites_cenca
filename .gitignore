@@ -139,4 +139,6 @@ dist
 .DS_Store
 *.orig
 src/app/sites/site-detail/detail-gestion/assets/
-src/app/chiro/assets/*
+src/app/chiro/assets/screenshots/
+src/app/chiro/assets/vba/
+

@@ -1,0 +1,45 @@
+h2[mat-dialog-title] { margin-bottom: 0; }
+
+mat-dialog-content {
+  min-width: 560px;
+  max-width: 720px;
+  padding-top: 16px !important;
+}
+
+.form-obs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  mat-form-field { width: 100%; }
+
+  .row-2 {
+    display: flex;
+    gap: 16px;
+    mat-form-field { flex: 1; }
+  }
+
+  .row-3 {
+    display: flex;
+    gap: 12px;
+    mat-form-field { flex: 1; }
+  }
+
+  .section-mortalite {
+    border: 1px solid #f44336;
+    border-radius: 4px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    h4 {
+      margin: 0 0 4px;
+      color: #f44336;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    mat-form-field { width: 100%; }
+  }
+}

@@ -1,0 +1,128 @@
+<h2 mat-dialog-title>{{ isNouveauMode ? 'Nouvelle observation' : 'Modifier l\'observation' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-obs">
+
+    <div class="row-2">
+      <mat-form-field>
+        <mat-label>Espèce *</mat-label>
+        <mat-select formControlName="espece">
+          <mat-option *ngFor="let e of especes" [value]="e.cd_espece">
+            {{ e.cd_espece }} — {{ e.nom }}
+          </mat-option>
+        </mat-select>
+        <mat-error>Espèce obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Nombre *</mat-label>
+        <input matInput type="number" formControlName="nombre" min="0">
+        <mat-error>Nombre obligatoire (≥ 0)</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="row-2">
+      <mat-form-field>
+        <mat-label>Type d'observation</mat-label>
+        <mat-select formControlName="type_observation">
+          <mat-option [value]="null">— Non renseigné —</mat-option>
+          <mat-option *ngFor="let t of typologies['type_observation']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Dénombrement</mat-label>
+        <mat-select formControlName="denombrement">
+          <mat-option [value]="null">— Non renseigné —</mat-option>
+          <mat-option *ngFor="let t of typologies['denombrement']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row-2">
+      <mat-form-field>
+        <mat-label>Objet</mat-label>
+        <mat-select formControlName="objet">
+          <mat-option [value]="null">— Non renseigné —</mat-option>
+          <mat-option *ngFor="let t of typologies['objet']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Méthode</mat-label>
+        <mat-select formControlName="methode">
+          <mat-option [value]="null">— Non renseigné —</mat-option>
+          <mat-option *ngFor="let t of typologies['methode']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row-3">
+      <mat-form-field>
+        <mat-label>Statut biologique</mat-label>
+        <mat-select formControlName="statut_biologique">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let t of typologies['statut_bio']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Stade</mat-label>
+        <mat-select formControlName="stade">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let t of typologies['stade']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Sexe</mat-label>
+        <mat-select formControlName="sexe">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let t of typologies['sexe']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field>
+      <mat-label>État biologique</mat-label>
+      <mat-select formControlName="etat_bio">
+        <mat-option [value]="null">— Non renseigné —</mat-option>
+        <mat-option *ngFor="let t of typologies['etat_bio']" [value]="t.code">{{ t.libelle }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Commentaire</mat-label>
+      <textarea matInput formControlName="commentaire" rows="2"></textarea>
+    </mat-form-field>
+
+    <!-- Mortalité -->
+    <div *ngIf="isMortalite" class="section-mortalite">
+      <h4>Mortalité</h4>
+
+      <mat-form-field>
+        <mat-label>Cause de mortalité</mat-label>
+        <mat-select formControlName="mortalite_cause">
+          <mat-option [value]="null">— Non renseigné —</mat-option>
+          <mat-option *ngFor="let t of typologies['mortalite_cause']" [value]="t.code">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="test_rabique">Test rabique effectué</mat-checkbox>
+
+      <mat-form-field *ngIf="hasTestRabique">
+        <mat-label>Résultat du test</mat-label>
+        <input matInput formControlName="resultat_test">
+      </mat-form-field>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close>Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || saving">
+    <mat-icon>save</mat-icon>
+    {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+  </button>
+</mat-dialog-actions>

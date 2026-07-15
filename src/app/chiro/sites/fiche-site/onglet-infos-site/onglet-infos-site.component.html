@@ -1,0 +1,245 @@
+<div class="button-title">
+  <div class="form-buttons">
+    <app-form-buttons
+      icone="edit"
+      theme="connaitre"
+      [isEditActive]="isEditMode"
+      [isFormValid]="isFormValid"
+      (toggleAction)="handleToggleAction($event)"
+      (onSubmit)="onSubmit()">
+    </app-form-buttons>
+  </div>
+  <div class="suppression" *ngIf="!isEditMode">
+    <button mat-button (click)="deleteRequested.emit()">Supprimer le site</button>
+  </div>
+</div>
+
+<ng-container *ngIf="isEditMode && form">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="edit-form">
+
+    <mat-card>
+      <mat-card-header><mat-card-title>Identification</mat-card-title></mat-card-header>
+      <mat-card-content class="grille-form">
+        <mat-form-field>
+          <mat-label>Code *</mat-label>
+          <input matInput formControlName="code">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Nom *</mat-label>
+          <input matInput formControlName="nom">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Type (définition)</mat-label>
+          <mat-select formControlName="definition">
+            <mat-option [value]="null">—</mat-option>
+            <mat-option *ngFor="let t of typologies?.['definition']" [value]="t.code">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Nature</mat-label>
+          <mat-select formControlName="nature">
+            <mat-option [value]="null">—</mat-option>
+            <mat-option *ngFor="let t of typologies?.['nature']" [value]="t.code">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Configuration</mat-label>
+          <mat-select formControlName="configuration">
+            <mat-option [value]="null">—</mat-option>
+            <mat-option *ngFor="let t of typologies?.['configuration']" [value]="t.code">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Habitat</mat-label>
+          <mat-select formControlName="habitat">
+            <mat-option [value]="null">—</mat-option>
+            <mat-option *ngFor="let t of typologies?.['habitat']" [value]="t.code">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Période</mat-label>
+          <mat-select formControlName="periode">
+            <mat-option [value]="null">—</mat-option>
+            <mat-option *ngFor="let t of typologies?.['periode']" [value]="t.code">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header><mat-card-title>Localisation</mat-card-title></mat-card-header>
+      <mat-card-content class="grille-form">
+        <mat-form-field>
+          <mat-label>Département</mat-label>
+          <mat-select [value]="selectedDepartement" (selectionChange)="onDepartementChange($event.value)">
+            <mat-option value="">—</mat-option>
+            <mat-option *ngFor="let d of departements" [value]="d.code">{{ d.code }} – {{ d.nom }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Commune</mat-label>
+          <mat-select formControlName="insee" [disabled]="!selectedDepartement || loadingCommunes">
+            <mat-option *ngIf="loadingCommunes" disabled>Chargement…</mat-option>
+            <mat-option *ngFor="let c of communesIGN" [value]="c.code">{{ c.nom }} ({{ c.code }})</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Description de la localisation</mat-label>
+          <textarea matInput formControlName="localisation" rows="2"></textarea>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>X Lambert 93</mat-label>
+          <input matInput type="number" formControlName="x_lambert">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Y Lambert 93</mat-label>
+          <input matInput type="number" formControlName="y_lambert">
+        </mat-form-field>
+        <p class="xy-note">
+          Si vous définissez des coordonnées X et Y ci-dessus <em>et</em> un nouvel emplacement sur la carte,
+          la position sur la carte sera prise en compte en priorité.
+        </p>
+        <div class="sous-localisation full-width">
+          <p class="sous-titre">Caractéristiques de la localisation</p>
+          <div class="grille-sous">
+            <mat-form-field>
+              <mat-label>Type de coordonnées</mat-label>
+              <mat-select formControlName="type_localisation">
+                <mat-option [value]="null">—</mat-option>
+                <mat-option *ngFor="let t of typologies?.['coordonnee']" [value]="t.code">{{ t.libelle }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Pointage</mat-label>
+              <mat-select formControlName="pointage_loc">
+                <mat-option [value]="null">—</mat-option>
+                <mat-option *ngFor="let t of typologies?.['pointage']" [value]="t.code">{{ t.libelle }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Précision</mat-label>
+              <mat-select formControlName="precision_loc">
+                <mat-option [value]="null">—</mat-option>
+                <mat-option *ngFor="let t of typologies?.['precision']" [value]="t.code">{{ t.libelle }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div *ngIf="displayedGps" class="gps-readonly">
+          <span><span class="label">Latitude :</span>{{ displayedGps.lat | number:'1.5-5' }}</span>
+          <span><span class="label">Longitude :</span>{{ displayedGps.lng | number:'1.5-5' }}</span>
+          <span style="font-size:0.78rem;color:#999">(coordonnées GPS — lecture seule)</span>
+        </div>
+        <div class="carte-picking full-width">
+          <p class="carte-hint">Cliquez sur la carte pour positionner le site.</p>
+          <app-map
+            [pointPickingMode]="true"
+            [initialMarker]="site.wgs84_x && site.wgs84_y ? { lat: site.wgs84_y, lng: site.wgs84_x, label: 'Localisation actuelle' } : undefined"
+            (pointPicked)="onPointPicked($event)">
+          </app-map>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header><mat-card-title>Propriété et accès</mat-card-title></mat-card-header>
+      <mat-card-content class="grille-form">
+        <mat-form-field><mat-label>Propriétaire</mat-label><input matInput formControlName="proprietaire"></mat-form-field>
+        <mat-form-field><mat-label>Type de propriétaire</mat-label><input matInput formControlName="type_proprietaire"></mat-form-field>
+        <mat-form-field><mat-label>Contact</mat-label><input matInput formControlName="contact"></mat-form-field>
+        <div class="checkboxes"><mat-checkbox formControlName="accessibilite">Site accessible</mat-checkbox></div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header><mat-card-title>Statuts</mat-card-title></mat-card-header>
+      <mat-card-content class="grille-form">
+        <div class="checkboxes">
+          <mat-checkbox formControlName="protection">Site protégé</mat-checkbox>
+          <mat-checkbox formControlName="suivi_prc">Suivi PRC</mat-checkbox>
+          <mat-checkbox formControlName="priorisation">Priorisation</mat-checkbox>
+        </div>
+        <mat-form-field *ngIf="hasProtection">
+          <mat-label>Date de protection</mat-label>
+          <input matInput [matDatepicker]="dpProt" formControlName="date_protection">
+          <mat-datepicker-toggle matSuffix [for]="dpProt"></mat-datepicker-toggle>
+          <mat-datepicker #dpProt></mat-datepicker>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header><mat-card-title>Description</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <textarea matInput formControlName="description" rows="4"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header><mat-card-title>Intérêt</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <textarea matInput formControlName="interet" rows="4"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+  </form>
+</ng-container>
+
+<ng-container *ngIf="!isEditMode">
+  <div class="infos-grille">
+    <mat-card>
+      <mat-card-header><mat-card-title>Identification</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="champ"><span class="label">Code</span><span>{{ site.code }}</span></div>
+        <div class="champ"><span class="label">Nom</span><span>{{ site.nom }}</span></div>
+        <div class="champ"><span class="label">Type</span><span>{{ site.definition_libelle || site.definition || '—' }}</span></div>
+        <div class="champ"><span class="label">Nature</span><span>{{ site.nature_libelle || site.nature || '—' }}</span></div>
+        <div class="champ"><span class="label">Configuration</span><span>{{ site.configuration_libelle || site.configuration || '—' }}</span></div>
+        <div class="champ"><span class="label">Habitat</span><span>{{ site.habitat_libelle || site.habitat || '—' }}</span></div>
+        <div class="champ"><span class="label">Période</span><span>{{ site.periode_libelle || site.periode || '—' }}</span></div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-header><mat-card-title>Localisation</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="champ">
+          <span class="label">Commune(s)</span>
+          <span *ngIf="site.communes?.length">{{ site.communes!.join(', ') }}</span>
+          <span *ngIf="!site.communes?.length">—</span>
+        </div>
+        <div class="champ" *ngIf="site.localisation"><span class="label">Localisation</span><span>{{ site.localisation }}</span></div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-header><mat-card-title>Propriété et accès</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="champ"><span class="label">Propriétaire</span><span>{{ site.proprietaire || '—' }}</span></div>
+        <div class="champ"><span class="label">Type propriétaire</span><span>{{ site.type_proprietaire || '—' }}</span></div>
+        <div class="champ"><span class="label">Contact</span><span>{{ site.contact || '—' }}</span></div>
+        <div class="champ"><span class="label">Accessible</span><span>{{ site.accessibilite ? 'Oui' : 'Non' }}</span></div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-header><mat-card-title>Statuts</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="champ"><span class="label">Protection</span><span>{{ site.protection ? 'Oui' : 'Non' }}</span></div>
+        <div class="champ" *ngIf="site.date_protection"><span class="label">Date protection</span><span>{{ site.date_protection }}</span></div>
+        <div class="champ"><span class="label">Suivi PRC</span><span>{{ site.suivi_prc ? 'Oui' : 'Non' }}</span></div>
+        <div class="champ"><span class="label">Priorisation</span><span>{{ site.priorisation ? 'Oui' : 'Non' }}</span></div>
+        <div class="champ" *ngIf="site.date_creation"><span class="label">Créé le</span><span>{{ site.date_creation | date:'dd/MM/yyyy' }}</span></div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="full-width" *ngIf="site.description">
+      <mat-card-header><mat-card-title>Description</mat-card-title></mat-card-header>
+      <mat-card-content><p>{{ site.description }}</p></mat-card-content>
+    </mat-card>
+    <mat-card class="full-width" *ngIf="site.interet">
+      <mat-card-header><mat-card-title>Intérêt</mat-card-title></mat-card-header>
+      <mat-card-content><p>{{ site.interet }}</p></mat-card-content>
+    </mat-card>
+  </div>
+</ng-container>
