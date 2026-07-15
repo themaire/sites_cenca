@@ -6,6 +6,7 @@ import { MenuItemResolver } from './resolvers/menu-item.resolver'; // Import du 
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
 import { AideComponent } from './aide/aide.component';
 import { WipComponent } from './wip/wip.component';
+import { IdeaBoxComponent } from './idea-box/idea-box.component';
 import { environment } from '../environments/environment';
 import { Route } from '@angular/router';
 
@@ -75,6 +76,12 @@ export const routes: Routes = [
   {
     path: 'aide/:section',
     component: AideComponent,
+  },
+
+  {
+    path: 'idea_box',
+    component: IdeaBoxComponent,
+    canActivate: [isLoggedInGuard],
   },
     // Redirection ajoutée pour accepter l'URL /fonciers
 
