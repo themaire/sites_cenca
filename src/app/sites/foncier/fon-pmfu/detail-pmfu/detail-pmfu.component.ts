@@ -601,7 +601,10 @@ export class DetailPmfuComponent {
    */
   subscribeDepartementCommunes(departementControl: FormControl | null) {
     if (!departementControl) return;
-    const loadCommunes = async (insee: string | null, resetSelection = true) => {
+    // Changer de département ne réinitialise jamais les communes déjà sélectionnées :
+    // un projet MFU peut associer des communes de départements différents (ex: communes
+    // limitrophes), le département ne sert qu'à filtrer les suggestions de l'autocomplete.
+    const loadCommunes = async (insee: string | null) => {
       this.isCommuneDisabled = !insee || !['08', '10', '51', '52'].includes(insee);
 
       if (insee) {
@@ -616,26 +619,18 @@ export class DetailPmfuComponent {
         this.communes = [];
       }
 
-      // Réinitialiser les communes sélectionnées uniquement si demandé (changement de département)
-      if (resetSelection) {
-        this.selectedCommunes = [];
-        this.syncSelectedCommunesToForm();
-        this.communeCtrl.setValue('', { emitEvent: false });
-      }
-
-      this.refreshFilteredCommunes('');
+      const ctrlValue = this.communeCtrl.value;
+      this.refreshFilteredCommunes(typeof ctrlValue === 'string' ? ctrlValue : '');
       this.cdr.detectChanges();
     };
 
-    // Sur changement de département (interaction utilisateur), on recharge et on réinitialise les communes
     departementControl.valueChanges.subscribe((insee: string) => {
-      void loadCommunes(insee, true);
+      void loadCommunes(insee);
     });
 
     // Si le contrôle département contient déjà une valeur (ouverture d'une fiche existante), charger immédiatement
-    // sans réinitialiser les communes déjà associées au projet
     if (departementControl.value) {
-      void loadCommunes(departementControl.value, false);
+      void loadCommunes(departementControl.value);
     }
   }
 

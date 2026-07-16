@@ -178,7 +178,7 @@
                 <mat-option value="52">Haute-Marne</mat-option>
               </mat-select>
             </ng-container>
-            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_dep')?.value && !communeCtrl.value && !selectedCommunes.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_dep')?.setValue(null); $event.stopPropagation()">
+            <button *ngIf="isEditPmfu && pmfuForm.get('pmfu_dep')?.value && !communeCtrl.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="pmfuForm.get('pmfu_dep')?.setValue(null); $event.stopPropagation()">
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #departementReadonly>
