@@ -1,0 +1,27 @@
+<div class="fiche-site">
+  <div class="entete">
+    <button mat-stroked-button (click)="retour()">
+      <mat-icon>arrow_back</mat-icon> Retour à la liste
+    </button>
+    <h2 *ngIf="site">{{ site.code }} — {{ site.nom }}</h2>
+  </div>
+
+  <div *ngIf="loading" class="spinner-wrapper"><mat-spinner diameter="40"></mat-spinner></div>
+
+  <mat-tab-group *ngIf="!loading && site" animationDuration="200ms">
+
+    <mat-tab label="Informations">
+      <app-onglet-infos-site
+        [site]="site"
+        [typologies]="typologies"
+        (saved)="onSiteSaved()"
+        (deleteRequested)="supprimerSite()">
+      </app-onglet-infos-site>
+    </mat-tab>
+
+    <mat-tab [label]="'Relevés (' + releves.length + ')'">
+      <app-site-releves [releves]="releves" [siteId]="siteId"></app-site-releves>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

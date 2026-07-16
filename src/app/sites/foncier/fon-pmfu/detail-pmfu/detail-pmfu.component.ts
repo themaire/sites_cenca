@@ -41,7 +41,8 @@ import { MatDatepickerIntl, MatDatepickerModule,} from '@angular/material/datepi
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS,} from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 
@@ -104,13 +105,12 @@ export interface Section {
     MatListModule,
     MapComponent,
     MatAutocompleteModule,
+    MatChipsModule,
   ],
   templateUrl: './detail-pmfu.component.html',
   styleUrl: './detail-pmfu.component.scss',
 })
 export class DetailPmfuComponent {
-  communeNomReadonly: string = '';
-
   get anneeSignatureMin(): number {
     const debutValue = this.pmfuForm?.get('pmfu_annee_debut')?.value;
     const debut = debutValue === null || debutValue === '' ? null : Number(debutValue);
@@ -217,11 +217,13 @@ export class DetailPmfuComponent {
   @ViewChild(MapComponent) mapComponent!: MapComponent;
   @ViewChild('mfuStepper') mfuStepper!: MatStepper;
   
-  communeInsee?: Commune; // Commune chargée dans le formulaire
-  communes: Commune[] = [];
+  communes: Commune[] = []; // Communes disponibles pour le département sélectionné
+  // Typé string | Commune : le trigger d'autocomplete écrit temporairement l'objet Commune
+  // sélectionné dans ce contrôle avant qu'onCommuneSelected() ne le réinitialise à ''.
   communeCtrl = new FormControl<string | Commune>('');
   isCommuneDisabled: boolean = true;
-  filteredCommunes: Commune[] = [];
+  filteredCommunes: Commune[] = []; // Communes proposées par l'autocomplete (déjà sélectionnées exclues)
+  selectedCommunes: Commune[] = []; // Communes actuellement associées au projet MFU
 
   // Listes de choix du formulaire
   typeFinancement!: SelectValue[];
@@ -342,46 +344,57 @@ export class DetailPmfuComponent {
     return commune ? commune.nom : '';
   }
 
-  /**
-   * Réinitialise la commune (vide tous les champs liés)
-   */
-  clearCommune(): void {
-    this.communeCtrl.setValue(null, { emitEvent: false });
-    this.pmfuForm.get('pmfu_commune')?.setValue(null);
-    this.pmfuForm.get('pmfu_commune_insee')?.setValue(null);
-    this.pmfuForm.get('pmfu_commune_nom')?.setValue(null);
-    console.log('[clearCommune] Commune réinitialisée');
+  /** Libellé des communes sélectionnées, pour l'affichage en lecture seule */
+  getCommunesLibelle(): string {
+    return this.selectedCommunes.map((c) => c.nom).join(', ');
+  }
+
+  /** Répercute selectedCommunes (source de vérité de l'UI) dans le formulaire réactif */
+  private syncSelectedCommunesToForm(): void {
+    this.pmfuForm.get('pmfu_commune_insee')?.setValue(this.selectedCommunes.map((c) => c.insee));
+    this.pmfuForm.get('pmfu_commune_nom')?.setValue(this.selectedCommunes.map((c) => c.nom));
+  }
+
+  /** Recalcule la liste proposée par l'autocomplete (communes déjà sélectionnées exclues) */
+  private refreshFilteredCommunes(filterValue: string = ''): void {
+    const already = new Set(this.selectedCommunes.map((c) => c.insee));
+    const lower = filterValue.toLowerCase();
+    this.filteredCommunes = this.communes.filter(
+      (commune) => !already.has(commune.insee) && commune.nom.toLowerCase().includes(lower)
+    );
   }
 
   /**
-   * Active ou désactive le FormControl pmfu_commune selon la valeur du département
+   * Ajoute la commune choisie dans l'autocomplete à la liste des communes du projet
    */
-  setupCommuneSelectDisabling() {
-    const departementControl = this.pmfuForm.get('pmfu_dep');
-    if (!departementControl) return;
-
-    // Fonction pour mettre à jour l'état du champ commune
-    // prend en paramètre la valeur du département
-    // retourne true si le champ commune doit être désactivé, false sinon
-    const updateCommuneState = (value: any) => {
-      const val = (value || '').toString().trim();
-      this.isCommuneDisabled = !["08","10","51","52"].includes(val);
-    };
-
-    updateCommuneState(departementControl.value);
-    departementControl.valueChanges.subscribe(updateCommuneState);
-  }
-
-  /**
-   * Rend le champ commune obligatoire
-   */
-  communeFieldToRequired() {
-    // Vérifier la validité du champ commune au démarrage (formulaire neuf)
-    if (this.pmfuForm.get('pmfu_commune')?.value === null || this.pmfuForm.get('pmfu_commune')?.value === '') {
-      this.pmfuForm.get('pmfu_commune')?.setValue(null);
-      console.log('[setValue] pmfu_commune <- null (communeFieldToRequired)');
-      console.log('[validity] pmfu_commune.valid =', this.pmfuForm.get('pmfu_commune')?.valid, '| errors =', this.pmfuForm.get('pmfu_commune')?.errors);
+  onCommuneSelected(event: MatAutocompleteSelectedEvent): void {
+    const commune = event.option.value as Commune;
+    if (!this.selectedCommunes.find((c) => c.insee === commune.insee)) {
+      this.selectedCommunes = [...this.selectedCommunes, commune];
+      this.syncSelectedCommunesToForm();
     }
+    this.communeCtrl.setValue('', { emitEvent: false });
+    this.refreshFilteredCommunes('');
+  }
+
+  /**
+   * Retire une commune de la liste des communes du projet
+   */
+  removeCommune(commune: Commune): void {
+    this.selectedCommunes = this.selectedCommunes.filter((c) => c.insee !== commune.insee);
+    this.syncSelectedCommunesToForm();
+    const ctrlValue = this.communeCtrl.value;
+    this.refreshFilteredCommunes(typeof ctrlValue === 'string' ? ctrlValue : '');
+  }
+
+  /**
+   * Réinitialise la liste des communes du projet
+   */
+  clearCommunes(): void {
+    this.selectedCommunes = [];
+    this.syncSelectedCommunesToForm();
+    this.communeCtrl.setValue('', { emitEvent: false });
+    this.refreshFilteredCommunes('');
   }
 
   async ngOnInit() {
@@ -422,44 +435,11 @@ export class DetailPmfuComponent {
 
 
     // Initialisation du filtrage pour l'autocomplete commune
-    // Synchronisation communeCtrl <-> pmfu_commune (FormGroup)
+    // communeCtrl ne sert qu'à la recherche : la sélection ajoute la commune à selectedCommunes
+    // (voir onCommuneSelected), qui est la source de vérité synchronisée vers pmfu_commune_insee/nom.
     this.communeCtrl.valueChanges.subscribe(value => {
-
-      console.log('Valeur du champ communeCtrl :', value);
-
-      let filterValue = '';
-      if (typeof value === 'string') {
-        filterValue = value.toLowerCase();
-        // Recherche d'une commune correspondante par nom exact
-        const found = this.communes.find(commune =>
-          commune.nom.toLowerCase() === filterValue
-        );
-        if (found) {
-          // Mettre à jour les champs utilisés pour la persistance
-          this.pmfuForm.get('pmfu_commune_insee')?.setValue(found.insee);
-          this.pmfuForm.get('pmfu_commune_nom')?.setValue(found.nom);
-          this.pmfuForm.get('pmfu_commune')?.setValue(found.insee);
-          console.log('[setValue] pmfu_commune_insee/nom <-', found.insee, found.nom, '(communeCtrl string match)');
-        } else {
-          // Aucune correspondance exacte -> vider les valeurs d'identification
-          this.pmfuForm.get('pmfu_commune_insee')?.setValue('');
-          this.pmfuForm.get('pmfu_commune_nom')?.setValue('');
-          this.pmfuForm.get('pmfu_commune')?.setValue('');
-          console.log('[clear] pmfu_commune_* <- (communeCtrl string no match)');
-        }
-      } else if (value && typeof value === 'object' && 'nom' in value) {
-        filterValue = (value as Commune).nom.toLowerCase();
-        const sel = value as Commune;
-        this.pmfuForm.get('pmfu_commune_insee')?.setValue(sel.insee);
-        this.pmfuForm.get('pmfu_commune_nom')?.setValue(sel.nom);
-        this.pmfuForm.get('pmfu_commune')?.setValue(sel.insee);
-        console.log('[setValue] pmfu_commune_insee/nom <-', sel.insee, sel.nom, '(communeCtrl object)');
-      }
-
-      // Filtrage de la liste pour l'autocomplete
-      this.filteredCommunes = this.communes.filter(commune =>
-        commune.nom.toLowerCase().includes(filterValue)
-      );
+      const filterValue = typeof value === 'string' ? value : (value as Commune)?.nom || '';
+      this.refreshFilteredCommunes(filterValue);
     });
 
     await this.docfileService.loadDocTypes(1); // Le parametre 1 veut dire "documents de projet" c'est la clé primaire de la table des types de documents
@@ -467,7 +447,7 @@ export class DetailPmfuComponent {
     this.initializeAllowedTypes();
     // Initialiser les valeurs du formulaire principal quand le composant a fini de s'initialiser
     this.cd_salarie = this.loginService.user()?.cd_salarie || null; // Code salarié de l'utilisateur connecté
-    this.gro_id = this.loginService.user()?.gro_id || null; // Groupe de l'utilisateur connecté
+    this.gro_id = Math.max(0, ...(this.loginService.user()?.groups ?? [0])) || null;
 
     // Récupérer les valeurs pour les selects
     // Récupérer les salariés pour créateur et responsable
@@ -602,37 +582,28 @@ export class DetailPmfuComponent {
       // Souscrire dynamiquement au chargement des communes selon le département
       // Fait en sorte que si on change de département, la liste des communes se mette à jour
       const departementControl = this.pmfuForm.get('pmfu_dep') as FormControl;
-      const communeControl = this.pmfuForm.get('pmfu_commune') as FormControl;
-      this.subscribeDepartementCommunes(departementControl, communeControl, this.communeCtrl);
+      this.subscribeDepartementCommunes(departementControl);
 
       // FIN DU CAS D'UN PROJET NEUF
     }
 
     // LOGIQUE COMMUNE AUX DEUX CAS : PROJET EXISTANT OU NOUVEAU PROJET
-
-    
-    // // Rendre le champ commune obligatoire
-    // this.communeFieldToRequired();
-
-    // Appeler la logique de désactivation dynamique du select commune après création du formulaire
-    // setTimeout(() => {
-    //   if (this.pmfuForm) {
-    //     this.setupCommuneSelectDisabling();
-    //   }
-    // }, 1000);
   }
 
   /**
    * SUPER IMPORTANT POUR LE CHARGEMENT DYNAMIQUE DES COMMUNES
    * Décrit ce qu'il va se passer si l'utilisateur change le département dans le formulaire
-   * 
-   * Souscrit aux changements du département et charge dynamiquement la liste des communes
+   *
+   * Souscrit aux changements du département, charge dynamiquement la liste des communes proposées
+   * par l'autocomplete et active/désactive la saisie selon que le département est renseigné.
    * Peut être utilisé pour un nouveau formulaire ou un formulaire existant
    * @param departementControl FormControl du département
    */
-  subscribeDepartementCommunes(departementControl: FormControl | null, communeControl: FormControl | null, dynCommunesCtl: FormControl | null) {
+  subscribeDepartementCommunes(departementControl: FormControl | null) {
     if (!departementControl) return;
-    const loadCommunes = async (insee: string | null, resetControls = true) => {
+    const loadCommunes = async (insee: string | null, resetSelection = true) => {
+      this.isCommuneDisabled = !insee || !['08', '10', '51', '52'].includes(insee);
+
       if (insee) {
         const communesRaw = await this.geoService.apiGeoCommunesUrl(insee);
         this.communes = communesRaw.map((item: any) => ({
@@ -641,51 +612,28 @@ export class DetailPmfuComponent {
           population: item.population ?? 0,
           codeposte: item.codeposte ?? ''
         }));
-        // Remplir aussi la liste filtrée pour que l'autocomplete affiche immédiatement
-        this.filteredCommunes = this.communes.slice();
-        console.log('🗺️ Communes chargées pour le département ' + insee + ' :', this.communes);
-        this.cdr.detectChanges();
       } else {
         this.communes = [];
-        this.filteredCommunes = [];
       }
 
-      // Réinitialiser le contrôle de la commune uniquement si demandé (changement de département)
-      if (resetControls && communeControl && dynCommunesCtl) {
-        communeControl.reset();
-        dynCommunesCtl.reset();
-        // Effacer aussi le nom de la commune dans le formulaire
-        this.pmfuForm?.get('pmfu_commune_nom')?.setValue('');
-        // Effacer aussi l'insee de la commune pour éviter incohérences
-        this.pmfuForm?.get('pmfu_commune_insee')?.setValue('');
-        // Conserver compatibilité avec l'ancien champ pmfu_commune si utilisé ailleurs
-        this.pmfuForm?.get('pmfu_commune')?.setValue('');
+      // Réinitialiser les communes sélectionnées uniquement si demandé (changement de département)
+      if (resetSelection) {
+        this.selectedCommunes = [];
+        this.syncSelectedCommunesToForm();
+        this.communeCtrl.setValue('', { emitEvent: false });
       }
 
-      // Si une commune est déjà sélectionnée (cas d'ouverture d'une fiche existante),
-      // synchroniser le contrôle autocomplete et stocker le nom dans pmfu_commune_nom
-      const currentInsee = communeControl?.value || this.pmfuForm?.get('pmfu_commune')?.value;
-      if (currentInsee && this.communes && this.communes.length > 0) {
-        const found = this.communes.find(c => c.insee === currentInsee);
-        if (found) {
-          // Mettre à jour le FormControl utilisé par l'autocomplete pour afficher le libellé
-          if (dynCommunesCtl) dynCommunesCtl.setValue(found, { emitEvent: false });
-          // Stocker le nom de la commune dans le formulaire principal
-          this.pmfuForm?.get('pmfu_commune_nom')?.setValue(found.nom);
-          // Stocker l'insee de la commune (champ utilisé pour la persistance)
-          this.pmfuForm?.get('pmfu_commune_insee')?.setValue(found.insee);
-          // Garder aussi le champ historique `pmfu_commune` en synchro
-          this.pmfuForm?.get('pmfu_commune')?.setValue(found.insee);
-        }
-      }
+      this.refreshFilteredCommunes('');
+      this.cdr.detectChanges();
     };
 
-    // Sur changement de département (interaction utilisateur), on recharge et on réinitialise la commune
+    // Sur changement de département (interaction utilisateur), on recharge et on réinitialise les communes
     departementControl.valueChanges.subscribe((insee: string) => {
       void loadCommunes(insee, true);
     });
 
     // Si le contrôle département contient déjà une valeur (ouverture d'une fiche existante), charger immédiatement
+    // sans réinitialiser les communes déjà associées au projet
     if (departementControl.value) {
       void loadCommunes(departementControl.value, false);
     }
@@ -704,47 +652,21 @@ export class DetailPmfuComponent {
       this.pmfu = (await this.fetch(this.projetLite.pmfu_id)) as ProjetMfu;
       // Ne pas toucher à `pmfuForm` ici (il n'est pas encore initialisé)
 
-      // Récupérer la commune via l'INSEE du projet chargé.
-      // Ne pas utiliser this.pmfuForm ici car il n'est pas encore initialisé.
-      const currentInsee = this.pmfu?.pmfu_commune_insee || null;
-      let communeChargee: {success: boolean, data?: string, mode: string} | undefined;
-      if (currentInsee) {
-        communeChargee = await this.geoService.apiGeoCommuneByInsee(currentInsee, 'nom');
-        // Mettre à jour le libellé en lecture seule si trouvé
-        this.communeNomReadonly = communeChargee?.data || this.communeNomReadonly;
-      }
-      console.warn('Commune chargée pour le projet :', communeChargee);
+      // Reconstruire les communes sélectionnées à partir des insee/noms stockés en parallèle
+      const inseeList = Array.isArray(this.pmfu?.pmfu_commune_insee) ? this.pmfu.pmfu_commune_insee : [];
+      const nomList = Array.isArray(this.pmfu?.pmfu_commune_nom) ? this.pmfu.pmfu_commune_nom : [];
+      this.selectedCommunes = inseeList.map((insee, i) => ({
+        insee,
+        nom: nomList[i] || '',
+        population: 0,
+        codeposte: '',
+      }));
 
       // Réaffecter le titre, formulaire, etc.
       this.updatePmfuTitle();
 
       // Créer les formulaires avec les données récupérées
       this.pmfuForm = this.formService.newPmfuForm(this.pmfu);
-      // Appliquer l'INSEE et le nom de la commune dans le formulaire et préremplir
-      // le contrôle d'autocomplete `communeCtrl` pour afficher le libellé.
-      if (currentInsee) {
-        // Stocker l'insee dans le formGroup (champ présent dans le form builder)
-        this.pmfuForm.get('pmfu_commune_insee')?.setValue(currentInsee);
-        // Si l'API a renvoyé le nom, le mettre dans le champ pmfu_commune_nom
-        if (communeChargee && communeChargee.data) {
-          this.pmfuForm.get('pmfu_commune_nom')?.setValue(communeChargee.data);
-          // Construire un objet Commune minimal pour l'autocomplete
-          const prefillCommune: Commune = {
-            insee: currentInsee,
-            nom: communeChargee.data,
-            population: 0,
-            codeposte: ''
-          };
-          // Préremplir le FormControl utilisé par l'autocomplete sans déclencher d'événement
-          this.communeCtrl.setValue(prefillCommune, { emitEvent: false });
-          // S'assurer que la liste de communes contient cet élément pour permettre
-          // l'ouverture immédiate du panel et le filtrage
-          if (!this.communes.find(c => c.insee === currentInsee)) {
-            this.communes.unshift(prefillCommune);
-            this.filteredCommunes = this.communes.slice();
-          }
-        }
-      }
       this.initialFormValues = this.snapshotFormValues(this.pmfuForm.getRawValue());
       this.docForm = this.formService.newDocForm(this.pmfu);
       const typeToField: Record<string, number | undefined> = {
@@ -770,8 +692,7 @@ export class DetailPmfuComponent {
       // Souscrire dynamiquement au chargement des communes selon le département
       // Fait en sorte que si on change de département, la liste des communes se mette à jour
       const departementControl = this.pmfuForm.get('pmfu_dep') as FormControl;
-      const communeControl = this.pmfuForm.get('pmfu_commune') as FormControl;
-      this.subscribeDepartementCommunes(departementControl, communeControl, this.communeCtrl);
+      this.subscribeDepartementCommunes(departementControl);
 
       console.log('setupPmfuForm terminé :', this.folders);
     } catch (error) {

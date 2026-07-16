@@ -84,7 +84,7 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
   ) {}
 
   get isAdmin(): boolean {
-    return (this.loginService.user()?.gro_id ?? 0) > 2;
+    return (this.loginService.user()?.groups ?? []).some(g => g > 2);
   }
 
   async ngOnInit() {
