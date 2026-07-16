@@ -93,7 +93,6 @@
     <ng-template #newTitle>
       <h2 *ngIf="newPmfu">Création d'un projet neuf en cours</h2>
       <div>Formulaire valide : {{ pmfuForm.valid }}</div>
-      <div>Commune sélectionnée : {{ pmfuForm.get('pmfu_commune')?.value }}</div>
     </ng-template>
   </div>
   <mat-horizontal-stepper
@@ -187,21 +186,38 @@
             </ng-template>
           </mat-form-field>
 
-          <mat-form-field appearance="fill">
-            <mat-label>Commune principale</mat-label>
+          <mat-form-field appearance="fill" class="communes-field">
+            <mat-label>Commune(s)</mat-label>
             <ng-container *ngIf="isEditPmfu; else communeReadonly">
-              <input type="text" matInput [formControl]="communeCtrl" [matAutocomplete]="auto" #trigger="matAutocompleteTrigger" (focus)="trigger.openPanel()" [disabled]="isCommuneDisabled" />
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCommune">
+              <mat-chip-grid #communeChipGrid [disabled]="isCommuneDisabled">
+                <mat-chip-row *ngFor="let commune of selectedCommunes" (removed)="removeCommune(commune)">
+                  {{ commune.nom }}
+                  <button matChipRemove aria-label="Retirer la commune">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+              </mat-chip-grid>
+              <input
+                type="text"
+                placeholder="Ajouter une commune..."
+                [formControl]="communeCtrl"
+                [matChipInputFor]="communeChipGrid"
+                [matAutocomplete]="auto"
+                #trigger="matAutocompleteTrigger"
+                (focus)="trigger.openPanel()"
+                [disabled]="isCommuneDisabled"
+              />
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCommune" (optionSelected)="onCommuneSelected($event)">
                 <mat-option *ngFor="let commune of filteredCommunes" [value]="commune">
                   {{ commune.nom }}
                 </mat-option>
               </mat-autocomplete>
             </ng-container>
-            <button *ngIf="isEditPmfu && communeCtrl.value" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="clearCommune(); $event.stopPropagation()">
+            <button *ngIf="isEditPmfu && selectedCommunes.length" matSuffix mat-icon-button aria-label="Effacer" class="clear-btn" (click)="clearCommunes(); $event.stopPropagation()">
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #communeReadonly>
-              <input matInput [value]="communeNomReadonly" readonly />
+              <input matInput [value]="selectedCommunes.length ? getCommunesLibelle() : 'Non renseigné'" readonly />
             </ng-template>
           </mat-form-field>
           

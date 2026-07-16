@@ -169,7 +169,7 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
         enterAnimationDuration: '400ms',
         exitAnimationDuration: '300ms',
 
-        scrollStrategy: this.overlay.scrollStrategies.block(),
+        scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
       });
       dialogRef.afterClosed().subscribe((result) => {
         console.log('La fenetre de dialogue vient de se fermer');
@@ -187,7 +187,7 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
         enterAnimationDuration: '400ms',
         exitAnimationDuration: '300ms',
 
-        scrollStrategy: this.overlay.scrollStrategies.block(),
+        scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
       });
       dialogRef.afterClosed().subscribe((result) => {
         console.log('La fenetre de dialogue vient de se fermer');
@@ -211,6 +211,11 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
     return str.replace(/\s+/g, ' ').trim().toLowerCase();
   }
 
+  /** Libellé affiché pour la/les commune(s) d'un projet MFU dans la table */
+  pmfuCommunesLibelle(row: ProjetsMfu): string {
+    return (row.pmfu_commune_nom || []).join(', ');
+  }
+
   private initDataSource(data: ProjetsMfu[]) {
     this.dataSource = new MatTableDataSource(data);
     if (this.sort) this.dataSource.sort = this.sort;
@@ -223,8 +228,8 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
           return item.pmfu_responsable
             ? item.pmfu_responsable.toLowerCase()
             : '';
-        case 'pmfu_commune':
-          return item.pmfu_commune_insee ? item.pmfu_commune_insee.toLowerCase() : '';
+        case 'pmfu_commune_nom':
+          return this.pmfuCommunesLibelle(item).toLowerCase();
         default:
           return '';
       }
