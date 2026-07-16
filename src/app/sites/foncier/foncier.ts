@@ -26,8 +26,8 @@ export interface ProjetMfu {
   pmfu_dep?: string;
   pmfu_territoire?: number;
   pmfu_type_acte?: number;
-  pmfu_commune_insee?: string;
-  pmfu_commune_nom?: string;
+  pmfu_commune_insee?: string[];
+  pmfu_commune_nom?: string[];
   pmfu_annee_debut?: number;
   pmfu_proprietaire?: string;
   pmfu_appui?: number;
@@ -59,8 +59,8 @@ export interface ProjetsMfu {
   pmfu_id: number;
   pmfu_nom: string;
   pmfu_responsable?: string;
-  pmfu_commune_insee?: string;
-  pmfu_commune_nom?: string;
+  pmfu_commune_insee?: string[];
+  pmfu_commune_nom?: string[];
   type_acte?: string;
   statut?: string;
 }
