@@ -138,7 +138,7 @@
             <mat-icon>close</mat-icon>
           </button>
           <ng-template #responsableReadonly>
-            <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_responsable')?.value, salaries)" readonly />
+            <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_responsable')?.value, salaries) || 'Non renseigné'" readonly />
           </ng-template>
         </mat-form-field>
 
@@ -155,13 +155,13 @@
             <mat-icon>close</mat-icon>
           </button>
           <ng-template #associeReadonly>
-            <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_associe')?.value, salaries)" readonly />
+            <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_associe')?.value, salaries) || 'Non renseigné'" readonly />
           </ng-template>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Créateur du projet</mat-label>
-          <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_createur')?.value, salaries)" [readonly]="!isEditPmfu" />
+          <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_createur')?.value, salaries) || 'Non renseigné'" [readonly]="!isEditPmfu" />
         </mat-form-field>
 
         </div>
@@ -182,7 +182,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #departementReadonly>
-              <input matInput [value]="getDepartementLibelle(pmfuForm.get('pmfu_dep')?.value)" readonly />
+              <input matInput [value]="getDepartementLibelle(pmfuForm.get('pmfu_dep')?.value) || 'Non renseigné'" readonly />
             </ng-template>
           </mat-form-field>
 
@@ -234,7 +234,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #typeActeReadonly>
-              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_type_acte')?.value, typeActe)" readonly />
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_type_acte')?.value, typeActe) || 'Non renseigné'" readonly />
             </ng-template>
           </mat-form-field>
 
@@ -255,7 +255,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #validCaReadonly>
-              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_validation')?.value, typeValidationCa)" readonly />
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_validation')?.value, typeValidationCa) || 'Non renseigné'" readonly />
             </ng-template>
           </mat-form-field>
 
@@ -272,7 +272,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #agenceReadonly>
-              <textarea matInput [value]="getAgencesLibelles()" readonly rows="2" class="textarea"></textarea>
+              <textarea matInput [value]="getAgencesLibelles() || 'Non renseigné'" readonly rows="2" class="textarea"></textarea>
             </ng-template>
           </mat-form-field>
 
@@ -289,7 +289,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #TerritReadonly>
-              <textarea matInput [value]="getTerritoiresLibelles()" readonly rows="2" class="textarea"></textarea>
+              <textarea matInput [value]="getTerritoiresLibelles() || 'Non renseigné'" readonly rows="2" class="textarea"></textarea>
             </ng-template>
           </mat-form-field>
 
@@ -349,7 +349,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #proprioReadonly>
-              <textarea matInput [value]="getProprietairesLibelles()" readonly rows="2" class="readonly-textarea"></textarea>
+              <textarea matInput [value]="getProprietairesLibelles() || 'Non renseigné'" readonly rows="2" class="readonly-textarea"></textarea>
             </ng-template>
           </mat-form-field>
 
@@ -369,7 +369,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #financementsReadonly>
-              <textarea matInput [value]="getFinancementsLibelles()" readonly rows="2" class="textarea"></textarea>
+              <textarea matInput [value]="getFinancementsLibelles() || 'Non renseigné'" readonly rows="2" class="textarea"></textarea>
             </ng-template>
           </mat-form-field>
 
@@ -399,7 +399,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #appuiReadonly>
-              <textarea matInput [value]="getAppuisLibelles()" readonly rows="2" class="textarea"></textarea>
+              <textarea matInput [value]="getAppuisLibelles() || 'Non renseigné'" readonly rows="2" class="textarea"></textarea>
             </ng-template>
           </mat-form-field>
 
@@ -425,7 +425,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #prioriteReadonly>
-              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_priorite')?.value, typePriorite)" readonly />
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_priorite')?.value, typePriorite) || 'Non renseigné'" readonly />
             </ng-template>
           </mat-form-field>
 
@@ -442,7 +442,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #statusReadonly>
-              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_status')?.value, typeStatus)" readonly />
+              <input matInput [value]="formService.getLibelleByCdType(pmfuForm.get('pmfu_status')?.value, typeStatus) || 'Non renseigné'" readonly />
             </ng-template>
           </mat-form-field>
 
@@ -456,7 +456,7 @@
               <input matInput [matDatepicker]="echeancesPicker" formControlName="pmfu_echeances" />
             </ng-container>
             <ng-template #echeancesReadonly>
-              <input matInput [value]="pmfuForm.get('pmfu_echeances')?.value | date:'dd/MM/yyyy'" readonly />
+              <input matInput [value]="(pmfuForm.get('pmfu_echeances')?.value | date:'dd/MM/yyyy') || 'Non renseigné'" readonly />
             </ng-template>
             <mat-datepicker-toggle *ngIf="isEditPmfu" matSuffix [for]="echeancesPicker"></mat-datepicker-toggle>
             <mat-datepicker #echeancesPicker></mat-datepicker>
@@ -467,12 +467,12 @@
 
           <mat-form-field appearance="fill">
             <mat-label>Dernière MAJ</mat-label>
-            <input matInput [value]="pmfuForm.get('pmfu_derniere_maj')?.value | date:'dd/MM/yyyy'" readonly />
+            <input matInput [value]="(pmfuForm.get('pmfu_derniere_maj')?.value | date:'dd/MM/yyyy') || 'Non renseigné'" readonly />
           </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>Création</mat-label>
-            <input matInput [value]="pmfuForm.get('pmfu_creation')?.value | date:'dd/MM/yyyy'" readonly />
+            <input matInput [value]="(pmfuForm.get('pmfu_creation')?.value | date:'dd/MM/yyyy') || 'Non renseigné'" readonly />
           </mat-form-field>
         </div>
 
@@ -491,7 +491,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <ng-template #prochEtapesReadonly>
-              <textarea matInput [value]="getEtapesLibelles()" readonly rows="2" class="textarea"></textarea>
+              <textarea matInput [value]="getEtapesLibelles() || 'Non renseigné'" readonly rows="2" class="textarea"></textarea>
             </ng-template>
           </mat-form-field>
         
