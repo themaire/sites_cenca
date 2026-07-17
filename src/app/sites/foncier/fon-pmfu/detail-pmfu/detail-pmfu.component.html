@@ -39,8 +39,10 @@
     <!-- 1er element -->
     <div class="buttons-container">
       <div class="form-buttons" *ngIf="
-                                projetLite?.pmfu_id && (
-                                  pmfuForm.get('pmfu_responsable')?.value === cd_salarie 
+                                !projetLite?.pmfu_id
+                                ||
+                                (
+                                  pmfuForm.get('pmfu_responsable')?.value === cd_salarie
                                   ||
                                   pmfuForm.get('pmfu_associe')?.value === cd_salarie
                                   ||
@@ -67,14 +69,16 @@
       
       <div class="suppression" *ngIf="
                                 projetLite?.pmfu_id && (
-                                  pmfuForm.get('pmfu_responsable')?.value === cd_salarie 
-                                  ||
-                                  pmfuForm.get('pmfu_associe')?.value === cd_salarie
-                                  ||
-                                  pmfuForm.get('pmfu_createur')?.value === cd_salarie
+                                  (
+                                    pmfuForm.get('pmfu_responsable')?.value === cd_salarie
+                                    ||
+                                    pmfuForm.get('pmfu_associe')?.value === cd_salarie
+                                    ||
+                                    pmfuForm.get('pmfu_createur')?.value === cd_salarie
                                   )
-                                ||
-                                (gro_id !== null && gro_id > 2)
+                                  ||
+                                  (gro_id !== null && gro_id > 2)
+                                  )
                                 ">
         <button mat-button (click)="deletePmfuConfirm()">
           Supprimer
