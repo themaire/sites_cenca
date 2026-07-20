@@ -14,7 +14,7 @@ export const isChiroGuard: CanActivateFn = (route, state) => {
       return false;
     }
     const CHIRO_ALLOWED_GROUPS = [3, 5, 6];
-    if (user.groups.some(g => CHIRO_ALLOWED_GROUPS.includes(g))) {
+    if (user.groups.map(Number).some(g => CHIRO_ALLOWED_GROUPS.includes(g))) {
       return true;
     }
     router.navigate(['/']);
