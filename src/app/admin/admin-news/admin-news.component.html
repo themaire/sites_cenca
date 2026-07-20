@@ -1,0 +1,53 @@
+<div class="admin-news">
+	<div style="display: flex; align-items: center; justify-content: space-between;">
+		<h2>{{ news.length }} actualités</h2>
+		<div class="add-btn">
+			<button mat-button (click)="openNewNewsDialog()">
+				<mat-icon>add</mat-icon>
+				Ajouter une actualité
+			</button>
+		</div>
+	</div>
+
+	<mat-form-field appearance="outline" style="width: 320px; max-width: 100%;">
+		<mat-label>Rechercher</mat-label>
+		<input matInput (keyup)="applyFilter($event)" placeholder="Titre..." />
+	</mat-form-field>
+
+	<table mat-table [dataSource]="dataSource" class="mat-elevation-z1 news-table">
+
+		<!-- Titre -->
+		<ng-container matColumnDef="titre">
+			<th mat-header-cell *matHeaderCellDef> Titre </th>
+			<td mat-cell *matCellDef="let row"> {{ row.titre }} </td>
+		</ng-container>
+
+		<!-- Date de publication -->
+		<ng-container matColumnDef="date_publication">
+			<th mat-header-cell *matHeaderCellDef> Date de publication </th>
+			<td mat-cell *matCellDef="let row"> {{ row.date_publication | date:'dd/MM/yyyy' }} </td>
+		</ng-container>
+
+		<!-- Publié -->
+		<ng-container matColumnDef="publie">
+			<th mat-header-cell *matHeaderCellDef> Statut </th>
+			<td mat-cell *matCellDef="let row">
+				<span *ngIf="row.publie; else brouillon">Publiée</span>
+				<ng-template #brouillon>Brouillon</ng-template>
+			</td>
+		</ng-container>
+
+		<!-- Actions -->
+		<ng-container matColumnDef="actions">
+			<th mat-header-cell *matHeaderCellDef style="text-align: right;"> Actions </th>
+			<td mat-cell *matCellDef="let row" style="text-align: right;">
+                <button mat-icon-button class="green-button" aria-label="Voir l'actualité" (click)="openNewsDialog(row)">
+                    <mat-icon>visibility</mat-icon>
+                </button>
+			</td>
+		</ng-container>
+
+		<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+		<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+	</table>
+</div>

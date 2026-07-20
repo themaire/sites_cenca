@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AdminService } from './admin.service';
 import { Salarie, Groupe } from './admin';
+import { News } from '../shared/interfaces/news';
 
 @Injectable({
   providedIn: 'root',
@@ -100,6 +101,23 @@ export class FormAdmin {
       });
   }
 
+  /**
+   * Formulaire pour une actualité
+   * @param news
+   * @returns
+   */
+  newsForm(news?: News): FormGroup {
+      return this.fb.group({
+      titre: [news?.titre || '', Validators.required],
+      resume: [news?.resume || '', Validators.required],
+      contenu: [news?.contenu || ''],
+      lien: [news?.lien || ''],
+      image_url: [news?.image_url || ''],
+      date_publication: [news?.date_publication || new Date(), Validators.required],
+      publie: [news?.publie ?? true],
+      });
+  }
+
   putbdd(
       mode: string |'update' | 'insert',
       table: string,
@@ -150,6 +168,8 @@ export class FormAdmin {
         rightMethod = (data, id) => this.adminService.updateUser(data, id);
       } else if (table === 'groupes') {
         rightMethod = (data, id) => this.adminService.updateGroup(data, id);
+      } else if (table === 'news') {
+        rightMethod = (data, id) => this.adminService.updateNews(data, id);
       } else {
         throw new Error(`Table '${table}' non supportée`);
       }
@@ -216,6 +236,27 @@ export class FormAdmin {
         }),
         catchError((error) => {
           console.error('Erreur lors de la création du groupe', error);
+          throw error;
+        })
+      );
+    }
+
+    if (mode === 'insert' && table === 'news') {
+      const { id, ...newsData } = valuesToUpdate as any;
+      return this.adminService.createNews(newsData).pipe(
+        map((response) => {
+          console.log('Actualité créée avec succès:', response);
+          const message = String(response.message);
+          this.snackMessage(message, response.code, snackbar);
+          form.disable();
+          return {
+            isEditMode: false,
+            formValue: form.value,
+            isEdited: true,
+          };
+        }),
+        catchError((error) => {
+          console.error('Erreur lors de la création de l\'actualité', error);
           throw error;
         })
       );

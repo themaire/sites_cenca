@@ -1,0 +1,26 @@
+<div mat-dialog-container>
+  <button class="close-btn" mat-icon-button aria-label="Fermer" (click)="close()">×</button>
+
+  <div mat-dialog-content>
+    <img *ngIf="news.image_url" [src]="news.image_url" [alt]="news.titre" />
+
+    <div class="date">{{ news.date_publication | date:'dd/MM/yyyy' }}</div>
+    <h2 class="titre">{{ news.titre }}</h2>
+    <div class="contenu-loading" *ngIf="loadingContenu">
+      <mat-spinner diameter="20"></mat-spinner>
+    </div>
+    <p class="contenu" *ngIf="!loadingContenu">{{ news.contenu }}</p>
+
+    <div class="publie-toggle" *ngIf="canEditPublie">
+      <mat-checkbox [formControl]="publieControl" [disabled]="savingPublie">
+        Publiée
+      </mat-checkbox>
+    </div>
+  </div>
+
+  <div mat-dialog-actions *ngIf="news.lien" align="end">
+    <a mat-flat-button color="primary" [href]="news.lien" target="_blank" rel="noopener noreferrer">
+      Aller voir dans ATLAS
+    </a>
+  </div>
+</div>

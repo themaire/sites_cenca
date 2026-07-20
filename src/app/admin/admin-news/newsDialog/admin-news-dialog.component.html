@@ -1,0 +1,87 @@
+<div mat-dialog-container>
+  <div>
+    <div class="same-line-flex">
+      <app-form-buttons
+        *ngIf="!loading && !error"
+        icone="edit"
+        theme="preferences"
+        [isFormValid]="isFormValid"
+        [isEditActive]="isEditActive"
+        [isAddActive]="isAddActive"
+        [nbObjectifs]="-1"
+        (toggleAction)="toggleEdit()"
+        (onSubmit)="onSubmit()">
+      </app-form-buttons>
+
+      <h2 mat-dialog-title class="dialog-title">
+        {{ isNewNews ? 'Nouvelle actualité' : 'Détail actualité' }}
+      </h2>
+
+      <div class="suppression" *ngIf="!isNewNews">
+        <button mat-button (click)="deleteItemConfirm()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-content>
+    <div *ngIf="loading">Chargement...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <ng-container *ngIf="!loading && !error && newsForm">
+      <form [formGroup]="newsForm">
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Titre</mat-label>
+          <input matInput formControlName="titre">
+          <mat-error *ngIf="newsForm.get('titre')?.hasError('required')">
+            Le titre est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Résumé</mat-label>
+          <textarea matInput formControlName="resume" rows="2"></textarea>
+          <mat-error *ngIf="newsForm.get('resume')?.hasError('required')">
+            Le résumé est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+          <mat-label>Contenu complet</mat-label>
+          <textarea matInput formControlName="contenu" rows="5"></textarea>
+        </mat-form-field>
+
+        <div class="same-line-flex">
+          <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+            <mat-label>Lien</mat-label>
+            <input matInput formControlName="lien">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+            <mat-label>URL de l'image</mat-label>
+            <input matInput formControlName="image_url">
+          </mat-form-field>
+        </div>
+
+        <div class="same-line-flex">
+          <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px;">
+            <mat-label>Date de publication</mat-label>
+            <input matInput formControlName="date_publication" [matDatepicker]="pickerPublication">
+            <mat-datepicker-toggle matSuffix [for]="pickerPublication"></mat-datepicker-toggle>
+            <mat-datepicker #pickerPublication></mat-datepicker>
+            <mat-error *ngIf="newsForm.get('date_publication')?.hasError('required')">
+              La date de publication est obligatoire
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="centered-content">
+          <mat-checkbox formControlName="publie" style="margin-top: 16px;">
+            Publiée
+          </mat-checkbox>
+        </div>
+
+      </form>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="news" *ngIf="!error && (loading || news.length > 0)">
+  <h2>Actualités</h2>
+
+  <div class="loading" *ngIf="loading">
+    <mat-spinner diameter="30"></mat-spinner>
+  </div>
+
+  <div class="liste" *ngIf="!loading">
+    <div
+      class="item"
+      *ngFor="let item of news"
+      role="button"
+      tabindex="0"
+      (click)="openDetail(item)"
+      (keydown.enter)="openDetail(item)"
+    >
+      <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.titre" />
+      <div class="contenu">
+        <div class="date">{{ item.date_publication | date:'dd/MM/yyyy' }}</div>
+        <div class="titre">{{ item.titre }}</div>
+        <div class="resume">{{ item.resume }}</div>
+      </div>
+    </div>
+  </div>
+</div>
