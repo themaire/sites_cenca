@@ -1,0 +1,26 @@
+@import "../../styles/mixins.scss";
+@import "../../styles/variables.scss";
+
+.add-btn {
+  display: flex;
+  @include align(center, center);
+  button {
+    @include btn(white, $couleur-flore, white, darken($couleur-flore, 10%));
+    @include align(center, center);
+    display: flex;
+  }
+}
+
+.green-button {
+  color: #4caf50 !important; // Vert Material
+
+  &:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+  }
+}
+
+.news-table {
+  width: 80% !important;
+  max-width: 1200px;
+  margin: 0 auto;
+}

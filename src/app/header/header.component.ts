@@ -45,7 +45,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   get hasChiroAccess(): boolean {
     const user = this.loginService.user();
-    return !!user && this.CHIRO_GROUPS.some(g => user.groups.includes(g));
+    if (!user) return false;
+    const groups = user.groups.map(Number);
+    return this.CHIRO_GROUPS.some(g => groups.includes(g));
   }
 
   get parametresMenuItem() {

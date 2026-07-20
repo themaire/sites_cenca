@@ -8,6 +8,7 @@ import { of, from, Observable } from 'rxjs';
 import { ApiResponse } from '../shared/interfaces/api';
 import { Selector } from '../shared/interfaces/selector';
 import { Salaries, Salarie, Groupes, Groupe, SalarieGroupe } from './admin';
+import { News } from '../shared/interfaces/news';
 import { SnackbarService } from '../shared/services/snackbar.service';
 
 @Injectable({
@@ -26,8 +27,19 @@ export class AdminService {
     const url = `${this.activeUrl}${subroute}`;
     console.log(`Dans getData() avec ${url}`);
 
-    const data = await fetch(url);
-    return await data.json() ?? [];
+    // fetch() n'est pas intercepté par authTokenInterceptor (qui ne patche que HttpClient) :
+    // le token doit être attaché manuellement ici pour les routes admin protégées.
+    const token = localStorage.getItem('token');
+    const response = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(body?.message || `Erreur ${response.status} lors de l'appel à ${url}`);
+    }
+
+    return (await response.json()) ?? [];
   }
 
   // Récupérer les détails d'un utilisateur par son cd_salarie
@@ -293,5 +305,84 @@ export class AdminService {
       }
     }
 
+  }
+
+  // Récupérer les détails d'une actualité par son id
+  async getNewsById(id: string): Promise<News> {
+    return this.getData<News>(`news/full/${id}`);
+  }
+
+  // Récupérer la liste de toutes les actualités (publiées et brouillons)
+  async getAllNews(): Promise<News[]> {
+    return this.getData<News[]>('news/lite');
+  }
+
+  /**
+   * Créer une nouvelle actualité
+   * @param newsData Les données de l'actualité à créer (sans id, généré par la DB)
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  createNews(newsData: Omit<News, 'id'>): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.activeUrl}post/news/create`, newsData).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Actualité créée avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la création de l\'actualité');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la création de l\'actualité';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
+  /**
+   * Modifier une actualité
+   * @param newsData Les données de l'actualité à modifier
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  updateNews(newsData: News, id: string): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.activeUrl}put/news/update/${id}`, newsData).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Actualité mise à jour avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la mise à jour de l\'actualité');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la mise à jour de l\'actualité';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
+  }
+
+  /**
+   * Supprimer une actualité par son id
+   * @param id L'ID de l'actualité à supprimer
+   * @returns Observable<ApiResponse> avec success true/false et message optionnel
+   */
+  deleteNews(id: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/gestint.news/id=${id}`).pipe(
+      tap(response => {
+        if (response.success) {
+          this.snackbarService.success('Actualité supprimée avec succès');
+        } else {
+          this.snackbarService.error(response.message || 'Erreur lors de la suppression de l\'actualité');
+        }
+      }),
+      catchError(error => {
+        const messageTxt = 'Erreur lors de la suppression de l\'actualité';
+        console.error(messageTxt, error);
+        this.snackbarService.error(messageTxt);
+        return of({ success: false, message: messageTxt } as ApiResponse);
+      })
+    );
   }
 }

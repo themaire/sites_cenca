@@ -8,11 +8,12 @@ import { CardComponent } from './card/card.component';
 
 import { MapComponent } from '../map/map.component';
 import { LoginService } from '../login/login.service';
+import { NewsComponent } from './news/news.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatSlideToggleModule, CardComponent, MapComponent],
+  imports: [CommonModule, MatSlideToggleModule, CardComponent, MapComponent, NewsComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
