@@ -392,6 +392,17 @@
               </tbody>
             </table>
           </div>
+
+          <div class="bilan-section" *ngIf="localisations_operations_projet.length > 0">
+            <div class="bilan-section-titre">CARTE DES OPÉRATIONS</div>
+            <app-map
+              mapName="Opérations du projet"
+              [localisation_site]="projetLite.localisation_site"
+              [localisations_operations]="localisations_operations_projet"
+              [zoomOnOperations]="true">
+            </app-map>
+          </div>
+
         </ng-container>
         <!-- <button mat-button type="submit">SOUMETTRE</button> -->
       </form>

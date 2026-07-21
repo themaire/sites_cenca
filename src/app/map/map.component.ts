@@ -53,6 +53,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() selectParcellesMode: boolean = false; // Active le mode sélection de parcelles
   @Input() coucheSitesCenca: string = 'cenca_autres'; // Nom de la couche à charger
   @Input() zoomOnParcelleAdd: boolean = false; // Zoom auto lors de l'ajout d'une parcelle
+  @Input() zoomOnOperations: boolean = false; // Zoom sur l'emprise combinée des opérations à l'init
 
   @Input() isEditMode: boolean = false; // Mode édition du parent
 
@@ -509,10 +510,12 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
         
         // Obtenir les limites et ajuster la vue
         const bounds = geojsonLayer.getBounds();
-        // Ajoute un petit délai pour laisser la carte s'afficher avant d'animer le zoom
-        setTimeout(() => {
-          this.map.flyToBounds(bounds, { duration: 3.5 }); // durée en secondes
-        }, 800); // délai en ms
+        // Zoom sur le site sauf si zoomOnOperations est actif (zoom sur opérations prioritaire)
+        if (!this.zoomOnOperations) {
+          setTimeout(() => {
+            this.map.flyToBounds(bounds, { duration: 3.5 });
+          }, 800);
+        }
 
         // Bouton (contrôle) personnalisé pour recentrer la carte sur l'emprise du site
         const ZoomToGeoJsonControl = L.Control.extend({
@@ -553,6 +556,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       // On regarde maintenant si on a des localisations_operations
       if (this.localisations_operations && this.localisations_operations?.length > 0) {
         console.log('Localisations d\'opérations trouvées :', this.localisations_operations.length);
+        let combinedBounds: L.LatLngBounds | null = null;
         for (const loc_ope of this.localisations_operations) {
           console.log('Traitement de la localisation d\'opération :', loc_ope);
           const geojson = loc_ope.geojson;
@@ -586,14 +590,14 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                     // console.log('NorthEast :', bounds.getNorthEast());
                     // console.log('Center :', bounds.getCenter());
                     // console.log('toBBoxString :', bounds.toBBoxString());
-                    
+
                     const northLat = bounds.getNorthEast().lat;
                     const southLat = bounds.getSouthWest().lat;
                     const westLng = bounds.getSouthWest().lng;
                     const eastLng = bounds.getNorthEast().lng;
                     const middleLng = (westLng + eastLng) / 2;
                     const targetLat = southLat + 0.9 * (northLat - southLat);
-                    
+
                     // Crée un marker invisible pour afficher le label au-dessus du polygone
                     const marker = L.marker([targetLat, middleLng], { opacity: 0 });
                     marker.bindTooltip(
@@ -612,6 +616,10 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                 fillColor: color,
               }).addTo(this.map);
               geojsonLayer.bringToFront();
+              if (this.zoomOnOperations) {
+                const lb = geojsonLayer.getBounds();
+                combinedBounds = combinedBounds ? combinedBounds.extend(lb) : lb;
+              }
 
             } else if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
               const geojsonLayer = L.geoJSON(geojson, {
@@ -626,7 +634,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                     `Longueur : ${length}`,
                     { permanent: true, direction: 'center' }
                   );
-                  
+
                 }
               }); // Fin de la création de geojsonLayer
               const color = this.getRandomColorName();
@@ -636,6 +644,10 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                 opacity: 1,
               }).addTo(this.map);
               geojsonLayer.bringToFront();
+              if (this.zoomOnOperations) {
+                const lb = geojsonLayer.getBounds();
+                combinedBounds = combinedBounds ? combinedBounds.extend(lb) : lb;
+              }
 
             } else if (geometryType === 'Point' || geometryType === 'MultiPoint') {
               const geojsonLayer = L.geoJSON(geojson, {
@@ -647,10 +659,19 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                 }
               }).addTo(this.map);
               geojsonLayer.bringToFront();
+              if (this.zoomOnOperations) {
+                const lb = geojsonLayer.getBounds();
+                combinedBounds = combinedBounds ? combinedBounds.extend(lb) : lb;
+              }
             } else {
               console.warn('Localisation d\'opération invalide ou sans GeoJSON :', loc_ope);
             }
           }
+        }
+        if (this.zoomOnOperations && combinedBounds && combinedBounds.isValid()) {
+          setTimeout(() => {
+            this.map.flyToBounds(combinedBounds!, { duration: 3.5 });
+          }, 800);
         }
       } else {
         // Sinon on zoom sur la Champagne-Ardenne
