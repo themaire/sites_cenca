@@ -570,6 +570,53 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   }
 
   /**
+   * Affiche une boîte de dialogue de confirmation pour la duplication d'un projet.
+   * Récupère l'UUID du projet actuellement ouvert, puis ouvre une boîte de dialogue
+   * demandant à l'utilisateur de confirmer la duplication. La duplication porte sur
+   * le projet et toutes ses opérations enfant (route backend `projet_complet/clone`).
+   */
+  duplicateProjetConfirm(): void {
+    if (!this.projet) {
+      console.error('Aucun projet sélectionné par l\'utilisateur pour la duplication.');
+      return;
+    }
+    const proj2duplicate: string = this.projet.uuid_proj;
+    const message = `Voulez-vous vraiment dupliquer ce projet ainsi que toutes ses opérations ?`;
+
+    // Sauvegarder les modifications en cours avant de dupliquer
+    this.onSubmit();
+
+    // Appel de la boîte de dialogue de confirmation
+    // Le bouton dupliquer de la boite de dialogue ( result ) va appeler le service projetService.duplicate()
+    this.confirmationService.confirm('Confirmation de duplication', message, 'duplicate', 'projet').subscribe(result => {
+
+      // La boite de dialogue renvoie dans result :
+      // false si l'utilisateur annule la duplication
+      // ou une liste des champs à exclure de la duplication si l'utilisateur confirme
+      console.log('Champs à exclure de la duplication :', result);
+
+      if (result === false) {
+        // Annulation de la duplication
+        return;
+      }
+      if (Array.isArray(result)) {
+        // L'utilisateur a confirmé la duplication
+        this.projetService.duplicate('projet', proj2duplicate, result).subscribe(success => {
+          if (success) {
+            // success === true ici si la duplication a réussi, on ferme la fenêtre de dialogue
+            // (le projet dupliqué apparaîtra dans la liste des projets au rafraîchissement du parent)
+            this.isEditProjet = false;
+            this.dialogRef.close();
+          } else {
+            // success === false ici si la duplication a échoué
+            // On ne fait rien le service a déjà géré l'erreur en affichant un message snackbar d'erreur
+          }
+        });
+      }
+    });
+  }
+
+  /**
    * Pour remplir la variable objectif_ope provenant du composant objectif
    * @param obj_ope : Objectif opérationnel
    */
