@@ -143,14 +143,18 @@ export class ProjetService {
   /**
    * Dupliquer un élément (opération ou projet) en excluant certains champs
    * !! id et exclude sont passés dans le corps de la requête
-   * 
+   * Un projet est dupliqué avec toutes ses opérations enfant via la route dédiée `projet_complet/clone`.
+   *
    * @param type 'operations' ou 'projet'
    * @param id L'ID de l'élément à dupliquer
    * @param excludeOptions Liste des champs à exclure de la duplication (ex: ['dates', 'quantite'])
    * @returns Observable<ApiResponse> avec success true/false et message optionnel
    */
   duplicateItem(type: string, id: string, excludeOptions?: string[]): Observable<ApiResponse> {
-    return this.http.put<ApiResponse>(`${this.activeUrl}put/table=${type}/clone`, {'id': id, 'excludeFieldsGroups': excludeOptions || [] }).pipe(
+    const url = type === 'projet'
+      ? `${this.activeUrl}put/projet_complet/clone`
+      : `${this.activeUrl}put/table=${type}/clone`;
+    return this.http.put<ApiResponse>(url, {'id': id, 'excludeFieldsGroups': excludeOptions || [] }).pipe(
       catchError(error => {
         const messageTxt = `Erreur lors de la duplication ${type === 'operations' ? 'de l\'opération' : 'du projet'} (id: ${id})`;
         console.error(messageTxt, error);

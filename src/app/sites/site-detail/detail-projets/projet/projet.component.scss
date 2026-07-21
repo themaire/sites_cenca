@@ -108,6 +108,10 @@ mat-dialog-content.dialogue {
 
     
 
+    .duplication {
+      display: none; /* Cache le bouton de duplication */
+    }
+
     .suppression {
       display: none; /* Cache le bouton de suppression */
     }
@@ -188,6 +192,11 @@ mat-dialog-content.dialogue {
 // Pour le bouton de suppression
 .suppression {
   @include suppression-btn();
+}
+
+// Pour le bouton de duplication
+.duplication {
+  @include duplication-btn();
 }
 
 // Pour le bouton de téléchargement de la fiche TVX
