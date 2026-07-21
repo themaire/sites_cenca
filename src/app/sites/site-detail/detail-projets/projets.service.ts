@@ -60,6 +60,23 @@ export class ProjetService {
   }
 
   // OPERATIONS
+  // Retourne les géométries de toutes les opérations d'un projet sous forme de Localisation[]
+  async getOperationsGeoJson(uuid_proj: string): Promise<Localisation[]> {
+    const url = `${this.activeUrl}projets/uuid=${uuid_proj}/operations/geojson`;
+    const data = await fetch(url);
+    const featureCollection = await data.json();
+    if (!featureCollection?.features?.length) return [];
+    return featureCollection.features.map((feature: any) => ({
+      loc_id: feature.properties?.loc_id ?? undefined,
+      loc_date: feature.properties?.loc_date ?? null,
+      geojson: feature,
+      surface: feature.properties?.surface ?? 0,
+      type: feature.properties?.type ?? '',
+      ref_uuid_ope: feature.properties?.uuid_ope ?? undefined,
+      ref_uuid_proj: feature.properties?.uuid_proj ?? undefined,
+    } as Localisation));
+  }
+
   // Utilisé dans operation.component.ts
   async getOperations(subroute: string): Promise<OperationLite[]> {
     const data = await fetch(this.activeUrl + subroute);

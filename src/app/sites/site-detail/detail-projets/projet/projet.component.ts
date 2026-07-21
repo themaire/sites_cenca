@@ -8,6 +8,7 @@ import { ProjetLite, Projet } from '../projets';
 import { OperationLite } from './operation/operations';
 import { Objectif } from './objectif/objectifs';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
+import { Localisation } from '../../../../shared/interfaces/localisation';
 
 import { ProjetService, DeleteItemTypeEnum } from '../projets.service';
 import { FormService } from '../../../../shared/services/form.service';
@@ -49,7 +50,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { ObjectifComponent } from './objectif/objectif.component';
 import { OperationComponent } from './operation/operation.component';
-// import { MapComponent } from '../../../../map/map.component';
+import { MapComponent } from '../../../../map/map.component';
 
 // import { Projection } from 'leaflet';
 // NE PAS oublier de décommenter la
@@ -92,7 +93,7 @@ export const MY_DATE_FORMATS = {
     FormButtonsComponent,
     // DetailGestionComponent,
     CommonModule,
-    // MapComponent,
+    MapComponent,
     MatSlideToggleModule,
     MatDialogModule,
     // MatDialogTitle,
@@ -124,8 +125,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   projetLite: ProjetLite;
   projet!: Projet;
-  objectifs_bilan: Objectif[] = []; // Liste des objectifs associés au projet
-  operations_bilan: OperationLite[] = []; // Liste des opérations associées au projet
+  objectifs_bilan: Objectif[] = [];
+  operations_bilan: OperationLite[] = [];
+  localisations_operations_projet: Localisation[] = [];
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 400;
 
@@ -276,7 +278,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
           // Assigner l'objet projet directement et forcer le type Projet
           this.projet = await this.fetch('projets', this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation)) as Projet;
           this.operations_bilan = await this.fetch('operations', this.projetLite.uuid_proj) as OperationLite[];
-          console.log('Operations_bilan après extraction :', this.operations_bilan);
+          this.localisations_operations_projet = await this.projetService.getOperationsGeoJson(this.projetLite.uuid_proj);
 
           this.objectifs_bilan = await this.fetch('objectifs', this.projetLite.uuid_proj) as Objectif[];
           console.log('Objectifs_bilan après extraction :', this.objectifs_bilan);
