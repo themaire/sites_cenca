@@ -204,13 +204,13 @@ mat-dialog-content.dialogue {
   @include download-fiche-tvx-btn();
 }
 
-.fiche-spinner {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 4px;
-  ::ng-deep circle {
-    stroke: white;
-  }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.fiche-spinner-icon {
+  animation: spin 1s linear infinite;
 }
 .disabled-download-fiche-tvx {
   @include disabled-download-fiche-tvx-btn();

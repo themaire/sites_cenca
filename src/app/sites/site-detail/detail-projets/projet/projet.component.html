@@ -327,7 +327,7 @@
                     (click)="downloadFicheTravaux(projet.uuid_proj || '', objectif_ope || '', projetLite.nom || '', projetLite.code)"
                     [disabled]="isDownloadingFiche"
                     [matTooltip]="isDownloadingFiche ? 'Génération en cours…' : 'Télécharger la fiche travaux'">
-                <mat-spinner *ngIf="isDownloadingFiche" [diameter]="20" class="fiche-spinner"></mat-spinner>
+                <mat-icon *ngIf="isDownloadingFiche" class="fiche-spinner-icon">sync</mat-icon>
                 <mat-icon *ngIf="!isDownloadingFiche">download</mat-icon>
                 {{ isDownloadingFiche ? 'Génération…' : 'Fiche travaux 🗒️ 👷' }}
               </button>
