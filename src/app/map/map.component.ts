@@ -258,11 +258,16 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     // quand plusieurs instances de <app-map> coexistent dans le DOM
     const mapContainer = this.elementRef.nativeElement.querySelector('#map');
     this.map = L.map(mapContainer, {
-      fullscreenControl: true, // Activer le contrôle plein écran
+      fullscreenControl: true,
       fullscreenControlOptions: {
-        position: 'topleft', // Position du bouton plein écran
+        position: 'topleft',
       },
     });
+
+    // Vue initiale sur la Champagne-Ardenne : garantit que Leaflet est toujours
+    // dans un état valide (tuiles chargées, position connue) avant tout flyToBounds.
+    // Sans ce setView, l'animation ne peut pas démarrer depuis une position définie.
+    this.map.setView([48.5, 4.5], 8);
 
     // Gestionnaire d'événements pour capturer les erreurs de tuiles
     this.map.on('tileerror', (error) => {
