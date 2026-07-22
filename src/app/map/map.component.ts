@@ -78,6 +78,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   // Propriété pour suivre l'état des popups et éviter les rechargements intempestifs
   private hasOpenPopup = false;
+  private resizeObserver?: ResizeObserver;
 
   // Propriétés pour le chargement dynamique des sites CENCA (cenca_autres)
   private sitesCencaLayer?: L.LayerGroup;
@@ -122,6 +123,16 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     setTimeout(() => {
       console.log('Initialisation de la carte :', this.mapName);
       this.initMap();
+
+      // Observer les changements de taille du container : quand le step devient visible
+      // (animation Material ou navigation dans le stepper), Leaflet recalcule ses dimensions.
+      const container = this.elementRef.nativeElement.querySelector('#map');
+      if (container) {
+        this.resizeObserver = new ResizeObserver(() => {
+          if (this.map) this.map.invalidateSize();
+        });
+        this.resizeObserver.observe(container);
+      }
     });
   }
 
@@ -142,6 +153,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.resizeObserver?.disconnect();
+
     // Nettoyage des timeouts
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
@@ -266,7 +279,6 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     // Vue initiale sur la Champagne-Ardenne : garantit que Leaflet est toujours
     // dans un état valide (tuiles chargées, position connue) avant tout flyToBounds.
-    // Sans ce setView, l'animation ne peut pas démarrer depuis une position définie.
     this.map.setView([48.5, 4.5], 8);
 
     // Gestionnaire d'événements pour capturer les erreurs de tuiles
@@ -518,11 +530,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
         
         // Obtenir les limites et ajuster la vue
         const bounds = geojsonLayer.getBounds();
-        if (this.zoomOnOperations) {
-          // Vue initiale immédiate sur le site (sans animation) pour que Leaflet
-          // ait une position de départ valide avant le flyToBounds sur les opérations
-          this.map.fitBounds(bounds);
-        } else {
+        // Zoom sur le site sauf si zoomOnOperations est actif (zoom sur opérations prioritaire)
+        if (!this.zoomOnOperations) {
           setTimeout(() => {
             this.map.flyToBounds(bounds, { duration: 3.5 });
           }, 800);
