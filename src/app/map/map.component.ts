@@ -254,7 +254,10 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     // Initialisation de la carte avec le contrôle plein écran
-    this.map = L.map('map', {
+    // On passe l'élément DOM local (et non l'ID 'map') pour éviter les conflits
+    // quand plusieurs instances de <app-map> coexistent dans le DOM
+    const mapContainer = this.elementRef.nativeElement.querySelector('#map');
+    this.map = L.map(mapContainer, {
       fullscreenControl: true, // Activer le contrôle plein écran
       fullscreenControlOptions: {
         position: 'topleft', // Position du bouton plein écran
