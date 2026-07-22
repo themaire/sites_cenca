@@ -487,7 +487,7 @@ export class ProjetService {
 
   /** Lance le téléchargement d'une fiche travaux au format DOCX
    */
-  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string): void {
+  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string, code_site?: string): void {
     const url = `${environment.apiUrl}sites/gen_fiche_travaux/uuid_proj=${uuid}`;
     this.http
       .get(url, { responseType: 'blob' })
@@ -527,7 +527,7 @@ export class ProjetService {
       )
       .subscribe((blob) => {
         if (!blob) return;
-        const fileName = `fiche_travaux_${obj_ope}_${nom_site}.docx`;
+        const fileName = `fiche_travaux_${obj_ope}_${nom_site}${code_site ? '_' + code_site : ''}.docx`;
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = fileName;

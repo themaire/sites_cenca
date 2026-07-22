@@ -324,7 +324,7 @@
             <div class="download-fiche-tvx" *ngIf="operations_bilan.length > 0">
               <button mat-button
                     type="button"
-                    (click)="downloadFicheTravaux(projet.uuid_proj || '', objectif_ope || '', projetLite.nom || '')"
+                    (click)="downloadFicheTravaux(projet.uuid_proj || '', objectif_ope || '', projetLite.nom || '', projetLite.code)"
                     matTooltip="Télécharger la fiche travaux">
                 <mat-icon>download</mat-icon>
                 Fiche travaux 🗒️ 👷

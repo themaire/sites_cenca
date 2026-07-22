@@ -627,8 +627,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // console.log('Objectif operationnel reçu du composant objectif :', obj_ope);
   }
 
-  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string) {
-    this.projetService.downloadFicheTravaux(uuid, obj_ope, nom_site);
+  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string, code_site?: string) {
+    this.projetService.downloadFicheTravaux(uuid, obj_ope, nom_site, code_site);
   }
 
 }
