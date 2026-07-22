@@ -16,7 +16,15 @@
       <!-- <h2 *ngIf="projetsLite.length == 1">{{ projetsLite.length }} projet.</h2>
       <h2 *ngIf="projetsLite.length > 1">{{ projetsLite.length }} projets.</h2> -->
       <h2>Listes des projets au nombre de : {{ projetsLite.length }}.</h2>
-      
+
+      <!-- Filtre dynamique sur les valeurs uniques trouvées dans la colonne Type (Action) -->
+      <mat-chip-listbox class="action-chips" [value]="filterAction" (change)="applyActionFilter($event)" aria-label="Filtrer par type d'action">
+        <mat-chip-option value="tous">Tous ({{ projetsLite.length }})</mat-chip-option>
+        <mat-chip-option *ngFor="let action of uniqueActionTypes; let i = index" [value]="action">
+          <span class="chip-dot" [style.background-color]="getChipColor(i)"></span>
+          {{ action }} ({{ countByActionType(action) }})
+        </mat-chip-option>
+      </mat-chip-listbox>
 
       <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 

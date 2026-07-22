@@ -15,9 +15,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipListboxChange } from '@angular/material/chips';
 
 import {
-  MatDialog, 
+  MatDialog,
   MatDialogModule
 } from '@angular/material/dialog';
 import { Overlay } from '@angular/cdk/overlay';
@@ -27,12 +28,13 @@ import { Overlay } from '@angular/cdk/overlay';
   standalone: true,
   imports: [CommonModule,
             MatDialogModule,
-            MatTableModule, 
-            MatTooltipModule, 
+            MatTableModule,
+            MatTooltipModule,
             MatIconModule,
             MatButtonModule,
-            MatFormFieldModule, 
-            MatInputModule, 
+            MatFormFieldModule,
+            MatInputModule,
+            MatChipsModule,
   ],
   templateUrl: './detail-projets.component.html',
   styleUrls: ['./detail-projets.component.scss', '../../../shared/form-buttons/form-buttons.component.scss']
@@ -44,6 +46,57 @@ export class DetailProjetsComponent {
 
   // Pour la liste des opérations : le tableau Material
   public displayedColumns: string[] = ['annee', 'responsable', 'projet', 'action', 'date_deb', 'statut',];
+
+  // Filtre dynamique sur les valeurs uniques trouvées dans la colonne Type (action)
+  filterAction: string = 'tous';
+
+  // L'action est une chaîne du type "Famille | Sous-famille | Détail" : on ne garde que le dernier élément
+  // pour réduire le nombre de valeurs distinctes affichées dans le filtre
+  private getActionLastSegment(action: string): string {
+    const segments = action.split('|');
+    return segments[segments.length - 1].trim();
+  }
+
+  // Liste des valeurs uniques (dernier segment) de la colonne "action" présentes dans les projets
+  get uniqueActionTypes(): string[] {
+    const actions = (this.projetsLite || [])
+      .map(projet => projet.action)
+      .filter((action): action is string => !!action)
+      .map(action => this.getActionLastSegment(action));
+    return Array.from(new Set(actions)).sort();
+  }
+
+  // Nombre de projets pour un type d'action donné (utilisé pour l'affichage des compteurs)
+  countByActionType(action: string): number {
+    return (this.projetsLite || []).filter(
+      projet => projet.action && this.getActionLastSegment(projet.action) === action
+    ).length;
+  }
+
+  // Palette catégorielle fixe (8 teintes), assignée par position d'apparition des chips (cycle au-delà de 8)
+  private readonly chipPalette: string[] = [
+    '#2a78d6', // bleu
+    '#eb6834', // orange
+    '#1baf7a', // aqua
+    '#eda100', // jaune
+    '#e87ba4', // magenta
+    '#008300', // vert
+    '#4a3aa7', // violet
+    '#e34948', // rouge
+  ];
+
+  // Couleur du chip en fonction de sa position dans la liste (ordre d'apparition)
+  getChipColor(index: number): string {
+    return this.chipPalette[index % this.chipPalette.length];
+  }
+
+  // Applique le filtre sélectionné sur le tableau Material des projets
+  // On lit la valeur directement depuis l'évènement du chip cliqué : combiner [(ngModel)] et (change)
+  // sur mat-chip-listbox lit filterAction avant que ngModel ne l'ait mis à jour (décalage d'un clic).
+  applyActionFilter(event: MatChipListboxChange): void {
+    this.filterAction = event.value;
+    this.dataSource.filter = this.filterAction;
+  }
 
   research: SitesService = inject(SitesService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
@@ -102,6 +155,15 @@ export class DetailProjetsComponent {
         // console.log('Données de projetsLite :', this.projetsLite);
         
         this.dataSource = new MatTableDataSource(this.projetsLite);
+
+        // Configurer le filtre dynamique sur la colonne Type (action)
+        this.dataSource.filterPredicate = (data: ProjetLite, filter: string) => {
+          if (filter === 'tous') {
+            return true;
+          }
+          return !!data.action && this.getActionLastSegment(data.action) === filter;
+        };
+        this.dataSource.filter = this.filterAction;
 
         // console.log('Données de this.Mfus après assignation :', this.actes);
         // this.cdr.detectChanges(); // Forcer la détection des changements

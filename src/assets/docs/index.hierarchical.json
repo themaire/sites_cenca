@@ -57,7 +57,7 @@
         },
         {
           "id": "ajout_shapefile",
-          "title": "Ajout d'un Shapefile",
+          "title": "Ajout d'une geométrie",
           "path": "sites/projets/ajout_shapefile.md",
           "order": 5,
           "published": true,

@@ -54,6 +54,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() coucheSitesCenca: string = 'cenca_autres'; // Nom de la couche à charger
   @Input() zoomOnParcelleAdd: boolean = false; // Zoom auto lors de l'ajout d'une parcelle
   @Input() zoomOnOperations: boolean = false; // Zoom sur l'emprise combinée des opérations à l'init
+  @Input() ope_mode: boolean = false; // Mode d'affichage des géométries d'opérations de travaux (libellé = action_2_libelle + surface)
 
   @Input() isEditMode: boolean = false; // Mode édition du parent
 
@@ -572,7 +573,16 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       if (starPane) {
         starPane.style.zIndex = '650'; // plus haut que les autres
       }
-      
+
+      // Pane dédiée aux étiquettes des opérations (surface, action_2_libelle...) : au-dessus de starPane
+      // pour éviter qu'un polygone passe devant une étiquette (même zIndex que le tooltipPane par défaut de Leaflet,
+      // créé avant starPane donc plus bas dans le DOM et masqué par lui sans cette pane dédiée).
+      this.map.createPane('operationLabelPane');
+      const operationLabelPane = this.map.getPane('operationLabelPane');
+      if (operationLabelPane) {
+        operationLabelPane.style.zIndex = '700';
+      }
+
       // On regarde maintenant si on a des localisations_operations
       if (this.localisations_operations && this.localisations_operations?.length > 0) {
         console.log('Localisations d\'opérations trouvées :', this.localisations_operations.length);
@@ -611,18 +621,36 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                     // console.log('Center :', bounds.getCenter());
                     // console.log('toBBoxString :', bounds.toBBoxString());
 
-                    const northLat = bounds.getNorthEast().lat;
-                    const southLat = bounds.getSouthWest().lat;
-                    const westLng = bounds.getSouthWest().lng;
-                    const eastLng = bounds.getNorthEast().lng;
-                    const middleLng = (westLng + eastLng) / 2;
-                    const targetLat = southLat + 0.9 * (northLat - southLat);
+                    let targetLat: number;
+                    let middleLng: number;
+                    let direction: L.Direction;
 
-                    // Crée un marker invisible pour afficher le label au-dessus du polygone
+                    if (this.ope_mode) {
+                      // En mode opérations : étiquette au centre géométrique du polygone
+                      const centroid = turf.centroid(feature);
+                      [middleLng, targetLat] = centroid.geometry.coordinates;
+                      direction = 'center';
+                    } else {
+                      // Par défaut : étiquette tout en haut et au centre (horizontalement) du polygone
+                      const northLat = bounds.getNorthEast().lat;
+                      const southLat = bounds.getSouthWest().lat;
+                      const westLng = bounds.getSouthWest().lng;
+                      const eastLng = bounds.getNorthEast().lng;
+                      middleLng = (westLng + eastLng) / 2;
+                      targetLat = southLat + 0.9 * (northLat - southLat);
+                      direction = 'top';
+                    }
+
+                    // Crée un marker invisible pour afficher le label
                     const marker = L.marker([targetLat, middleLng], { opacity: 0 });
+                    // En mode opérations, le libellé met en avant le type d'opération (action_2_libelle)
+                    // fourni par la route de géométrie des opérations, suivi de la surface
+                    const label = this.ope_mode
+                      ? `${feature.properties?.['action_2_libelle'] || 'Type non renseigné'} : ${surface}`
+                      : `Surface : ${surface}`;
                     marker.bindTooltip(
-                      `Surface : ${surface}`,
-                      { permanent: true, direction: 'top' }
+                      label,
+                      { permanent: true, direction, pane: 'operationLabelPane' }
                     ).addTo(this.map);
                   }
                 }
@@ -652,7 +680,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                   // Affiche le label sur la ligne
                   layer.bindTooltip(
                     `Longueur : ${length}`,
-                    { permanent: true, direction: 'center' }
+                    { permanent: true, direction: 'center', pane: 'operationLabelPane' }
                   );
 
                 }

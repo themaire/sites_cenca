@@ -477,12 +477,12 @@ Variable (operation) form: {{ form }}<br>
 
       <!-- Pour uploader une localisation -->
       <div *ngIf="operation && (isEditOperation && operation.localisations === undefined || operation.localisations !== undefined && operation.localisations.length == 0)">
-        <button mat-button (click)="downloadShapefileExample('polygone')">Télécharger le modèle de fichier shapefile de type POLYGONE si necessaire</button>
+        <!-- <button mat-button (click)="downloadShapefileExample('polygone')">Télécharger le modèle de fichier shapefile de type POLYGONE si necessaire</button>
         <button mat-button (click)="downloadShapefileExample('ligne')">Télécharger le modèle de fichier shapefile de type LIGNE si necessaire</button>
-        <button mat-button (click)="downloadShapefileExample('point')">Télécharger le modèle de fichier shapefile de type POINT si necessaire</button>
+        <button mat-button (click)="downloadShapefileExample('point')">Télécharger le modèle de fichier shapefile de type POINT si necessaire</button> -->
         <form [formGroup]="geoFileForm!">
           <div class="file-upload-container">
-            <label for="shapefile">Fichier géographique (ZIP ou GeoJSON)</label>
+            <label for="shapefile">Fichier géographique (GeoJSON)</label>
             <input type="file"
               id="shapefile"
               (change)="onFileSelected($event)"
