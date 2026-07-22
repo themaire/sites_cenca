@@ -513,8 +513,11 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
         
         // Obtenir les limites et ajuster la vue
         const bounds = geojsonLayer.getBounds();
-        // Zoom sur le site sauf si zoomOnOperations est actif (zoom sur opérations prioritaire)
-        if (!this.zoomOnOperations) {
+        if (this.zoomOnOperations) {
+          // Vue initiale immédiate sur le site (sans animation) pour que Leaflet
+          // ait une position de départ valide avant le flyToBounds sur les opérations
+          this.map.fitBounds(bounds);
+        } else {
           setTimeout(() => {
             this.map.flyToBounds(bounds, { duration: 3.5 });
           }, 800);
