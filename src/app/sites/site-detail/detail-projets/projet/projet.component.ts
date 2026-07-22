@@ -44,7 +44,7 @@ import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackBar
 
 import { AsyncPipe } from '@angular/common';
-import { map } from 'rxjs/operators';
+import { map, finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
@@ -128,6 +128,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   objectifs_bilan: Objectif[] = [];
   operations_bilan: OperationLite[] = [];
   localisations_operations_projet: Localisation[] = [];
+  isDownloadingFiche: boolean = false;
   isLoading: boolean = true;  // Initialisation à 'true' pour activer le spinner
   loadingDelay: number = 400;
 
@@ -627,8 +628,11 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // console.log('Objectif operationnel reçu du composant objectif :', obj_ope);
   }
 
-  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string) {
-    this.projetService.downloadFicheTravaux(uuid, obj_ope, nom_site);
+  downloadFicheTravaux(uuid: string, obj_ope: string, nom_site: string, code_site?: string) {
+    this.isDownloadingFiche = true;
+    this.projetService.downloadFicheTravaux(uuid, obj_ope, nom_site, code_site)
+      .pipe(finalize(() => this.isDownloadingFiche = false))
+      .subscribe();
   }
 
 }

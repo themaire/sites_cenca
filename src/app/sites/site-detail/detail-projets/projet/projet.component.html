@@ -160,7 +160,17 @@
             <mat-label>Perspectives</mat-label>
             <input matInput [value]="step1Form.get('perspectives')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
-          
+
+        </div>
+
+        <div *ngIf="localisations_operations_projet.length > 0">
+          <app-map
+            mapName="Opérations du projet"
+            [localisation_site]="projetLite.localisation_site"
+            [localisations_operations]="localisations_operations_projet"
+            [zoomOnOperations]="true"
+            [ope_mode]="true">
+          </app-map>
         </div>
 
       </ng-container>
@@ -324,10 +334,12 @@
             <div class="download-fiche-tvx" *ngIf="operations_bilan.length > 0">
               <button mat-button
                     type="button"
-                    (click)="downloadFicheTravaux(projet.uuid_proj || '', objectif_ope || '', projetLite.nom || '')"
-                    matTooltip="Télécharger la fiche travaux">
-                <mat-icon>download</mat-icon>
-                Fiche travaux 🗒️ 👷
+                    (click)="downloadFicheTravaux(projet.uuid_proj || '', objectif_ope || '', projetLite.nom || '', projetLite.code)"
+                    [disabled]="isDownloadingFiche"
+                    [matTooltip]="isDownloadingFiche ? 'Génération en cours…' : 'Télécharger la fiche travaux'">
+                <mat-icon *ngIf="isDownloadingFiche" class="fiche-spinner-icon">sync</mat-icon>
+                <mat-icon *ngIf="!isDownloadingFiche">download</mat-icon>
+                {{ isDownloadingFiche ? 'Génération…' : 'Fiche travaux 🗒️ 👷' }}
               </button>
             </div>
             <!-- Ou -->
@@ -391,16 +403,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-
-          <div class="bilan-section" *ngIf="localisations_operations_projet.length > 0">
-            <div class="bilan-section-titre">CARTE DES OPÉRATIONS</div>
-            <app-map
-              mapName="Opérations du projet"
-              [localisation_site]="projetLite.localisation_site"
-              [localisations_operations]="localisations_operations_projet"
-              [zoomOnOperations]="true">
-            </app-map>
           </div>
 
         </ng-container>

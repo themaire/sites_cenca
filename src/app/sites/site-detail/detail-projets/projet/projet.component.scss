@@ -203,6 +203,15 @@ mat-dialog-content.dialogue {
 .download-fiche-tvx {
   @include download-fiche-tvx-btn();
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.fiche-spinner-icon {
+  animation: spin 1s linear infinite;
+}
 .disabled-download-fiche-tvx {
   @include disabled-download-fiche-tvx-btn();
 }
