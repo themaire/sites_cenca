@@ -325,9 +325,11 @@
               <button mat-button
                     type="button"
                     (click)="downloadFicheTravaux(projet.uuid_proj || '', objectif_ope || '', projetLite.nom || '', projetLite.code)"
-                    matTooltip="Télécharger la fiche travaux">
-                <mat-icon>download</mat-icon>
-                Fiche travaux 🗒️ 👷
+                    [disabled]="isDownloadingFiche"
+                    [matTooltip]="isDownloadingFiche ? 'Génération en cours…' : 'Télécharger la fiche travaux'">
+                <mat-spinner *ngIf="isDownloadingFiche" [diameter]="20" class="fiche-spinner"></mat-spinner>
+                <mat-icon *ngIf="!isDownloadingFiche">download</mat-icon>
+                {{ isDownloadingFiche ? 'Génération…' : 'Fiche travaux 🗒️ 👷' }}
               </button>
             </div>
             <!-- Ou -->

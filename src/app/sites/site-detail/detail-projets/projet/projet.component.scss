@@ -203,6 +203,15 @@ mat-dialog-content.dialogue {
 .download-fiche-tvx {
   @include download-fiche-tvx-btn();
 }
+
+.fiche-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+  ::ng-deep circle {
+    stroke: white;
+  }
+}
 .disabled-download-fiche-tvx {
   @include disabled-download-fiche-tvx-btn();
 }
