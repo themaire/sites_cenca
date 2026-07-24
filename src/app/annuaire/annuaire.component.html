@@ -1,0 +1,111 @@
+<div class="annuaire-page">
+
+  <div class="entete">
+    <h2>Annuaire</h2>
+  </div>
+
+  <div class="edition">
+    Ajouter un contact :
+    <button mat-icon-button
+        matTooltip="Ajouter un contact"
+        class="btn-edition"
+        (click)="openDialog()">
+        <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="spinner-wrapper">
+    <mat-spinner diameter="36"></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!loading">
+
+    <mat-form-field class="filter-field">
+      <mat-label>Rechercher</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Nom, adresse, téléphone, mail...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-chip-listbox class="type-chips" [value]="filterTypPersonne" (change)="applyTypeFilter($event)" aria-label="Filtrer par type de contact">
+      <mat-chip-option value="tous">Tous ({{ contacts.length }})</mat-chip-option>
+      <mat-chip-option *ngFor="let type of typPersonnes" [value]="type.cd_type">
+        {{ type.libelle }} ({{ countByType(type.cd_type!) }})
+      </mat-chip-option>
+    </mat-chip-listbox>
+
+    <div *ngIf="contacts.length > 0; then thenBlock; else elseBlock"></div>
+
+    <ng-template #thenBlock>
+      <h3>{{ dataSource.filteredData.length }} contact(s) sur {{ contacts.length }}</h3>
+
+      <mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+        <ng-container matColumnDef="nom">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Nom</mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.nom }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="typ_personne">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ getTypPersonneLibelle(element.typ_personne) }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="telephone">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Téléphone</mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.telephone || '—' }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="mail">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Mail</mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            {{ element.mail || '—' }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="etiquettes">
+          <mat-header-cell *matHeaderCellDef>Étiquettes</mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            <mat-chip-set *ngIf="element.etiquettes?.length; else noEtiquette">
+              <mat-chip *ngFor="let etiquette of element.etiquettes">{{ etiquette.libelle }}</mat-chip>
+            </mat-chip-set>
+            <ng-template #noEtiquette>—</ng-template>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="validite">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="col-validite">Valide</mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index" class="col-validite" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+            <mat-icon *ngIf="element.validite" class="icon-valide">check_circle</mat-icon>
+            <mat-icon *ngIf="!element.validite" class="icon-invalide">cancel</mat-icon>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="openDialog(row)"
+        ></mat-row>
+      </mat-table>
+
+      <mat-paginator
+        [pageSize]="20"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        showFirstLastButtons
+        aria-label="Pagination de l'annuaire des contacts."
+      >
+      </mat-paginator>
+    </ng-template>
+
+    <ng-template #elseBlock>
+      Aucun contact dans l'annuaire.
+    </ng-template>
+
+  </ng-container>
+
+</div>
