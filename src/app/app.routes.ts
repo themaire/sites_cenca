@@ -77,6 +77,14 @@ export const routes: Routes = [
       import('./admin/admin.routes').then((mod) => mod.ADMIN_ROUTES),
     canActivate: [isLoggedInGuard],
   },
+
+  // Lazy-load
+  {
+    path: 'annuaire',
+    loadChildren: () =>
+      import('./annuaire/annuaire.routes').then((mod) => mod.ANNUAIRE_ROUTES),
+    canActivate: [isLoggedInGuard],
+  },
   // Routes d'aide - version publique (sans authentification)
   {
     path: 'aide',

@@ -17,6 +17,7 @@ import {
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, skip, tap } from 'rxjs/operators';
 
+import { Annuaire } from '../../annuaire/interfaces/annuaire';
 import { Acte } from '../../sites/site-detail/detail-mfu/acte';
 import { Parcelle } from '../../sites/site-detail/detail-mfu/acte_mfu/parcelle-mfu/parcelle';
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
@@ -561,6 +562,22 @@ export class FormService {
       clearError();
       return null;
     };
+  }
+
+  // ============================================================
+  // SECTION ANNUAIRE — Contacts (agriculteurs, entreprises, etc.)
+  // ============================================================
+
+  newAnnuaireForm(annuaire?: Annuaire): FormGroup {
+    return this.fb.group({
+      nom: [annuaire?.nom || '', Validators.required],
+      adresse: [annuaire?.adresse || ''],
+      typ_personne: [annuaire?.typ_personne || null],
+      telephone: [annuaire?.telephone || ''],
+      mail: [annuaire?.mail || '', [Validators.email]],
+      validite: [annuaire?.validite !== undefined ? annuaire.validite : true],
+      actuel: [annuaire?.actuel || null],
+    });
   }
 
   // ============================================================

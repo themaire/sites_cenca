@@ -1,0 +1,108 @@
+@import "../styles/mixins.scss";
+@import "../styles/variables.scss";
+
+.annuaire-page {
+  padding: 1.5rem;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.edition {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 20px;
+  gap: 15px;
+  .btn-edition {
+    @include btn-icon($administratif, $bleuC);
+    @include icon(white, black);
+  }
+}
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 12px;
+
+  --mdc-filled-text-field-active-indicator-color: #{$administratif};
+  --mdc-filled-text-field-focus-active-indicator-color: #{$administratif};
+  --mdc-filled-text-field-focus-label-text-color: #{$administratif};
+  --mat-form-field-focus-select-arrow-color: #{$administratif};
+  --mat-select-focused-arrow-color: #{$administratif};
+}
+
+.type-chips {
+  display: block;
+  margin-bottom: 12px;
+
+  ::ng-deep .mdc-evolution-chip-set__chips {
+    row-gap: 8px;
+  }
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+mat-table {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+// Ligne de titre
+.mat-mdc-table mat-header-row.mat-mdc-header-row {
+  border-bottom: 2px solid $administratif;
+}
+
+.col-validite {
+  max-width: 70px;
+  flex: 0 0 70px;
+  justify-content: center;
+}
+
+.icon-valide {
+  color: $couleur-territoire;
+}
+
+.icon-invalide {
+  color: $superRed;
+}
+
+mat-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.even-row {
+  background-color: white;
+}
+
+.odd-row {
+  background-color: #f2f2f2;
+}
+
+// Responsive
+@media screen and (max-width: $mobile) {
+  .col-validite {
+    display: none;
+  }
+}

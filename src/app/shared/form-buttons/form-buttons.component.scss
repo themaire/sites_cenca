@@ -52,6 +52,16 @@
       @include icon($bleuF, white);
     }
 
+    // Theme administratif
+    .btn-edition-administratif {
+      @include btn-icon($administratif, $bleuC);
+      @include icon(white, black);
+    }
+    .btn-sauvegarde-administratif {
+      @include btn-icon(white, $administratif);
+      @include icon($bleuF, white);
+    }
+
     // Theme preferences
     .btn-edition-preferences {
       @include btn-icon($parametres, $bleuC);
