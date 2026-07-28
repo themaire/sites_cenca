@@ -93,7 +93,7 @@ export class AnnuaireFicheComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    @Inject(MAT_DIALOG_DATA) public data: { uuid_ann?: string }
+    @Inject(MAT_DIALOG_DATA) public data: { uuid_ann?: string; nomPrefill?: string; quickCreate?: boolean }
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -122,7 +122,9 @@ export class AnnuaireFicheComponent implements OnInit, OnDestroy {
     } else {
       this.isNewContact = true;
       this.isEditMode = true;
-      this.contactForm = this.formService.newAnnuaireForm();
+      this.contactForm = this.formService.newAnnuaireForm(
+        this.data.nomPrefill ? ({ nom: this.data.nomPrefill } as Annuaire) : undefined
+      );
     }
 
     this.formStatusSub = this.contactForm.statusChanges.subscribe(() => {
@@ -160,6 +162,10 @@ export class AnnuaireFicheComponent implements OnInit, OnDestroy {
       this.annuaireService.createAnnuaire(this.contactForm.value).subscribe({
         next: (result) => {
           this.formService.snackMessage('Contact créé avec succès', 0, this.snackBar);
+          if (this.data.quickCreate) {
+            this.dialogRef.close({ uuid_ann: result.uuid_ann, nom: this.contactForm.value.nom });
+            return;
+          }
           this.isNewContact = false;
           this.isEditMode = false;
           this.contact = { ...this.contactForm.getRawValue(), uuid_ann: result.uuid_ann };
