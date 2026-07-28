@@ -128,8 +128,8 @@ Variable (operation) form: {{ form }}<br>
     <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
   </div>
 
-  <mat-stepper labelPosition="bottom" 
-                      [linear]="!operation"
+  <mat-stepper labelPosition="bottom"
+                      [linear]="linearMode"
                       #stepper 
                       [animationDuration]="duration.value" 
                       class="margin-stepper"
@@ -275,8 +275,20 @@ Variable (operation) form: {{ form }}<br>
             </mat-select>
           </mat-form-field>
           <mat-form-field class="medium-width">
-            <mat-label>Nom du maitre d'oeuvre</mat-label>
-            <input matInput formControlName="nom_mo">
+            <mat-label>Nom du maître d'oeuvre</mat-label>
+            <input matInput formControlName="ref_uuid_ann"
+              [matAutocomplete]="annuaireAuto"
+              (focus)="filteredAnnuaires = annuaires">
+            <button mat-icon-button matSuffix type="button"
+              matTooltip="Ajouter un nouveau contact à l'annuaire"
+              (click)="openAnnuaireQuickCreate()">
+              <mat-icon>import_contacts</mat-icon>
+            </button>
+            <mat-autocomplete #annuaireAuto="matAutocomplete" [displayWith]="displayAnnuaireByUuid">
+              <mat-option *ngFor="let a of filteredAnnuaires" [value]="a.uuid_ann">
+                {{ a.nom }}
+              </mat-option>
+            </mat-autocomplete>
           </mat-form-field>
   
           <mat-form-field class="medium-width">
