@@ -87,6 +87,10 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
     return (this.loginService.user()?.groups ?? []).some(g => g > 2);
   }
 
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
+
   async ngOnInit() {
     this.formService
       .getSelectValues$('sites/selectvalues=docplan.typ_documents')
@@ -137,6 +141,9 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
   }
 
   toggleEdit(): void {
+    if (!this.isEditMode && !this.isEditAllowed) {
+      return;
+    }
     this.isEditMode = this.formService.simpleToggle(this.isEditMode);
     if (this.isEditMode) {
       this.docPlanForm.enable();
@@ -213,6 +220,9 @@ export class DocPlanFicheComponent implements OnInit, OnDestroy {
   }
 
   deleteItemConfirm(): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     const nom = this.docPlanDetail?.nom || 'ce document planificateur';
     this.confirmationService
       .confirm(

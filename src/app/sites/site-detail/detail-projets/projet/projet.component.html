@@ -35,7 +35,7 @@
     <!-- 1er element -->
     <div class="form-buttons">
       <app-form-buttons
-        *ngIf="!isEditOperation && !isAddOperation"
+        *ngIf="!isEditOperation && !isAddOperation && isEditAllowed"
         [isEditActive]="isEditProjet"
         icone="edit"
         [theme]="'gerer'"
@@ -64,19 +64,19 @@
     </ng-template>
 
     <!-- 3eme element (facultatif)-->
-    <div class="duplication">
+    <div class="duplication" *ngIf="isEditAllowed">
       <button mat-button (click)="duplicateProjetConfirm()">Dupliquer le projet</button>
     </div>
 
-    <div class="suppression">
+    <div class="suppression" *ngIf="isEditAllowed">
       <button mat-button (click)="deleteItemConfirm()">Supprimer le projet</button>
     </div>
   </div>
   
-  <mat-stepper labelPosition="bottom" 
-                [linear]="newProjet"  
-                #stepper 
-                [animationDuration]="duration.value" 
+  <mat-stepper labelPosition="bottom"
+                [linear]="newProjet"
+                #stepper
+                [animationDuration]="duration.value"
                 class="margin-stepper"
                 [orientation]="(stepperOrientation | async)!">
 

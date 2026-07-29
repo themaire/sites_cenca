@@ -1,5 +1,5 @@
-<div class="edition">
-  Ajouter un nouveau projet : 
+<div class="edition" *ngIf="isEditAllowed">
+  Ajouter un nouveau projet :
   <button mat-icon-button
       matTooltip="Ajouter un projet"
       class="btn-edition"

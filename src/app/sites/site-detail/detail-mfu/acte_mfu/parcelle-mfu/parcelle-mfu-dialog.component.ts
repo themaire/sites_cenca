@@ -23,6 +23,7 @@ import { ParcelleService } from './parcelle.service';
 import { FormService } from '../../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
+import { LoginService } from '../../../../../login/login.service';
 
 @Component({
   selector: 'app-dialog-parcelle-mfu',
@@ -91,6 +92,10 @@ export class ParcelleMfuDialogComponent implements OnInit, OnDestroy {
     return this.isLoadingSections || this.isLoadingNumeros;
   }
 
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
+
   constructor(
       public formService: FormService,
       private dialogRef: MatDialogRef<ParcelleMfuDialogComponent>,
@@ -99,6 +104,7 @@ export class ParcelleMfuDialogComponent implements OnInit, OnDestroy {
       private cdr: ChangeDetectorRef,
       private fb: FormBuilder,
       private snackBar: MatSnackBar,
+      private loginService: LoginService,
   ) {
     this.parcelle = this.dialogData;
     console.log("parcelle reçu dans le dialogue MFU :", this.parcelle);
@@ -514,6 +520,9 @@ export class ParcelleMfuDialogComponent implements OnInit, OnDestroy {
    * Affiche une boîte de dialogue de confirmation pour la suppression d'une parcelle.
    */
   deleteItemConfirm(): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     const message = `Voulez-vous vraiment supprimer cette parcelle?<br><strong>${this.parcelle.code_parcelle || 'Cette parcelle'}</strong><br>Cette action est irréversible.`;
     
     // Appel de la boîte de dialogue de confirmation

@@ -4,7 +4,7 @@ import { LoginService } from '../login/login.service';
 import { User } from '../login/user.model';
 import { map, catchError, of } from 'rxjs';
 
-export const isChiroGuard: CanActivateFn = (route, state) => {
+export const isAdminGuard: CanActivateFn = (route, state) => {
   const loginService = inject(LoginService);
   const router = inject(Router);
 
@@ -13,7 +13,7 @@ export const isChiroGuard: CanActivateFn = (route, state) => {
       router.navigate(['login']);
       return false;
     }
-    if (loginService.isChiro()) {
+    if (loginService.isAdmin()) {
       return true;
     }
     router.navigate(['/']);

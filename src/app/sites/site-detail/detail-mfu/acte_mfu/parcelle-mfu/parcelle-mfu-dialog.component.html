@@ -13,9 +13,9 @@
       <!-- En-tête avec boutons et titre -->
       <div class="button-title" [class.center-title]="newParcelle">
         <!-- 1er element -->
-        <div class="form-buttons" *ngIf="parcelleForm">
-          <app-form-buttons 
-            [isEditActive]="isEditParcelle || newParcelle" 
+        <div class="form-buttons" *ngIf="parcelleForm && isEditAllowed">
+          <app-form-buttons
+            [isEditActive]="isEditParcelle || newParcelle"
             icone="edit" 
             [theme]="'gerer'"
             [isFormValid]="parcelleForm ? parcelleForm.valid : false" 
@@ -30,7 +30,7 @@
         </div>
 
         <!-- 3eme element (optional) - only show for existing parcels, not new ones -->
-        <div class="suppression" *ngIf="!newParcelle">
+        <div class="suppression" *ngIf="!newParcelle && isEditAllowed">
           <button mat-button (click)="deleteItemConfirm()">Supprimer la parcelle</button>
         </div>
 

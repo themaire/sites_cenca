@@ -32,6 +32,7 @@ import { FormService } from '../../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
 import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-buttons.component';
+import { LoginService } from '../../../../../login/login.service';
 
 function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
@@ -122,6 +123,11 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private overlay = inject(Overlay);
+  private loginService = inject(LoginService);
+
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
 
   parcelles: Parcelle[] = [];
   dataSource = new MatTableDataSource<Parcelle>(this.parcelles);
@@ -607,6 +613,9 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
   }
 
   async startEditMode(parcelle: Parcelle) {
+    if (!this.isEditAllowed) {
+      return;
+    }
     this.isEditModeLocal = true;
     this.isAddMode = false;
     this.editingParcelle = parcelle;
@@ -838,6 +847,9 @@ export class ParcelleMfuComponent implements OnInit, AfterViewInit {
   }
 
   deleteParcelle(parcelle: Parcelle): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     const message = `Supprimer "${parcelle.code_parcelle || 'cette parcelle'}" ?`;
 
     this.confirmationService.confirm('Supprimer parcelle', message, 'delete').subscribe(result => {

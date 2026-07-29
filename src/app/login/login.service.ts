@@ -23,6 +23,67 @@ export class LoginService {
 
   user = signal<User | undefined | null>(undefined);
 
+  private static readonly CONSULTATION_GROUPS = [1];
+  private static readonly EDIT_GROUPS = [2];
+  private static readonly CHIRO_GROUPS = [3, 5, 6];
+  private static readonly FONCIER_GROUPS = [9];
+  private static readonly CADRE_GROUPS = [3, 4];
+  private static readonly ADMIN_GROUPS = [5];
+
+  /**
+   * Groupes effectifs de l'utilisateur. Un utilisateur sans groupe est
+   * considéré comme faisant partie du groupe 1 (consultation).
+   */
+  private getEffectiveGroups(user: User): number[] {
+    const groups = (user.groups ?? []).map(Number);
+    return groups.length > 0 ? groups : LoginService.CONSULTATION_GROUPS;
+  }
+
+  /**
+   * Indique si l'utilisateur connecté appartient à au moins un des groupes fournis.
+   * Les groupes se cumulent : un utilisateur peut appartenir à plusieurs groupes
+   * (ex: groupe 2 ET groupe 3) et sera reconnu par chacune des méthodes concernées.
+   */
+  hasAnyGroup(allowedGroups: number[]): boolean {
+    const user = this.user();
+    if (!user) {
+      return false;
+    }
+    return this.getEffectiveGroups(user).some(g => allowedGroups.includes(g));
+  }
+
+  isConsultation(): boolean {
+    return this.hasAnyGroup(LoginService.CONSULTATION_GROUPS);
+  }
+
+  /**
+   * Droit d'édition : groupe 2, mais aussi cadre (3, 4) et admin (5),
+   * qui héritent naturellement du droit d'édition en plus de leurs propres droits.
+   */
+  isEdit(): boolean {
+    return this.hasAnyGroup([
+      ...LoginService.EDIT_GROUPS,
+      ...LoginService.CADRE_GROUPS,
+      ...LoginService.ADMIN_GROUPS,
+    ]);
+  }
+
+  isChiro(): boolean {
+    return this.hasAnyGroup(LoginService.CHIRO_GROUPS);
+  }
+
+  isFoncier(): boolean {
+    return this.hasAnyGroup(LoginService.FONCIER_GROUPS);
+  }
+
+  isCadre(): boolean {
+    return this.hasAnyGroup(LoginService.CADRE_GROUPS);
+  }
+
+  isAdmin(): boolean {
+    return this.hasAnyGroup(LoginService.ADMIN_GROUPS);
+  }
+
   /**
    * Authentifie un utilisateur en utilisant les identifiants fournis et récupère les informations de l'utilisateur.
    * 

@@ -23,6 +23,7 @@ import { AnnuaireFicheComponent } from '../../../../../annuaire/annuaire-fiche/a
 
 import { ApiResponse } from '../../../../../shared/interfaces/api';
 import { Localisation } from '../../../../../shared/interfaces/localisation';
+import { LoginService } from '../../../../../login/login.service';
 
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
@@ -296,10 +297,15 @@ export class OperationComponent implements OnInit, OnDestroy {
     private annuaireService: AnnuaireService,
     private dialog: MatDialog,
     private overlay: Overlay,
+    private loginService: LoginService,
     ) {
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
       this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)').pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
+  }
+
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
   }
 
   public getFamilleLibelle(cd_type: string, liste: SelectValue[]): string {
@@ -701,7 +707,14 @@ export class OperationComponent implements OnInit, OnDestroy {
     // Deux grands modes :
     // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
     // 2. Créer un formulaire avec les données d'une opération
-    
+
+    if (!this.isEditAllowed) {
+      this.snackBar.open('Vous n\'avez pas les droits nécessaires pour cette action.', 'Fermer', {
+        duration: 3000,
+      });
+      return;
+    }
+
     this.unsubForm(); // Se désabonner des changements du formulaire précédent
 
     if (this.projetEditMode || this.isEditObjectif || this.isAddObjectif) {
@@ -982,6 +995,9 @@ export class OperationComponent implements OnInit, OnDestroy {
   /** Méthode pour gérer la soumission du formulaire de fichier géographique
    */
   handleGeoFileSubmission() {
+    if (!this.isEditAllowed) {
+      return;
+    }
     this.geofilesService.handleGeoFileSubmission(
       this.geoFileForm!,
       this.fileInput,
@@ -1014,6 +1030,9 @@ export class OperationComponent implements OnInit, OnDestroy {
  * et des animations d'entrée/sortie.
  */
   deleteItemConfirm(type: 'localisation' | 'operation'): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     let ope2delete: Operation | undefined = undefined;
     let loca2delete: Localisation[] | undefined = undefined;
     if (this.operation) {
@@ -1095,6 +1114,9 @@ export class OperationComponent implements OnInit, OnDestroy {
  * Des cases à cocher invitent l'utilisateur à sélectionner les champs à exclure de la duplication.
  */
   duplicateOperationConfirm(): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     if (!this.operation) {
       console.error('Aucune opération sélectionnée par l\'utilisateur pour la duplication.');
       return;

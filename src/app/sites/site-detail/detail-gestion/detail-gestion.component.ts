@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { LoginService } from '../../../login/login.service';
 
 @Component({
   selector: 'app-detail-gestion',
@@ -54,10 +55,15 @@ export class DetailGestionComponent {
 
   constructor(
     private dialog: MatDialog,
+    private loginService: LoginService,
   ) {}
 
   get uuid_site(): string | undefined {
     return (this.inputDetail?.uuid_site || this.inputUUIDsite) as string | undefined;
+  }
+
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
   }
 
   async ngOnChanges(changes: SimpleChanges) {
@@ -90,6 +96,7 @@ export class DetailGestionComponent {
   }
 
   openDialog(doc?: DocPlan): void {
+    if (!doc && !this.isEditAllowed) return;
     const uuid_site = this.uuid_site;
     if (!uuid_site) return;
 

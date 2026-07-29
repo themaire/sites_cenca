@@ -87,7 +87,7 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   
   newMfu = false;
   isEditMfu = false;
-  gro_id: number | null = null;
+  canEditUrl = false; // Champ URL réservé aux groupes foncier, cadre et admin
   
   mfuForm!: FormGroup;
   isFormValid = false;
@@ -120,8 +120,12 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
     this.resolvedActeUuid = this.acteLite?.uuid_acte || '';
   }
 
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
+
   async ngOnInit() {
-    this.gro_id = Math.max(0, ...(this.loginService.user()?.groups ?? [0])) || null;
+    this.canEditUrl = this.loginService.isFoncier() || this.loginService.isCadre() || this.loginService.isAdmin();
     await this.loadSelectValues();
 
     if (this.acteLite?.uuid_acte) {
@@ -267,6 +271,9 @@ export class ActeMfuComponent implements OnInit, OnDestroy {
   }
 
   deleteItemConfirm() {
+    if (!this.isEditAllowed) {
+      return;
+    }
     this.confirmationService.confirm('Suppression', 'Supprimer ?', 'delete').subscribe(ok => {
       if (ok) {
         this.acteService.deleteActe(this.resolvedActeUuid).subscribe({
