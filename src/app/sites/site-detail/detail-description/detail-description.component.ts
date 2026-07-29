@@ -12,6 +12,7 @@ import { DetailSite } from '../../site-detail';
 import { SitesService } from '../../sites.service';
 import { FormService } from '../../../shared/services/form.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { LoginService } from '../../../login/login.service';
 
 @Component({
   selector: 'app-detail-description',
@@ -42,10 +43,11 @@ export class DetailDescriptionComponent {
   private snackBar = inject(MatSnackBar); // Injecter MatSnackBar
 
   constructor(
-    private sitesService: SitesService, 
+    private sitesService: SitesService,
     private formService: FormService,
     private fb: FormBuilder,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private loginService: LoginService
   ) {this.form = this.fb.group({
     // Initialiser le formulaire avec des contrôles vides
     description_site: ['', Validators.required],
@@ -66,7 +68,14 @@ ngOnInit() {
     });
   }
 
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
+
   toggleEditMode() {
+    if (!this.isEditMode && !this.isEditAllowed) {
+      return;
+    }
     this.isEditMode = !this.isEditMode;
     if (this.isEditMode) {
       this.form.enable();

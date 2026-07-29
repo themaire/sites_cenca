@@ -22,6 +22,7 @@ import {
   MatDialogModule
 } from '@angular/material/dialog';
 import { Overlay } from '@angular/cdk/overlay';
+import { LoginService } from '../../../login/login.service';
 
 @Component({
   selector: 'app-detail-projets',
@@ -103,8 +104,13 @@ export class DetailProjetsComponent {
 
   constructor(
     private dialog: MatDialog,
-    private overlay: Overlay
+    private overlay: Overlay,
+    private loginService: LoginService
   ) {}
+
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
 
   async ngOnChanges(changes: SimpleChanges){
     // Recuperer les opérations du site selectionné dans un tableau mat-table
@@ -196,6 +202,7 @@ export class DetailProjetsComponent {
   }
 
   openDialog(projetlite?: ProjetLite): void {
+    if (projetlite === undefined && !this.isEditAllowed) return;
     // Prend un projetLite en paramètre et ouvre une fenetre de dialogue
 
     // Le but est de donner un projetLite à la fenetre de dialogue

@@ -7,6 +7,7 @@
   <div class="button-title">
     <div class="form-buttons">
       <app-form-buttons
+        *ngIf="isEditAllowed"
         [isEditActive]="isEditMode"
         icone="edit"
         [theme]="'connaitre'"
@@ -163,7 +164,7 @@
     <div class="ecg-header">
       <h3>Entité cohérente de gestion</h3>
       <button mat-stroked-button type="button"
-              *ngIf="isEditMode"
+              *ngIf="isEditMode && isEditAllowed"
               (click)="openEcgPicker()">
         <mat-icon>link</mat-icon>
         Assigner une entité cohérente
@@ -178,7 +179,7 @@
       </div>
       <button mat-icon-button color="warn"
               type="button"
-              *ngIf="isEditMode"
+              *ngIf="isEditMode && isEditAllowed"
               matTooltip="Retirer l'entité cohérente de gestion"
               (click)="removeEcg()">
         <mat-icon>link_off</mat-icon>
@@ -192,7 +193,7 @@
   </div>
 
   <!-- Bouton de suppression -->
-  <div class="suppression" *ngIf="!isNewDoc">
+  <div class="suppression" *ngIf="!isNewDoc && isEditAllowed">
     <button mat-button (click)="deleteItemConfirm()">Supprimer le document planificateur</button>
   </div>
 

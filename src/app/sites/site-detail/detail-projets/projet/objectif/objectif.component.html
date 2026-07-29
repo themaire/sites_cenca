@@ -12,7 +12,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <div class = "button-title">
   <app-form-buttons
-    *ngIf="!projetEditMode"
+    *ngIf="!projetEditMode && isEditAllowed"
     icone="add"
     [theme]="'gerer'"
     [isEditActive]="isEditObjectif" 
@@ -24,7 +24,7 @@ Variable (objectif) isAddOperation: {{ isAddOperation }}<br> -->
     (onSubmit)="onSubmit($event)"
   ></app-form-buttons>
 
-  <div *ngIf="!isEditProjet && isEditObjectif">
+  <div *ngIf="!isEditProjet && isEditObjectif && isEditAllowed">
       <div class="suppression">
         <button mat-button (click)="deleteItemConfirm()">Supprimer l'objectif</button>
       </div>
