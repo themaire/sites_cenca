@@ -1,4 +1,4 @@
-<div class="edition">
+<div class="edition" *ngIf="isEditAllowed">
   Ajouter un nouvel acte MFU :
   <button mat-icon-button matTooltip="Ajouter un acte MFU" class="btn-edition" (click)="onSelect(undefined, $event)">
     <mat-icon>add</mat-icon>

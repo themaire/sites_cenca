@@ -142,7 +142,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   //
   isEditObjectif: boolean = false; // Si on doit cacher le stepper pour voir le composant objectif
   isAddObjectif: boolean = false; // Si on doit cacher le stepper pour voir le composant objectif
-  
+
   projetForm!: FormGroup;
   isFormValid: boolean = false;
   initialFormValues!: FormGroup; // Propriété pour stocker les valeurs initiales du formulaire principal
@@ -189,7 +189,12 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
       // console.log("this.projetLite dans le dialog :", this.projetLite);
     }
-  
+
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
+
+
   getTypeInterv(generation: string): string {
     // Renvoie le type d'intervention en fonction de son code : "gestion" ou "autre"
     // @param : typ_interve : correspond au champ "generation" de la vue "ope.synthesesites"
@@ -529,6 +534,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
    * et des animations d'entrée/sortie.
    */
   deleteItemConfirm(): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     // Fabriquer le libellé du projet
     // let libelle = '';
     // if (type == 'operation') {
@@ -579,6 +587,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
    * le projet et toutes ses opérations enfant (route backend `projet_complet/clone`).
    */
   duplicateProjetConfirm(): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     if (!this.projet) {
       console.error('Aucun projet sélectionné par l\'utilisateur pour la duplication.');
       return;

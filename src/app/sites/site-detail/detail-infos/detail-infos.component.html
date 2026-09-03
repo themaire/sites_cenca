@@ -10,7 +10,7 @@
           <button
             mat-icon-button
             matTooltip="Modifier"
-            *ngIf="!isEditMode"
+            *ngIf="!isEditMode && isEditAllowed"
             class="btn-edition"
             (click)="toggleEditMode()"
           >

@@ -1,6 +1,6 @@
 <ng-container *ngIf="!cacheMisere; else wipBlock">
 
-  <div class="edition">
+  <div class="edition" *ngIf="isEditAllowed">
     Ajouter un document planificateur :
     <button mat-icon-button
             matTooltip="Ajouter un document planificateur"

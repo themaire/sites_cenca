@@ -1,7 +1,7 @@
 export const environment = {
     windows: false,
     production: true,
-    cache_misere: true,
+    cache_misere: false,
     
     apiUrl: 'https://si-10.cen-champagne-ardenne.org:8889/',
     apiLocalUrl: 'http://localhost:8889/',

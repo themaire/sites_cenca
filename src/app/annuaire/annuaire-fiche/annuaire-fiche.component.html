@@ -1,0 +1,190 @@
+<mat-dialog-content class="dialogue" *ngIf="!isLoading; else loading">
+<div class="conteneur-annuaire">
+  <div class="administratif">Annuaire</div>
+  <div class="annuaire-fiche">
+
+    <!-- En-tête : boutons + titre -->
+    <div class="button-title">
+      <div class="form-buttons">
+        <app-form-buttons
+          [isEditActive]="isEditMode"
+          icone="edit"
+          [theme]="'administratif'"
+          [isFormValid]="isFormValid"
+          (toggleAction)="toggleEdit()"
+          (onSubmit)="onSubmit()"
+        ></app-form-buttons>
+      </div>
+
+      <div class="title-container">
+        <h2 *ngIf="isNewContact">Nouveau contact</h2>
+        <h2 *ngIf="!isNewContact && !isEditMode">Fiche contact</h2>
+        <h2 *ngIf="!isNewContact && isEditMode">Modification du contact</h2>
+      </div>
+    </div>
+
+    <!-- ==============================
+         FORMULAIRE PRINCIPAL
+    =============================== -->
+    <form [formGroup]="contactForm">
+
+      <mat-form-field class="full-width">
+        <mat-label>Nom *</mat-label>
+        <input matInput formControlName="nom">
+        <mat-error *ngIf="contactForm.get('nom')?.hasError('required')">Champ obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Adresse</mat-label>
+        <textarea matInput formControlName="adresse" rows="2"></textarea>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="typ_personne">
+            <mat-option [value]="null">Non renseigné</mat-option>
+            <mat-option *ngFor="let t of typPersonnes" [value]="t.cd_type">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Téléphone</mat-label>
+          <input matInput formControlName="telephone">
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Mail</mat-label>
+          <input matInput type="email" formControlName="mail">
+          <mat-error *ngIf="contactForm.get('mail')?.hasError('email')">Adresse mail invalide</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field>
+          <mat-label>Actuel</mat-label>
+          <mat-select formControlName="actuel">
+            <mat-option [value]="null">Non renseigné</mat-option>
+            <mat-option *ngFor="let o of actuelOptions" [value]="o.cd_type">{{ o.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-slide-toggle formControlName="validite" class="validite-toggle">Contact valide</mat-slide-toggle>
+      </div>
+
+    </form>
+
+    <!-- ==============================
+         ÉTIQUETTES
+    =============================== -->
+    <div class="section" *ngIf="!isNewContact">
+      <h3>Étiquettes</h3>
+
+      <mat-chip-set class="chips-list">
+        <mat-chip *ngFor="let etiquette of etiquettes" [removable]="isEditMode" (removed)="removeEtiquette(etiquette)">
+          {{ etiquette.libelle || etiquette.typ_etiquette }}
+          <mat-icon matChipRemove *ngIf="isEditMode">cancel</mat-icon>
+        </mat-chip>
+        <span *ngIf="etiquettes.length === 0" class="no-item">Aucune étiquette.</span>
+      </mat-chip-set>
+
+      <div class="add-row" *ngIf="isEditMode && availableEtiquettes.length > 0">
+        <mat-form-field class="add-select">
+          <mat-label>Ajouter une étiquette</mat-label>
+          <mat-select [(ngModel)]="selectedEtiquetteToAdd" [ngModelOptions]="{standalone: true}">
+            <mat-option *ngFor="let t of availableEtiquettes" [value]="t.cd_type">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-icon-button matTooltip="Ajouter" [disabled]="!selectedEtiquetteToAdd" (click)="addEtiquette()">
+          <mat-icon>add_circle</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==============================
+         COMPÉTENCES
+    =============================== -->
+    <div class="section" *ngIf="!isNewContact">
+      <h3>Compétences</h3>
+
+      <div class="competences-list" *ngIf="competences.length > 0; else noCompetence">
+        <div class="competence-row" *ngFor="let competence of competences">
+
+          <ng-container *ngIf="editingCompetenceTyp !== competence.typ_competence; else editRow">
+            <span class="competence-libelle">{{ competence.libelle || competence.typ_competence }}</span>
+            <span class="competence-notation" *ngIf="competence.notation !== undefined && competence.notation !== null">Note : {{ competence.notation }}</span>
+            <span class="competence-remarque" *ngIf="competence.remarque">{{ competence.remarque }}</span>
+
+            <span class="competence-actions" *ngIf="isEditMode">
+              <button mat-icon-button matTooltip="Modifier" (click)="startEditCompetence(competence)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Supprimer" (click)="removeCompetence(competence)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+          </ng-container>
+
+          <ng-template #editRow>
+            <span class="competence-libelle">{{ competence.libelle || competence.typ_competence }}</span>
+            <mat-form-field class="edit-notation">
+              <mat-label>Notation</mat-label>
+              <input matInput type="number" [(ngModel)]="editNotation" [ngModelOptions]="{standalone: true}">
+            </mat-form-field>
+            <mat-form-field class="edit-remarque">
+              <mat-label>Remarque</mat-label>
+              <input matInput [(ngModel)]="editRemarque" [ngModelOptions]="{standalone: true}">
+            </mat-form-field>
+            <span class="competence-actions">
+              <button mat-icon-button matTooltip="Enregistrer" (click)="saveEditCompetence(competence)">
+                <mat-icon>save</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Annuler" (click)="cancelEditCompetence()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </span>
+          </ng-template>
+
+        </div>
+      </div>
+      <ng-template #noCompetence>
+        <span class="no-item">Aucune compétence renseignée.</span>
+      </ng-template>
+
+      <div class="add-row" *ngIf="isEditMode && availableCompetences.length > 0">
+        <mat-form-field class="add-select">
+          <mat-label>Type de compétence</mat-label>
+          <mat-select [(ngModel)]="selectedCompetenceToAdd" [ngModelOptions]="{standalone: true}">
+            <mat-option *ngFor="let t of availableCompetences" [value]="t.cd_type">{{ t.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-notation">
+          <mat-label>Notation</mat-label>
+          <input matInput type="number" [(ngModel)]="notationToAdd" [ngModelOptions]="{standalone: true}">
+        </mat-form-field>
+        <mat-form-field class="edit-remarque">
+          <mat-label>Remarque</mat-label>
+          <input matInput [(ngModel)]="remarqueToAdd" [ngModelOptions]="{standalone: true}">
+        </mat-form-field>
+        <button mat-icon-button matTooltip="Ajouter" [disabled]="!selectedCompetenceToAdd" (click)="addCompetence()">
+          <mat-icon>add_circle</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bouton de suppression -->
+    <div class="suppression" *ngIf="!isNewContact">
+      <button mat-button (click)="deleteItemConfirm()">Supprimer le contact</button>
+    </div>
+
+  </div><!-- .annuaire-fiche -->
+</div><!-- .conteneur-annuaire -->
+</mat-dialog-content>
+
+<!-- Spinner de chargement -->
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner class="spinner-vert"></mat-spinner>
+    <p>Chargement...</p>
+  </div>
+</ng-template>

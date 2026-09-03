@@ -15,6 +15,7 @@ import { DetailSite } from '../../site-detail';
 import { Commune } from './commune';
 import { SitesService } from '../../sites.service';
 import { FormService } from '../../../shared/services/form.service';
+import { LoginService } from '../../../login/login.service';
 // import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 
 @Component({
@@ -43,11 +44,12 @@ export class DetailInfosComponent implements OnChanges, OnInit {
   isMobile: boolean = false;
 
   constructor(
-    private sitesService: SitesService, 
+    private sitesService: SitesService,
     private formService: FormService,
     private fb: FormBuilder,
     private breakpointObserver: BreakpointObserver,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private loginService: LoginService
   ) {
     this.form = this.fb.group({
       // Initialiser le formulaire avec des contrôles vides
@@ -123,7 +125,14 @@ export class DetailInfosComponent implements OnChanges, OnInit {
     }
   }
 
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
+
   toggleEditMode(): void {
+    if (!this.isEditMode && !this.isEditAllowed) {
+      return;
+    }
     this.isEditMode = this.formService.simpleToggle(this.isEditMode); // Changer le mode du booleen
     this.formService.toggleFormState(this.form, this.isEditMode, this.initialFormValues); // Changer l'état du formulaire
   }

@@ -17,6 +17,7 @@ import {
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, skip, tap } from 'rxjs/operators';
 
+import { Annuaire } from '../../annuaire/interfaces/annuaire';
 import { Acte } from '../../sites/site-detail/detail-mfu/acte';
 import { Parcelle } from '../../sites/site-detail/detail-mfu/acte_mfu/parcelle-mfu/parcelle';
 import { Projet } from '../../sites/site-detail/detail-projets/projets';
@@ -368,7 +369,7 @@ export class FormService {
           operation?.typ_intervention || '',
           Validators.required,
         ],
-        nom_mo: [operation?.nom_mo || '', Validators.required],
+        ref_uuid_ann: [operation?.ref_uuid_ann || null, Validators.required],
         cadre_intervention: [
           operation?.cadre_intervention ?? null,
           Validators.required,
@@ -561,6 +562,22 @@ export class FormService {
       clearError();
       return null;
     };
+  }
+
+  // ============================================================
+  // SECTION ANNUAIRE — Contacts (agriculteurs, entreprises, etc.)
+  // ============================================================
+
+  newAnnuaireForm(annuaire?: Annuaire): FormGroup {
+    return this.fb.group({
+      nom: [annuaire?.nom || '', Validators.required],
+      adresse: [annuaire?.adresse || ''],
+      typ_personne: [annuaire?.typ_personne || null],
+      telephone: [annuaire?.telephone || ''],
+      mail: [annuaire?.mail || '', [Validators.email]],
+      validite: [annuaire?.validite !== undefined ? annuaire.validite : true],
+      actuel: [annuaire?.actuel || null],
+    });
   }
 
   // ============================================================
@@ -775,7 +792,7 @@ export class FormService {
 
       // Step 2
       typ_intervention: formValue.step2?.typ_intervention,
-      nom_mo: formValue.step2?.nom_mo,
+      ref_uuid_ann: formValue.step2?.ref_uuid_ann,
       cadre_intervention: formValue.step2?.cadre_intervention,
       cadre_intervention_detail: formValue.step2?.cadre_intervention_detail,
       ben_participants: formValue.step2?.ben_participants,

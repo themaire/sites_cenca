@@ -12,6 +12,7 @@ import { ProjetService, DeleteItemTypeEnum } from '../../projets.service';
 import { FormService } from '../../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
 import { ApiResponse } from '../../../../../shared/interfaces/api';
+import { LoginService } from '../../../../../login/login.service';
 
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -134,12 +135,17 @@ export class ObjectifComponent {
     private fb: FormBuilder,
     private projetService: ProjetService,
     private snackBar: MatSnackBar, // Injecter MatSnackBar
+    private loginService: LoginService,
     ) {
-      
+
       // console.log("this.ref_uuid_proj venant du input :", this.ref_uuid_proj);
       this.form = fb.group({});
 
     }
+
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
 
   async ngOnInit() {
     // Remplir this.form soit vide soit avec les données passées en entrée
@@ -361,6 +367,13 @@ export class ObjectifComponent {
     // 1. Créer un nouveau formulaire vide si ne donne pas le parametre objectif
     // 2. Créer un formulaire avec les données
 
+    if (!this.isEditAllowed) {
+      this.snackBar.open('Vous n\'avez pas les droits nécessaires pour cette action.', 'Fermer', {
+        duration: 3000,
+      });
+      return;
+    }
+
     if (this.projetEditMode || this.isEditOperation || this.isAddOperation) {
       let type = '';
       if (this.projetEditMode) {
@@ -529,6 +542,9 @@ export class ObjectifComponent {
    * et des animations d'entrée/sortie.
    */
   deleteItemConfirm(): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     // Fabriquer le libellé du projet
     // let libelle = '';
     // if (type == 'operation') {

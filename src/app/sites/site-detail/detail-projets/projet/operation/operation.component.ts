@@ -12,14 +12,18 @@ import { FormButtonsComponent } from '../../../../../shared/form-buttons/form-bu
 
 import { OperationLite, Operation, OperationCheckbox } from './operations';
 import { SelectValue } from '../../../../../shared/interfaces/formValues';
+import { AnnuaireLite } from '../../../../../annuaire/interfaces/annuaire';
 
 import { ProjetService, DeleteItemTypeEnum } from '../../projets.service';
 import { FormService } from '../../../../../shared/services/form.service';
 import { GeofilesService } from '../../../../../shared/services/geofiles.service';
 import { ConfirmationService } from '../../../../../shared/services/confirmation.service';
+import { AnnuaireService } from '../../../../../annuaire/annuaire.service';
+import { AnnuaireFicheComponent } from '../../../../../annuaire/annuaire-fiche/annuaire-fiche.component';
 
 import { ApiResponse } from '../../../../../shared/interfaces/api';
 import { Localisation } from '../../../../../shared/interfaces/localisation';
+import { LoginService } from '../../../../../login/login.service';
 
 import { MatTable, MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Importer MatSnackBar
@@ -34,9 +38,12 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-import { MatInputModule } from '@angular/material/input'; 
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Overlay } from '@angular/cdk/overlay';
 
 import { MatDatepickerIntl, MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
@@ -109,6 +116,8 @@ export const MY_DATE_FORMATS = {
     MatProgressSpinnerModule,
     MatTableModule,
     MatSlideToggleModule,
+    MatAutocompleteModule,
+    MatDialogModule,
   ],
   templateUrl: './operation.component.html',
   styleUrls: ['./operation.component.scss']
@@ -202,6 +211,10 @@ export class OperationComponent implements OnInit, OnDestroy {
   
   maitreOeuvreTypes!: SelectValue[];
   selectedMaitreOeuvreType: string = '';
+
+  // Contacts de l'annuaire (maître d'oeuvre) - autocomplete du step2
+  annuaires: AnnuaireLite[] = [];
+  filteredAnnuaires: AnnuaireLite[] = [];
   
   programmeTypes!: SelectValue[];
   selectedProgrammeType: string = '';
@@ -281,16 +294,71 @@ export class OperationComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private projetService: ProjetService,
     private snackBar: MatSnackBar, // Injecter MatSnackBar
+    private annuaireService: AnnuaireService,
+    private dialog: MatDialog,
+    private overlay: Overlay,
+    private loginService: LoginService,
     ) {
       // Sert pour le stepper
       const breakpointObserver = inject(BreakpointObserver);
       this.stepperOrientation = breakpointObserver.observe('(min-width: 800px)').pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
   }
 
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
+
   public getFamilleLibelle(cd_type: string, liste: SelectValue[]): string {
     // Récupérer le libellé de la famille d'opération à partir de cd_type
     const selectValue = this.formService.getLibelleByCdType(cd_type, liste);
     return selectValue ? selectValue : '';
+  }
+
+  // Affiche le nom du contact de l'annuaire correspondant à l'UUID stocké dans le formulaire
+  displayAnnuaireByUuid = (value: string | null): string => {
+    const uuid = String(value || '').trim();
+    if (!uuid) return '';
+    const contact = this.annuaires.find((a) => a.uuid_ann === uuid);
+    return contact ? contact.nom : uuid;
+  };
+
+  // Filtre la liste des contacts de l'annuaire en fonction de la saisie de l'utilisateur
+  filterAnnuaire(value: string | null): void {
+    const query = String(value || '').toLowerCase().trim();
+    this.filteredAnnuaires = !query
+      ? this.annuaires
+      : this.annuaires.filter((a) => (a.nom || '').toLowerCase().includes(query));
+    this.cdr.detectChanges();
+  }
+
+  // Ouvre la fiche Annuaire en création rapide, pré-remplie avec le texte déjà tapé,
+  // et sélectionne automatiquement le nouveau contact dans le formulaire d'opération
+  openAnnuaireQuickCreate(): void {
+    const currentValue = this.step2Form.get('ref_uuid_ann')?.value;
+    const nomPrefill = typeof currentValue === 'string' && !this.annuaires.some((a) => a.uuid_ann === currentValue)
+      ? currentValue
+      : '';
+
+    const dialogRef = this.dialog.open(AnnuaireFicheComponent, {
+      data: { nomPrefill, quickCreate: true },
+      minWidth: '50vw',
+      maxWidth: '95vw',
+      height: '70vh',
+      maxHeight: '90vh',
+      hasBackdrop: true,
+      backdropClass: 'custom-backdrop-administratif',
+      enterAnimationDuration: '400ms',
+      exitAnimationDuration: '300ms',
+      scrollStrategy: this.overlay.scrollStrategies.close(),
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.uuid_ann) {
+        this.annuaires = [...this.annuaires, { uuid_ann: result.uuid_ann, nom: result.nom } as AnnuaireLite];
+        this.filteredAnnuaires = this.annuaires;
+        this.step2Form.get('ref_uuid_ann')?.setValue(result.uuid_ann);
+      }
+    });
   }
 
   async ngOnInit() {
@@ -415,6 +483,14 @@ export class OperationComponent implements OnInit, OnDestroy {
     this.liste_ope_animaux_paturage = await this.projetService.getOperationAnimaux(subrouteOperationAnimauxListe);
     console.log('Liste des programmes possibles :', this.liste_ope_financeurs);
     console.log('Liste des animaux possibles :', this.liste_ope_animaux_paturage);
+
+    // Liste des contacts de l'annuaire pour l'autocomplete du maître d'oeuvre
+    try {
+      this.annuaires = await this.annuaireService.getAnnuaires();
+      this.filteredAnnuaires = this.annuaires;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des contacts de l\'annuaire', error);
+    }
 
 
     try {
@@ -631,7 +707,14 @@ export class OperationComponent implements OnInit, OnDestroy {
     // Deux grands modes :
     // 1. Créer un nouveau formulaire vide si ne donne PAS une operation
     // 2. Créer un formulaire avec les données d'une opération
-    
+
+    if (!this.isEditAllowed) {
+      this.snackBar.open('Vous n\'avez pas les droits nécessaires pour cette action.', 'Fermer', {
+        duration: 3000,
+      });
+      return;
+    }
+
     this.unsubForm(); // Se désabonner des changements du formulaire précédent
 
     if (this.projetEditMode || this.isEditObjectif || this.isAddObjectif) {
@@ -652,6 +735,7 @@ export class OperationComponent implements OnInit, OnDestroy {
 
     if (empty) {
       // Création d'un formulaire vide - Si empty est vrai
+      this.linearMode = true; // Stepper linéaire pour un formulaire neuf
       try {
         // Création d'un objet Operation "neuf" avec les listes fixes
         const newOperation: Operation = {
@@ -736,6 +820,10 @@ export class OperationComponent implements OnInit, OnDestroy {
         this.changedAction2Values = { previous: this.changedAction2Values.actual || '', // Stocker l'ancienne valeur
                                       actual: newValue }; // Mettre à jour la nouvelle valeur
         console.log('Action_2 vient de changer la nouvelle valeur devient l ancienne :', newValue, "donc this.changedAction2Values.previous = ", this.changedAction2Values.previous);
+      });
+      // Filtrage de la liste des contacts de l'annuaire (maître d'oeuvre) à chaque frappe
+      this.step2Form.get('ref_uuid_ann')?.valueChanges.subscribe((newValue) => {
+        this.filterAnnuaire(newValue);
       });
 
       // Test si this.step1Form existe et est rempli
@@ -907,6 +995,9 @@ export class OperationComponent implements OnInit, OnDestroy {
   /** Méthode pour gérer la soumission du formulaire de fichier géographique
    */
   handleGeoFileSubmission() {
+    if (!this.isEditAllowed) {
+      return;
+    }
     this.geofilesService.handleGeoFileSubmission(
       this.geoFileForm!,
       this.fileInput,
@@ -939,6 +1030,9 @@ export class OperationComponent implements OnInit, OnDestroy {
  * et des animations d'entrée/sortie.
  */
   deleteItemConfirm(type: 'localisation' | 'operation'): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     let ope2delete: Operation | undefined = undefined;
     let loca2delete: Localisation[] | undefined = undefined;
     if (this.operation) {
@@ -1020,6 +1114,9 @@ export class OperationComponent implements OnInit, OnDestroy {
  * Des cases à cocher invitent l'utilisateur à sélectionner les champs à exclure de la duplication.
  */
   duplicateOperationConfirm(): void {
+    if (!this.isEditAllowed) {
+      return;
+    }
     if (!this.operation) {
       console.error('Aucune opération sélectionnée par l\'utilisateur pour la duplication.');
       return;

@@ -52,6 +52,7 @@ export interface Operation {
   date_ajout?: Date;
   ref_loc_id?: Number;
   nom_mo?: string;
+  ref_uuid_ann?: string;
   financeur_description?: string;
   cadre_intervention?: number;
   cadre_intervention_detail?: number;

@@ -5,7 +5,7 @@
     <!-- En-tête avec boutons en haut -->
     <div class="button-title center-title">
       <!-- 1er element -->
-      <div class="form-buttons" *ngIf="parcelleForm">
+      <div class="form-buttons" *ngIf="parcelleForm && isEditAllowed">
         <app-form-buttons [isEditActive]="isEditModeLocal || isAddMode" icone="add" [theme]="'proteger'"
           label="Ajouter une parcelle" [isFormValid]="parcelleForm ? parcelleForm.valid : false"
           (toggleAction)="toggleEditParcelle($event)" (onSubmit)="onSubmit()">
@@ -19,7 +19,7 @@
       <div class="dummy-right"></div>
 
       <!-- 3eme element : suppression uniquement en mode edition -->
-      <div class="suppression" *ngIf="isEditModeLocal">
+      <div class="suppression" *ngIf="isEditModeLocal && isEditAllowed">
         <button mat-button (click)="deleteParcelle(editingParcelle!)">Supprimer la parcelle</button>
       </div>
 
@@ -168,7 +168,7 @@
   <!-- Vue liste -->
   <div *ngIf="!isEditModeLocal && !isAddMode" class="parcelles-list-view">
     <div class="button-title center-title">
-      <div class="form-buttons">
+      <div class="form-buttons" *ngIf="isEditAllowed">
         <app-form-buttons [isEditActive]="false" icone="add" [theme]="'proteger'" label="Ajouter une parcelle"
           [isFormValid]="true" (toggleAction)="toggleEditParcelle($event)">
         </app-form-buttons>
@@ -238,7 +238,8 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let parcelle" class="clickable-row">
-            <button mat-icon-button matTooltip="Supprimer" (click)="deleteParcelle(parcelle); $event.stopPropagation()"
+            <button mat-icon-button matTooltip="Supprimer" *ngIf="isEditAllowed"
+              (click)="deleteParcelle(parcelle); $event.stopPropagation()"
               class="supprimer-btn">
               <mat-icon>delete</mat-icon>
             </button>

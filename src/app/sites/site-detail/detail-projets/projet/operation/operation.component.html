@@ -14,7 +14,7 @@ Variable (operation) form: {{ form }}<br>
 <!-- Utilisation du template buttons pour ajouter une opération -->
 <ng-template #buttons>
   <app-form-buttons
-    *ngIf="!projetEditMode"
+    *ngIf="!projetEditMode && isEditAllowed"
     icone="add" 
     [theme]="'gerer'"
     [isEditActive]="isEditOperation" 
@@ -128,8 +128,8 @@ Variable (operation) form: {{ form }}<br>
     <input hidden id="duration" value="300" type="number" min="0" step="100" #duration>
   </div>
 
-  <mat-stepper labelPosition="bottom" 
-                      [linear]="!operation"
+  <mat-stepper labelPosition="bottom"
+                      [linear]="linearMode"
                       #stepper 
                       [animationDuration]="duration.value" 
                       class="margin-stepper"
@@ -275,8 +275,20 @@ Variable (operation) form: {{ form }}<br>
             </mat-select>
           </mat-form-field>
           <mat-form-field class="medium-width">
-            <mat-label>Nom du maitre d'oeuvre</mat-label>
-            <input matInput formControlName="nom_mo">
+            <mat-label>Nom du maître d'oeuvre</mat-label>
+            <input matInput formControlName="ref_uuid_ann"
+              [matAutocomplete]="annuaireAuto"
+              (focus)="filteredAnnuaires = annuaires">
+            <button mat-icon-button matSuffix type="button"
+              matTooltip="Ajouter un nouveau contact à l'annuaire"
+              (click)="openAnnuaireQuickCreate()">
+              <mat-icon>import_contacts</mat-icon>
+            </button>
+            <mat-autocomplete #annuaireAuto="matAutocomplete" [displayWith]="displayAnnuaireByUuid">
+              <mat-option *ngFor="let a of filteredAnnuaires" [value]="a.uuid_ann">
+                {{ a.nom }}
+              </mat-option>
+            </mat-autocomplete>
           </mat-form-field>
   
           <mat-form-field class="medium-width">
@@ -466,7 +478,7 @@ Variable (operation) form: {{ form }}<br>
         <div>
           <app-map mapName='Opération' [localisation_site]="localisation_site" [localisations_operations]="operation.localisations"></app-map>
         </div>
-        <div class="suppression">
+        <div class="suppression" *ngIf="isEditAllowed">
           <button mat-button (click)="deleteItemConfirm('localisation')">Supprimer la localisation</button>
         </div>
       </div>
@@ -609,11 +621,11 @@ Variable (operation) form: {{ form }}<br>
       <!-- Permet d'inclure le template en bas du composant -->
       <ng-container *ngTemplateOutlet="buttons"></ng-container>
 
-      <div class="duplication">
+      <div class="duplication" *ngIf="isEditAllowed">
         <button mat-button (click)="duplicateOperationConfirm()">Dupliquer l'opération</button>
       </div>
 
-      <div class="suppression">
+      <div class="suppression" *ngIf="isEditAllowed">
         <button mat-button (click)="deleteItemConfirm('operation')">Supprimer l'opération</button>
       </div>
     </div>

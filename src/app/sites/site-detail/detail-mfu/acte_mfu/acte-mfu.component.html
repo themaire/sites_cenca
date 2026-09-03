@@ -38,14 +38,14 @@
 <ng-template #acteContent>
   <div class="button-title" [class.center-title]="newMfu">
     <!-- 1er élément -->
-    <div class="form-buttons" *ngIf="mfuForm">
+    <div class="form-buttons" *ngIf="mfuForm && isEditAllowed">
       <app-form-buttons [isEditActive]="isEditMfu || newMfu" icone="edit" [theme]="'proteger'" label="Modifier cet acte"
         [isFormValid]="mfuForm ? mfuForm.valid : false" (toggleAction)="toggleEditMfu($event)" (onSubmit)="onSubmit()">
       </app-form-buttons>
     </div>
 
     <!-- Bouton d'ajout d'un acte à un site -->
-    <div class="form-buttons" *ngIf="isEditMfu && !newMfu">
+    <div class="form-buttons" *ngIf="isEditMfu && !newMfu && isEditAllowed">
       <app-form-buttons [isEditActive]="false" [isAddActive]="false" [isFormValid]="true" icone="add" theme="proteger" label="Rattacher cet acte à un AUTRE site"
         (toggleAction)="openAttachSiteDialog()">
       </app-form-buttons>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- 3e élément (optionnel) : visible uniquement pour un acte existant -->
-    <div class="suppression" *ngIf="!newMfu">
+    <div class="suppression" *ngIf="!newMfu && isEditAllowed">
       <button mat-button (click)="deleteItemConfirm()">Supprimer l'acte</button>
     </div>
 
@@ -146,7 +146,7 @@
         <!-- Ligne 3 : URL | Lien de téléchargement | Remarque (3 colonnes) -->
         <div class="form-row-three url-row">
           <!-- Cellule URL (flex 0) -->
-          <mat-form-field class="url-cell" *ngIf="(isEditMfu || newMfu) && gro_id !== null && gro_id > 2">
+          <mat-form-field class="url-cell" *ngIf="(isEditMfu || newMfu) && canEditUrl">
             <mat-label>URL document</mat-label>
             <input matInput formControlName="url" [readonly]="!isEditMfu">
           </mat-form-field>

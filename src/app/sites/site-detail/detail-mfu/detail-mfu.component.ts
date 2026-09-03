@@ -30,6 +30,7 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { Overlay } from '@angular/cdk/overlay';
+import { LoginService } from '../../../login/login.service';
 
 @Component({
   selector: 'app-detail-mfu',
@@ -82,8 +83,13 @@ export class DetailMfuComponent {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   public dialog: MatDialog = inject(MatDialog);
   public overlay: Overlay = inject(Overlay);
+  private loginService: LoginService = inject(LoginService);
   // Garde la position de scroll pour figer l'arriere-plan pendant la modale.
   private lockedScrollY: number | null = null;
+
+  get isEditAllowed(): boolean {
+    return this.loginService.isEdit();
+  }
 
   async ngOnChanges(changes: SimpleChanges) {
     let subroute: string = '';
@@ -189,6 +195,7 @@ export class DetailMfuComponent {
   }
 
   openDialog(actelite?: ActeLite): void {
+    if (actelite === undefined && !this.isEditAllowed) return;
     if (actelite !== undefined) {
       const acteAny = actelite as any;
       const resolvedUuid = acteAny?.uuid_acte || acteAny?.uuid || acteAny?.ref_uuid_acte || '';
