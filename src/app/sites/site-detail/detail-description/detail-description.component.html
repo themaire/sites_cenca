@@ -1,78 +1,43 @@
 <div *ngIf="inputDetail !== undefined" class="container">
   <div class="container-champ">
-    <div class="champ">
-      <!-- -->
-      <div class="edition">
-        <button
-          mat-icon-button
-          matTooltip="Modifier"
-          *ngIf="!isEditMode && isEditAllowed"
-          class="btn-edition"
-          (click)="toggleEditMode()"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button
-          mat-button
-          matTooltip="Sauvegarder"
-          *ngIf="isEditMode"
-          class="btn-sauvegarde"
-          (click)="onUpdate()"
-        >
-          <mat-icon>save</mat-icon>
-        </button>
-        <button
-          mat-button
-          matTooltip="Annuler"
-          *ngIf="isEditMode"
-          class="btn-annulation"
-          (click)="toggleEditMode()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
+    <div class="champ" [formGroup]="form">
+      <div class="edition" *ngIf="isEditAllowed">
+        <app-form-buttons
+          [isEditActive]="isEditMode"
+          icone="edit"
+          [theme]="'proteger'"
+          [isFormValid]="form.valid"
+          (toggleAction)="toggleEditMode()"
+          (onSubmit)="onUpdate()"
+        ></app-form-buttons>
       </div>
 
-      <div class="ligne1">
-        <div class="description">
-          <h2>Description du site:</h2>
-          <div class="infos">
-            <textarea
-              [(ngModel)]="inputDetail.description_site"
-              [disabled]="!isEditMode"
-            ></textarea>
-          </div>
+      <!-- Lecture seule : inert = rien n'est focalisable ni modifiable, sans griser les champs -->
+      <div class="grille-form" [attr.inert]="!isEditMode ? '' : null">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Description du site</mat-label>
+          <textarea matInput formControlName="description_site" rows="3"></textarea>
+        </mat-form-field>
+
+        <div class="toggles">
+          <mat-slide-toggle formControlName="sensibilite">Site sensible</mat-slide-toggle>
         </div>
-      </div>
-      <div class="ligne2">
-        <div class="sensible">
-          <h2>Site sensible:</h2>
-          <div class="infos">
-            <input
-              [(ngModel)]="inputDetail.sensibilite"
-              [disabled]="!isEditMode"
-            />
-          </div>
-        </div>
-        <div class="des-sensible">
-          <h2>Description sensibilité:</h2>
-          <div class="infos">
-            <input
-              [(ngModel)]="inputDetail.remq_sensibilite"
-              [disabled]="!isEditMode"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="ligne3">
-        <div class="typ_ouverture">
-          <h2>Site ouvert au public:</h2>
-          <div class="infos">
-            <input
-              [(ngModel)]="inputDetail.typ_ouverture"
-              [disabled]="!isEditMode"
-            />
-          </div>
-        </div>
+
+        <mat-form-field appearance="fill" [class.champ-verrouille]="!form.get('sensibilite')?.value">
+          <mat-label>Description sensibilité</mat-label>
+          <input
+            matInput
+            formControlName="remq_sensibilite"
+            [readonly]="!form.get('sensibilite')?.value"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Site ouvert au public</mat-label>
+          <mat-select formControlName="typ_ouverture">
+            <mat-option *ngFor="let ouverture of typesOuverture" [value]="ouverture.cd_type">{{ ouverture.libelle }}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
       <div class="ligne4">
         <div class="amenagements">
@@ -82,40 +47,23 @@
           </div>
         </div>
       </div>
-      <div class="ligne5" *ngIf="!isMobile && !isEditMode">
-        <div class="description">
-          <h2>Lien CEN:</h2>
-          <div class="infos">
-            <a class="lien" href="{{ inputDetail.url_cen }}">{{
-              inputDetail.url_cen
-            }}</a>
-          </div>
-        </div>
-        <div class="description">
-          <h2>Lien MNHN:</h2>
-          <div class="infos">
-            <a class="lien" href="{{ inputDetail.url_mnhn }}">{{
-              inputDetail.url_mnhn
-            }}</a>
-          </div>
-        </div>
+      <div class="liens" *ngIf="!isMobile && !isEditMode">
+        <ng-container
+          *ngTemplateOutlet="lien; context: { label: 'Lien CEN', url: inputDetail.url_cen, status: linkStatus.url_cen, cause: linkCause.url_cen }"
+        ></ng-container>
+        <ng-container
+          *ngTemplateOutlet="lien; context: { label: 'Lien MNHN', url: inputDetail.url_mnhn, status: linkStatus.url_mnhn, cause: linkCause.url_mnhn }"
+        ></ng-container>
       </div>
-      <div class="ligne5" *ngIf="isEditMode">
-        <div class="description">
-          <h2>Lien CEN:</h2>
-          <div class="infos">
-            <input [(ngModel)]="inputDetail.url_cen" [disabled]="!isEditMode" />
-            <div class="description">
-              <h2>Lien MNHN:</h2>
-              <div class="infos">
-                <input
-                  [(ngModel)]="inputDetail.url_mnhn"
-                  [disabled]="!isEditMode"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="grille-form" *ngIf="isEditMode">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Lien CEN</mat-label>
+          <input matInput formControlName="url_cen" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Lien MNHN</mat-label>
+          <input matInput formControlName="url_mnhn" />
+        </mat-form-field>
       </div>
 
       <div *ngIf="isMobile">
@@ -139,3 +87,27 @@
     </div>
   </div>
 </div>
+
+<!-- Lien en consultation : hypertexte si le lien répond (ou si le test est impossible), rouge sinon -->
+<ng-template #lien let-label="label" let-url="url" let-status="status" let-cause="cause">
+  <div class="lien-bloc">
+    <h2>{{ label }}:</h2>
+    <div class="infos">
+      <ng-container *ngIf="status !== 'vide'; else pasDeLien">
+        <a
+          *ngIf="status !== 'ko'; else lienCasse"
+          class="lien"
+          [href]="href(url)"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ url }}</a
+        >
+        <ng-template #lienCasse>
+          <span class="lien-ko">{{ url }}</span>
+          <div class="lien-ko-message">Ce lien ne fonctionne pas ({{ cause }}).</div>
+        </ng-template>
+      </ng-container>
+      <ng-template #pasDeLien><span class="lien-vide">—</span></ng-template>
+    </div>
+  </div>
+</ng-template>

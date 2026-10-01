@@ -22,17 +22,35 @@
   .infos {
     width: 100%;
   }
-  textarea,
-  .lien,
-  input {
-    @include input($couleur-faune, black);
+  // Simple lien hypertexte (plus de cadre orange de l'ancien style)
+  .lien {
+    word-break: break-all;
   }
-  .ligne2,
-  .ligne3 {
+  .grille-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.5rem 1rem;
+    align-items: center;
+    mat-form-field { width: 100%; }
+    .full-width { grid-column: 1 / -1; }
+    .champ-verrouille { opacity: 0.55; }
+  }
+
+  .liens {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    flex-wrap: wrap;
     gap: 16px;
+  }
+  .lien-ko {
+    color: red;
+    word-break: break-all;
+  }
+  .lien-ko-message {
+    color: red;
+    font-size: 0.85rem;
+  }
+  .lien-vide {
+    color: #888;
   }
 
   .edition {
@@ -40,18 +58,6 @@
     @include align(center, start);
     margin-bottom: 20px;
     gap: 20px;
-    .btn-edition {
-      @include btn-icon($couleur-faune, $orangeC);
-      @include icon(white, black);
-    }
-    .btn-sauvegarde {
-      @include btn-icon(white, $couleur-territoire);
-      @include icon($couleur-flore, white);
-    }
-    .btn-annulation {
-      @include btn-icon(white, red);
-      @include icon(red, white);
-    }
   }
 }
 @media screen and (max-width: $mobile) {

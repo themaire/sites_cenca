@@ -218,6 +218,18 @@ mat-dialog-content.dialogue {
   @include suppression-btn();
 }
 
+.creer-site {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+}
+
 .selected {
   background-color: rgba(180, 73, 23, 0.1);
   box-shadow: inset 0 0 20px rgba(180, 73, 23, 0.15);

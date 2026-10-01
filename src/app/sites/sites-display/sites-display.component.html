@@ -16,7 +16,13 @@
 
 <!-- "On affiche la liste du resultat de recherche -- si on a PAS selectionné de site dans la liste" -->
 <div *ngIf="selectedSite == undefined">
-  <p>Liste des sites sélectionnés parmis votre filtrage :</p>
+  <div class="entete-liste">
+    <p>Liste des sites sélectionnés parmis votre filtrage :</p>
+    <button mat-flat-button color="primary" (click)="openNewSiteDialog()">
+      <mat-icon>add</mat-icon>
+      Nouveau site
+    </button>
+  </div>
 
     <mat-form-field class="filtre">
       <mat-label>Mots-clés</mat-label>
@@ -27,7 +33,7 @@
         #input
 
 
-        
+
       />
     </mat-form-field>
 

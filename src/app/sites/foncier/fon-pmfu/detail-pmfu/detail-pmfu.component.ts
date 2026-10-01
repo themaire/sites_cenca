@@ -1,7 +1,7 @@
 import { Component, Inject, ChangeDetectorRef, ViewChild, ElementRef} from '@angular/core';
 import { CommonModule } from '../../../../../../node_modules/@angular/common';
 
-import { MatDialogRef, MatDialogContent, MAT_DIALOG_DATA,} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MatDialogContent, MAT_DIALOG_DATA,} from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Overlay } from '@angular/cdk/overlay';
 import { MatIconModule } from '@angular/material/icon';
@@ -52,6 +52,11 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MapComponent } from '../../../../map/map.component';
 
 import { ApiResponse } from '../../../../shared/interfaces/api';
+import { NewSiteComponent, NewSiteDialogData } from '../../../new/new-site.component';
+
+// Code du statut PMFU 'Signé' (liste sitcenca.libelles / status) : un projet de maîtrise
+// foncière signé donne lieu à la création d'un vrai site CENCA en gestion.
+const STATUS_SIGNE = 44;
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -114,8 +119,34 @@ export class DetailPmfuComponent {
   get anneeSignatureMin(): number {
     const debutValue = this.pmfuForm?.get('pmfu_annee_debut')?.value;
     const debut = debutValue === null || debutValue === '' ? null : Number(debutValue);
-    if (debut === null || Number.isNaN(debut)) return 2024;
-    return Math.max(2024, debut);
+    if (debut === null || Number.isNaN(debut)) return 2021;
+    return Math.max(2021, debut);
+  }
+
+  // Un projet MFU signé (status = 44) donne lieu à la création d'un vrai site en gestion.
+  get isStatusSigne(): boolean {
+    return Number(this.pmfuForm?.get('pmfu_status')?.value) === STATUS_SIGNE;
+  }
+
+  /** Ouvre le formulaire de création de site (dialogue imbriqué) depuis un projet MFU signé,
+   * en préremplissant nom et responsable à partir du projet pour éviter une double saisie. */
+  onCreerSite(): void {
+    const responsableCd = this.pmfuForm.get('pmfu_responsable')?.value;
+
+    const data: NewSiteDialogData = {
+      nomPrefill: this.pmfuForm.get('pmfu_nom')?.value || undefined,
+      responsablePrefill: responsableCd || undefined,
+      pmfuId: this.projetLite?.pmfu_id ?? this.pmfu?.pmfu_id,
+    };
+
+    this.dialog.open(NewSiteComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'new-site-dialog-panel',
+      autoFocus: false,
+      data,
+    });
   }
 
   // Série de 6 getters pour obtenir les libellés des sélections multiples
@@ -289,6 +320,7 @@ export class DetailPmfuComponent {
     private loginService: LoginService, // Inject LoginService
     private geoService: GeoService,
     private dialogRef: MatDialogRef<DetailPmfuComponent>,
+    private dialog: MatDialog,
     private sanitizer: DomSanitizer,
     private http: HttpClient,
     private overlay: Overlay,

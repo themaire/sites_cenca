@@ -156,3 +156,11 @@ body {
 .cdk-overlay-pane.attach-site-dialog-panel .mat-mdc-dialog-surface {
   background-color: #ffffff !important;
 }
+
+// Supprime le padding par défaut de la modale de création de site : le composant gère
+// lui-même sa mise en page (bandeau "Protéger" + contenu) sur toute la surface de la boîte.
+.cdk-overlay-pane.new-site-dialog-panel .mat-mdc-dialog-container,
+.cdk-overlay-pane.new-site-dialog-panel .mat-mdc-dialog-surface {
+  padding: 0;
+  overflow: hidden;
+}

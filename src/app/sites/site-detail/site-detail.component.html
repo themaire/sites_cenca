@@ -10,6 +10,13 @@
       >
         Retour
       </button>
+
+      <!-- Suppression d'un site créé par erreur (refusée par le backend si des données y sont rattachées) -->
+      <div class="suppression" *ngIf="isEditAllowed && siteDetail">
+        <button mat-button type="button" [disabled]="deleting" (click)="deleteSiteConfirm()">
+          Supprimer le site
+        </button>
+      </div>
     </div>
     <!-- Titre -->
     <h2 *ngIf="siteDetail !== undefined">

@@ -2,7 +2,7 @@ import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { of, from, Observable } from 'rxjs';
 
 // interfaces utilisés dans la promise de la fonction
@@ -17,6 +17,38 @@ import { DetailSite } from './site-detail';
 import { Localisation } from '../shared/interfaces/localisation';
 import { ApiResponse } from '../shared/interfaces/api';
 import { Selector } from '../shared/interfaces/selector';
+
+export interface UrlCheck {
+  etat: 'ok' | 'ko' | 'inconnu';
+  /** Code HTTP final (null en cas d'erreur réseau ou d'URL refusée) */
+  status: number | null;
+  /** Message du backend quand l'URL est refusée */
+  message?: string;
+}
+
+/** Conservateur bénévole rattaché à un site (contact de l'annuaire) */
+export interface Conservateur {
+  uuid_ann: string;
+  nom: string;
+  telephone?: string;
+  mail?: string;
+  adresse?: string;
+}
+
+export interface SiteDeleteDependance {
+  table: string;
+  libelle: string;
+  nombre: number;
+}
+
+/** Réponse de GET sites/delete/site/uuid_site=:uuid (vérification, ne supprime rien) */
+export interface SiteDeleteCheck {
+  supprimable: boolean;
+  dependances: SiteDeleteDependance[];
+  /** Ce qui disparaîtrait avec le site (géométries, milieux naturels, aménagements, communes...) */
+  supprime_avec_le_site?: Record<string, unknown>;
+  message?: string;
+}
 
 interface SiteLite {
   // Listes courtes de sites
@@ -38,6 +70,83 @@ export class SitesService {
   private activeUrl: string = environment.apiUrl + 'sites/';
 
   constructor(private http: HttpClient) { }
+
+  /** Vérifie si un site peut être supprimé (route de contrôle, ne supprime rien). */
+  checkSiteDeletion(uuid_site: string): Observable<SiteDeleteCheck> {
+    return this.http
+      .get<any>(`${this.activeUrl}delete/site/uuid_site=${uuid_site}`)
+      // Le détail peut être à la racine de la réponse ou dans data selon l'enveloppe du backend
+      .pipe(map((res) => ({ ...res, ...(res?.data ?? {}) }) as SiteDeleteCheck));
+  }
+
+  /**
+   * Supprime un site créé par erreur. Le backend répond 409 (avec message et data.dependances)
+   * dès qu'une donnée est rattachée au site : l'erreur est laissée au composant appelant.
+   */
+  deleteSite(uuid_site: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}delete/site/uuid_site=${uuid_site}`);
+  }
+
+  /**
+   * Communes d'un site (table esp.localisations, via l'espace du site).
+   * Route backend existante : GET sites/commune/uuid=:uuid_site -> [{ insee, nom, departement }]
+   */
+  getCommunesSite(uuid_site: string): Observable<Commune[]> {
+    return this.http
+      .get<any>(`${this.activeUrl}commune/uuid=${uuid_site}`)
+      .pipe(map((res) => (Array.isArray(res) ? res : res?.data ?? []) as Commune[]));
+  }
+
+  /** Rattache une commune au site. Route backend : POST sites/commune/uuid_site=:uuid, body { insee } */
+  addCommuneSite(uuid_site: string, insee: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.activeUrl}commune/uuid_site=${uuid_site}`, { insee });
+  }
+
+  /** Détache une commune du site. Route backend : DELETE sites/commune/uuid_site=:uuid/insee=:insee */
+  removeCommuneSite(uuid_site: string, insee: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}commune/uuid_site=${uuid_site}/insee=${insee}`);
+  }
+
+  /**
+   * Conservateurs bénévoles d'un site (table sitcenca.conservateurs -> ann.annuaire).
+   * Route backend : GET sites/conservateur/uuid_site=:uuid_site -> [{ uuid_ann, nom, telephone, mail, adresse }]
+   */
+  getConservateursSite(uuid_site: string): Observable<Conservateur[]> {
+    return this.http
+      .get<any>(`${this.activeUrl}conservateur/uuid_site=${uuid_site}`)
+      .pipe(map((res) => (Array.isArray(res) ? res : res?.data ?? []) as Conservateur[]));
+  }
+
+  /** Rattache un conservateur au site. Route backend : POST sites/conservateur/uuid_site=:uuid, body { uuid_ann } */
+  addConservateurSite(uuid_site: string, uuid_ann: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.activeUrl}conservateur/uuid_site=${uuid_site}`, { uuid_ann });
+  }
+
+  /** Détache un conservateur du site. Route backend : DELETE sites/conservateur/uuid_site=:uuid/uuid_ann=:uuid_ann */
+  removeConservateurSite(uuid_site: string, uuid_ann: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.activeUrl}conservateur/uuid_site=${uuid_site}/uuid_ann=${uuid_ann}`);
+  }
+
+  /**
+   * Teste côté serveur qu'un lien répond (le navigateur ne peut pas lire le code HTTP d'un autre
+   * domaine à cause de CORS). Route backend : GET sites/check-url?url=... -> { ok, status }.
+   * Réponse 400 (URL refusée) -> 'ko' avec le message du serveur ; route absente ou autre erreur
+   * -> 'inconnu' (le lien reste affiché normalement).
+   */
+  checkUrl(url: string): Observable<UrlCheck> {
+    return this.http
+      .get<{ ok: boolean; status?: number | null }>(`${this.activeUrl}check-url`, { params: { url } })
+      .pipe(
+        map((res): UrlCheck => ({ etat: res.ok ? 'ok' : 'ko', status: res.status ?? null })),
+        catchError((err) =>
+          of<UrlCheck>(
+            err?.status === 400
+              ? { etat: 'ko', status: null, message: err.error?.message }
+              : { etat: 'inconnu', status: null },
+          ),
+        ),
+      );
+  }
 
   // fonction modèle de base réutilisée partout pour les différentes methode de ce fichier
   async getData<T>(subroute: string): Promise<T> {
@@ -284,6 +393,22 @@ export class SitesService {
     return this.http.put<ApiResponse>(url, payload).pipe(
       catchError((error) => {
         console.error('Erreur lors du rattachement multi-sites de l\'acte', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Crée un nouveau site (et son espace parent) en une seule opération atomique côté backend.
+   * `table=espace_site` est une valeur spéciale de la route générique d'insertion : elle ne
+   * correspond à aucune vraie table SQL, elle déclenche la création combinée espace + site.
+   * Les uuid (uuid_espace, uuid_site) sont générés côté backend et renvoyés dans response.data.
+   */
+  createSite(data: Record<string, any>): Observable<ApiResponse> {
+    const url = `${this.activeUrl}put/table=espace_site/insert`;
+    return this.http.put<ApiResponse>(url, data).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la création du site', error);
         throw error;
       })
     );

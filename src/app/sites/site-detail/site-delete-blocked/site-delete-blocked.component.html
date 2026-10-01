@@ -1,0 +1,18 @@
+<h2 mat-dialog-title class="titre">Suppression impossible</h2>
+<mat-dialog-content>
+  <div class="message">{{ data.message }}</div>
+
+  <ul *ngIf="data.dependances.length" class="dependances">
+    <li *ngFor="let dep of data.dependances">
+      <strong>{{ dep.nombre }}</strong> {{ dep.libelle }}
+    </li>
+  </ul>
+
+  <div class="aide">
+    Seul un site créé par erreur, sans aucune donnée rattachée, peut être supprimé.
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="center-buttons">
+  <button mat-button mat-dialog-close>Fermer</button>
+</mat-dialog-actions>
