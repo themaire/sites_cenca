@@ -6,188 +6,96 @@
       <ng-container [formGroup]="form">
 
         <!-- Boutons edit/save/cancel -->
-        <div class="edition">
-          <button
-            mat-icon-button
-            matTooltip="Modifier"
-            *ngIf="!isEditMode && isEditAllowed"
-            class="btn-edition"
-            (click)="toggleEditMode()"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          
-          <button
-            mat-icon-button
-            matTooltip="Sauvegarder"
-            *ngIf="isEditMode"
-            class="btn-sauvegarde"
-            (click)="onUpdate()"
-          >
-            <mat-icon>save</mat-icon>
-          </button>
-          
-          <button
-            mat-icon-button
-            matTooltip="Annuler"
-            *ngIf="isEditMode"
-            class="btn-annulation"
-            (click)="toggleEditMode()"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
+        <div class="edition" *ngIf="isEditAllowed">
+          <app-form-buttons
+            [isEditActive]="isEditMode"
+            icone="edit"
+            [theme]="'proteger'"
+            [isFormValid]="form.valid"
+            (toggleAction)="toggleEditMode()"
+            (onSubmit)="onUpdate()"
+          ></app-form-buttons>
         </div>
 
-        <div class="ligne1">
-          <div class="nom">
-            <h2>Nom:</h2>
-            <div class="infos">
-              <!--{{ inputDetail.nom }}-->
-              <input formControlName="nom"/>
-            </div>
-          </div>
+        <!-- Lecture seule : inert = rien n'est focalisable ni modifiable, sans griser les champs -->
+        <div [attr.inert]="!isEditMode ? '' : null">
+        <div class="toggles">
+          <mat-slide-toggle formControlName="validite">Site valide</mat-slide-toggle>
+          <mat-slide-toggle formControlName="ref_public">Réf. publique</mat-slide-toggle>
+          <mat-slide-toggle formControlName="zh">Zone humide</mat-slide-toggle>
         </div>
-        <div class="ligne2">
-          <div class="code">
-            <h2>Code:</h2>
-            <div class="infos">
-              <!--{{ inputDetail.code }}-->
-              <input formControlName="code"/>
-            </div>
-          </div>
-          <div class="surface">
-            <h2>Surface:</h2>
-            <div class="infos">
-              <!--{{ inputDetail.surface }}-->
-              <input formControlName="surface"/>
-            </div>
-          </div>
-          <div class="responsable">
-            <h2>Responsable:</h2>
-            <div class="infos">
-              <!-- {{ inputDetail.responsable }}-->
-              <input
-                formControlName="responsable"
-                [disabled]="!isEditMode"
-              />
-            </div>
-          </div>
+
+        <div class="grille-form">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Nom</mat-label>
+            <input matInput formControlName="nom">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Surface</mat-label>
+            <input matInput type="number" formControlName="surface">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Responsable</mat-label>
+            <mat-select formControlName="responsable">
+              <mat-option *ngFor="let salarie of responsables" [value]="salarie.cd_type">{{ salarie.libelle }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="typ_site">
+              <mat-option *ngFor="let typeSite of lists.typesSite" [value]="typeSite.cd_type">{{ typeSite.libelle }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Première année contrat</mat-label>
+            <input matInput formControlName="prem_ctr">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Type d'espace</mat-label>
+            <mat-select formControlName="typ_espace">
+              <mat-option *ngFor="let type of lists.typesEspace" [value]="type.cd_type">{{ type.libelle }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Bassin d'agence</mat-label>
+            <mat-select formControlName="bassin_agence">
+              <mat-option *ngFor="let bassin of lists.bassinsAgence" [value]="bassin.cd_type">{{ bassin.libelle }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Réf. MNHN</mat-label>
+            <input matInput formControlName="id_mnhn">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Réf. FCEN</mat-label>
+            <input matInput formControlName="ref_fcen">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Regroupement de sites</mat-label>
+            <mat-select formControlName="rgpt">
+              <mat-option *ngFor="let regroupement of lists.regroupements" [value]="regroupement.cd_type">{{ regroupement.libelle }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Partie(s) gérée(s)</mat-label>
+            <input matInput formControlName="parties_gerees">
+          </mat-form-field>
         </div>
-        <div class="ligne3">
-          <div class="categorie">
-            <h2>Catégorie:</h2>
-            <div class="infos">
-              <!-- {{ inputDetail.typ_site }}-->
-              <input
-                formControlName="typ_site"
-                [disabled]="!isEditMode"
-              />
-            </div>
-          </div>
-          <div class="statut">
-            <h2>Status:</h2>
-            <div class="toggle">
-              <!--{{ inputDetail.validite }}-->
-              <!-- <input
-                [(ngModel)]="inputDetail.validite"
-                [disabled]="!isEditMode"
-              /> -->
-              <mat-slide-toggle class="toggle"
-                formControlName="validite"
-                [disabled]="!isEditMode"
-              >
-              </mat-slide-toggle>
-            </div>
-          </div>
-          <div class="1er_ctr">
-            <h2>Première année contrat:</h2>
-            <div class="infos">
-              <!-- {{ inputDetail.prem_ctr }}-->
-              <input
-                formControlName="prem_ctr"
-                [disabled]="!isEditMode"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="ligne4">
-          <div class="parties">
-            <h2>Parties consernée(s):</h2>
-            <div class="parties-consernées">
-              <!-- <input [(ngModel)]="" />-->
-              ---
-            </div>
-          </div>
-          <div class="site">
-            <h2>Site ref.public:</h2>
-            <div class="infos">
-              <!-- {{ inputDetail.ref_public }}-->
-              <input
-                formControlName="ref_public"
-                [disabled]="!isEditMode"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="ligne5">
-          <div class="espace">
-            <h2>Type d'espace:</h2>
-            <div class="infos">
-              <!--{{ inputDetail.typ_espace }}-->
-              <input
-                formControlName="typ_espace"
-                [disabled]="!isEditMode"
-              />
-            </div>
-          </div>
-          <div class="bassin">
-            <h2>Bassin d'agence:</h2>
-            <div class="infos">
-              <!--{{ inputDetail.bassin_agence }}-->
-              <input
-                formControlName="bassin_agence"
-                [disabled]="!isEditMode"
-              />
-            </div>
-          </div>
-          <div class="zone-humide">
-            <h2>Zone humide:</h2>
-            <div class="toggle">
-              <!--  {{ inputDetail.zh }}
-                <input [(ngModel)]="inputDetail.zh" />-->
-              <mat-slide-toggle class="toggle" 
-                formControlName="zh" [disabled]="!isEditMode">
-              </mat-slide-toggle>
-            </div>
-          </div>
-        </div>
-        <div class="ligne6">
-          <div class="refM">
-            <h2>Ref. MNHN:</h2>
-            <div class="infos">
-              <!--     {{ inputDetail.id_mnhn }}-->
-              <input formControlName="id_mnhn"/>
-            </div>
-          </div>
-          <div class="refF">
-            <h2>Ref. FCEN:</h2>
-            <div class="infos">
-              <!--   {{ inputDetail.ref_fcen }}-->
-              <input
-                formControlName="ref_fcen"
-                [disabled]="!isEditMode"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="ligne7">
-          <div class="rgpt">
-            <h2>RGTP:</h2>
-            <div class="infos">
-              <!--  {{ inputDetail.rgpt }}-->
-              <input formControlName="rgpt"/>
-            </div>
-          </div>
         </div>
       </ng-container>
       <!-- Fin du formulaire -->
@@ -200,14 +108,98 @@
       </div>
     </div>
 
-    <div *ngIf="communes !== undefined" class="container-commune">
-      <h2>Commune(s) concernée(s)</h2>
-      <div class="commune">
-        <p *ngFor="let comm of communes" class="infos">
-          <input [(ngModel)]="comm.nom"/>
-          <!--{{ comm.nom }}-->
-        </p>
-      </div>
+    <!-- Communes du site : chaque ajout/retrait est enregistré immédiatement (esp.localisations) -->
+    <!-- Un mat-form-field par mode : il doit toujours contenir un contrôle (chip-grid ou matInput) -->
+    <div class="container-commune">
+      <mat-form-field *ngIf="isEditMode; else communesReadonly" appearance="fill" class="communes-field">
+        <mat-label>Commune(s) concernée(s)</mat-label>
+          <mat-chip-grid #communeChipGrid [disabled]="communesEnCours">
+            <mat-chip-row *ngFor="let commune of communesSite" (removed)="removeCommune(commune)">
+              {{ commune.nom }}
+              <button matChipRemove [attr.aria-label]="'Retirer ' + commune.nom">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          </mat-chip-grid>
+          <input
+            type="text"
+            placeholder="Ajouter une commune (nom ou code INSEE)..."
+            [formControl]="communeCtrl"
+            [matChipInputFor]="communeChipGrid"
+            [matAutocomplete]="autoCommune"
+            #triggerCommune="matAutocompleteTrigger"
+            (focus)="triggerCommune.openPanel()"
+          />
+          <mat-autocomplete #autoCommune="matAutocomplete" [displayWith]="displayCommune" (optionSelected)="onCommuneSelected($event)">
+            <mat-option *ngFor="let commune of filteredCommunes" [value]="commune" [disabled]="communesEnCours">
+              {{ commune.nom }} <span class="insee">({{ commune.insee }})</span>
+            </mat-option>
+          </mat-autocomplete>
+          <!-- <mat-hint>Enregistré immédiatement à chaque ajout ou retrait</mat-hint> -->
+      </mat-form-field>
+      <ng-template #communesReadonly>
+        <mat-form-field appearance="fill" class="communes-field">
+          <mat-label>Commune(s) concernée(s)</mat-label>
+          <input matInput readonly [value]="libelleCommunes() || 'Non renseigné'" />
+        </mat-form-field>
+      </ng-template>
+    </div>
+
+    <!-- Conservateurs bénévoles : contacts de l'annuaire, enregistrés immédiatement (sitcenca.conservateurs) -->
+    <div class="container-commune">
+      <mat-form-field *ngIf="isEditMode; else conservateursReadonly" appearance="fill" class="communes-field">
+        <mat-label>Conservateur(s) bénévole(s)</mat-label>
+          <mat-chip-grid #conservateurChipGrid [disabled]="conservateursEnCours">
+            <mat-chip-row *ngFor="let conservateur of conservateursSite" (removed)="removeConservateur(conservateur)">
+              {{ conservateur.nom }}
+              <button matChipRemove [attr.aria-label]="'Retirer ' + conservateur.nom">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          </mat-chip-grid>
+          <input
+            type="text"
+            placeholder="Ajouter un conservateur (annuaire)..."
+            [formControl]="conservateurCtrl"
+            [matChipInputFor]="conservateurChipGrid"
+            [matAutocomplete]="autoConservateur"
+            #triggerConservateur="matAutocompleteTrigger"
+            (focus)="triggerConservateur.openPanel()"
+            (click)="triggerConservateur.openPanel()"
+          />
+          <button mat-icon-button matSuffix type="button"
+            matTooltip="Afficher la liste des contacts"
+            (click)="$event.stopPropagation(); triggerConservateur.panelOpen ? triggerConservateur.closePanel() : triggerConservateur.openPanel()">
+            <mat-icon>{{ triggerConservateur.panelOpen ? 'arrow_drop_up' : 'arrow_drop_down' }}</mat-icon>
+          </button>
+          <button mat-icon-button matSuffix type="button"
+            matTooltip="Créer un nouveau contact dans l'annuaire et l'ajouter comme conservateur"
+            [disabled]="conservateursEnCours"
+            (click)="openConservateurQuickCreate()">
+            <mat-icon>person_add</mat-icon>
+          </button>
+          <mat-autocomplete #autoConservateur="matAutocomplete" [displayWith]="displayConservateur" (optionSelected)="onConservateurSelected($event)">
+            <mat-optgroup *ngIf="filteredCB.length" [label]="'Conservateurs bénévoles (' + filteredCB.length + ')'">
+              <mat-option *ngFor="let contact of filteredCB" [value]="contact" [disabled]="conservateursEnCours">{{ contact.nom }}</mat-option>
+            </mat-optgroup>
+            <mat-optgroup *ngIf="filteredAutres.length" [label]="'Autres contacts de l\'annuaire (' + filteredAutres.length + ')'">
+              <mat-option *ngFor="let contact of filteredAutres" [value]="contact" [disabled]="conservateursEnCours">{{ contact.nom }}</mat-option>
+            </mat-optgroup>
+            <mat-option *ngIf="!filteredCB.length && !filteredAutres.length" [value]="CREER_CONSERVATEUR" [disabled]="conservateursEnCours">
+              <mat-icon>person_add</mat-icon>
+              Aucun contact trouvé : créer « {{ saisieConservateur }} » dans l'annuaire
+            </mat-option>
+          </mat-autocomplete>
+          <!-- <mat-hint>Enregistré immédiatement à chaque ajout ou retrait</mat-hint> -->
+      </mat-form-field>
+      <ng-template #conservateursReadonly>
+        <mat-form-field appearance="fill" class="communes-field">
+          <mat-label>Conservateur(s) bénévole(s)</mat-label>
+          <input matInput readonly
+            [value]="libelleConservateurs() || 'Non renseigné'"
+            [matTooltip]="contactsConservateurs()" />
+        </mat-form-field>
+      </ng-template>
     </div>
   </div>
   <div class="container-carte">

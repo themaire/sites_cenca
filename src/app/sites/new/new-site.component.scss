@@ -1,0 +1,89 @@
+@import "../../styles/variables.scss";
+@import "../../styles/mixins.scss";
+
+.new-site-dialog {
+  display: flex;
+  flex-direction: row;
+  min-height: 100%;
+  max-height: 90vh;
+}
+
+// Reprend le bandeau "Protéger" affiché sur toute la section /sites (sites.component.scss),
+// pour garder la même identité visuelle même en boîte de dialogue.
+.proteger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 25px;
+  background-color: $couleur-faune;
+}
+
+.proteger-text {
+  writing-mode: vertical-lr;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  @include Typo($p16, $gras, white);
+}
+
+.new-site-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  .new-site-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0.75rem 1.5rem 0;
+
+    .titre {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      font-size: 1.2rem;
+      white-space: nowrap;
+    }
+  }
+
+  mat-dialog-content {
+    padding: 0 1.5rem;
+  }
+
+  h3 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1rem;
+    color: #555;
+  }
+
+  .grille-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.5rem 1rem;
+    mat-form-field { width: 100%; }
+    .full-width { grid-column: 1 / -1; }
+  }
+
+  .toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 0.75rem 0;
+  }
+
+  .toggles-centres {
+    justify-content: center;
+  }
+
+  .info-geo {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: #777;
+    font-style: italic;
+  }
+}

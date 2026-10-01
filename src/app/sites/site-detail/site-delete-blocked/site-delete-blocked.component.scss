@@ -1,0 +1,33 @@
+.titre {
+  color: #d32f2f; // Material warn, comme le bouton "Supprimer" de la confirmation
+  text-align: center;
+}
+
+.message {
+  white-space: pre-line;
+  text-align: center;
+}
+
+.dependances {
+  display: inline-block;
+  text-align: left;
+  margin: 12px 0 0;
+  color: #d32f2f;
+}
+
+.aide {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #777;
+  font-style: italic;
+  text-align: center;
+}
+
+.center-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+mat-dialog-content {
+  text-align: center;
+}

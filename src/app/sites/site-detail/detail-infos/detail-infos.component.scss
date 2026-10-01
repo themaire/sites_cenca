@@ -4,15 +4,15 @@
 .container {
   display: grid;
   grid-template-columns: 6fr 6fr;
-  flex-wrap: wrap;
-  grid-gap: 131px;
+  grid-gap: 40px;
   margin: 20px auto;
   @include align(top, center);
 }
 .container-champ {
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  // Pas de flex-wrap : en colonne, Chrome calcule alors la hauteur des blocs sur une largeur
+  // plus étroite que la réelle, d'où un grand vide sous le formulaire et une carte trop haute.
   gap: 30px;
   @include dim(100%, auto);
 
@@ -23,10 +23,6 @@
 
   .infos {
     width: 100%;
-  }
-  .parties-consernées,
-  input {
-    @include input($couleur-faune, black);
   }
   .ligne2,
   .ligne3,
@@ -70,12 +66,30 @@
     }
   }
 
-  .commune {
+  .grille-form {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    flex-wrap: wrap;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem 1rem;
+    mat-form-field { width: 100%; }
+    .full-width { grid-column: 1 / -1; }
   }
+
+  .toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container-commune {
+    .communes-field { width: 100%; }
+  }
+}
+
+.insee {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 0.85em;
 }
 
 .container-carte {
@@ -92,18 +106,6 @@
   @include align(center, start);
   margin-bottom: 20px;
   gap: 15px;
-  .btn-edition {
-    @include btn-icon($couleur-faune, $orangeC);
-    @include icon(white, black);
-  }
-  .btn-sauvegarde {
-    @include btn-icon(white, $couleur-faune);
-    @include icon($orangeM, white);
-  }
-  .btn-annulation {
-    @include btn-icon(white, red);
-    @include icon(red, white);
-  }
 
   .clear-btn {
   color: rgba(0, 0, 0, 0.54);

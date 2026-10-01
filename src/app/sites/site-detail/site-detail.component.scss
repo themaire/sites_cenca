@@ -8,7 +8,8 @@
 //groupe d'onglets
 .top-tabs {
   display: flex;
-  flex-wrap: wrap;
+  // Pas de flex-wrap : le groupe d'onglets Material est en colonne, et Chrome calcule alors
+  // la hauteur des onglets sur une largeur trop étroite (grande zone blanche sous le contenu).
   justify-content: space-between;
 }
 mat-tab {
@@ -16,11 +17,20 @@ mat-tab {
 }
 
 .container-btn-h {
-  display: flex;
-  @include align(center, center);
+  // 3 colonnes : le bouton Retour reste centré, "Supprimer le site" se cale à droite
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   margin-bottom: 20px;
   .btn {
+    grid-column: 2;
     @include btn(white, $couleur-flore, white, $couleur-faune);
+  }
+  .suppression {
+    grid-column: 3;
+    justify-self: end;
+    @include suppression-btn();
+    padding: 0; // le mixin ajoute un padding pensé pour le bas de page
   }
 }
 .container-btn-b {

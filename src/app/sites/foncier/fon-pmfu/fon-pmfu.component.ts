@@ -169,7 +169,11 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
         enterAnimationDuration: '400ms',
         exitAnimationDuration: '300ms',
 
-        scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
+        // noop() : ne bloque ni ne repositionne rien au scroll (donc pas de décalage du fond).
+        // close() a été abandonné car il ferme cette fenêtre dès qu'on scrolle dans une AUTRE
+        // boîte de dialogue ouverte par-dessus (ex: création d'un site) : deux mat-dialog ne sont
+        // jamais réellement imbriquées en DOM, ce sont deux overlays indépendants pour le CDK.
+        scrollStrategy: this.overlay.scrollStrategies.noop(),
       });
       dialogRef.afterClosed().subscribe((result) => {
         console.log('La fenetre de dialogue vient de se fermer');
@@ -187,7 +191,11 @@ export class FonPmfuComponent implements OnInit, AfterViewInit {
         enterAnimationDuration: '400ms',
         exitAnimationDuration: '300ms',
 
-        scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
+        // noop() : ne bloque ni ne repositionne rien au scroll (donc pas de décalage du fond).
+        // close() a été abandonné car il ferme cette fenêtre dès qu'on scrolle dans une AUTRE
+        // boîte de dialogue ouverte par-dessus (ex: création d'un site) : deux mat-dialog ne sont
+        // jamais réellement imbriquées en DOM, ce sont deux overlays indépendants pour le CDK.
+        scrollStrategy: this.overlay.scrollStrategies.noop(),
       });
       dialogRef.afterClosed().subscribe((result) => {
         console.log('La fenetre de dialogue vient de se fermer');

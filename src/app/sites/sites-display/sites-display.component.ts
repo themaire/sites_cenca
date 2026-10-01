@@ -6,6 +6,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { ListSite } from '../site'; // prototype d'un site
 import { SitesService } from '../sites.service'; // service de données
 import { SiteDetailComponent } from '../site-detail/site-detail.component'; // service de données
+import { NewSiteComponent } from '../new/new-site.component';
 import { BackToTopComponent } from '../../back-to-top/back-to-top.component';
 
 import { MatPaginator, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
@@ -15,6 +16,9 @@ import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-sites-display',
@@ -27,6 +31,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatInputModule,
     MatSortModule,
     MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
     BackToTopComponent,
   ],
   templateUrl: './sites-display.component.html',
@@ -55,8 +61,8 @@ export class SitesDisplayComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   research: SitesService = inject(SitesService);
-  
-  constructor(private route: ActivatedRoute, private router: Router) {}
+
+  constructor(private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {}
   
   ngAfterViewInit() {
     if (this.dataSource) {
@@ -130,6 +136,23 @@ export class SitesDisplayComponent implements AfterViewInit {
     this.selectedSite = undefined;
     this.route.params.subscribe((params: Params) => {
       this.loadSites(params);
+    });
+  }
+
+  openNewSiteDialog(): void {
+    const dialogRef = this.dialog.open(NewSiteComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'new-site-dialog-panel',
+      autoFocus: false,
+    });
+
+    dialogRef.afterClosed().subscribe((createdSite?: ListSite) => {
+      if (createdSite?.uuid_site) {
+        // Ouvre directement la fiche du site qui vient d'être créé.
+        this.selectedSite = createdSite;
+      }
     });
   }
 }

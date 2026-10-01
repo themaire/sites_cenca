@@ -144,4 +144,3 @@ src/app/chiro/assets/vba/
 
 # Claude Code worktrees (nested git repos, ne doivent jamais être trackés)
 .claude/worktrees/
-

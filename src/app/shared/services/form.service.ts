@@ -270,6 +270,45 @@ export class FormService {
     });
   }
 
+  // ============================================================
+  // SECTION SITES — Création d'un site (espace + site)
+  // ============================================================
+
+  // Créer un nouveau formulaire de création de site.
+  // Les uuid (uuid_espace, uuid_site) ne sont pas demandés ici :
+  // ils sont générés côté backend lors de l'insertion (route
+  // PUT /sites/put/table=espace_site/insert), qui crée l'espace
+  // et le site rattaché dans une même transaction.
+  newSiteForm(): FormGroup {
+    return this.fb.group({
+      // Champs "espace"
+      nom: ['', Validators.required],
+      surface: [null, Validators.required],
+      typ_espace: ['', Validators.required],
+      bassin_agence: ['', Validators.required],
+      zh: [false],
+      rgpt: ['AUCUN'],
+
+      // Champs "site"
+      code: ['', Validators.required],
+      responsable: [null, Validators.required],
+      typ_site: [null, Validators.required],
+      validite: [true, Validators.required],
+      prem_ctr: [''],
+      ref_public: [false],
+      id_mnhn: [''],
+      ref_fcen: [''],
+      description_site: ['', Validators.required],
+      sensibilite: [false],
+      remq_sensibilite: [''],
+      typ_ouverture: [''],
+      url_cen: [''],
+      url_mnhn: [''],
+      ref_pmfu_id: [null],
+      parties_gerees: [''],
+    });
+  }
+
   // Créer un nouveau formulaire de projet
 
   // Le parametre est optionnel tout comme les données indiquées à l'intérieur
@@ -495,7 +534,7 @@ export class FormService {
       pmfu_type_acte: [projet?.pmfu_type_acte || null],
       pmfu_commune_insee: [projet?.pmfu_commune_insee || [], [Validators.required, inseeCommuneValidator()]],
       pmfu_commune_nom: [projet?.pmfu_commune_nom || []],
-      pmfu_annee_debut: [projet?.pmfu_annee_debut || null, [Validators.min(2025), Validators.max(2099)]],
+      pmfu_annee_debut: [projet?.pmfu_annee_debut || null, [Validators.min(2021), Validators.max(2099)]],
       pmfu_proprietaire: [projet?.pmfu_proprietaire || ''],
       pmfu_appui: [projet?.pmfu_appui || null],
       pmfu_appui_desc: [projet?.pmfu_appui_desc || ''],
@@ -508,7 +547,7 @@ export class FormService {
       pmfu_surf_mfu: [projet?.pmfu_surf_mfu || null],
       pmfu_priorite: [projet?.pmfu_priorite || null],
       pmfu_status: [projet?.pmfu_status || null],
-      pmfu_annee_signature: [projet?.pmfu_annee_signature || null, [Validators.min(2025), Validators.max(2099)]],
+      pmfu_annee_signature: [projet?.pmfu_annee_signature || null, [Validators.min(2021), Validators.max(2099)]],
       pmfu_echeances: [projet?.pmfu_echeances || null],
       pmfu_creation: [projet?.pmfu_creation || new Date()],
       pmfu_derniere_maj: [projet?.pmfu_derniere_maj || null],
