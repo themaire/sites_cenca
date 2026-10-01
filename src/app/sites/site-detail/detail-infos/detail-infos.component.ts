@@ -28,6 +28,7 @@ import { SiteSelectLists, SiteSelectListsService } from '../../site-select-lists
 import { GeoService } from '../../../shared/services/geo.service';
 import { AnnuaireService } from '../../../annuaire/annuaire.service';
 import { AnnuaireFicheComponent } from '../../../annuaire/annuaire-fiche/annuaire-fiche.component';
+import { ConfirmationService } from '../../../shared/services/confirmation.service';
 import { SelectValue } from '../../../shared/interfaces/formValues';
 import { FormButtonsComponent } from '../../../shared/form-buttons/form-buttons.component';
 // import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
@@ -109,7 +110,8 @@ export class DetailInfosComponent implements OnChanges, OnInit {
     private geoService: GeoService,
     private annuaireService: AnnuaireService,
     private dialog: MatDialog,
-    private overlay: Overlay
+    private overlay: Overlay,
+    private confirmationService: ConfirmationService
   ) {
     this.form = this.fb.group({
       // Initialiser le formulaire avec des contrôles vides
@@ -260,7 +262,17 @@ export class DetailInfosComponent implements OnChanges, OnInit {
     });
   }
 
+  /** Le retrait est enregistré immédiatement : on demande d'abord confirmation */
   removeCommune(commune: Commune): void {
+    if (!this.inputDetail) return;
+    this.confirmationService
+      .confirm('Retirer une commune', `Retirer ${commune.nom} (${commune.insee}) des communes de ce site ?`, 'delete')
+      .subscribe((ok) => {
+        if (ok === true) this.retirerCommune(commune);
+      });
+  }
+
+  private retirerCommune(commune: Commune): void {
     if (!this.inputDetail) return;
 
     this.communesEnCours = true;
@@ -419,7 +431,21 @@ export class DetailInfosComponent implements OnChanges, OnInit {
     });
   }
 
+  /** Le retrait est enregistré immédiatement : on demande d'abord confirmation (la fiche annuaire est conservée) */
   removeConservateur(conservateur: Conservateur): void {
+    if (!this.inputDetail) return;
+    this.confirmationService
+      .confirm(
+        'Retirer un conservateur',
+        `Retirer ${conservateur.nom} des conservateurs de ce site ? Sa fiche reste dans l'annuaire.`,
+        'delete'
+      )
+      .subscribe((ok) => {
+        if (ok === true) this.retirerConservateur(conservateur);
+      });
+  }
+
+  private retirerConservateur(conservateur: Conservateur): void {
     if (!this.inputDetail) return;
 
     this.conservateursEnCours = true;
