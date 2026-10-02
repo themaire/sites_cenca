@@ -4,23 +4,85 @@
   <div mat-dialog-content>
     <img *ngIf="news.image_url" [src]="news.image_url" [alt]="news.titre" />
 
-    <div class="date">{{ news.date_publication | date:'dd/MM/yyyy' }}</div>
+    <div class="date" [title]="news.date_publication | date:'dd/MM/yyyy'">
+      {{ news.date_publication | tempsEcoule }}
+    </div>
     <h2 class="titre">{{ news.titre }}</h2>
     <div class="contenu-loading" *ngIf="loadingContenu">
       <mat-spinner diameter="20"></mat-spinner>
     </div>
     <p class="contenu" *ngIf="!loadingContenu">{{ news.contenu }}</p>
 
+    <div class="lien" *ngIf="news.lien">
+      <a mat-flat-button color="primary" [href]="news.lien" target="_blank" rel="noopener noreferrer">
+        Aller voir dans ATLAS
+      </a>
+    </div>
+
+    <div class="reactions" *ngIf="news.reactions">
+      <app-news-reactions [news]="news"></app-news-reactions>
+    </div>
+
+    <section class="commentaires" *ngIf="loadingComments || comments">
+      <h3>Commentaires<span *ngIf="comments"> ({{ comments.length }})</span></h3>
+
+      <div class="contenu-loading" *ngIf="loadingComments">
+        <mat-spinner diameter="20"></mat-spinner>
+      </div>
+
+      <ng-container *ngIf="comments">
+        <p class="vide" *ngIf="comments.length === 0">Soyez le premier à commenter.</p>
+
+        <div class="commentaire" *ngFor="let c of comments">
+          <div class="avatar" [title]="c.prenom + ' ' + c.nom">{{ initiales(c) }}</div>
+          <div class="bulle">
+            <div class="entete">
+              <span class="auteur">{{ c.prenom }} {{ c.nom }}</span>
+              <span class="quand" [title]="c.date_creation | date:'dd/MM/yyyy HH:mm'">
+                {{ c.date_creation | tempsEcoule }}
+              </span>
+              <button
+                *ngIf="canDelete(c)"
+                type="button"
+                class="supprimer"
+                aria-label="Supprimer le commentaire"
+                title="Supprimer"
+                (click)="deleteComment(c)"
+              >×</button>
+            </div>
+            <div class="texte">{{ c.contenu }}</div>
+          </div>
+        </div>
+
+        <div class="nouveau">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <textarea
+              matInput
+              [formControl]="commentControl"
+              placeholder="Écrire un commentaire…"
+              rows="2"
+              [maxlength]="commentMax"
+              (keydown.control.enter)="sendComment()"
+            ></textarea>
+            <mat-hint align="end">{{ commentControl.value.length }} / {{ commentMax }}</mat-hint>
+          </mat-form-field>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            [disabled]="sendingComment || !commentControl.value.trim()"
+            (click)="sendComment()"
+          >
+            {{ sendingComment ? 'Envoi…' : 'Publier' }}
+          </button>
+        </div>
+      </ng-container>
+    </section>
+
     <div class="publie-toggle" *ngIf="canEditPublie">
       <mat-checkbox [formControl]="publieControl" [disabled]="savingPublie">
         Publiée
       </mat-checkbox>
     </div>
-  </div>
-
-  <div mat-dialog-actions *ngIf="news.lien" align="end">
-    <a mat-flat-button color="primary" [href]="news.lien" target="_blank" rel="noopener noreferrer">
-      Aller voir dans ATLAS
-    </a>
   </div>
 </div>

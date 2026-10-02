@@ -51,3 +51,104 @@ img {
   padding-top: 12px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
+
+.lien {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.reactions {
+  margin-top: 16px;
+}
+
+.commentaires {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+  h3 {
+    @include Typo($p14, $semiGras, rgba(0, 0, 0, 0.8));
+    margin: 0 0 10px;
+  }
+
+  .vide {
+    @include Typo($p12, $normal, rgba(0, 0, 0, 0.5));
+    margin: 0 0 10px;
+  }
+}
+
+.commentaire {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  .avatar {
+    @include Typo($p12, $semiGras, white);
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: $couleur-territoire;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bulle {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .entete {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .auteur {
+    @include Typo($p12, $semiGras, black);
+  }
+
+  .quand {
+    @include Typo($p10, $normal, rgba(0, 0, 0, 0.5));
+  }
+
+  .supprimer {
+    margin-left: auto;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.4);
+
+    &:hover, &:focus-visible {
+      color: #c62828;
+    }
+  }
+
+  .texte {
+    @include Typo($p14, $normal, rgba(0, 0, 0, 0.8));
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.nouveau {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 6px;
+
+  mat-form-field {
+    flex: 1;
+  }
+
+  button {
+    margin-top: 8px;
+  }
+}

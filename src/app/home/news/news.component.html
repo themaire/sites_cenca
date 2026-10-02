@@ -1,25 +1,48 @@
 <div class="news" *ngIf="!error && (loading || news.length > 0)">
-  <h2>Actualités</h2>
+  <h2>
+    Actualités
+    <span class="badge-non-lues" *ngIf="nbNonLues > 0">
+      {{ nbNonLues }} nouvelle{{ nbNonLues > 1 ? 's' : '' }}
+    </span>
+  </h2>
 
   <div class="loading" *ngIf="loading">
     <mat-spinner diameter="30"></mat-spinner>
   </div>
 
-  <div class="liste" *ngIf="!loading">
-    <div
-      class="item"
+  <div class="fil" *ngIf="!loading">
+    <article
+      class="post"
       *ngFor="let item of news"
+      [class.non-lu]="item.lu === false"
       role="button"
       tabindex="0"
       (click)="openDetail(item)"
       (keydown.enter)="openDetail(item)"
     >
+      <header>
+        <span class="date" [title]="item.date_publication | date:'dd/MM/yyyy'">
+          {{ item.date_publication | tempsEcoule }}
+        </span>
+        <span class="pastille" *ngIf="item.lu === false">Nouveau</span>
+      </header>
+
+      <div class="titre">{{ item.titre }}</div>
+      <div class="resume">{{ item.resume }}</div>
       <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.titre" />
-      <div class="contenu">
-        <div class="date">{{ item.date_publication | date:'dd/MM/yyyy' }}</div>
-        <div class="titre">{{ item.titre }}</div>
-        <div class="resume">{{ item.resume }}</div>
-      </div>
+
+      <footer *ngIf="item.reactions || item.nb_commentaires !== undefined">
+        <app-news-reactions *ngIf="item.reactions" [news]="item"></app-news-reactions>
+        <span class="commentaires" *ngIf="item.nb_commentaires !== undefined">
+          💬 {{ item.nb_commentaires }} commentaire{{ item.nb_commentaires > 1 ? 's' : '' }}
+        </span>
+      </footer>
+    </article>
+
+    <div class="voir-plus" *ngIf="hasMore">
+      <button mat-stroked-button color="primary" [disabled]="loadingMore" (click)="loadMore()">
+        {{ loadingMore ? 'Chargement…' : 'Voir plus' }}
+      </button>
     </div>
   </div>
 </div>

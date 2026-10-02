@@ -1,0 +1,17 @@
+<div class="reactions" [class.saving]="saving">
+  <button
+    type="button"
+    *ngFor="let c of choix"
+    class="reaction"
+    [class.mine]="reaction(c.emoji)?.mine"
+    [class.vide]="!reaction(c.emoji)?.count"
+    [matTooltip]="c.label"
+    [attr.aria-label]="c.label + ' (' + (reaction(c.emoji)?.count || 0) + ')'"
+    [attr.aria-pressed]="!!reaction(c.emoji)?.mine"
+    (click)="toggle(c.emoji, $event)"
+    (keydown.enter)="$event.stopPropagation()"
+  >
+    <span class="emoji">{{ c.emoji }}</span>
+    <span class="count" *ngIf="reaction(c.emoji)?.count">{{ reaction(c.emoji)?.count }}</span>
+  </button>
+</div>
