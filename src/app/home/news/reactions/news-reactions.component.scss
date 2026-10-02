@@ -1,0 +1,54 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/mixins.scss";
+
+.reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  &.saving {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+
+  .emoji {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .count {
+    @include Typo($p12, $semiGras, rgba(0, 0, 0, 0.7));
+  }
+
+  // Les réactions que personne n'a encore choisies restent discrètes
+  &.vide {
+    opacity: 0.55;
+  }
+
+  &:hover, &:focus-visible {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &.mine {
+    opacity: 1;
+    border-color: $couleur-flore;
+    background-color: rgba(22, 65, 148, 0.08);
+
+    .count {
+      color: $couleur-flore;
+    }
+  }
+}

@@ -56,4 +56,25 @@ describe('NewsComponent', () => {
     const newsBlock = (fixture.nativeElement as HTMLElement).querySelector('.news');
     expect(newsBlock).toBeNull();
   }));
+
+  it('should count unread news and load the next page', fakeAsync(() => {
+    const page = (start: number, n: number): News[] =>
+      Array.from({ length: n }, (_, i) => ({
+        id: start + i, titre: `T${start + i}`, resume: '', date_publication: '2026-07-01', lu: i !== 0,
+      }));
+    newsServiceSpy.getNews.and.returnValues(Promise.resolve(page(1, 8)), Promise.resolve(page(9, 2)));
+    fixture.detectChanges();
+    flush();
+
+    expect(component.hasMore).toBeTrue();
+    expect(component.nbNonLues).toBe(1);
+
+    component.loadMore();
+    flush();
+
+    expect(newsServiceSpy.getNews).toHaveBeenCalledWith(8, 8);
+    expect(component.news.length).toBe(10);
+    expect(component.hasMore).toBeFalse();
+    expect(component.nbNonLues).toBe(2);
+  }));
 });
