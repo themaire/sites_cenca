@@ -74,7 +74,7 @@ export class FileExploratorComponent {
   separator: string = environment.pathSep;
 
   @Input() section!: number;
-  @Input() referenceId!: number;
+  @Input() referenceId!: number | string;
   constructor(
     public docfileService: DocfileService,
     private sanitizer: DomSanitizer,
@@ -132,6 +132,9 @@ export class FileExploratorComponent {
     this.previewUrl = undefined;
     this.isDocxView = false;
     this.galerie = undefined;
+    // Vider la liste du dossier précédent : sinon elle s'affiche en mode "liste de documents"
+    // le temps que la requête revienne, avant d'être remplacée par la galerie
+    this.filePathList = [];
     console.log('Dossier cliqué :', folder);
     try {
       this.docfileService.getFilesList(folder.cd_type, this.section, this.referenceId)
@@ -214,20 +217,10 @@ export class FileExploratorComponent {
   }
 
   getFileUrl(filename: string): string {
-    console.log('filename de getFileUrl :' + filename);
-    this.docfileService.docfiles.forEach((file: any) => {
-      if (file.doc_path.split('/').pop() === filename.split('/').pop()) {
-        console.log('file.doc_path:', file.doc_path);
-        filename = `files/${file.doc_path}`;
-      }
-    });
-    console.log('filename:', filename);
-
-    if (environment.windows) {
-      // Si on est en dev Windows, on remplace les slashes par des backslashes
-      filename = filename.split('/').join('\\');
-    }
-    return `${this.activeUrl}${filename}`;
+    const docfile = this.docfileService.docfiles.find(
+      (file: any) => file.doc_path.split('/').pop() === filename.split('/').pop()
+    );
+    return this.docfileService.getDocUrl(docfile?.doc_path || filename);
   }
 
   openFile(filename: string): void {
