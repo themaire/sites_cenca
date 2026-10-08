@@ -1,0 +1,70 @@
+@import "../../../../../styles/themes.scss";
+@import "../../../../../styles/mixins.scss";
+
+.medias {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.upload {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 40%;
+  min-width: 240px;
+  @include align(center, flex-start);
+  .upload-titre {
+    font-weight: bold;
+  }
+  .upload-icon {
+    height: 64px;
+    width: 64px;
+    font-size: 64px;
+    color: $orangeM;
+  }
+}
+
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  @include align(center, center);
+  border: 2px dashed $orangeM;
+  border-radius: 5px;
+  width: 80%;
+  padding: 20px;
+  gap: 5px;
+  margin-top: 8px;
+  cursor: pointer;
+  .drop-text {
+    font-weight: bold;
+  }
+}
+
+.error-text {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.upload-list {
+  width: 80%;
+  .upload-list-item {
+    display: flex;
+    @include align(center, space-between);
+  }
+  button:hover {
+    color: red;
+  }
+}

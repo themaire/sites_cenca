@@ -1,8 +1,17 @@
 <div class="carousel-container" *ngIf="images.length">
   <button class="nav left" (click)="prev()"><</button>
 
-  <div class="carousel-image">
-    <img [src]="images[currentIndex]" alt="Image {{ currentIndex + 1 }}" />
+  <div class="carousel-image" #frame
+       [class.zoomed]="isZoomed"
+       [class.dragging]="isDragging"
+       (mousemove)="onMouseMove($event)"
+       (mouseup)="onMouseUp()"
+       (mouseleave)="onMouseLeave()">
+    <img [src]="images[currentIndex]" alt="Image {{ currentIndex + 1 }}"
+         [style.width.px]="isZoomed ? zoomedWidth : null"
+         [title]="isZoomed ? 'Cliquer pour revenir à la vue entière' : 'Cliquer pour zoomer'"
+         (mousedown)="onMouseDown($event)"
+         (click)="toggleZoom($event)" />
   </div>
 
   <button class="nav right" (click)="next()">></button>
@@ -18,7 +27,7 @@
       <span
         *ngFor="let img of images; let i = index"
         [class.active]="i === currentIndex"
-        (click)="currentIndex = i"
+        (click)="goTo(i)"
       >
       </span>
     </div>

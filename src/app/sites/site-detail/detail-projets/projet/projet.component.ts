@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, Inject, signal, OnDestroy, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -51,6 +51,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { ObjectifComponent } from './objectif/objectif.component';
 import { OperationComponent } from './operation/operation.component';
 import { MapComponent } from '../../../../map/map.component';
+import { ProjetMediasComponent } from './medias/projet-medias.component';
 
 // import { Projection } from 'leaflet';
 // NE PAS oublier de décommenter la
@@ -94,6 +95,7 @@ export const MY_DATE_FORMATS = {
     // DetailGestionComponent,
     CommonModule,
     MapComponent,
+    ProjetMediasComponent,
     MatSlideToggleModule,
     MatDialogModule,
     // MatDialogTitle,
@@ -136,6 +138,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   
   newProjet: boolean = false;
   isEditProjet: boolean = false;
+  @ViewChild(ProjetMediasComponent) projetMedias?: ProjetMediasComponent;
   //
   isEditOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
   isAddOperation: boolean = false; // Si on doit cacher le stepper pour voir le composant operation
@@ -453,6 +456,9 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
         uuid_proj = this.projet.uuid_proj;
       }
 
+      // Les photos déposées dans le step Médias sont envoyées avec la sauvegarde du projet
+      const mediasEnvoyes = this.projetMedias?.uploadPending() ?? false;
+
       const submitObservable = this.formService.putBdd('update', 'projets', this.projetForm, this.isEditProjet, this.snackBar, uuid_proj, this.initialFormValues);
 
       // S'abonner à l'observable
@@ -463,7 +469,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
             this.initialFormValues = result.formValue;
             if (result.skipped === true) {
               // Le formulaire n'a pas été modifié, on n'appelle pas le backend, on fait rien
-              this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
+              // (si des photos sont parties, c'est leur message de confirmation qui s'affichera)
+              if (!mediasEnvoyes) this.snackBar.open('Aucune donnée modifiée', 'Fermer', {
                 duration: 3000,
                 panelClass: ['snackbar-info'],
               });
