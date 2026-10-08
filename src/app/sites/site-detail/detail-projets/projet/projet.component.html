@@ -105,11 +105,6 @@
           </mat-form-field>
           
           <mat-form-field class="custom-mat-form-field">
-            <mat-label>Créateur</mat-label>
-            <input matInput [value]="step1Form.get('createur')?.value || 'Non renseigné'" readonly>
-          </mat-form-field>
-          
-          <mat-form-field class="custom-mat-form-field">
             <mat-label>Maitre d'ouvrage</mat-label>
             <input matInput [value]="step1Form.get('pro_maitre_ouvrage')?.value || 'Non renseigné'" readonly>
           </mat-form-field>
@@ -312,6 +307,11 @@
 
     </mat-step>
 
+    <mat-step state="photo" *ngIf="projet && newProjet === false && projet.pro_webapp === true">
+      <ng-template matStepLabel>Médias</ng-template>
+      <app-projet-medias [uuidProj]="projet.uuid_proj" [editMode]="isEditProjet"></app-projet-medias>
+    </mat-step>
+
     <mat-step state="flag" *ngIf="projet && newProjet === false">
       <ng-template matStepLabel>Bilan d'execution</ng-template>
 
@@ -434,6 +434,9 @@
     </ng-template>
     <ng-template matStepperIcon="construction">
       <mat-icon>construction</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="photo">
+      <mat-icon>photo_camera</mat-icon>
     </ng-template>
     <ng-template matStepperIcon="flag">
       <mat-icon>flag</mat-icon>

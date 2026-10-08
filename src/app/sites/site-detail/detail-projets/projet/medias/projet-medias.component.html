@@ -1,0 +1,38 @@
+<div class="medias">
+
+  <div class="upload-row" *ngIf="editMode">
+    @for (type of docTypes; track type.cd_type) {
+      <div class="upload" (drop)="onFileDropped($event, type.field)" (dragover)="onDragOver($event)">
+        <span class="upload-titre">{{ type.libelle }}</span>
+        <small>({{ allowedAccept }})</small>
+
+        <input type="file" class="hidden" multiple
+               [id]="'medias-' + type.field"
+               [accept]="allowedAccept"
+               (change)="onFileSelected($event, type.field)" />
+
+        <label [for]="'medias-' + type.field" class="drop-zone">
+          <mat-icon class="upload-icon">add_a_photo</mat-icon>
+          <span class="drop-text">Glissez-déposez vos photos ou cliquez</span>
+        </label>
+
+        @for (err of fileErrors[type.field] || []; track $index) {
+          <div class="error-text">{{ err }}</div>
+        }
+
+        <mat-list class="upload-list">
+          @for (file of pendingFor(type.field); track file[0]) {
+            <div class="upload-list-item">
+              <span>{{ file[0] }}</span>
+              <button mat-icon-button type="button" (click)="removePendingFile(file)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+        </mat-list>
+      </div>
+    }
+  </div>
+
+  <app-file-explorator [section]="section" [referenceId]="uuidProj"></app-file-explorator>
+</div>

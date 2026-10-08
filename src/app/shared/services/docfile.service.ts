@@ -73,6 +73,28 @@ export class DocfileService {
     return this.doc_types;
   }
 
+  /** URL publique d'un document de files.docs
+   * @param doc_path - Chemin enregistré en base, relatif à la racine files/ du backend
+   * (ex: photos/travaux/avant/doc_xxx.jpeg). Valable pour toutes les sections (pmfu, travaux, sites...)
+   */
+  getDocUrl(doc_path: string): string {
+    let path = `files/${doc_path}`;
+    if (environment.windows) {
+      // En dev Windows, le backend sert les fichiers avec des backslashes
+      path = path.split('/').join('\\');
+    }
+    return `${this.activeUrl}${path}`;
+  }
+
+  /** URL publique d'une photo de files.docs
+   * Les anciens enregistrements n'ont pas le préfixe photos/ (ex: pmfu/doc_41_xxx.jpg) :
+   * on l'ajoute, comme le fait le backend dans /picts/img
+   */
+  getPhotoUrl(doc_path: string): string {
+    const normalized = doc_path.split('\\').join('/');
+    return this.getDocUrl(normalized.startsWith('photos/') ? normalized : `photos/${normalized}`);
+  }
+
   getTypeNames() {
     return this.doc_types.map((t) => t.libelle);
   }
@@ -156,7 +178,7 @@ export class DocfileService {
   }
 
   /** Soumettre le docfiles au backend */
-  submitDocfiles(docForm: FormGroup, ref_id: number): Observable<ApiResponse> {
+  submitDocfiles(docForm: FormGroup, ref_id: number | string): Observable<ApiResponse> {
     if (!docForm) {
       return of({
         success: false,

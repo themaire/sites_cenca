@@ -11,6 +11,7 @@ import { SiteCencaCollection, SiteCencaFeature } from '../shared/interfaces/site
 import { ParcellesSelected } from '../../app/sites/foncier/foncier';
 import { GeoService } from '../shared/services/geo.service';
 import { SiteCencaService } from '../shared/services/site-cenca.service';
+import { couleurOperation, OPACITE_OPERATION } from './couleurs-operations';
 
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError } from 'rxjs';
@@ -72,10 +73,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Output() pointPicked = new EventEmitter<{ lat: number; lng: number }>();
   @Input() initialMarker?: { lat: number; lng: number; label?: string };
 
-  lastColorIndex = -1;
   private pickingMarker?: L.Marker;
   private initialMarkerLayer?: L.CircleMarker;
-  usedColors: number[] = [];
 
   // Propriété pour suivre l'état des popups et éviter les rechargements intempestifs
   private hasOpenPopup = false;
@@ -655,12 +654,12 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
                   }
                 }
               }); // Fin de la création de geojsonLayer
-              const color = this.getRandomColorName();
+              const color = this.getOperationColor(geojson);
               geojsonLayer.setStyle({
                 color: color,
                 weight: 2,
                 opacity: 1,
-                fillOpacity: 0.5,
+                fillOpacity: OPACITE_OPERATION,
                 fillColor: color,
               }).addTo(this.map);
               geojsonLayer.bringToFront();
@@ -685,7 +684,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
                 }
               }); // Fin de la création de geojsonLayer
-              const color = this.getRandomColorName();
+              const color = this.getOperationColor(geojson);
               geojsonLayer.setStyle({
                 color: color,
                 weight: 5,
@@ -751,27 +750,12 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Générateur de couleurs CSS variées et contrastées pour couches Leaflet.
-   * Retourne un nom de couleur CSS différent à chaque appel, sans répétition immédiate.
+   * Couleur fixe d'une géométrie d'opération selon son type (action_2, à défaut action),
+   * identique à celle de la carte de la fiche travaux générée par le backend
    */
-  getRandomColorName(): string {
-    const COLOR_PALETTE: string[] = [
-      'red', 'blue', 'orange', 'purple', 'teal', 'brown', 'magenta',
-      'gold', 'navy', 'lime', 'maroon', 'olive', 'aqua', 'fuchsia', 'coral',
-      'indigo', 'crimson', 'darkcyan', 'darkorange', 'darkviolet', 'deepskyblue'
-    ];
-  
-    // Si toutes les couleurs ont été utilisées, on recommence
-    if (this.usedColors.length === COLOR_PALETTE.length) {
-      this.usedColors = [];
-    }
-    let idx: number;
-    do {
-      idx = Math.floor(Math.random() * COLOR_PALETTE.length);
-    } while (this.usedColors.includes(idx) || idx === this.lastColorIndex);
-    this.usedColors.push(idx);
-    this.lastColorIndex = idx;
-    return COLOR_PALETTE[idx];
+  getOperationColor(geojson: any): string {
+    const props = geojson?.properties ?? {};
+    return couleurOperation(props['action_2'], props['action']);
   }
 
   private resetMapView(): void {
