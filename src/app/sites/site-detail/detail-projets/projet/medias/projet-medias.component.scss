@@ -7,6 +7,22 @@
   gap: 16px;
 }
 
+.nommage-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid $orangeM;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.04);
+  font-size: 0.9rem;
+  mat-icon {
+    flex-shrink: 0;
+    color: $orangeM;
+  }
+}
+
 .upload-row {
   display: flex;
   flex-wrap: wrap;

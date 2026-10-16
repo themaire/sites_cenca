@@ -1,5 +1,16 @@
 <div class="medias">
 
+  <p class="nommage-info" *ngIf="editMode">
+    <mat-icon>info</mat-icon>
+    <span>
+      Pour qu'une photo apparaisse dans la fiche travaux, commencez son nom de fichier par
+      <strong>FT_avant_</strong> ou <strong>TR_avant_</strong> (photo avant travaux), ou par
+      <strong>FT_apres_</strong> ou <strong>TR_apres_</strong> (photo après travaux), par exemple
+      « TR_avant_mare.jpg ». Les majuscules et les accents n'ont pas d'importance, et seules les
+      2 premières photos déposées de chaque catégorie sont retenues.
+    </span>
+  </p>
+
   <div class="upload-row" *ngIf="editMode">
     @for (type of docTypes; track type.cd_type) {
       <div class="upload" (drop)="onFileDropped($event, type.field)" (dragover)="onDragOver($event)">
