@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, ViewChild, computed, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-import { AppelOutil, ChatbotService, ErreurChat, MessageChat } from '../shared/services/chatbot.service';
+import { AppelOutil, ChatbotService, ErreurChat, MessageChat, SONNEUR_OCCUPE } from '../shared/services/chatbot.service';
 import { ChantSonneur } from './chant-sonneur';
 
 /** État d'affichage du chatbot : bouton seul, panneau ou plein écran. */
@@ -34,6 +34,8 @@ const CLE_HISTORIQUE = 'chatbot_historique';
 const CLE_MODE = 'chatbot_mode';
 /** Préférence durable (localStorage) : chant de fin de réponse activé ou coupé. */
 const CLE_SON = 'chatbot_son';
+/** Intervalle d'interrogation de `GET chat/etat` quand le panneau est ouvert. */
+const INTERVALLE_ETAT_MS = 15_000;
 
 /**
  * Sonneur, l'assistant IA des sites du CENCA (nommé d'après le sonneur à ventre jaune).
@@ -62,8 +64,8 @@ export class ChatbotComponent implements OnDestroy {
   readonly avatar = 'assets/chatbot/sonneur.svg';
   readonly exemples = [
     'Quels actes fonciers arrivent à échéance dans les 6 mois ?',
-    'Quels sites gérons-nous à Reims ?',
-    'Bilan des travaux réalisés en 2025 par type d\'action',
+    'Quels sont les nouveaux sites de 2025 dans l\'Aube ?',
+    'Quels sont les plus grands sites d\'Aurore ?',
   ];
   /** Questions d'aide, pour découvrir ce que sait faire Sonneur. */
   readonly aides = ['Que sais-tu faire ?', 'Aide', 'Des exemples ?'];
@@ -78,6 +80,10 @@ export class ChatbotComponent implements OnDestroy {
   reponseNonLue = signal(false);
   /** Sonneur chante quand une réponse arrive hors de vue (coupable depuis l'en-tête). */
   sonActif = signal(this.lireSon());
+  /** Sonneur répond déjà à la question d'un autre utilisateur : message du serveur, sinon null. */
+  occupe = signal<string | null>(null);
+  /** Saisie bloquée tant que Sonneur est occupé (les questions d'aide restent possibles). */
+  bloqueParOccupation = computed(() => !!this.occupe() && !this.enCours());
   saisie = '';
   avatarIndisponible = false;
 
@@ -98,12 +104,50 @@ export class ChatbotComponent implements OnDestroy {
   /** Cache du rendu Markdown, pour ne pas reparser à chaque détection de changements. */
   private rendus = new WeakMap<MessageChat, { source: string; html: string }>();
   private chant = new ChantSonneur();
+  private minuterieEtat: ReturnType<typeof setInterval> | null = null;
 
-  constructor(private chatbotService: ChatbotService, private router: Router) {}
+  constructor(private chatbotService: ChatbotService, private router: Router) {
+    // Panneau ouvert : on surveille la disponibilité de Sonneur ; replié : on arrête
+    effect(() => {
+      if (this.mode() === 'replie') {
+        this.arreterSurveillance();
+      } else {
+        this.surveillerEtat();
+      }
+    });
+  }
 
   ngOnDestroy(): void {
+    this.arreterSurveillance();
     this.interrompre();
     this.chant.fermer();
+  }
+
+  // --- Disponibilité de Sonneur --------------------------------------------
+
+  private surveillerEtat(): void {
+    if (this.minuterieEtat) return;
+    void this.verifierEtat();
+    this.minuterieEtat = setInterval(() => void this.verifierEtat(), INTERVALLE_ETAT_MS);
+  }
+
+  private arreterSurveillance(): void {
+    if (this.minuterieEtat) clearInterval(this.minuterieEtat);
+    this.minuterieEtat = null;
+  }
+
+  /** Inutile pendant sa propre question : c'est elle qui occupe Sonneur. */
+  private async verifierEtat(): Promise<void> {
+    if (this.enCours()) return;
+    try {
+      const etat = await this.chatbotService.etat();
+      if (!this.enCours()) {
+        this.occupe.set(etat.occupe ? (etat.message || 'Sonneur est occupé. Réessayez dans quelques minutes.') : null);
+      }
+    } catch {
+      // État indisponible (réseau, session) : on ne bloque pas, l'envoi dira ce qu'il en est
+      this.occupe.set(null);
+    }
   }
 
   // --- Affichage -----------------------------------------------------------
@@ -169,7 +213,10 @@ export class ChatbotComponent implements OnDestroy {
   envoyer(texte: string = this.saisie): void {
     const question = texte.trim();
     if (!question || this.enCours() || this.conversationTerminee()) return;
+    // Sonneur occupé : seules les questions d'aide passent (réponse immédiate du backend)
+    if (this.occupe() && !this.estQuestionAide(question)) return;
 
+    const avant = this.messages();
     this.saisie = '';
     // L'envoi est un geste de l'utilisateur : le navigateur autorisera le chant à la fin
     if (this.sonActif()) this.chant.preparer();
@@ -205,6 +252,7 @@ export class ChatbotComponent implements OnDestroy {
           case 'erreur':
             reponse.content = evenement.donnees.message;
             reponse.erreur = true;
+            reponse.occupe = evenement.donnees.code === SONNEUR_OCCUPE;
             break;
         }
         this.rafraichir();
@@ -212,17 +260,43 @@ export class ChatbotComponent implements OnDestroy {
       error: (erreur: Error) => {
         reponse.content = erreur.message || 'Une erreur est survenue.';
         reponse.erreur = true;
-        reponse.conversationPleine = erreur instanceof ErreurChat && erreur.statut === 413;
+        if (erreur instanceof ErreurChat) {
+          reponse.conversationPleine = erreur.statut === 413;
+          reponse.occupe = erreur.statut === 503 || erreur.code === SONNEUR_OCCUPE;
+          // Session expirée : la question revient dans la saisie, à renvoyer après reconnexion
+          if (erreur.statut === 401 || erreur.statut === 403) this.saisie = question;
+        }
         this.terminer();
+        if (reponse.occupe) this.refuserPourOccupation(avant, question, reponse.content);
       },
       complete: () => {
         this.terminer();
+        if (reponse.occupe) {
+          this.refuserPourOccupation(avant, question, reponse.content);
+          return;
+        }
         // Réponse arrivée jusqu'au bout (pas d'erreur ; un Stop n'appelle pas complete),
         // pendant que l'utilisateur ne regarde pas : panneau replié ou onglet en arrière-plan
         const horsDeVue = this.mode() === 'replie' || document.hidden;
         if (this.sonActif() && horsDeVue && reponse.content.trim() && !reponse.erreur) this.chant.jouer();
       },
     });
+  }
+
+  /**
+   * Refus « Sonneur occupé » : la question n'entre pas dans l'historique, elle revient
+   * dans la saisie pour être renvoyée quand Sonneur sera libre.
+   */
+  private refuserPourOccupation(avant: MessageChat[], question: string, message: string): void {
+    this.messages.set(avant);
+    this.sauvegarder();
+    this.saisie = question;
+    this.occupe.set(message);
+  }
+
+  estQuestionAide(question: string): boolean {
+    const normalisee = question.trim().toLowerCase();
+    return this.aides.some(aide => aide.toLowerCase() === normalisee);
   }
 
   /** Bouton Stop : arrête la génération (le backend arrête le modèle). */

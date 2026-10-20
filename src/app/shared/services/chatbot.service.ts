@@ -22,6 +22,8 @@ export interface MessageChat {
   questionsRestantes?: number;
   /** Erreur 413 : la conversation est pleine, il faut en ouvrir une nouvelle. */
   conversationPleine?: boolean;
+  /** Refus « Sonneur occupé » (503) : jamais conservé dans l'historique. */
+  occupe?: boolean;
 }
 
 /** Erreur HTTP de `POST /chat` (hors flux), avec le statut et le code éventuel du backend. */
@@ -37,7 +39,19 @@ export type EvenementChat =
   | { type: 'outil'; donnees: AppelOutil }
   | { type: 'texte'; donnees: { texte: string } }
   | { type: 'fin'; donnees: { outils: string[]; duree_ms: number; modele?: string; questions_restantes?: number } }
-  | { type: 'erreur'; donnees: { message: string } };
+  | { type: 'erreur'; donnees: { message: string; code?: string } };
+
+/** Réponse de `GET chat/etat` : Sonneur peut-il prendre une question ? */
+export interface EtatSonneur {
+  occupe: boolean;
+  questions_en_cours: number;
+  capacite: number;
+  /** Message à afficher quand Sonneur est occupé (null s'il est libre). */
+  message: string | null;
+}
+
+/** Code d'erreur du backend quand une autre question occupe déjà le modèle (503 ou événement `erreur`). */
+export const SONNEUR_OCCUPE = 'sonneur_occupe';
 
 /**
  * Service du chatbot métier.
@@ -66,13 +80,9 @@ export class ChatbotService {
         .map(m => ({ role: m.role, content: m.content }));
 
       const lire = async () => {
-        const token = localStorage.getItem('token');
         const reponse = await fetch(environment.apiBaseUrl + 'chat', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {})
-          },
+          headers: { 'Content-Type': 'application/json', ...this.entetesAuth() },
           body: JSON.stringify({ messages: historique }),
           signal
         });
@@ -122,6 +132,36 @@ export class ChatbotService {
     });
   }
 
+  /** Disponibilité de Sonneur (une seule question traitée à la fois sur le serveur). */
+  async etat(): Promise<EtatSonneur> {
+    const reponse = await fetch(environment.apiBaseUrl + 'chat/etat', { headers: this.entetesAuth() });
+    if (!reponse.ok) throw await this.erreurHttp(reponse);
+    return reponse.json();
+  }
+
+  /**
+   * En-tête Bearer ajouté à la main (l'intercepteur ne s'applique pas à `fetch`).
+   * Jeton expiré (valable 1 h) : on prévient tout de suite plutôt que d'attendre le 401.
+   */
+  private entetesAuth(): Record<string, string> {
+    const token = localStorage.getItem('token');
+    if (token && this.jetonExpire(token)) {
+      throw new ErreurChat('Session expirée, reconnectez-vous puis reposez votre question.', 401, 'TOKEN_EXPIRE');
+    }
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  /** Lit `exp` dans la charge utile du JWT (sans vérifier la signature : simple confort d'affichage). */
+  private jetonExpire(token: string): boolean {
+    try {
+      const charge = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const { exp } = JSON.parse(atob(charge));
+      return typeof exp === 'number' && exp * 1000 <= Date.now();
+    } catch {
+      return false;
+    }
+  }
+
   /** Transforme un bloc `event: ...\ndata: ...` en événement typé. */
   private analyserEvenement(bloc: string): EvenementChat | null {
     let type = 'message';
@@ -160,7 +200,9 @@ export class ChatbotService {
     switch (statut) {
       case 401:
       case 403:
-        return 'Session expirée, reconnectez-vous.';
+        return 'Session expirée, reconnectez-vous puis reposez votre question.';
+      case 503:
+        return 'Sonneur est occupé à répondre à une autre question. Réessayez dans quelques minutes.';
       case 429:
         return 'Trop de questions en peu de temps, patientez quelques minutes.';
       case 400:

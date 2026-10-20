@@ -192,7 +192,13 @@ $marge-droite: 20px;
     border-radius: 16px;
     cursor: pointer;
 
-    &:hover {
+    // Sonneur occupé : les exemples attendent, seules les questions d'aide passent
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
       background-color: $vertTC;
       border-color: $couleur-territoire;
     }
@@ -426,6 +432,25 @@ $marge-droite: 20px;
 }
 
 // --- Limite de conversation -----------------------------------------------
+
+.bandeau-occupe {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin: 0 12px 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #fff4e0;
+  border-left: 3px solid $couleur-faune;
+  @include Typo($p12, $normal, #6b4a12);
+  mat-icon {
+    flex-shrink: 0;
+    @include dim(18px, 18px);
+    font-size: 18px;
+    color: $couleur-faune;
+  }
+}
 
 .bandeau-limite {
   flex-shrink: 0;

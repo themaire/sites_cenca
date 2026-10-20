@@ -92,7 +92,7 @@
           </aside>
           <p class="essayer">Par exemple :</p>
           @for (exemple of exemples; track exemple) {
-            <button type="button" class="exemple" (click)="envoyer(exemple)">{{ exemple }}</button>
+            <button type="button" class="exemple" (click)="envoyer(exemple)" [disabled]="bloqueParOccupation()">{{ exemple }}</button>
           }
           <p class="essayer">Pour découvrir ce que je sais faire, demandez-moi :</p>
           <div class="aides">
@@ -164,6 +164,14 @@
       </div>
     }
 
+    <!-- Sonneur occupé par la question d'un autre utilisateur -->
+    @if (bloqueParOccupation() && !conversationTerminee()) {
+      <div class="bandeau-occupe" role="status">
+        <mat-icon>hourglass_top</mat-icon>
+        <span>{{ occupe() }} Les questions d'aide restent possibles.</span>
+      </div>
+    }
+
     <!-- Saisie -->
     <form class="saisie" (ngSubmit)="envoyer()">
       <textarea
@@ -173,7 +181,7 @@
         [(ngModel)]="saisie"
         (keydown)="surTouche($event)"
         [disabled]="conversationTerminee()"
-        placeholder="Posez votre question à Sonneur… (ou tapez « aide »)"
+        [placeholder]="bloqueParOccupation() ? 'Sonneur est occupé… (tapez « aide » pour l\'aide)' : 'Posez votre question à Sonneur… (ou tapez « aide »)'"
         aria-label="Votre question"
       ></textarea>
       @if (enCours()) {
@@ -182,7 +190,7 @@
           <mat-icon>stop_circle</mat-icon>
         </button>
       } @else {
-        <button mat-icon-button type="submit" class="envoyer" [disabled]="!saisie.trim() || conversationTerminee()"
+        <button mat-icon-button type="submit" class="envoyer" [disabled]="!saisie.trim() || conversationTerminee() || (bloqueParOccupation() && !estQuestionAide(saisie))"
           matTooltip="Envoyer" aria-label="Envoyer">
           <mat-icon>send</mat-icon>
         </button>
