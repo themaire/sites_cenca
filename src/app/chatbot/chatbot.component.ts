@@ -33,7 +33,7 @@ const CLE_HISTORIQUE = 'chatbot_historique';
 const CLE_MODE = 'chatbot_mode';
 
 /**
- * ATLAS, l'assistant IA des sites du CENCA.
+ * Sonneur, l'assistant IA des sites du CENCA (nommé d'après le sonneur à ventre jaune).
  *
  * Toujours ancré en bas à droite : replié (bouton), en panneau ou agrandi dans la fenêtre.
  * Le front porte la conversation (le backend est sans état) et la sauvegarde
@@ -56,13 +56,13 @@ export class ChatbotComponent implements OnDestroy {
   @ViewChild('listeMessages') listeMessages?: ElementRef<HTMLElement>;
   @ViewChild('zoneSaisie') zoneSaisie?: ElementRef<HTMLTextAreaElement>;
 
-  readonly avatar = 'assets/chatbot/atlas.svg';
+  readonly avatar = 'assets/chatbot/sonneur.svg';
   readonly exemples = [
     'Quels actes fonciers arrivent à échéance dans les 6 mois ?',
     'Quels sites gérons-nous à Reims ?',
     'Bilan des travaux réalisés en 2025 par type d\'action',
   ];
-  /** Questions d'aide, pour découvrir ce que sait faire ATLAS. */
+  /** Questions d'aide, pour découvrir ce que sait faire Sonneur. */
   readonly aides = ['Que sais-tu faire ?', 'Aide', 'Des exemples ?'];
 
   mode = signal<ModeChatbot>(this.lireMode());

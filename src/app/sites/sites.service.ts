@@ -254,6 +254,28 @@ export class SitesService {
     }));
   }
 
+  /**
+   * Sites portant un code (permalien `/site/:code`), sans tenir compte de la casse.
+   * Route backend : GET sites/code=:code -> [{ uuid_site, code, nom }] (liste : un code peut être en double).
+   * Tant que la route n'existe pas ou ne trouve rien, repli sur la liste complète des sites.
+   */
+  async getSitesParCode(code: string): Promise<SiteLite[]> {
+    try {
+      const reponse = await fetch(`${this.activeUrl}code=${encodeURIComponent(code)}`);
+      if (reponse.ok) {
+        const rows = await reponse.json();
+        if (Array.isArray(rows) && rows.length) {
+          return rows.map((row: any) => ({ uuid_site: row.uuid_site, code_site: row.code, nom_site: row.nom }));
+        }
+      }
+    } catch {
+      // Route indisponible : repli ci-dessous
+    }
+    const cible = code.trim().toUpperCase();
+    const sites = await this.getSitesLiteFallback();
+    return sites.filter(site => site.code_site?.trim().toUpperCase() === cible);
+  }
+
   // Utilisé dans operation.component.ts
   async getLocalisations_orig(subroute: string): Promise<Localisation[]> {
     const data = await fetch(this.activeUrl + subroute);

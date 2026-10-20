@@ -84,6 +84,16 @@
           "requireAuth": true,
           "backendUrl": null,
           "accessLevel": 0
+        },
+        {
+          "id": "sonneur",
+          "title": "Sonneur, l'assistant",
+          "path": "chatbot/sonneur.md",
+          "order": 8,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null,
+          "accessLevel": 0
         }
       ]
     },

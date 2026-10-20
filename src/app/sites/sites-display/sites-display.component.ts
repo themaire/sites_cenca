@@ -140,18 +140,18 @@ export class SitesDisplayComponent implements AfterViewInit {
     // Ca se passe dans la vue du component sites-display
     if (site.uuid_site !== undefined) {
       this.selectedSite = site;
-      this.afficherPermalien(site.uuid_site);
+      this.afficherPermalien(site);
     } else {
       console.log('Pas de uuid pour afficher le site : ' + site.uuid_site);
     }
   }
 
   /**
-   * L'adresse affichée devient le permalien de la fiche (`/site/:uuid`), à copier ou partager.
-   * Simple changement d'URL, sans navigation : la liste filtrée reste en place derrière la fiche.
+   * L'adresse affichée devient le permalien de la fiche (`/site/:code`, ou `/site/:uuid` sans code),
+   * à copier ou partager. Simple changement d'URL, sans navigation : la liste filtrée reste en place.
    */
-  private afficherPermalien(uuid: string): void {
-    this.location.go('/site/' + uuid);
+  private afficherPermalien(site: { uuid_site: string; code?: string }): void {
+    this.location.go('/site/' + encodeURIComponent(site.code?.trim() || site.uuid_site));
   }
 
   /** Bouton Retour de la fiche : on dépile le permalien (le retour arrière ferme la fiche). */
@@ -181,7 +181,7 @@ export class SitesDisplayComponent implements AfterViewInit {
       if (createdSite?.uuid_site) {
         // Ouvre directement la fiche du site qui vient d'être créé.
         this.selectedSite = createdSite;
-        this.afficherPermalien(createdSite.uuid_site);
+        this.afficherPermalien(createdSite);
       }
     });
   }

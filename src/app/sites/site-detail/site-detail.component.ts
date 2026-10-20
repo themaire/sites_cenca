@@ -238,11 +238,11 @@ Seront aussi supprimés : ${cascade}.` : '') +
     }
   }
 
-  /** Copie le permalien de la fiche (`/site/:uuid`) dans le presse-papiers. */
+  /** Copie le permalien de la fiche dans le presse-papiers : `/site/:code`, ou `/site/:uuid` pour un site sans code. */
   copierLien(): void {
-    const uuid = this.siteDetail?.uuid_site ?? this.site?.uuid_site;
-    if (!uuid) return;
-    const lien = `${window.location.origin}/site/${uuid}`;
+    const id = this.siteDetail?.code?.trim() || this.siteDetail?.uuid_site || this.site?.uuid_site;
+    if (!id) return;
+    const lien = `${window.location.origin}/site/${encodeURIComponent(id)}`;
     navigator.clipboard.writeText(lien).then(
       () => this.formService.snackMessage('Lien de la fiche copié.', 0, this.snackBar),
       () => this.formService.snackMessage(`Copie impossible. Lien : ${lien}`, 1, this.snackBar)

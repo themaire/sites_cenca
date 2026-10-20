@@ -4,6 +4,22 @@
   <div class="sites-enfants sites-enfants--permalien">
     @if (site(); as site) {
       <app-site-detail [site]="site" (selectedSite)="retour()"></app-site-detail>
+    } @else if (codeIntrouvable()) {
+      <div class="permalien-message">
+        <mat-icon>search_off</mat-icon>
+        <p>Aucun site ne porte le code « {{ codeIntrouvable() }} » : le lien est peut-être périmé, ou le code a changé.</p>
+        <button mat-flat-button type="button" (click)="retour()">Retour</button>
+      </div>
+    } @else if (homonymes().length) {
+      <div class="permalien-message">
+        <mat-icon>call_split</mat-icon>
+        <p>Plusieurs sites portent ce code, choisissez lequel ouvrir :</p>
+        <ul>
+          @for (homonyme of homonymes(); track homonyme.uuid_site) {
+            <li><a [routerLink]="['/site', homonyme.uuid_site]">{{ homonyme.nom_site }}</a> ({{ homonyme.code_site }})</li>
+          }
+        </ul>
+      </div>
     }
   </div>
 </div>

@@ -488,6 +488,12 @@ $marge-droite: 20px;
   padding: 0 8px 6px;
   text-align: center;
   @include Typo($p10, $normal, #888);
+
+  a {
+    color: $couleur-flore;
+    font-weight: bold;
+    white-space: nowrap;
+  }
 }
 
 // --- Mobile : panneau en plein écran ----------------------------------------

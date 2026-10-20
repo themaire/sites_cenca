@@ -41,9 +41,9 @@ export const routes: Routes = [
     // canActivate: [isLoggedInGuard], // Désactivé temporairement
   },
 
-  // Permalien d'une fiche site (liens partagés, liens d'ATLAS)
+  // Permalien d'une fiche site : /site/52134 ou /site/<uuid> (liens partagés, liens de Sonneur)
   {
-    path: 'site/:uuid',
+    path: 'site/:id', // code du site (ex. 52134) ou uuid
     loadComponent: () =>
       import('./sites/site-permalien/site-permalien.component').then((mod) => mod.SitePermalienComponent),
     canActivate: [isLoggedInGuard],

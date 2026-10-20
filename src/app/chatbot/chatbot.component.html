@@ -1,13 +1,13 @@
 @if (mode() === 'replie') {
-  <!-- Bouton flottant : ATLAS replié -->
+  <!-- Bouton flottant : Sonneur replié -->
   <button
     type="button"
     class="lanceur"
     (click)="ouvrir()"
-    [matTooltip]="enCours() ? 'ATLAS prépare sa réponse…'
-      : reponseNonLue() ? 'ATLAS a répondu' : 'Ouvrir ATLAS, l\'assistant sites'"
+    [matTooltip]="enCours() ? 'Sonneur prépare sa réponse…'
+      : reponseNonLue() ? 'Sonneur a répondu' : 'Ouvrir Sonneur, l\'assistant sites'"
     matTooltipPosition="left"
-    aria-label="Ouvrir l'assistant ATLAS"
+    aria-label="Ouvrir l'assistant Sonneur"
   >
     @if (!avatarIndisponible) {
       <img [src]="avatar" alt="" (error)="avatarIndisponible = true" />
@@ -25,7 +25,7 @@
     class="panneau"
     [class.agrandi]="mode() === 'agrandi'"
     role="dialog"
-    aria-label="Assistant ATLAS"
+    aria-label="Assistant Sonneur"
   >
     <!-- En-tête -->
     <header class="entete">
@@ -36,7 +36,7 @@
           <mat-icon class="avatar">forum</mat-icon>
         }
         <div>
-          <h2>ATLAS</h2>
+          <h2>Sonneur</h2>
           <span class="sous-titre">Assistant sites</span>
         </div>
       </div>
@@ -66,7 +66,7 @@
       @if (messages().length === 0) {
         <div class="accueil">
           <p>
-            Bonjour, je suis <strong>ATLAS</strong>. Je réponds à vos questions sur les sites,
+            Bonjour, je suis <strong>Sonneur</strong>. Je réponds à vos questions sur les sites,
             le foncier et les travaux, à partir des données de l'application.
           </p>
           <aside class="encart">
@@ -74,7 +74,7 @@
               <mat-icon>hourglass_top</mat-icon>
               <span>
                 <strong>Un peu de patience :</strong> je fonctionne sur un serveur local, une réponse
-                peut prendre de quelques secondes à une minute. C'est normal.
+                peut prendre de 1 à 4 minutes. C'est normal.
               </span>
             </div>
             <div class="encart-ligne">
@@ -168,7 +168,7 @@
         [(ngModel)]="saisie"
         (keydown)="surTouche($event)"
         [disabled]="conversationTerminee()"
-        placeholder="Posez votre question à ATLAS… (ou tapez « aide »)"
+        placeholder="Posez votre question à Sonneur… (ou tapez « aide »)"
         aria-label="Votre question"
       ></textarea>
       @if (enCours()) {
@@ -184,6 +184,10 @@
       }
     </form>
 
-    <footer class="mention">Assistant IA local, lecture seule : vérifiez les informations importantes.</footer>
+    <!-- Même gestion des liens que les réponses : ouverture dans l'application -->
+    <footer class="mention" (click)="surClicMarkdown($event)">
+      Assistant IA local, lecture seule : vérifiez les informations importantes.
+      <a href="/aide/sonneur">Bien utiliser Sonneur</a>
+    </footer>
   </section>
 }
