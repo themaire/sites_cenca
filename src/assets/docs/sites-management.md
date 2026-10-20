@@ -1,60 +1,76 @@
 # Gestion des sites
 
-## Ajouter un nouveau site
+La page **Sites** (adresse `/sites`, bandeau « Protéger ») permet de rechercher un site du CEN, d'ouvrir sa fiche, de la modifier et de créer un nouveau site.
 
-Pour ajouter un nouveau site dans l'application :
+## Rechercher un site
 
-1. **Accéder au mode d'édition**
-   - Connectez-vous avec un compte administrateur
-   - Cliquez sur l'icône "Édition" dans la barre d'outils
+1. Renseignez un ou plusieurs critères dans la barre de recherche :
+   - **Type** : « Site géré » ou « CAST » ;
+   - **Code** : chiffres uniquement ;
+   - **Nom** : 3 caractères minimum ;
+   - les menus déroulants suivants (commune, milieux naturels, responsable), dont les valeurs viennent de la base.
+2. Cliquez sur **Sélection des sites** (la touche Entrée fonctionne aussi dans les champs Code et Nom).
 
-2. **Positionner le nouveau site**
-   - Cliquez sur l'emplacement désiré sur la carte
-   - Une fenêtre de création s'ouvrira automatiquement
+La liste affiche les colonnes Code, Statut, Nom, Communes, Milieux naturels, Bassin agence et Responsable. Vous pouvez :
 
-3. **Remplir les informations**
-   - **Nom du site** : Nom descriptif du site
-   - **Type** : Sélectionnez le type approprié
-   - **Description** : Informations détaillées
-   - **Coordonnées** : Vérifiez les coordonnées GPS
+- affiner le résultat avec le champ **Mots-clés** ;
+- trier en cliquant sur l'en-tête d'une colonne ;
+- changer le nombre de lignes par page en bas du tableau.
 
-4. **Valider la création**
-   - Vérifiez toutes les informations
-   - Cliquez sur "Enregistrer"
+Cliquez sur une ligne pour ouvrir la fiche du site.
 
-## Modifier un site existant
+## Créer un site
 
-### Modification des informations
+1. Au-dessus de la liste, cliquez sur **Nouveau site**.
+2. Remplissez le formulaire. Les champs Nom, Description du site, Code, Surface, Responsable, Type, Type d'espace et Bassin d'agence sont obligatoires. Le champ « Description sensibilité » ne s'active que si « Site sensible » est coché.
+3. Cliquez sur l'icône disquette (**Sauvegarder**). Tant que le formulaire est incomplet, elle reste grisée. La croix (**Annuler**) ferme la fenêtre sans rien enregistrer.
 
-1. Cliquez sur le marqueur du site à modifier
-2. Dans la popup d'information, cliquez sur "Modifier"
-3. Effectuez les modifications nécessaires
-4. Sauvegardez les changements
+La fiche du nouveau site s'ouvre directement. La localisation géographique et les communes se renseignent ensuite depuis cette fiche.
 
-### Déplacer un site
+Un site peut aussi être créé depuis un projet de maîtrise foncière signé : voir [Projets MFU](/aide/projets-mfu).
 
-1. Activez le mode d'édition
-2. Faites glisser le marqueur vers sa nouvelle position
-3. Confirmez le déplacement
+## La fiche site
+
+La fiche est organisée en onglets. Sur ordinateur :
+
+| Onglet | Contenu |
+| --- | --- |
+| **Infos générales** | Identité du site (nom, code, surface, responsable, type, références…), communes concernées, conservateurs bénévoles |
+| **Description et Ouverture** | Description, sensibilité, ouverture au public, liens CEN et MNHN |
+| **Actes MFU** | Actes de maîtrise foncière et d'usage du site, filtrables (tous, valides, invalides) — voir [Foncier](/aide/foncier) |
+| **Projets** | Projets du site et leurs opérations — voir [Ajouter une géométrie à une opération](/aide/ajout_shapefile) |
+| **Plans de gestion** | Documents planificateurs du site — voir [Plans de gestion](/aide/plans-gestion) |
+| **Habitats** | Milieux naturels et code géologie |
+
+Sur téléphone, les mêmes contenus sont répartis en trois groupes d'onglets aux libellés raccourcis : **Infos gén.** et **Desc. et Ouv.**, puis **Actes MFU** et **Projets**, puis **Gestion** et **Habitats**.
+
+Le bouton **Retour** ramène à la liste.
+
+## Modifier une fiche
+
+Réservé aux utilisateurs ayant le droit d'édition.
+
+1. Dans l'onglet Infos générales ou Description et Ouverture, cliquez sur l'icône crayon (**Modifier**).
+2. Modifiez les champs.
+3. Cliquez sur l'icône disquette (**Sauvegarder**), ou sur la croix (**Annuler**) pour revenir aux valeurs d'origine.
+
+Dans Infos générales, les communes et les conservateurs bénévoles s'ajoutent et se retirent en mode modification ; chaque ajout ou retrait est enregistré immédiatement, sans passer par la disquette. Un conservateur absent de l'annuaire peut être créé sur place avec l'icône **Créer un nouveau contact dans l'annuaire et l'ajouter comme conservateur**.
 
 ## Supprimer un site
 
-⚠️ **Attention** : La suppression d'un site est définitive.
+Réservé aux utilisateurs ayant le droit d'édition. La suppression ne concerne que les sites créés par erreur.
 
-1. Sélectionnez le site à supprimer
-2. Cliquez sur "Supprimer" dans les options
-3. Confirmez la suppression
+1. Ouvrez la fiche et cliquez sur **Supprimer le site** en haut de la fiche.
+2. Si des données sont rattachées au site, une fenêtre **Suppression impossible** en donne la liste ; le site n'est pas supprimé.
+3. Sinon, une fenêtre de confirmation s'ouvre et indique ce qui sera supprimé avec le site. Confirmez : la suppression est irréversible.
 
-## Types de sites
+## Partager une fiche (permalien)
 
-- **Site actif** : Site en fonctionnement normal
-- **Site en maintenance** : Site temporairement indisponible
-- **Site d'étude** : Site en cours d'analyse
-- **Site abandonné** : Site désaffecté
+Chaque fiche a une adresse directe de la forme `/site/<code>` (ou `/site/<identifiant>` pour un site sans code). Cette adresse s'affiche dans le navigateur dès que vous ouvrez une fiche.
 
-## Bonnes pratiques
+Pour la copier, cliquez sur **Copier le lien** en haut de la fiche.
 
-- Vérifiez toujours les coordonnées avant de valider
-- Utilisez des noms descriptifs et cohérents
-- Mettez à jour régulièrement les informations
-- Documentez les changements importants
+En ouvrant un permalien :
+
+- si plusieurs sites portent le même code, la liste de ces sites s'affiche pour choisir ;
+- si aucun site ne correspond, un message l'indique (lien périmé ou code modifié).

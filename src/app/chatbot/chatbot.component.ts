@@ -28,6 +28,7 @@ const LIBELLES_OUTILS: Record<string, string> = {
   rechercher_projets: 'Recherche de projets',
   operations_projet: 'Opérations du projet',
   bilan_operations: 'Bilan des opérations',
+  travaux_site: 'Travaux du site',
 };
 
 const CLE_HISTORIQUE = 'chatbot_historique';
@@ -65,7 +66,7 @@ export class ChatbotComponent implements OnDestroy {
   readonly exemples = [
     'Quels actes fonciers arrivent à échéance dans les 6 mois ?',
     'Quels sont les nouveaux sites de 2025 dans l\'Aube ?',
-    'Quels sont les plus grands sites d\'Aurore ?',
+    'Quels sont les plus grands sites gérés par Romaric ?',
   ];
   /** Questions d'aide, pour découvrir ce que sait faire Sonneur. */
   readonly aides = ['Que sais-tu faire ?', 'Aide', 'Des exemples ?'];
@@ -82,6 +83,8 @@ export class ChatbotComponent implements OnDestroy {
   sonActif = signal(this.lireSon());
   /** Sonneur répond déjà à la question d'un autre utilisateur : message du serveur, sinon null. */
   occupe = signal<string | null>(null);
+  /** Question restée sans réponse après un rechargement de la page : remise dans la saisie. */
+  questionInterrompue = signal(false);
   /** Saisie bloquée tant que Sonneur est occupé (les questions d'aide restent possibles). */
   bloqueParOccupation = computed(() => !!this.occupe() && !this.enCours());
   saisie = '';
@@ -107,6 +110,8 @@ export class ChatbotComponent implements OnDestroy {
   private minuterieEtat: ReturnType<typeof setInterval> | null = null;
 
   constructor(private chatbotService: ChatbotService, private router: Router) {
+    this.reprendreQuestionInterrompue();
+
     // Panneau ouvert : on surveille la disponibilité de Sonneur ; replié : on arrête
     effect(() => {
       if (this.mode() === 'replie') {
@@ -198,6 +203,7 @@ export class ChatbotComponent implements OnDestroy {
   nouvelleConversation(): void {
     this.interrompre();
     this.messages.set([]);
+    this.questionInterrompue.set(false);
     this.sauvegarder();
     this.zoneSaisie?.nativeElement.focus();
   }
@@ -223,6 +229,9 @@ export class ChatbotComponent implements OnDestroy {
     const reponse: MessageChat = { role: 'assistant', content: '', outils: [] };
     const historique = [...this.messages(), { role: 'user' as const, content: question }];
     this.messages.set([...historique, reponse]);
+    this.questionInterrompue.set(false);
+    // Sauvegardée dès l'envoi : un rechargement de page pendant la réponse ne perd pas la question
+    this.sauvegarder();
     this.enCours.set(true);
     this.outilEnCours.set(null);
     this.attente.set(null);
@@ -368,14 +377,69 @@ export class ChatbotComponent implements OnDestroy {
     }
   }
 
+  /** Libellé lisible ; un outil récent du serveur MCP, encore absent de la table, reste lisible. */
   libelleOutil(nom: string): string {
-    return LIBELLES_OUTILS[nom] ?? nom;
+    if (LIBELLES_OUTILS[nom]) return LIBELLES_OUTILS[nom];
+    const texte = nom.replace(/_/g, ' ');
+    return texte.charAt(0).toUpperCase() + texte.slice(1);
   }
 
   formaterArguments(outil: AppelOutil): string {
     const valeurs = Object.entries(outil.arguments ?? {})
       .map(([cle, valeur]) => `${cle} : ${typeof valeur === 'string' ? valeur : JSON.stringify(valeur)}`);
     return valeurs.length ? valeurs.join(', ') : 'sans argument';
+  }
+
+  /** Conversation enregistrable : au moins une réponse aboutie, aucune génération en cours. */
+  conversationEnregistrable = computed(() =>
+    !this.enCours() && this.messages().some(m => m.role === 'assistant' && !m.erreur && m.content.trim())
+  );
+
+  /**
+   * Enregistre toute la conversation dans un fichier texte : chaque question, sa réponse
+   * (Markdown brut, lisible tel quel) et les requêtes utilisées, pour garder la trace de la
+   * provenance des données. Les messages d'erreur sont écartés.
+   */
+  enregistrerConversation(): void {
+    if (!this.conversationEnregistrable()) return;
+
+    const maintenant = new Date();
+    const deux = (n: number) => String(n).padStart(2, '0');
+    const jour = `${maintenant.getFullYear()}-${deux(maintenant.getMonth() + 1)}-${deux(maintenant.getDate())}`;
+    const heure = `${deux(maintenant.getHours())}h${deux(maintenant.getMinutes())}`;
+    const separateur = '-'.repeat(60);
+
+    const lignes = [
+      `Conversation avec Sonneur, assistant sites du CENCA — ${maintenant.toLocaleDateString('fr-FR')} à ${heure}`,
+    ];
+    const modeles = new Set<string>();
+    for (const message of this.messages()) {
+      if (message.erreur || !message.content.trim()) continue;
+      if (message.role === 'user') {
+        lignes.push('', separateur, `QUESTION : ${message.content.trim()}`, separateur, '');
+        continue;
+      }
+      lignes.push(message.content.trim());
+      if (message.outils?.length) {
+        lignes.push('', `Requêtes utilisées (${message.outils.length}) :`);
+        message.outils.forEach(outil =>
+          lignes.push(`- ${this.libelleOutil(outil.nom)} (${outil.nom}) : ${this.formaterArguments(outil)}`)
+        );
+      }
+      if (message.modele) modeles.add(message.modele);
+    }
+    lignes.push('', separateur);
+    if (modeles.size) lignes.push(`Modèle : ${[...modeles].join(', ')}`);
+    lignes.push('Assistant IA local, lecture seule : vérifiez les informations importantes.');
+
+    // BOM UTF-8 : accents corrects à l'ouverture dans le Bloc-notes et les vieux éditeurs Windows
+    const fichier = new Blob(['﻿' + lignes.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(fichier);
+    const lien = document.createElement('a');
+    lien.href = url;
+    lien.download = `sonneur_${jour}_${heure}.txt`;
+    lien.click();
+    setTimeout(() => URL.revokeObjectURL(url));
   }
 
   estEnCoursDeGeneration(index: number): boolean {
@@ -398,6 +462,25 @@ export class ChatbotComponent implements OnDestroy {
     } catch {
       // sessionStorage indisponible ou plein : l'historique reste en mémoire
     }
+  }
+
+  /**
+   * Page rechargée pendant une réponse : la conversation sauvegardée se termine par la
+   * question (et une bulle de réponse vide). On retire la question de l'historique et on
+   * la remet dans la saisie, pour la renvoyer en un clic.
+   */
+  private reprendreQuestionInterrompue(): void {
+    const messages = [...this.messages()];
+    const derniere = messages.at(-1);
+    if (derniere?.role === 'assistant' && !derniere.content.trim()) messages.pop();
+    const question = messages.at(-1);
+    if (question?.role !== 'user') return;
+
+    messages.pop();
+    this.messages.set(messages);
+    this.sauvegarder();
+    this.saisie = question.content;
+    this.questionInterrompue.set(true);
   }
 
   private lireHistorique(): MessageChat[] {

@@ -1,101 +1,79 @@
-# Questions Fréquemment Posées (FAQ)
+# Questions fréquentes
 
-## Connexion et authentification
+Cette page répond aux questions les plus courantes sur la connexion, les droits, la recherche de sites et le partage de liens.
 
-### Q : J'ai oublié mon mot de passe, que faire ?
+## Connexion
 
-**R :** Contactez votre administrateur système pour réinitialiser votre mot de passe. Pour des raisons de sécurité, les utilisateurs ne peuvent pas réinitialiser leur mot de passe eux-mêmes.
+### J'ai oublié mon mot de passe
 
-### Q : Pourquoi ne puis-je pas me connecter ?
+Sur la page de connexion, cliquez sur **J'ai oublié mon mot de passe.**, saisissez votre adresse e-mail CENCA puis cliquez sur **Envoyer**. Si l'adresse est connue, vous recevez un lien pour définir un nouveau mot de passe. La procédure complète est décrite dans le [Guide de démarrage](/aide/getting-started).
 
-**R :** Vérifiez que :
-- Vos identifiants sont corrects
-- Votre compte n'a pas été suspendu
-- Votre connexion internet fonctionne
-- Le serveur de l'application est accessible
+### Le message « Identifiant ou mot de passe incorrect » s'affiche
 
-## Utilisation de la carte
+Vérifiez l'identifiant et le mot de passe saisis. Si le problème persiste, réinitialisez votre mot de passe comme indiqué ci-dessus.
 
-### Q : La carte ne s'affiche pas correctement
+### Je suis renvoyé sur la page de connexion
 
-**R :** Essayez les solutions suivantes :
-1. Actualisez la page (F5)
-2. Videz le cache de votre navigateur
-3. Vérifiez votre connexion internet
-4. Contactez le support si le problème persiste
+Votre session a expiré. L'application la vérifie à chaque changement de page et, si elle n'est plus valide, vous renvoie vers la connexion. Reconnectez-vous : vous revenez sur la page que vous vouliez ouvrir.
 
-### Q : Comment puis-je rechercher un site spécifique ?
+Si cela se produit pendant une question posée à Sonneur, votre question est remise dans la zone de saisie : renvoyez-la après vous être reconnecté.
 
-**R :** Utilisez la barre de recherche en haut de la carte. Vous pouvez rechercher par :
-- Nom du site
-- Nom de ville
-- Coordonnées GPS
-- Type de site
+## Droits et menus
 
-### Q : Puis-je exporter les données de la carte ?
+### Je ne vois pas un menu ou un bouton qu'un collègue voit
 
-**R :** Oui, utilisez le bouton "Exporter" dans la barre d'outils. Les formats disponibles sont :
-- CSV pour les données tabulaires
-- GeoJSON pour les données géographiques
-- PDF pour les rapports
+Certains menus et boutons dépendent de vos droits :
 
-## Gestion des sites
+- le bouton **Chiroptères** de l'en-tête est réservé aux utilisateurs ayant le droit chiroptères ;
+- le bouton **Paramètres** est réservé aux administrateurs ;
+- les boutons de modification et de suppression des fiches demandent le droit d'édition.
 
-### Q : Qui peut ajouter ou modifier des sites ?
+Sans droit particulier, vous êtes en consultation. Pour obtenir un droit supplémentaire, adressez-vous à l'administrateur de l'application (son contact figure dans le pied de page).
 
-**R :** Seuls les utilisateurs avec des droits d'administration peuvent :
-- Ajouter de nouveaux sites
-- Modifier les informations existantes
-- Supprimer des sites
+### Une entrée du menu ne mène nulle part
 
-### Q : Les changements sont-ils sauvegardés automatiquement ?
+Les entrées marquées d'un cadenas ne sont pas encore disponibles.
 
-**R :** Non, vous devez explicitement cliquer sur "Enregistrer" pour sauvegarder vos modifications. Un indicateur visuel vous avertit si vous avez des modifications non sauvegardées.
+## Sites
 
-## Problèmes techniques
+### Comment retrouver un site ?
 
-### Q : L'application est lente, que faire ?
+1. Ouvrez **Protéger > Liste des sites** (ou la carte « Liste des sites » de l'accueil).
+2. Renseignez un ou plusieurs critères :
+   - **Type** : Site géré ou CAST ;
+   - **Code** : chiffres uniquement, au moins 4 ;
+   - **Nom** : au moins 3 caractères ;
+   - **Milieux naturels**, **Responsable**, **Bassin agence** : listes de choix.
+3. Cliquez sur **Sélection des sites** (ou appuyez sur Entrée dans les champs Code ou Nom).
+4. Dans la liste obtenue, le champ **Mots-clés** filtre encore les résultats.
+5. Cliquez sur une ligne pour ouvrir la fiche du site.
 
-**R :** Pour améliorer les performances :
-- Fermez les autres onglets de votre navigateur
-- Désactivez temporairement les extensions de navigateur
-- Utilisez un navigateur récent (Chrome, Firefox, Safari)
-- Vérifiez que votre connexion internet est stable
+Vous pouvez aussi demander un site à [Sonneur](/aide/sonneur), qui répond avec un lien vers la fiche. Voir aussi [Gestion des sites](/aide/sites-management).
 
-### Q : Certains boutons ne fonctionnent pas
+### Comment partager le lien d'une fiche site ?
 
-**R :** Ce problème peut être dû à :
-- JavaScript désactivé dans votre navigateur
-- Bloqueur de publicités trop restrictif
-- Version de navigateur trop ancienne
-- Extensions de navigateur incompatibles
+En haut de la fiche, cliquez sur **Copier le lien**. Le message « Lien de la fiche copié. » confirme la copie : collez-le dans un e-mail ou un message. Le lien a la forme `/site/` suivi du code du site (par exemple `/site/52134`). Le destinataire doit être connecté pour ouvrir la fiche.
 
-## Contact et support
+### Un lien vers une fiche affiche « Aucun site ne porte le code… »
 
-### Q : Comment contacter le support technique ?
+Le code n'existe pas ou plus dans la base : le lien est périmé, ou le code du site a changé. Recherchez le site par son nom. Si plusieurs sites portent le même code, l'application vous propose de choisir celui à ouvrir.
 
-**R :** Vous pouvez contacter le support via :
-- Email : support@cenca.org
-- Téléphone : +33 1 23 45 67 89
-- Formulaire de contact dans l'application
+## Carte
 
-### Q : Où puis-je signaler un bug ?
+### Les parcelles cadastrales n'apparaissent pas
 
-**R :** Signalez les bugs via le formulaire de contact en précisant :
-- Votre navigateur et sa version
-- Les étapes pour reproduire le problème
-- Le message d'erreur exact (si applicable)
-- Une capture d'écran si pertinente
+Activez la couche « Parcelles Cadastrales » dans le sélecteur de couches, puis zoomez : les parcelles ne s'affichent qu'à partir d'un niveau de zoom proche (environ 1:2000). Voir [Utilisation de la carte](/aide/carte).
 
-## Mises à jour
+## Aide et suggestions
 
-### Q : Comment savoir quand l'application est mise à jour ?
+### Je ne vois pas Sonneur
 
-**R :** Les mises à jour sont annoncées via :
-- Notification dans l'application
-- Email aux utilisateurs enregistrés
-- Page d'actualités du site web
+Le bouton de Sonneur, en bas à droite de l'écran, n'apparaît qu'une fois connecté, et pas sur les pages de connexion ni d'aide.
 
-### Q : Dois-je faire quelque chose lors d'une mise à jour ?
+### Une fiche d'aide affiche « Section introuvable. »
 
-**R :** En général non, les mises à jour sont automatiques. Parfois, un simple rafraîchissement de la page suffit pour accéder aux nouvelles fonctionnalités.
+Cette fiche est réservée à certains droits (administrateurs, groupe chiroptères, droit d'édition…). Si vous en avez besoin, adressez-vous à l'administrateur de l'application.
+
+### Comment signaler un problème ou proposer une idée ?
+
+Ouvrez **Administratif > Boite à idées**, puis cliquez sur **Ajouter une idée** : le formulaire s'ouvre dans un nouvel onglet. La page affiche aussi les idées déjà proposées. Pour un blocage urgent, contactez l'administrateur indiqué dans le pied de page.

@@ -1,36 +1,39 @@
 import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of, switchMap } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { marked } from 'marked';
 
 import { LoginService } from '../login/login.service';
 
+/**
+ * Droit requis pour voir une catégorie ou une fiche d'aide.
+ * Chaque valeur correspond à une méthode de LoginService (isAdmin, isCadre...) :
+ * les groupes ne sont pas hiérarchiques, on ne compare donc jamais leurs numéros.
+ */
+export type DocDroit = 'admin' | 'cadre' | 'edit' | 'chiro' | 'foncier';
+
 export interface DocSection {
   id: string;
   title: string;
-  path: string;
+  path: string | null;
   order: number;
   published: boolean;
   requireAuth: boolean;
   backendUrl?: string | null;
   content?: string;
-  accessLevel?: number;
+  droit?: DocDroit;
 }
 
 export interface DocCategory {
   id: string;
   title: string;
-  accessLevel: number;
+  droit?: DocDroit;
   sections: DocSection[];
 }
 
 interface DocHierarchicalIndex {
   categories: DocCategory[];
-}
-
-interface DocIndex {
-  sections: DocSection[];
 }
 
 @Injectable({
@@ -39,44 +42,8 @@ interface DocIndex {
 export class DocumentationService {
   private activeUrl: string = environment.apiBaseUrl;
   private readonly docsPath = '/assets/docs/';
-  private sectionsCache: DocSection[] = [];
-  private allSectionsCache: DocSection[] = [];
 
-  /**
-   * Charge l'index hiérarchique des catégories et sections depuis le nouveau JSON
-   */
-  private loadHierarchicalIndex(): Observable<DocHierarchicalIndex> {
-    return this.http.get<DocHierarchicalIndex>(`${this.docsPath}index.hierarchical.json`);
-  }
-
-  /**
-   * Récupère les catégories et leurs sections accessibles selon le groupe utilisateur
-   */
-  getHierarchicalSections(isAuthenticated: boolean = false): Observable<DocCategory[]> {
-    return this.loadHierarchicalIndex().pipe(
-      map(index => {
-        const userGroId = Math.max(0, ...(this.loginService.user()?.groups ?? [0]));
-        // Filtrer les catégories accessibles
-        const filteredCategories = index.categories
-          .filter(cat => cat.accessLevel <= userGroId)
-          .map(cat => ({
-            ...cat,
-            sections: cat.sections
-              .filter(section => section.published)
-              .filter(section => !section.requireAuth || isAuthenticated)
-              .filter(section => (typeof section.accessLevel === 'number' ? section.accessLevel : 0) <= userGroId)
-              .sort((a, b) => a.order - b.order)
-          }));
-        console.log('Catégories et sections accessibles:', filteredCategories.map(c => ({
-          cat: c.id,
-          sections: c.sections.map(s => s.id)
-        })));
-        return filteredCategories;
-      })
-    );
-  }
-
-  constructor(private http: HttpClient, public loginService: LoginService) {
+  constructor(private http: HttpClient, private loginService: LoginService) {
     // Configuration de marked pour améliorer le rendu
     marked.setOptions({
       breaks: true,
@@ -85,46 +52,52 @@ export class DocumentationService {
   }
 
   /**
-   * Charge l'index des sections depuis le fichier JSON
+   * Charge l'index hiérarchique des catégories et sections
    */
-  private loadSectionsIndex(): Observable<DocIndex> {
-    return this.http.get<DocIndex>(`${this.docsPath}index.hierarchical.json`);
+  private loadHierarchicalIndex(): Observable<DocHierarchicalIndex> {
+    return this.http.get<DocHierarchicalIndex>(`${this.docsPath}index.hierarchical.json`);
   }
 
   /**
-   * Récupère les sections publiées et filtrées selon la convention POSIX et l'authentification
+   * Indique si l'utilisateur connecté possède le droit demandé (aucun droit = accessible à tous)
    */
-  getSections(isAuthenticated: boolean = false): Observable<DocSection[]> {
-    return this.loadSectionsIndex().pipe(
-      map(index => {
-        const userGroId = Math.max(0, ...(this.loginService.user()?.groups ?? [0]));
-        const filteredSections = index.sections
-          .filter(section => section.published)
-          .filter(section => !section.requireAuth || isAuthenticated)
-          .filter(section => (typeof section.accessLevel === 'number' ? section.accessLevel : 0) <= userGroId)
-          .sort((a, b) => a.order - b.order);
-        
-        console.log('Sections filtrées chargées:', filteredSections.map(s => s.id));
-        
-        return filteredSections;
-      })
-    );
-  }
-
-  /**
-   * Récupère toutes les sections (y compris les drafts) - pour usage développeur
-   */
-  getAllSections(): Observable<DocSection[]> {
-    if (this.allSectionsCache.length > 0) {
-      return of(this.allSectionsCache);
+  aLeDroit(droit?: DocDroit): boolean {
+    switch (droit) {
+      case undefined:
+        return true;
+      case 'admin':
+        return this.loginService.isAdmin();
+      case 'cadre':
+        return this.loginService.isCadre();
+      case 'edit':
+        return this.loginService.isEdit();
+      case 'chiro':
+        return this.loginService.isChiro();
+      case 'foncier':
+        return this.loginService.isFoncier();
+      default:
+        // Droit inconnu dans l'index : on masque par prudence
+        return false;
     }
+  }
 
-    return this.loadSectionsIndex().pipe(
-      map(index => {
-        const allSections = index.sections.sort((a, b) => a.order - b.order);
-        this.allSectionsCache = allSections;
-        return allSections;
-      })
+  /**
+   * Récupère les catégories et leurs sections accessibles selon les droits de l'utilisateur
+   */
+  getHierarchicalSections(isAuthenticated: boolean = false): Observable<DocCategory[]> {
+    return this.loadHierarchicalIndex().pipe(
+      map(index => index.categories
+        .filter(cat => this.aLeDroit(cat.droit))
+        .map(cat => ({
+          ...cat,
+          sections: cat.sections
+            .filter(section => section.published)
+            .filter(section => !section.requireAuth || isAuthenticated)
+            .filter(section => this.aLeDroit(section.droit))
+            .sort((a, b) => a.order - b.order)
+        }))
+        .filter(cat => cat.sections.length > 0)
+      )
     );
   }
 
@@ -139,49 +112,17 @@ export class DocumentationService {
   }
 
   /**
-   * Récupère une section spécifique par son ID (seulement les sections publiées)
+   * Charge le contenu HTML d'une section : depuis le backend si backendUrl est défini,
+   * sinon depuis le fichier markdown local
    */
-  getSection(id: string): Observable<DocSection | undefined> {
-    return this.getSections().pipe(
-      map(sections => sections.find(section => section.id === id))
-    );
-  }
-
-  /**
-   * Récupère une section spécifique par son ID (y compris les drafts) - pour usage développeur
-   */
-  getSectionIncludingDrafts(id: string): Observable<DocSection | undefined> {
-    return this.getAllSections().pipe(
-      map(sections => sections.find(section => section.id === id))
-    );
-  }
-
-  /**
-   * Charge le contenu HTML d'une section
-   * Si backendUrl est défini, charge le HTML depuis le backend
-   */
-  getSectionContent(id: string, isAuthenticated: boolean = false): Observable<string> {
-    return this.getSections(isAuthenticated).pipe(
-      map(sections => {
-        const section = sections.find(s => s.id === id);
-        if (!section) {
-          throw new Error(`Section '${id}' not found`);
-        }
-        return section;
-      }),
-      switchMap(section => {
-        if (section.backendUrl) {
-          // Préfixer l'URL si besoin
-          let url = section.backendUrl;
-          if (!/^https?:\/\//.test(url)) {
-            url = this.activeUrl.replace(/\/$/, '') + (url.startsWith('/') ? url : '/' + url);
-          }
-          return this.http.get(url, { responseType: 'text' });
-        } else {
-          // Charge le markdown local
-          return this.loadMarkdownFile(section.path);
-        }
-      })
-    );
+  loadSectionContent(section: DocSection): Observable<string> {
+    if (section.backendUrl) {
+      let url = section.backendUrl;
+      if (!/^https?:\/\//.test(url)) {
+        url = this.activeUrl.replace(/\/$/, '') + (url.startsWith('/') ? url : '/' + url);
+      }
+      return this.http.get(url, { responseType: 'text' });
+    }
+    return this.loadMarkdownFile(section.path ?? '');
   }
 }

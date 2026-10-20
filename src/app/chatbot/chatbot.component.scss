@@ -542,3 +542,8 @@ $marge-droite: 20px;
     display: none;
   }
 }
+
+// Bouton désactivé de l'en-tête (ex. rien à enregistrer) : estompé mais visible sur le fond bleu
+.entete .actions button[disabled] {
+  color: rgb(255 255 255 / 40%);
+}

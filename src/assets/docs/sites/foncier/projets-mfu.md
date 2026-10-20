@@ -1,117 +1,80 @@
 # Projets de maîtrise foncière et d'usage (MFU)
 
-## Qu'est-ce qu'un projet MFU ?
+Un projet MFU suit une démarche d'acquisition, de bail ou de convention sur une ou plusieurs parcelles cadastrales, jusqu'à sa signature.
 
-Un **projet de maîtrise foncière et d'usage** (PMFU) formalise une démarche d'acquisition, de location ou de convention sur une ou plusieurs parcelles cadastrales, en vue d'assurer leur protection ou leur gestion.
+## Accéder aux projets MFU
 
-Chaque projet regroupe :
+Depuis le menu, ouvrez **Foncier** (`/foncier`), puis la carte des projets MFU. La page a pour adresse `/foncier/pmfu`. Le bouton **Aide** de la page ouvre cette fiche.
 
-- **Nom du projet**
-- **Responsable** et **collègue associé** (parmi les salariés opérationnels)
-- **Département** et **commune principale**
-- **Type d'acte** (acquisition, bail, convention…)
-- **Parcelles cadastrales** concernées (voir ci-dessous)
-- **Validation bureau/CA**, **priorité**, **statut**
-- **Territoire(s)**, **territoire Agence de l'Eau**
-- **Financements envisagés**, **coût estimé**
-- **Année de début**, **année de signature**
-- **Besoin d'appui**, **prochaines étapes**, **échéance prochaine étape**
-- **Détails juridiques**
-- **Pièces jointes** (actes, décisions de bureau, notes, photos)
+## Droits
 
----
+- Créer un projet : tous les utilisateurs connectés.
+- Modifier ou supprimer un projet : son responsable, son collègue associé, son créateur, ainsi que les cadres, les administrateurs et le groupe foncier.
 
-## Consulter la liste des projets MFU
+## Consulter la liste
 
-Depuis le menu, ouvrez la page **Protéger**. Le tableau liste tous les projets MFU existants.
+Le tableau affiche Nom du Projet, Nom du responsable, Commune(s) et Type d'acte.
 
-Au-dessus du tableau, une ligne de filtres permet d'affiner l'affichage :
+- Les menus déroulants au-dessus du tableau filtrent la liste ; choisissez **Tous** pour lever un critère. Les critères se cumulent.
+- **Mots-clés** : recherche libre, combinée aux menus.
+- L'icône **Réinitialiser les filtres** (entonnoir barré) apparaît dès qu'un filtre est actif.
 
-- **Responsable**, **Commune**, **Type d'acte**, **Statut** : quatre menus déroulants alimentés automatiquement depuis les valeurs existantes en base. Choisissez une valeur pour ne garder que les projets correspondants, ou **Tous** pour désactiver le critère.
-- **Mots-clés** : recherche libre, complémentaire aux menus déroulants.
+Cliquez sur une ligne pour ouvrir le projet.
 
-Les critères se **cumulent** : par exemple choisir un responsable puis une commune n'affiche que les projets qui correspondent aux deux à la fois. Le bouton en forme d'entonnoir barré (visible dès qu'un filtre est actif) réinitialise tout d'un coup.
+## Le formulaire en trois étapes
 
-Cliquez sur une ligne pour ouvrir la fiche détaillée du projet.
+La fiche d'un projet est un formulaire en étapes. On passe de l'une à l'autre en cliquant sur leur titre ou avec les boutons **Suivant** et **Précédent**.
 
----
+1. **Informations principales** : Nom du projet, Mesures compensatoires, Responsable, Collègue associé, Département, Commune(s), Type d'acte, Validation bureau/CA, Territoire, Territoire Agence Eau, surfaces, Année de début, Année de signature, Type de propriétaire, Financements envisagés, Coût estimé, Besoin d'appui, Priorité, statut, Échéance prochaine étape, Prochaines étapes, Détails juridiques.
+2. **Parcelles cadastrales concernées** : carte et liste des parcelles du projet.
+3. **Pièces jointes** : documents du projet.
 
-## Créer un projet MFU
+## Créer un projet
 
-1. Depuis la page **Protéger**, cliquez sur le bouton **+** (« Ajouter un projet MFU »)
-2. Renseignez les informations de l'onglet **Informations principales**
-3. Passez à l'onglet **Localisation** pour sélectionner les parcelles (voir ci-dessous)
-4. Complétez si besoin l'onglet **Pièces jointes**
-5. Cliquez sur **Enregistrer**
+1. Cliquez sur l'icône **+** (**Ajouter un projet MFU**).
+2. Remplissez l'étape Informations principales, puis sélectionnez les parcelles et ajoutez les pièces jointes si besoin.
+3. Cliquez sur l'icône disquette (**Sauvegarder**). La fenêtre se ferme après l'enregistrement.
 
----
+## Modifier un projet
 
-## Sélectionner les parcelles (onglet Localisation)
+1. Ouvrez le projet depuis la liste.
+2. Cliquez sur l'icône crayon (**Modifier**).
+3. Faites vos modifications dans les différentes étapes.
+4. Cliquez sur la disquette (**Sauvegarder**). La croix (**Annuler**) restaure l'état initial, y compris la liste des parcelles et les cases « Pour partie ».
 
-C'est le cœur du formulaire : la carte affiche les parcelles cadastrales et permet de composer la liste des parcelles concernées par le projet.
+## Sélectionner les parcelles
 
-### Ajouter une parcelle
+En mode modification, à l'étape **Parcelles cadastrales concernées** :
 
-1. Zoomez sur la carte jusqu'à voir apparaître les parcelles cadastrales (zoom suffisant requis — dézoomez si rien ne s'affiche)
-2. Cliquez sur une parcelle : une popup s'ouvre
-3. Cliquez sur le bouton **panier vert** de la popup pour l'ajouter à la sélection
+1. Zoomez sur la carte : les parcelles n'apparaissent qu'à partir d'un zoom suffisant (environ 1:2000).
+2. Cliquez sur une parcelle, puis sur l'icône panier vert (**Sélectionner cette parcelle**) de la fenêtre qui s'ouvre.
 
-La parcelle ajoutée apparaît :
-- **en surbrillance jaune** sur la carte
-- sous forme de **chip** (étiquette) au-dessus de la carte, avec le nom de la commune, la section, le numéro et l'identifiant de la parcelle
+La parcelle s'ajoute sous **Parcelles sélectionnées :** (commune, section, numéro, identifiant). Pour chaque parcelle :
 
-### Retirer une parcelle
+- la loupe (**Zoomer sur cette parcelle**) recentre la carte ;
+- la case **Pour partie** indique que le projet ne concerne qu'une partie de la parcelle ;
+- la corbeille (**Supprimer cette parcelle**) la retire. On peut aussi la retirer depuis la carte avec le panier rouge (**Retirer cette parcelle**).
 
-- Depuis la carte : cliquez sur la parcelle sélectionnée puis sur le **panier rouge** de la popup
-- Depuis les chips : cliquez sur l'icône **corbeille** de la chip correspondante (visible uniquement en mode édition)
+Couleurs sur la carte :
 
-### Cocher une parcelle « Pour partie »
+| Parcelle | Couleur |
+| --- | --- |
+| Non sélectionnée | Orange |
+| Sélectionnée en totalité | Jaune |
+| Sélectionnée pour partie | Violet |
 
-Si le projet ne concerne qu'**une partie** de la parcelle (et non sa totalité), cochez la case **Pour partie** présente sur la chip de la parcelle.
+Le sélecteur de couches de la carte permet d'afficher aussi les couches « Sites CENCA Sites » et « Sites CENCA Autres ».
 
-La parcelle change alors de couleur sur la carte :
+## Pièces jointes
 
-| État de la parcelle          | Couleur                          |
-|-------------------------------|-----------------------------------|
-| Non sélectionnée              | Orange                            |
-| Sélectionnée (totalité)       | Jaune (contour et remplissage clair) |
-| Sélectionnée **pour partie**  | Violet (contour et remplissage clair) |
+En mode modification, chaque type de document a sa zone **Glissez-déposez vos fichiers ou cliquez**, avec sous son nom les extensions autorisées. Les fichiers d'un type non autorisé sont refusés. En consultation, l'étape affiche les fichiers déjà déposés.
 
-> La case « Pour partie » n'est modifiable qu'en mode édition. Décocher une parcelle la fait revenir en jaune.
+## Créer le site à partir d'un projet signé
 
-### Zoomer sur une parcelle
+Quand le statut du projet est « signé », un bouton **Créer site** apparaît en haut de la fiche. Il ouvre le formulaire de création de site, prérempli avec le nom et le responsable du projet (voir [Gestion des sites](/aide/sites-management)).
 
-Cliquez sur l'icône **loupe** d'une chip pour recentrer la carte sur cette parcelle.
+## Supprimer un projet
 
-### Autres couches de la carte
-
-Des interrupteurs permettent d'afficher en complément :
-- les **sites CENCA** déjà gérés (couche verte)
-- les **autres sites** connus (CAST et autres, couche jaune)
-
----
-
-## Modifier un projet MFU
-
-1. Ouvrez la fiche du projet depuis la liste
-2. Cliquez sur l'icône **crayon** pour passer en mode édition
-3. Modifiez les champs souhaités, ajoutez/retirez des parcelles, ajustez les cases « Pour partie »
-4. Cliquez sur **Enregistrer**
-
-> Annuler l'édition (sans enregistrer) restaure exactement l'état initial des parcelles, y compris les cases « Pour partie ».
-
----
-
-## Gérer les pièces jointes
-
-Dans l'onglet **Pièces jointes**, glissez-déposez vos fichiers dans la zone correspondant au type de document (photos, acte, décision de bureau, note de bureau), ou cliquez pour parcourir vos fichiers. Les fichiers non autorisés pour un type donné sont automatiquement refusés.
-
----
-
-## Supprimer un projet MFU
-
-1. Ouvrez la fiche du projet
-2. Cliquez sur **Supprimer** (visible pour le responsable, le collègue associé, le créateur, ou un utilisateur avec des droits suffisants)
-3. Confirmez la suppression dans la boîte de dialogue
-
-⚠️ **Attention** : cette action est irréversible.
+1. Ouvrez le projet.
+2. Cliquez sur **Supprimer**.
+3. Confirmez. La suppression est irréversible.

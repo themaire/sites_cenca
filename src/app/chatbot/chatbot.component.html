@@ -46,6 +46,11 @@
           [attr.aria-label]="sonActif() ? 'Couper le son' : 'Activer le son'" [attr.aria-pressed]="sonActif()">
           <mat-icon>{{ sonActif() ? 'volume_up' : 'volume_off' }}</mat-icon>
         </button>
+        <button mat-icon-button type="button" (click)="enregistrerConversation()"
+          [disabled]="!conversationEnregistrable()"
+          matTooltip="Enregistrer la conversation (.txt)" aria-label="Enregistrer la conversation au format texte">
+          <mat-icon>download</mat-icon>
+        </button>
         <button mat-icon-button type="button" (click)="nouvelleConversation()"
           matTooltip="Nouvelle conversation" aria-label="Nouvelle conversation">
           <mat-icon>add_comment</mat-icon>
@@ -161,6 +166,14 @@
     } @else if (!enCours() && questionsRestantes() !== null && questionsRestantes()! <= 2) {
       <div class="bandeau-limite">
         Plus que {{ questionsRestantes() }} question{{ questionsRestantes()! > 1 ? 's' : '' }} dans cette conversation
+      </div>
+    }
+
+    <!-- Page rechargée pendant une réponse : la question attend d'être renvoyée -->
+    @if (questionInterrompue() && !enCours()) {
+      <div class="bandeau-occupe" role="status">
+        <mat-icon>replay</mat-icon>
+        <span>Votre dernière question a été interrompue (page rechargée). Elle est dans la zone de saisie : renvoyez-la.</span>
       </div>
     }
 

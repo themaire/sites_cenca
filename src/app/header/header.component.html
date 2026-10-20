@@ -85,8 +85,8 @@
           </div>
         </div>
         <div class="connexion">
-          <!-- Bouton Aide - toujours visible -->
-          <div class="aide-button">
+          <!-- Bouton Aide - réservé aux utilisateurs connectés -->
+          <div class="aide-button" *ngIf="loginService.user()">
             <button 
               mat-button
               class="btn-aide"
@@ -130,8 +130,8 @@
           />
         </div>
         <div class="connexion">
-          <!-- Bouton Aide - toujours visible en mobile -->
-          <div class="aide-button">
+          <!-- Bouton Aide - réservé aux utilisateurs connectés -->
+          <div class="aide-button" *ngIf="loginService.user()">
             <button 
               mat-icon-button
               class="btn-aide-mobile"
