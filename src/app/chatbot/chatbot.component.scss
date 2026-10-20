@@ -1,0 +1,513 @@
+@import "../styles/variables.scss";
+@import "../styles/mixins.scss";
+
+// Au-dessus du bouton back-to-top (bottom: 20px ; right: 20px)
+$marge-bas: 80px;
+$marge-droite: 20px;
+
+:host {
+  position: fixed;
+  right: $marge-droite;
+  bottom: $marge-bas;
+  z-index: 1000;
+}
+
+// --- Bouton replié ---------------------------------------------------------
+
+.lanceur {
+  position: relative;
+  @include dim(60px, 60px);
+  @include align(center, center);
+  padding: 0;
+  border: 3px solid white;
+  border-radius: 50%;
+  background-color: $couleur-flore;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  img {
+    @include dim(100%, 100%);
+    border-radius: 50%;
+  }
+
+  mat-icon {
+    color: white;
+  }
+
+  // Génération en cours alors que le panneau est replié
+  .pastille {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    @include dim(12px, 12px);
+    border-radius: 50%;
+    background-color: $couleur-territoire;
+    border: 2px solid white;
+
+    // Génération en cours : la pastille pulse
+    &.en-cours {
+      animation: pulsation 1.2s ease-in-out infinite;
+    }
+
+    // Réponse arrivée pendant que le chatbot était replié
+    &.non-lue {
+      @include dim(14px, 14px);
+      background-color: $superRed;
+    }
+  }
+}
+
+@keyframes pulsation {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+
+// --- Panneau ---------------------------------------------------------------
+
+.panneau {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  height: 680px;
+  max-height: calc(100vh - #{$marge-bas} - 20px);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 30%);
+  overflow: hidden;
+
+  // Agrandi dans la fenêtre, toujours calé en bas à droite
+  &.agrandi {
+    width: calc(100vw - #{$marge-droite} * 2);
+    height: calc(100vh - #{$marge-bas} - 20px);
+  }
+
+  mat-progress-bar {
+    flex-shrink: 0;
+  }
+}
+
+.entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 8px 4px 8px 12px;
+  background-color: $couleur-flore;
+  color: white;
+
+  .identite {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .avatar {
+    @include dim(40px, 40px);
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+  h2 {
+    @include Typo($p18, $gras, white);
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  .sous-titre {
+    @include Typo($p12, $normal, white);
+    opacity: 0.85;
+  }
+
+  .actions button {
+    color: white;
+  }
+}
+
+// --- Messages --------------------------------------------------------------
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f6f7fb;
+}
+
+.accueil {
+  @include Typo($p14, $normal, #333);
+
+  // Encart : lenteur normale et erreurs possibles
+  .encart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 4px 0 14px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, $vertTC, white);
+    border: 1px solid $bleuC;
+    border-left: 4px solid $couleur-territoire;
+    border-radius: 10px;
+    @include Typo($p12, $normal, #444);
+    line-height: 1.45;
+  }
+
+  .encart-ligne {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    mat-icon {
+      flex-shrink: 0;
+      @include dim(20px, 20px);
+      font-size: 20px;
+      color: $couleur-flore;
+    }
+
+    strong {
+      color: $couleur-flore;
+    }
+  }
+
+  .essayer {
+    margin-bottom: 6px;
+    font-weight: $semiGras;
+  }
+
+  .exemple {
+    display: block;
+    width: 100%;
+    margin-bottom: 6px;
+    padding: 8px 12px;
+    text-align: left;
+    @include Typo($p14, $normal, $couleur-flore);
+    background: white;
+    border: 1px solid $bleuC;
+    border-radius: 16px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $vertTC;
+      border-color: $couleur-territoire;
+    }
+  }
+
+  // Questions d'aide : pastilles compactes sur une ligne
+  .aides {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .aide {
+    padding: 4px 10px;
+    @include Typo($p12, $normal, $couleur-flore);
+    font-style: italic;
+    background: white;
+    border: 1px dashed $bleuC;
+    border-radius: 12px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $vertTC;
+      border-color: $couleur-territoire;
+    }
+  }
+}
+
+.bulle {
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  @include Typo($p14, $normal, #222);
+  overflow-wrap: anywhere;
+
+  &.utilisateur {
+    align-self: flex-end;
+    background-color: $couleur-flore;
+    color: white;
+    border-bottom-right-radius: 4px;
+    white-space: pre-wrap;
+  }
+
+  &.assistant {
+    background: white;
+    border: 1px solid #e2e4ee;
+    border-bottom-left-radius: 4px;
+    min-width: 60px;
+  }
+
+  &.erreur {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    background-color: #fdeeee;
+    border-color: $redM;
+    color: darken($superRed, 20%);
+
+    .icone-erreur {
+      flex-shrink: 0;
+      color: $superRed;
+    }
+  }
+}
+
+.ligne-assistant {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+
+  .mini-avatar {
+    flex-shrink: 0;
+    @include dim(28px, 28px);
+    border-radius: 50%;
+  }
+
+  .bulle {
+    max-width: calc(85% - 34px);
+  }
+}
+
+.panneau.agrandi .bulle {
+  max-width: 900px;
+}
+
+// Contenu Markdown généré : hors encapsulation des styles du composant
+.markdown {
+  ::ng-deep {
+    p {
+      margin: 0 0 8px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px;
+      padding-left: 20px;
+    }
+
+    h1, h2, h3, h4 {
+      font-size: $p16;
+      margin: 8px 0 4px;
+    }
+
+    code {
+      background: #eef0f6;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-size: $p12;
+    }
+
+    pre {
+      overflow-x: auto;
+      background: #eef0f6;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    table {
+      display: block;
+      overflow-x: auto;
+      border-collapse: collapse;
+      margin: 6px 0;
+      font-size: $p12;
+    }
+
+    th,
+    td {
+      border: 1px solid #d5d8e3;
+      padding: 4px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: $couleur-flore;
+      color: white;
+      font-weight: $semiGras;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f6f7fb;
+    }
+
+    a {
+      color: $bleuM;
+    }
+  }
+}
+
+.statut {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  @include Typo($p12, $normal, #666);
+  font-style: italic;
+
+  mat-icon {
+    @include dim(16px, 16px);
+    font-size: 16px;
+  }
+}
+
+// Trois points animés en attendant le premier morceau de texte
+.points {
+  display: inline-flex;
+  gap: 4px;
+
+  span {
+    @include dim(7px, 7px);
+    border-radius: 50%;
+    background-color: $bleuM;
+    animation: rebond 1.2s infinite ease-in-out;
+
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes rebond {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.requetes {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #d5d8e3;
+  @include Typo($p12, $normal, #555);
+
+  summary {
+    cursor: pointer;
+    color: $couleur-flore;
+    font-weight: $semiGras;
+  }
+
+  ul {
+    margin: 6px 0 0;
+    padding-left: 16px;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  code {
+    margin-left: 4px;
+    font-size: $p10;
+    color: #888;
+  }
+
+  .arguments {
+    display: block;
+    color: #666;
+    overflow-wrap: anywhere;
+  }
+}
+
+// --- Limite de conversation -----------------------------------------------
+
+.bandeau-limite {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  text-align: center;
+  background-color: $vertTC;
+  border-top: 1px solid #e2e4ee;
+  @include Typo($p12, $normal, #555);
+}
+
+.fin-conversation {
+  flex-shrink: 0;
+  padding: 10px 8px 4px;
+  text-align: center;
+  border-top: 1px solid #e2e4ee;
+  @include Typo($p14, $normal, #333);
+
+  p {
+    margin: 0 0 8px;
+  }
+}
+
+// --- Saisie ----------------------------------------------------------------
+
+.saisie {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 8px;
+  border-top: 1px solid #e2e4ee;
+
+  textarea {
+    flex: 1;
+    resize: none;
+    max-height: 120px;
+    padding: 8px 10px;
+    border: 1px solid #c9ccd8;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: $p14;
+
+    &:focus {
+      outline: none;
+      border-color: $couleur-flore;
+    }
+  }
+
+  .envoyer:not([disabled]) {
+    color: $couleur-flore;
+  }
+
+  .stop {
+    color: $superRed;
+  }
+}
+
+.mention {
+  flex-shrink: 0;
+  padding: 0 8px 6px;
+  text-align: center;
+  @include Typo($p10, $normal, #888);
+}
+
+// --- Mobile : panneau en plein écran ----------------------------------------
+
+@media (max-width: $mobile) {
+  :host:has(.panneau) {
+    inset: 0;
+  }
+
+  .panneau,
+  .panneau.agrandi {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  // Déjà en plein écran : agrandir/réduire n'a pas d'effet
+  .btn-taille {
+    display: none;
+  }
+}

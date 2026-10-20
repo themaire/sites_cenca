@@ -1,0 +1,189 @@
+@if (mode() === 'replie') {
+  <!-- Bouton flottant : ATLAS replié -->
+  <button
+    type="button"
+    class="lanceur"
+    (click)="ouvrir()"
+    [matTooltip]="enCours() ? 'ATLAS prépare sa réponse…'
+      : reponseNonLue() ? 'ATLAS a répondu' : 'Ouvrir ATLAS, l\'assistant sites'"
+    matTooltipPosition="left"
+    aria-label="Ouvrir l'assistant ATLAS"
+  >
+    @if (!avatarIndisponible) {
+      <img [src]="avatar" alt="" (error)="avatarIndisponible = true" />
+    } @else {
+      <mat-icon>forum</mat-icon>
+    }
+    @if (enCours()) {
+      <span class="pastille en-cours" aria-hidden="true"></span>
+    } @else if (reponseNonLue()) {
+      <span class="pastille non-lue" aria-hidden="true"></span>
+    }
+  </button>
+} @else {
+  <section
+    class="panneau"
+    [class.agrandi]="mode() === 'agrandi'"
+    role="dialog"
+    aria-label="Assistant ATLAS"
+  >
+    <!-- En-tête -->
+    <header class="entete">
+      <div class="identite">
+        @if (!avatarIndisponible) {
+          <img class="avatar" [src]="avatar" alt="" (error)="avatarIndisponible = true" />
+        } @else {
+          <mat-icon class="avatar">forum</mat-icon>
+        }
+        <div>
+          <h2>ATLAS</h2>
+          <span class="sous-titre">Assistant sites</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button mat-icon-button type="button" (click)="nouvelleConversation()"
+          matTooltip="Nouvelle conversation" aria-label="Nouvelle conversation">
+          <mat-icon>add_comment</mat-icon>
+        </button>
+        <button mat-icon-button type="button" class="btn-taille" (click)="basculerTaille()"
+          [matTooltip]="mode() === 'agrandi' ? 'Réduire' : 'Agrandir'"
+          [attr.aria-label]="mode() === 'agrandi' ? 'Réduire' : 'Agrandir'">
+          <mat-icon>{{ mode() === 'agrandi' ? 'close_fullscreen' : 'open_in_full' }}</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="fermer()"
+          matTooltip="Replier" aria-label="Replier l'assistant">
+          <mat-icon>remove</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    @if (enCours()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <!-- Messages -->
+    <div class="messages" #listeMessages aria-live="polite">
+      @if (messages().length === 0) {
+        <div class="accueil">
+          <p>
+            Bonjour, je suis <strong>ATLAS</strong>. Je réponds à vos questions sur les sites,
+            le foncier et les travaux, à partir des données de l'application.
+          </p>
+          <aside class="encart">
+            <div class="encart-ligne">
+              <mat-icon>hourglass_top</mat-icon>
+              <span>
+                <strong>Un peu de patience :</strong> je fonctionne sur un serveur local, une réponse
+                peut prendre de quelques secondes à une minute. C'est normal.
+              </span>
+            </div>
+            <div class="encart-ligne">
+              <mat-icon>fact_check</mat-icon>
+              <span>
+                <strong>Je peux me tromper :</strong> vérifiez les informations importantes, par exemple
+                dans le dépliant « Requêtes utilisées » ou sur la fiche du site.
+              </span>
+            </div>
+          </aside>
+          <p class="essayer">Par exemple :</p>
+          @for (exemple of exemples; track exemple) {
+            <button type="button" class="exemple" (click)="envoyer(exemple)">{{ exemple }}</button>
+          }
+          <p class="essayer">Pour découvrir ce que je sais faire, demandez-moi :</p>
+          <div class="aides">
+            @for (aide of aides; track aide) {
+              <button type="button" class="aide" (click)="envoyer(aide)">« {{ aide }} »</button>
+            }
+          </div>
+        </div>
+      }
+
+      @for (message of messages(); track $index; let i = $index) {
+        @if (message.role === 'user') {
+          <div class="bulle utilisateur">{{ message.content }}</div>
+        } @else {
+          <div class="ligne-assistant">
+            <img class="mini-avatar" [src]="avatar" alt="" [hidden]="avatarIndisponible" />
+            <div class="bulle assistant" [class.erreur]="message.erreur"
+              [attr.title]="message.modele ? 'Modèle : ' + message.modele : null">
+              @if (message.erreur) {
+                <mat-icon class="icone-erreur">error_outline</mat-icon>
+                <span>{{ message.content }}</span>
+              } @else if (message.content) {
+                <div class="markdown" [innerHTML]="rendreMarkdown(message)" (click)="surClicMarkdown($event)"></div>
+              }
+
+              @if (estEnCoursDeGeneration(i)) {
+                <div class="statut">
+                  @if (outilEnCours()) {
+                    <mat-icon>search</mat-icon> Consultation : {{ outilEnCours() }}…
+                  } @else if (attente() && !message.content) {
+                    <mat-icon>hourglass_top</mat-icon> {{ attente() }}
+                  } @else if (!message.content) {
+                    <span class="points"><span></span><span></span><span></span></span>
+                  }
+                </div>
+              }
+
+              @if (message.outils?.length) {
+                <details class="requetes">
+                  <summary>Requêtes utilisées ({{ message.outils!.length }})</summary>
+                  <ul>
+                    @for (outil of message.outils; track $index) {
+                      <li>
+                        <strong>{{ libelleOutil(outil.nom) }}</strong>
+                        <code>{{ outil.nom }}</code>
+                        <span class="arguments">{{ formaterArguments(outil) }}</span>
+                      </li>
+                    }
+                  </ul>
+                </details>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Limite de conversation -->
+    @if (conversationTerminee()) {
+      <div class="fin-conversation">
+        <p>Conversation terminée : ouvrez une nouvelle conversation pour continuer.</p>
+        <button mat-flat-button color="primary" type="button" (click)="nouvelleConversation()">
+          <mat-icon>add_comment</mat-icon> Nouvelle conversation
+        </button>
+      </div>
+    } @else if (!enCours() && questionsRestantes() !== null && questionsRestantes()! <= 2) {
+      <div class="bandeau-limite">
+        Plus que {{ questionsRestantes() }} question{{ questionsRestantes()! > 1 ? 's' : '' }} dans cette conversation
+      </div>
+    }
+
+    <!-- Saisie -->
+    <form class="saisie" (ngSubmit)="envoyer()">
+      <textarea
+        #zoneSaisie
+        name="saisie"
+        rows="2"
+        [(ngModel)]="saisie"
+        (keydown)="surTouche($event)"
+        [disabled]="conversationTerminee()"
+        placeholder="Posez votre question à ATLAS… (ou tapez « aide »)"
+        aria-label="Votre question"
+      ></textarea>
+      @if (enCours()) {
+        <button mat-icon-button type="button" class="stop" (click)="interrompre()"
+          matTooltip="Arrêter" aria-label="Arrêter la génération">
+          <mat-icon>stop_circle</mat-icon>
+        </button>
+      } @else {
+        <button mat-icon-button type="submit" class="envoyer" [disabled]="!saisie.trim() || conversationTerminee()"
+          matTooltip="Envoyer" aria-label="Envoyer">
+          <mat-icon>send</mat-icon>
+        </button>
+      }
+    </form>
+
+    <footer class="mention">Assistant IA local, lecture seule : vérifiez les informations importantes.</footer>
+  </section>
+}

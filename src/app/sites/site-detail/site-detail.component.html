@@ -2,6 +2,14 @@
   <div class="fond">
     <!-- Bouton Retour bleu en haut-->
     <div class="container-btn-h">
+      <!-- Permalien de la fiche, à partager -->
+      <div class="lien" *ngIf="siteDetail">
+        <button mat-button type="button" (click)="copierLien()"
+          matTooltip="Copier l'adresse de cette fiche pour la partager">
+          <mat-icon>link</mat-icon> Copier le lien
+        </button>
+      </div>
+
       <button
         mat-button-flat
         class="btn"
@@ -18,12 +26,20 @@
         </button>
       </div>
     </div>
+    <!-- Lien vers un site inexistant (périmé ou supprimé) -->
+    <div class="introuvable" *ngIf="introuvable">
+      <mat-icon>search_off</mat-icon>
+      <p>Ce site est introuvable : le lien est peut-être périmé, ou le site a été supprimé.</p>
+    </div>
+
     <!-- Titre -->
-    <h2 *ngIf="siteDetail !== undefined">
+    <h2 *ngIf="siteDetail !== undefined && !introuvable">
       {{ siteDetail.description_site }}
     </h2>
 
-    <div *ngIf="isMobile; then mobile; else desktop" class="site-detail"></div>
+    <ng-container *ngIf="!introuvable">
+      <div *ngIf="isMobile; then mobile; else desktop" class="site-detail"></div>
+    </ng-container>
 
     <ng-template #desktop>
       <!-- Onglets supérieurs -->

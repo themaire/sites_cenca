@@ -36,6 +36,10 @@
   width: 100%;
   margin: 0 50px 25px 29px;
 }
+// Permalien : pas de bloc de recherche au-dessus de la fiche pour l'espacer de l'en-tête
+.sites-enfants--permalien {
+  padding-top: 25px;
+}
 
 @media screen and (max-width: $mobile) {
   .sites-enfants {

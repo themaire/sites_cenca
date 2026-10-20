@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { NavigationEnd, RouterLink, RouterOutlet } from '@angular/router';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
+import { ChatbotComponent } from './chatbot/chatbot.component';
 
 import { LoginService } from './login/login.service';
 import { User } from './login/user.model';
@@ -19,31 +20,46 @@ import { User } from './login/user.model';
     RouterModule,
     HeaderComponent,
     FooterComponent,
+    ChatbotComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
+  /** Routes accessibles sans authentification. */
+  private static readonly ROUTES_PUBLIQUES = ['/aide', '/documentation', '/login', '/reset-password', '/not-found'];
+
   token: string | null = localStorage.getItem('token');
   isResetPasswordMode = false;
+
+  /** URL courante, mise à jour à chaque navigation. */
+  private urlCourante = signal(this.router.url);
+
+  /** Le chatbot ne s'affiche que pour un utilisateur connecté, hors routes publiques. */
+  afficherChatbot = computed(() =>
+    !!this.loginService.user() && !this.estRoutePublique(this.urlCourante())
+  );
 
   constructor(private router: Router, private loginService: LoginService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    const publicRoutes = ['/aide', '/documentation', '/login', '/reset-password', '/not-found'];
-
     // Appel explicite au chargement initial uniquement si route privée
-    if (!publicRoutes.some(route => this.router.url.startsWith(route))) {
+    if (!this.estRoutePublique(this.router.url)) {
       this.checkToken();
     }
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        if (!publicRoutes.some(route => this.router.url.startsWith(route))) {
+        this.urlCourante.set(this.router.url);
+        if (!this.estRoutePublique(this.router.url)) {
           this.checkToken();
         }
       }
     });
+  }
+
+  private estRoutePublique(url: string): boolean {
+    return AppComponent.ROUTES_PUBLIQUES.some(route => url.startsWith(route));
   }
 
   /**
@@ -52,9 +68,8 @@ export class AppComponent implements OnInit {
    * Si le token n'est pas valide ou inexistant, l'utilisateur est redirigé vers la page de connexion.
    */
   checkToken() {
-    const publicRoutes = ['/aide', '/documentation', '/login', '/reset-password', '/not-found'];
     // Ne rien faire si route publique
-    if (publicRoutes.some(route => this.router.url.startsWith(route))) {
+    if (this.estRoutePublique(this.router.url)) {
       return;
     }
 
@@ -83,9 +98,9 @@ export class AppComponent implements OnInit {
           localStorage.removeItem('token');
           this.token = null;
 
-          // Ne redirige vers /login que si l'utilisateur n'est pas déjà sur cette page
-          if (this.router.url !== '/login') {
-            this.navigate('login');
+          // Redirige vers /login en mémorisant la page demandée, pour y revenir après connexion
+          if (!this.router.url.startsWith('/login')) {
+            this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
           }
         },
       });

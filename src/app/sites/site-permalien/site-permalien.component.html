@@ -1,0 +1,9 @@
+<div class="site-parent">
+  <div class="proteger"><span class="proteger-text">Protéger</span></div>
+
+  <div class="sites-enfants sites-enfants--permalien">
+    @if (site(); as site) {
+      <app-site-detail [site]="site" (selectedSite)="retour()"></app-site-detail>
+    }
+  </div>
+</div>

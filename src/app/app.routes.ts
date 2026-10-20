@@ -41,6 +41,14 @@ export const routes: Routes = [
     // canActivate: [isLoggedInGuard], // Désactivé temporairement
   },
 
+  // Permalien d'une fiche site (liens partagés, liens d'ATLAS)
+  {
+    path: 'site/:uuid',
+    loadComponent: () =>
+      import('./sites/site-permalien/site-permalien.component').then((mod) => mod.SitePermalienComponent),
+    canActivate: [isLoggedInGuard],
+  },
+
   // Lazy-load
   {
     path: 'foncier',
