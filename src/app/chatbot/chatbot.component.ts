@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { AppelOutil, ChatbotService, ErreurChat, MessageChat } from '../shared/services/chatbot.service';
+import { ChantSonneur } from './chant-sonneur';
 
 /** État d'affichage du chatbot : bouton seul, panneau ou plein écran. */
 export type ModeChatbot = 'replie' | 'panneau' | 'agrandi';
@@ -31,6 +32,8 @@ const LIBELLES_OUTILS: Record<string, string> = {
 
 const CLE_HISTORIQUE = 'chatbot_historique';
 const CLE_MODE = 'chatbot_mode';
+/** Préférence durable (localStorage) : chant de fin de réponse activé ou coupé. */
+const CLE_SON = 'chatbot_son';
 
 /**
  * Sonneur, l'assistant IA des sites du CENCA (nommé d'après le sonneur à ventre jaune).
@@ -73,6 +76,8 @@ export class ChatbotComponent implements OnDestroy {
   attente = signal<string | null>(null);
   /** Réponse arrivée pendant que le chatbot était replié. */
   reponseNonLue = signal(false);
+  /** Sonneur chante quand une réponse arrive hors de vue (coupable depuis l'en-tête). */
+  sonActif = signal(this.lireSon());
   saisie = '';
   avatarIndisponible = false;
 
@@ -92,11 +97,13 @@ export class ChatbotComponent implements OnDestroy {
   private abonnement: Subscription | null = null;
   /** Cache du rendu Markdown, pour ne pas reparser à chaque détection de changements. */
   private rendus = new WeakMap<MessageChat, { source: string; html: string }>();
+  private chant = new ChantSonneur();
 
   constructor(private chatbotService: ChatbotService, private router: Router) {}
 
   ngOnDestroy(): void {
     this.interrompre();
+    this.chant.fermer();
   }
 
   // --- Affichage -----------------------------------------------------------
@@ -111,6 +118,21 @@ export class ChatbotComponent implements OnDestroy {
   /** Replie le chatbot ; une génération en cours continue en arrière-plan. */
   fermer(): void {
     this.changerMode('replie');
+  }
+
+  /** Active ou coupe le chant ; à l'activation, Sonneur fait entendre son chant. */
+  basculerSon(): void {
+    const actif = !this.sonActif();
+    this.sonActif.set(actif);
+    try {
+      localStorage.setItem(CLE_SON, actif ? 'oui' : 'non');
+    } catch {
+      // localStorage indisponible : le choix vaut pour cette page seulement
+    }
+    if (actif) {
+      this.chant.preparer();
+      this.chant.jouer();
+    }
   }
 
   basculerTaille(): void {
@@ -149,6 +171,8 @@ export class ChatbotComponent implements OnDestroy {
     if (!question || this.enCours() || this.conversationTerminee()) return;
 
     this.saisie = '';
+    // L'envoi est un geste de l'utilisateur : le navigateur autorisera le chant à la fin
+    if (this.sonActif()) this.chant.preparer();
     const reponse: MessageChat = { role: 'assistant', content: '', outils: [] };
     const historique = [...this.messages(), { role: 'user' as const, content: question }];
     this.messages.set([...historique, reponse]);
@@ -191,7 +215,13 @@ export class ChatbotComponent implements OnDestroy {
         reponse.conversationPleine = erreur instanceof ErreurChat && erreur.statut === 413;
         this.terminer();
       },
-      complete: () => this.terminer(),
+      complete: () => {
+        this.terminer();
+        // Réponse arrivée jusqu'au bout (pas d'erreur ; un Stop n'appelle pas complete),
+        // pendant que l'utilisateur ne regarde pas : panneau replié ou onglet en arrière-plan
+        const horsDeVue = this.mode() === 'replie' || document.hidden;
+        if (this.sonActif() && horsDeVue && reponse.content.trim() && !reponse.erreur) this.chant.jouer();
+      },
     });
   }
 
@@ -303,6 +333,14 @@ export class ChatbotComponent implements OnDestroy {
       return Array.isArray(messages) ? messages : [];
     } catch {
       return [];
+    }
+  }
+
+  private lireSon(): boolean {
+    try {
+      return localStorage.getItem(CLE_SON) !== 'non';
+    } catch {
+      return true;
     }
   }
 

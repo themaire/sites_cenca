@@ -42,7 +42,9 @@ Quand la réponse porte sur beaucoup d'éléments, Sonneur donne un **résumé**
 
 Une réponse prend **de 1 à 4 minutes**. Le modèle tourne **sur nos propres machines**, sans carte graphique : c'est plus lent qu'un service en ligne, mais **les données ne sortent pas du CEN**.
 
-Pendant ce temps, vous pouvez replier Sonneur et continuer à travailler : une pastille vous signale la réponse quand elle arrive.
+Pendant ce temps, vous pouvez replier Sonneur et continuer à travailler. Quand la réponse arrive alors que vous ne regardez pas (panneau replié, ou autre onglet ouvert), **Sonneur chante** : quelques petits « hou » timides, comme le vrai sonneur à ventre jaune. Si le panneau est replié, une pastille rouge sur la mascotte vous signale aussi la réponse. Si vous gardez le panneau ouvert sous les yeux, Sonneur reste silencieux.
+
+> Le chant vous dérange ? Coupez-le avec le bouton 🔊 en haut du panneau. Votre choix est mémorisé.
 
 ---
 
@@ -71,3 +73,4 @@ Les chiffres viennent de la base, mais le modèle peut **mal formuler** une rép
 6. **10 questions** maximum par conversation ; nouvelle conversation pour changer de sujet.
 7. **Vérifier** sur la fiche avant de citer un chiffre.
 8. **« Que sais-tu faire ? »** pour découvrir ses possibilités.
+9. Sonneur **chante** quand la réponse arrive hors de vue ; le bouton 🔊 coupe le son.

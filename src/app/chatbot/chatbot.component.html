@@ -41,6 +41,11 @@
         </div>
       </div>
       <div class="actions">
+        <button mat-icon-button type="button" (click)="basculerSon()"
+          [matTooltip]="sonActif() ? 'Couper le chant de Sonneur' : 'Sonneur chante quand une réponse arrive panneau replié'"
+          [attr.aria-label]="sonActif() ? 'Couper le son' : 'Activer le son'" [attr.aria-pressed]="sonActif()">
+          <mat-icon>{{ sonActif() ? 'volume_up' : 'volume_off' }}</mat-icon>
+        </button>
         <button mat-icon-button type="button" (click)="nouvelleConversation()"
           matTooltip="Nouvelle conversation" aria-label="Nouvelle conversation">
           <mat-icon>add_comment</mat-icon>
