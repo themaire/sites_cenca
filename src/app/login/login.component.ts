@@ -159,8 +159,12 @@ export class LoginComponent implements OnDestroy {
     });
   }
 
+  /** Après connexion : page demandée avant la connexion (returnUrl), sinon l'accueil. */
   navigateHome() {
-    this.router.navigate(['/']);
+    const retour = this.route.snapshot.queryParamMap.get('returnUrl');
+    // Uniquement une adresse interne à l'application (pas de redirection vers un autre site)
+    const interne = !!retour && retour.startsWith('/') && !retour.startsWith('//') && !retour.startsWith('/login');
+    this.router.navigateByUrl(interne ? retour! : '/');
   }
 
   ngOnDestroy(): void {

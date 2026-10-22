@@ -1,5 +1,5 @@
-import { Component, inject, ViewChild, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, ViewChild, AfterViewInit, DestroyRef } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
@@ -62,7 +62,20 @@ export class SitesDisplayComponent implements AfterViewInit {
 
   research: SitesService = inject(SitesService);
 
-  constructor(private route: ActivatedRoute, private router: Router, private dialog: MatDialog) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private dialog: MatDialog,
+    private location: Location
+  ) {
+    // Retour arrière du navigateur depuis une fiche : on revient à la liste
+    const historique = this.location.subscribe(() => {
+      if (this.selectedSite && !this.location.path().startsWith('/site/')) {
+        this.fermerFiche();
+      }
+    });
+    inject(DestroyRef).onDestroy(() => historique.unsubscribe());
+  }
   
   ngAfterViewInit() {
     if (this.dataSource) {
@@ -127,16 +140,32 @@ export class SitesDisplayComponent implements AfterViewInit {
     // Ca se passe dans la vue du component sites-display
     if (site.uuid_site !== undefined) {
       this.selectedSite = site;
+      this.afficherPermalien(site);
     } else {
       console.log('Pas de uuid pour afficher le site : ' + site.uuid_site);
     }
   }
 
+  /**
+   * L'adresse affichée devient le permalien de la fiche (`/site/:code`, ou `/site/:uuid` sans code),
+   * à copier ou partager. Simple changement d'URL, sans navigation : la liste filtrée reste en place.
+   */
+  private afficherPermalien(site: { uuid_site: string; code?: string }): void {
+    this.location.go('/site/' + encodeURIComponent(site.code?.trim() || site.uuid_site));
+  }
+
+  /** Bouton Retour de la fiche : on dépile le permalien (le retour arrière ferme la fiche). */
   resetSelected(): void {
+    if (this.location.path().startsWith('/site/')) {
+      this.location.back();
+    } else {
+      this.fermerFiche();
+    }
+  }
+
+  private fermerFiche(): void {
     this.selectedSite = undefined;
-    this.route.params.subscribe((params: Params) => {
-      this.loadSites(params);
-    });
+    this.loadSites(this.route.snapshot.params);
   }
 
   openNewSiteDialog(): void {
@@ -152,6 +181,7 @@ export class SitesDisplayComponent implements AfterViewInit {
       if (createdSite?.uuid_site) {
         // Ouvre directement la fiche du site qui vient d'être créé.
         this.selectedSite = createdSite;
+        this.afficherPermalien(createdSite);
       }
     });
   }

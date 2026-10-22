@@ -1,4 +1,3 @@
-import { environment } from '../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -40,7 +39,7 @@ import { LoginService } from '../login/login.service';
         <mat-sidenav [opened]="sidenavOpened" mode="side" class="sidenav">
           <mat-nav-list>
             <ng-container *ngFor="let category of categories">
-              <h3 matSubheader *ngIf="userGroupId === 5">{{ category.title }}</h3>
+              <h3 matSubheader *ngIf="categories.length > 1">{{ category.title }}</h3>
               <a mat-list-item 
                  *ngFor="let section of category.sections" 
                  (click)="navigateToSection(section)"
@@ -59,8 +58,15 @@ import { LoginService } from '../login/login.service';
               <p>Chargement...</p>
             </div>
             
-            <div *ngIf="!isLoading" 
+            <div *ngIf="!isLoading && !connecte" class="connexion-requise">
+              <mat-icon>lock</mat-icon>
+              <p>L'aide est réservée aux utilisateurs de l'application.</p>
+              <a mat-flat-button color="primary" routerLink="/login" [queryParams]="{ returnUrl: router.url }">Se connecter</a>
+            </div>
+
+            <div *ngIf="!isLoading && connecte" 
                  class="markdown-content" 
+                 (click)="onContentClick($event)"
                  [innerHTML]="currentContent">
             </div>
           </div>
@@ -122,6 +128,15 @@ import { LoginService } from '../login/login.service';
 
     .markdown-content {
       line-height: 1.6;
+    }
+
+    .connexion-requise {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 48px;
+      text-align: center;
     }
 
     .markdown-content :deep(h1) {
@@ -190,23 +205,21 @@ import { LoginService } from '../login/login.service';
   `]
 })
 export class AideComponent implements OnInit {
-  private activeUrl: string = environment.apiBaseUrl;
-  userGroupId: number = 0;
   categories: DocCategory[] = [];
   currentContent: string = '';
   currentSection: DocSection | null = null;
-  isLoading = false;
+  isLoading = true; // vrai jusqu'à la vérification de la session, pour ne pas afficher le message de connexion à tort
   sidenavOpened = true;
+  /** Toutes les fiches exigent une connexion : un visiteur anonyme ne voit qu'une invitation à se connecter. */
+  connecte = false;
   baseRoute = '/aide'; // Toujours utiliser /aide
   
   constructor(
     private documentationService: DocumentationService,
     private route: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private loginService: LoginService
-  ) {
-    this.userGroupId = Math.max(0, ...(this.loginService.user()?.groups ?? [0]));
-  }
+  ) {}
   
   toggleSidenav() {
     this.sidenavOpened = !this.sidenavOpened;
@@ -236,6 +249,12 @@ export class AideComponent implements OnInit {
   private loadCategoriesAndSection(): void {
     const proceed = () => {
       const isAuthenticated = this.loginService.user() !== null && this.loginService.user() !== undefined;
+      this.connecte = isAuthenticated;
+      if (!isAuthenticated) {
+        this.sidenavOpened = false;
+        this.isLoading = false;
+        return;
+      }
       this.documentationService.getHierarchicalSections(isAuthenticated).subscribe(categories => {
         this.categories = categories;
         // Si on est sur /aide sans section, charger la section 'index' de la première catégorie
@@ -286,30 +305,14 @@ export class AideComponent implements OnInit {
     }
     this.currentSection = foundSection;
     // Charger le contenu selon la source (backend ou markdown local)
-    if (foundSection.backendUrl) {
-      let url = foundSection.backendUrl;
-      if (!/^https?:\/\//.test(url)) {
-        url = this.activeUrl.replace(/\/$/, '') + (url.startsWith('/') ? url : '/' + url);
-      }
-      this.documentationService['http'].get(url, { responseType: 'text' }).subscribe({
+    if (foundSection.backendUrl || foundSection.path) {
+      this.documentationService.loadSectionContent(foundSection).subscribe({
         next: (content: string) => {
           this.currentContent = content;
           this.isLoading = false;
         },
         error: (error: any) => {
-          console.error('Erreur lors du chargement de la documentation backend:', error);
-          this.currentContent = '<p>Erreur lors du chargement de la documentation.</p>';
-          this.isLoading = false;
-        }
-      });
-    } else if (foundSection.path) {
-      this.documentationService.loadMarkdownFile(foundSection.path).subscribe({
-        next: (content: string) => {
-          this.currentContent = content;
-          this.isLoading = false;
-        },
-        error: (error: any) => {
-          console.error('Erreur lors du chargement du markdown:', error);
+          console.error('Erreur lors du chargement de la documentation:', error);
           this.currentContent = '<p>Erreur lors du chargement de la documentation.</p>';
           this.isLoading = false;
         }
@@ -317,6 +320,23 @@ export class AideComponent implements OnInit {
     } else {
       this.currentContent = '<p>Aucun contenu disponible pour cette section.</p>';
       this.isLoading = false;
+    }
+  }
+
+  /**
+   * Les liens entre fiches ([texte](/aide/<id>)) sont injectés par innerHTML :
+   * sans interception, chaque clic rechargerait toute l'application.
+   * Ctrl/Cmd/Maj + clic garde le comportement du navigateur (nouvel onglet).
+   */
+  onContentClick(event: MouseEvent) {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+    const lien = (event.target as HTMLElement).closest('a');
+    const href = lien?.getAttribute('href');
+    if (href && href.startsWith(this.baseRoute + '/')) {
+      event.preventDefault();
+      this.router.navigateByUrl(href);
     }
   }
 

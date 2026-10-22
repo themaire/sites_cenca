@@ -15,6 +15,9 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -44,6 +47,9 @@ import { DetailProjetsComponent } from './detail-projets/detail-projets.componen
     // RouterOutlet,
 
     MatTabsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
 
     DetailInfosComponent,
     DetailDescriptionComponent,
@@ -61,6 +67,8 @@ export class SiteDetailComponent {
   @Output() selectedSite = new EventEmitter<Object>(); // Utiliser cette variable provenent du composant frere
 
   isMobile: boolean = false;
+  /** Aucun site ne correspond à l'uuid demandé. */
+  introuvable = false;
 
   public siteDetail!: DetailSite;
   public siteDetailProjet!: DetailSiteProjet;
@@ -206,7 +214,13 @@ Seront aussi supprimés : ${cascade}.` : '') +
       );
       // console.log(this.site);
 
+      this.introuvable = false;
       this.sitesService.getSiteUUID(subroute).then(async (siteGuetted) => {
+        // uuid inconnu (lien périmé, site supprimé) : le backend renvoie une liste vide
+        if (!siteGuetted?.uuid_site) {
+          this.introuvable = true;
+          return;
+        }
         this.siteDetail = siteGuetted;
 
         const subrouteCommunes = `commune/uuid=${siteGuetted.uuid_site}`;
@@ -220,8 +234,19 @@ Seront aussi supprimés : ${cascade}.` : '') +
           surface: siteGuetted.surface,
           localisation: siteGuetted.localisation
         }
-      });
+      }).catch(() => this.introuvable = true);
     }
+  }
+
+  /** Copie le permalien de la fiche dans le presse-papiers : `/site/:code`, ou `/site/:uuid` pour un site sans code. */
+  copierLien(): void {
+    const id = this.siteDetail?.code?.trim() || this.siteDetail?.uuid_site || this.site?.uuid_site;
+    if (!id) return;
+    const lien = `${window.location.origin}/site/${encodeURIComponent(id)}`;
+    navigator.clipboard.writeText(lien).then(
+      () => this.formService.snackMessage('Lien de la fiche copié.', 0, this.snackBar),
+      () => this.formService.snackMessage(`Copie impossible. Lien : ${lien}`, 1, this.snackBar)
+    );
   }
 
   ngOnInit() {

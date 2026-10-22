@@ -26,11 +26,31 @@ mat-tab {
     grid-column: 2;
     @include btn(white, $couleur-flore, white, $couleur-faune);
   }
+  .lien {
+    grid-column: 1;
+    justify-self: start;
+    button {
+      color: $couleur-flore;
+    }
+  }
   .suppression {
     grid-column: 3;
     justify-self: end;
     @include suppression-btn();
     padding: 0; // le mixin ajoute un padding pensé pour le bas de page
+  }
+}
+.introuvable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 40px 20px;
+  @include Typo($p16, $normal, #555);
+  mat-icon {
+    @include dim(48px, 48px);
+    font-size: 48px;
+    color: $couleur-faune;
   }
 }
 .container-btn-b {

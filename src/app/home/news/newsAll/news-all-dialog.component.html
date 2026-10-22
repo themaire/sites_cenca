@@ -1,0 +1,46 @@
+<div mat-dialog-container>
+  <button class="close-btn" mat-icon-button aria-label="Fermer" (click)="close()">×</button>
+
+  <h2 mat-dialog-title>Toutes les actualités</h2>
+
+  <div mat-dialog-content>
+    <div class="loading" *ngIf="loading">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
+
+    <p class="vide" *ngIf="error">Impossible de charger les actualités.</p>
+    <p class="vide" *ngIf="!loading && !error && news.length === 0">Aucune actualité publiée.</p>
+
+    <ul class="billets" *ngIf="!loading && news.length > 0">
+      <li
+        class="billet"
+        *ngFor="let item of news"
+        [class.non-lu]="item.lu === false"
+        role="button"
+        tabindex="0"
+        (click)="openDetail(item)"
+        (keydown.enter)="openDetail(item)"
+      >
+        <img *ngIf="item.image_url" [src]="item.image_url" [alt]="item.titre" />
+
+        <div class="texte">
+          <div class="entete">
+            <span class="date" [title]="item.date_publication | date:'dd/MM/yyyy'">
+              {{ item.date_publication | tempsEcoule }}
+            </span>
+            <span class="pastille" *ngIf="item.lu === false">Nouveau</span>
+            <span class="commentaires" *ngIf="item.nb_commentaires">💬 {{ item.nb_commentaires }}</span>
+          </div>
+          <div class="titre">{{ item.titre }}</div>
+          <div class="resume">{{ item.resume }}</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="voir-plus" *ngIf="!loading && !error && hasMore">
+      <button mat-stroked-button color="primary" [disabled]="loadingMore" (click)="loadMore()">
+        {{ loadingMore ? 'Chargement…' : 'Voir plus' }}
+      </button>
+    </div>
+  </div>
+</div>

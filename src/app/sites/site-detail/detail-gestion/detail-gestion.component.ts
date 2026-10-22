@@ -35,7 +35,7 @@ import { LoginService } from '../../../login/login.service';
   styleUrls: ['./detail-gestion.component.scss']
 })
 export class DetailGestionComponent {
-  cacheMisere = environment.cache_misere;
+  plansGestionVisibles = environment.fonctionnalites.plansGestion;
 
   @Input() inputDetail?: DetailSite;
   @Input() inputUUIDsite?: String;

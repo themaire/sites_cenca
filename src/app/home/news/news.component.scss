@@ -26,8 +26,59 @@
   padding: 20px 0;
 }
 
+// Carte fine « Toutes les actualités » à droite du fil, sur toute sa hauteur
+.fil-conteneur {
+  display: flex;
+  gap: 16px;
+
+  @media screen and (max-width: 650px) {
+    flex-direction: column;
+  }
+}
+
+.tous {
+  flex: 0 0 48px;
+  display: flex;
+  @include align(center, center);
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  background-color: $couleur-flore;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover, &:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  // Libellé vertical, lu de bas en haut comme les bandeaux des tuiles de l'accueil
+  span {
+    @include Typo($p14, $semiGras, white);
+    writing-mode: vertical-lr;
+    text-orientation: sideways;
+    transform: rotate(180deg);
+    white-space: nowrap;
+  }
+
+  // Sur petit écran : bandeau horizontal au-dessus du fil
+  @media screen and (max-width: 650px) {
+    order: -1;
+    flex-basis: auto;
+    padding: 10px;
+
+    span {
+      writing-mode: horizontal-tb;
+      transform: none;
+    }
+  }
+}
+
 // Fil en grille : 4 cartes par ligne sur grand écran, puis 3 / 2 / 1 selon la largeur
 .fil {
+  flex: 1;
+  min-width: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;

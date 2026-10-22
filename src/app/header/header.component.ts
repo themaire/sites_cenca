@@ -1,26 +1,16 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  inject,
-  ViewChildren,
-  QueryList,
-  OnDestroy,
-} from '@angular/core';
+import { Component, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Router, RouterModule } from '@angular/router';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 
-import { MenuService } from '../menu.service';
-import { MatMenu } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { MenuItem } from '../menuItem';
+
+import { MenuService } from '../menu.service';
 import { LoginService } from '../login/login.service';
-import { Subscription } from 'rxjs';
-import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-header',
@@ -35,24 +25,29 @@ import { effect } from '@angular/core';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  public logoutSubscription: Subscription | null = null;
-  initials: string | null = null;
+export class HeaderComponent {
+  readonly PARAMETRES_ID = 28;
 
-  userGroId: number | null = null;
+  // Axes du CENCA (alimentés par le MenuService)
+  readonly menuItems = toSignal(this.menuService.menuItems$, { initialValue: [] });
 
-  readonly CHIRO_GROUPS = [3, 5, 6];
+  // Axes affichés sous forme de bouton déroulant (hors Paramètres)
+  readonly axes = computed(() =>
+    this.menuItems().filter((item) => item.id !== this.PARAMETRES_ID)
+  );
 
-  get hasChiroAccess(): boolean {
-    const user = this.loginService.user();
-    if (!user) return false;
-    const groups = user.groups.map(Number);
-    return this.CHIRO_GROUPS.some(g => groups.includes(g));
-  }
+  readonly parametresMenuItem = computed(() =>
+    this.menuItems().find((item) => item.id === this.PARAMETRES_ID)
+  );
 
-  get parametresMenuItem() {
-    return this.menuItems[0]?.children?.find(i => i.id === 28);
-  }
+  // Accès Chiroptères : règle de groupes centralisée dans LoginService
+  readonly hasChiroAccess = computed(() => this.loginService.isChiro());
+
+  // Seuils calés sur la largeur réelle du menu (≈ 1000px pour les 9 axes d'un admin, ligne complète ≈ 1630px) :
+  // - compact : petit logo, Aide en icône, boutons resserrés
+  // - mobile  : menu hamburger
+  readonly isCompact = this.matches('(max-width: 1699.98px)');
+  readonly isMobile = this.matches('(max-width: 1239.98px)');
 
   constructor(
     private router: Router,
@@ -60,52 +55,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private breakpointObserver: BreakpointObserver,
     public loginService: LoginService
   ) {
+    // (Re)charger le menu à chaque changement d'utilisateur connecté
+    // (arbre admin avec « Paramètres » pour le groupe 5)
     effect(() => {
-      const user = this.loginService.user();
-      if (user) {
-        this.userGroId = user.groups[0] ?? 0;
-        this.menuService.loadMenuItems(this.userGroId ?? 0);
+      if (this.loginService.user()) {
+        this.menuService.loadMenuItems(this.loginService.isAdmin());
       }
     });
   }
 
-  isMobile: boolean = false;
-  menuItems: MenuItem[] = [
-    {
-      id: 0,
-      name: 'Axes du CENCA',
-      children: [], // A remplir par le service this.menuService
-    },
-    {
-      id: 1,
-      name: 'Préférences',
-      children: [
-        {
-          id: 3,
-          name: 'Vraiment plus tard',
-          children: [],
-        },
-      ],
-    },
-  ];
-
-  ngOnInit() {
-    this.menuService.menuItems$.subscribe((items) => {
-      this.menuItems[0].children = items;
-    });
-
-    // Si ce n'est pas déjà fait, charger les données
-    this.menuService.loadMenuItems(this.userGroId ?? 0);
-
-    // console.log('Menu Items at end of onInit() :');
-    // console.log(this.menuItems);
-
-    // Détecter si c'est la version mobile
-    this.breakpointObserver
-      .observe([Breakpoints.Handset])
-      .subscribe((result) => {
-        this.isMobile = result.matches;
-      });
+  private matches(query: string) {
+    return toSignal(
+      this.breakpointObserver.observe(query).pipe(map((result) => result.matches)),
+      { initialValue: this.breakpointObserver.isMatched(query) }
+    );
   }
 
   navigateToHome() {
@@ -114,28 +77,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Bouton deconnexion
   logout() {
-    this.logoutSubscription = this.loginService.logout().subscribe({
-      next: (_) => {
-        this.navigateToLogin();
-      },
-      error: (_) => {
-        this.navigateToLogin();
-      },
+    this.menuService.clearCache();
+    this.loginService.logout().subscribe({
+      complete: () => this.navigateToLogin(),
+      error: () => this.navigateToLogin(),
     });
   }
+
   // Bouton connexion
   navigateToLogin() {
     this.router.navigate(['login']);
-  }
-
-  ngOnDestroy(): void {
-    this.logoutSubscription?.unsubscribe();
-  }
-
-  initialsName() {
-    if (this.loginService.user()) {
-      this.initials =
-        this.loginService.user()!.nom[0] + this.loginService.user()!.prenom[0];
-    }
   }
 }

@@ -6,27 +6,24 @@ header {
   @include fond-bleu();
 
   nav {
+    // Logo et connexion à leur taille naturelle, le menu prend le reste
     display: grid;
-    grid-template-columns: 3fr 8fr 1fr;
-    height: 80px;
+    grid-template-columns: auto 1fr auto;
+    height: 64px;
     margin-left: 50px;
     margin-right: 50px;
     @include align(center, space-between);
-    gap: auto;
+    column-gap: 24px;
 
     .logo-conteneur {
-      @include dim(250px, 70px);
+      @include dim(fit-content, 52px);
       background: white;
       cursor: pointer;
 
       .logoGrand {
-        @include dim(auto, 70px);
+        @include dim(auto, 52px);
         object-fit: cover;
         cursor: pointer;
-      }
-
-      .logoPetit {
-        display: none;
       }
     }
 
@@ -38,7 +35,7 @@ header {
         display: flex;
         @include dim(100%, 100%);
         @include align(center, center);
-        gap: 35px;
+        gap: 20px;
       }
     }
 
@@ -53,23 +50,24 @@ header {
         @include align(center, center);
         gap: 10px;
         .btn-initiales {
-          @include dim(48px, 40px);
+          @include dim(40px, 34px);
           display: flex;
           @include align(center, center);
-          padding: 10px;
-          @include Typo($p16, $semiGras, white);
+          padding: 8px;
+          @include Typo($p14, $semiGras, white);
           border: 1px solid white;
           border-radius: 100px;
           background-color: $couleur-flore;
         }
         .mdc-button {
-          min-width: 48px;
+          min-width: 40px;
         }
         .btn-deconnexion {
           display: flex;
           @include align(center, center);
           border: 1px solid white;
-          @include dim(auto, 40px);
+          @include dim(34px, 34px);
+          padding: 0;
           border-radius: 100px;
           color: white;
           background-color: $couleur-flore;
@@ -85,50 +83,31 @@ header {
   }
 }
 
-.c-proteger {
-  @include btn-menu(
-    $proteger
-  ); // Inclut les styles de base comme padding et border-radius
+// Couleurs des axes du CENCA (class_color renvoyée par le menu)
+$axes: (
+  proteger: $proteger,
+  connaitre: $connaitre,
+  gerer: $gerer,
+  valoriser: $valoriser,
+  accompagner: $accompagner,
+  administratif: $administratif,
+  liens-utiles: $liens-utiles,
+  chiro: $chiro,
+);
+
+@each $nom, $couleur in $axes {
+  .c-#{$nom} {
+    @include btn-menu($couleur);
+  }
 }
 
-.c-connaitre {
-  @include btn-menu(
-    $connaitre
-  ); // Inclut les styles de base comme padding et border-radius
-}
-
-.c-gerer {
-  @include btn-menu(
-    $gerer
-  ); // Inclut les styles de base comme padding et border-radius
-}
-
-.c-valoriser {
-  @include btn-menu(
-    $valoriser
-  ); // Inclut les styles de base comme padding et border-radius
-}
-
-.c-accompagner {
-  @include btn-menu(
-    $accompagner
-  ); // Inclut les styles de base comme padding et border-radius
-}
-
-.c-administratif {
-  @include btn-menu(
-    $administratif
-  ); // Inclut les styles de base comme padding et border-radius
-}
-
-.c-liens-utiles {
-  @include btn-menu(
-    $liens-utiles
-  ); // Inclut les styles de base comme padding et border-radius
-}
-
-.c-chiro {
-  @include btn-menu($chiro);
+// Boutons arrondis du header (axes, Chiroptères, Paramètres, Aide)
+.btn-pill {
+  --mdc-text-button-container-shape: 20px;
+  --mdc-text-button-container-height: 32px;
+  border-radius: 20px;
+  height: 32px;
+  font-size: $p14;
 }
 
 .c-parametres, .c-parametres_hover {
@@ -176,8 +155,8 @@ span {
     color: white !important;
     border: 1px solid #4CAF50 !important;
     font-weight: 500 !important;
-    min-height: 36px !important;
-    padding: 0 16px !important;
+    min-height: 32px !important;
+    padding: 0 14px !important;
     
     // Surcharge explicite des styles Material
     &.mat-mdc-button {
@@ -239,205 +218,55 @@ span {
 }
 
 // RESPONSIVE
-// Media query pour les grands écrans (1026px à 1338px)
-@media screen and (max-width: 1338px) and (min-width: 1026px) {
-  header {
-    nav {
-      // Réduire les marges
-      margin-left: 30px;
-      margin-right: 30px;
-      grid-template-columns: 2.5fr 7fr 1.5fr;
-      
-      .connexion {
-        .aide-button {
-          .btn-aide {
-            padding: 0 14px !important;
-            font-size: 14px;
-            // Garder le style vert
-            background-color: #4CAF50 !important;
-            color: white !important;
-          }
-        }
-      }
-    }
+// Les modes sont pilotés par le composant (classes .compact / .mobile sur <header>),
+// avec les mêmes seuils que le template : pas de media query qui contredirait le HTML.
+
+// Compact (< 1700px) : petit logo, Aide en icône, boutons resserrés
+header.compact nav {
+  margin-left: 24px;
+  margin-right: 24px;
+  column-gap: 16px;
+
+  .logo-conteneur,
+  .logo-conteneur .logoPetit {
+    @include dim(46px, 54px);
+    object-fit: cover;
+  }
+
+  .menu-conteneur .menu {
+    gap: 10px;
+  }
+
+  .btn-pill {
+    --mat-text-button-horizontal-padding: 10px;
+    padding: 0 10px;
+  }
+
+  .aide-button {
+    margin-right: 0;
   }
 }
 
-// Media query intermédiaire pour les écrans moyens (entre 935px et 1024px)
-@media screen and (max-width: 1024px) and (min-width: 935px) {
-  header {
-    nav {
-      // Ajuster les proportions de la grid pour plus d'espace à droite
-      grid-template-columns: 2fr 6fr 2fr;
-      margin-left: 20px;
-      margin-right: 20px;
-      
-      .connexion {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 8px;
-        
-        .aide-button {
-          .btn-aide {
-            padding: 0 12px !important;
-            font-size: 14px;
-            min-height: 32px !important;
-            
-            mat-icon {
-              margin-right: 6px !important;
-            }
-          }
-        }
-      }
+// Mobile (< 1240px) : menu hamburger
+header.mobile nav {
+  margin-left: 16px;
+  margin-right: 16px;
+
+  .connexion {
+    gap: 10px;
+
+    // Cibles tactiles confortables sur mobile
+    .user .btn-initiales {
+      @include dim(48px, 40px);
+    }
+
+    .btn-hamburger {
+      display: flex;
+      @include align(center, center);
+      border: 1px solid white;
+      @include dim(40px, 40px);
+      border-radius: 100px;
+      color: white;
     }
   }
-}
-
-// // Media query pour les très petits desktops (moins de 935px mais mode desktop)
-// @media screen and (max-width: 934px) and (min-width: 769px) {
-//   header {
-//     nav {
-//       // Grid encore plus compacte
-//       grid-template-columns: 1.5fr 5fr 2.5fr;
-//       margin-left: 15px;
-//       margin-right: 15px;
-      
-//       .menu-conteneur {
-//         .menu {
-//           gap: 20px; // Réduire l'espace entre les boutons menu
-//         }
-//       }
-      
-//       .connexion {
-//         display: flex;
-//         align-items: center;
-//         justify-content: flex-end;
-//         gap: 6px;
-        
-//         .aide-button {
-//           .btn-aide {
-//             padding: 0 10px !important;
-//             font-size: 13px;
-//             min-height: 30px !important;
-            
-//             mat-icon {
-//               margin-right: 4px !important;
-//               font-size: 18px;
-//             }
-//           }
-//         }
-        
-//         .user {
-//           gap: 6px;
-          
-//           .btn-initiales {
-//             width: 36px !important;
-//             height: 30px !important;
-//             font-size: 12px;
-//           }
-          
-//           .btn-deconnexion {
-//             height: 30px !important;
-//             width: 30px !important;
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
-@media screen and (max-width: $tablette) {
-  header {
-    nav {
-      grid-template-columns: 1fr 1fr;
-      margin: 0 25px;
-      gap: 0;
-
-      .logo-conteneur {
-        @include dim(60px, 70px);
-        .logoPetit {
-          display: block;
-          @include dim(60px, 70px);
-          object-fit: cover;
-        }
-      }
-      .connexion {
-        display: flex; /* Make the container a flexbox */
-        align-items: center;
-        margin-left: auto;
-        gap: 10px;
-        
-        // Surcharge spécifique pour le bouton aide mobile
-        .aide-button {
-          .btn-aide-mobile {
-            background-color: #4CAF50 !important;
-            color: white !important;
-            border: 2px solid #4CAF50 !important;
-            border-radius: 50% !important;
-            width: 40px !important;
-            height: 40px !important;
-            min-width: 40px !important;
-            min-height: 40px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            padding: 0 !important;
-            overflow: hidden;
-            
-            mat-icon {
-              margin: 0 !important;
-              padding: 0 !important;
-              color: white !important;
-              font-size: 18px !important;
-              width: 18px !important;
-              height: 18px !important;
-              line-height: 18px !important;
-              position: relative;
-              left: 0;
-              right: 0;
-              top: 0;
-              bottom: 0;
-            }
-          }
-        }
-
-        .btn-hamburger,
-        .btn-deconnexion {
-          display: flex;
-          @include align(center, center);
-          border: 1px solid white;
-          @include dim(auto, 40px);
-          border-radius: 100px;
-          color: white;
-        }
-        .icon {
-          display: flex;
-          @include align(center, center);
-          @include dim(25px, 25px);
-          text-align: center;
-        }
-        span {
-          @include dim(40px, 40px);
-        }
-      }
-    }
-  }
-
-  .doc-button {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    margin-left: 10px;
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.2) !important;
-    }
-    
-    mat-icon {
-      margin-right: 8px;
-    }
-  }
-
-  // Les styles aide sont maintenant définis en haut du fichier
 }

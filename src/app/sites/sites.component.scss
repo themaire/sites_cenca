@@ -36,6 +36,31 @@
   width: 100%;
   margin: 0 50px 25px 29px;
 }
+// Permalien : pas de bloc de recherche au-dessus de la fiche pour l'espacer de l'en-tête
+.sites-enfants--permalien {
+  padding-top: 25px;
+}
+// Permalien : code inconnu ou partagé par plusieurs sites
+.permalien-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 40px 20px;
+  @include Typo($p16, $normal, #555);
+  mat-icon {
+    @include dim(48px, 48px);
+    font-size: 48px;
+    color: $couleur-faune;
+  }
+  a {
+    color: $couleur-flore;
+    font-weight: bold;
+  }
+  button {
+    @include btn(white, $couleur-flore, white, $couleur-faune);
+  }
+}
 
 @media screen and (max-width: $mobile) {
   .sites-enfants {

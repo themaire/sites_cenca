@@ -3,7 +3,6 @@
     {
       "id": "utilisateur",
       "title": "Documentation utilisateur",
-      "accessLevel": 0,
       "sections": [
         {
           "id": "index",
@@ -11,9 +10,8 @@
           "path": "index.md",
           "order": 1,
           "published": true,
-          "requireAuth": false,
-          "backendUrl": null,
-          "accessLevel": 0
+          "requireAuth": true,
+          "backendUrl": null
         },
         {
           "id": "getting-started",
@@ -21,96 +19,154 @@
           "path": "getting-started.md",
           "order": 2,
           "published": true,
-          "requireAuth": false,
-          "backendUrl": null,
-          "accessLevel": 0
-        },
-        {
-          "id": "map-usage",
-          "title": "Utilisation de la carte",
-          "path": "map-usage.md",
-          "order": 3,
-          "published": true,
-          "requireAuth": false,
-          "backendUrl": null,
-          "accessLevel": 0
+          "requireAuth": true,
+          "backendUrl": null
         },
         {
           "id": "faq",
           "title": "Questions fréquentes",
           "path": "faq.md",
+          "order": 3,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null
+        },
+        {
+          "id": "carte",
+          "title": "Utilisation de la carte",
+          "path": "carte.md",
           "order": 4,
           "published": true,
-          "requireAuth": false,
+          "requireAuth": true,
+          "backendUrl": null
+        },
+        {
+          "id": "sonneur",
+          "title": "Sonneur, l'assistant",
+          "path": "chatbot/sonneur.md",
+          "order": 5,
+          "published": true,
+          "requireAuth": true,
           "backendUrl": null,
-          "accessLevel": 0
+          "fonctionnalite": "sonneur"
+        },
+        {
+          "id": "sonneur-exemples",
+          "title": "Exemples de questions à Sonneur",
+          "path": "chatbot/sonneur-exemples.md",
+          "order": 6,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null,
+          "fonctionnalite": "sonneur"
+        },
+        {
+          "id": "actualites",
+          "title": "Actualités",
+          "path": "actualites.md",
+          "order": 7,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null
         },
         {
           "id": "sites-management",
           "title": "Gestion des sites",
           "path": "sites-management.md",
-          "order": 5,
+          "order": 8,
           "published": true,
           "requireAuth": true,
-          "backendUrl": null,
-          "accessLevel": 0
+          "backendUrl": null
         },
         {
           "id": "ajout_shapefile",
-          "title": "Ajout d'une geométrie",
+          "title": "Ajouter une géométrie à une opération",
           "path": "sites/projets/ajout_shapefile.md",
-          "order": 5,
+          "order": 9,
           "published": true,
           "requireAuth": true,
           "backendUrl": null,
-          "accessLevel": 0
+          "droit": "edit"
         },
         {
           "id": "plans-gestion",
-          "title": "Plans de gestion et ECG",
+          "title": "Plans de gestion",
           "path": "sites/gestion/plans-gestion.md",
-          "order": 6,
+          "order": 10,
           "published": true,
           "requireAuth": true,
-          "backendUrl": null,
-          "accessLevel": 0
+          "backendUrl": null
+        },
+        {
+          "id": "travaux",
+          "title": "Travaux",
+          "path": "travaux.md",
+          "order": 11,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null
+        },
+        {
+          "id": "foncier",
+          "title": "Foncier",
+          "path": "foncier.md",
+          "order": 12,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null
         },
         {
           "id": "projets-mfu",
-          "title": "Projets de maîtrise foncière et d'usage",
+          "title": "Projets de maîtrise foncière et d'usage (MFU)",
           "path": "sites/foncier/projets-mfu.md",
-          "order": 7,
+          "order": 13,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null
+        },
+        {
+          "id": "chiro",
+          "title": "Module Chiroptères",
+          "path": "chiro.md",
+          "order": 14,
           "published": true,
           "requireAuth": true,
           "backendUrl": null,
-          "accessLevel": 0
+          "droit": "chiro"
+        },
+        {
+          "id": "annuaire",
+          "title": "Annuaire des contacts",
+          "path": "annuaire.md",
+          "order": 15,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null
         }
       ]
     },
     {
       "id": "admin",
       "title": "Documentation administrateur",
-      "accessLevel": 5,
+      "droit": "admin",
       "sections": [
+        {
+          "id": "parametres",
+          "title": "Paramètres",
+          "path": "parametres.md",
+          "order": 1,
+          "published": true,
+          "requireAuth": true,
+          "backendUrl": null
+        },
         {
           "id": "upload_fichiers_geo",
           "title": "Fichiers géographiques",
           "path": null,
-          "order": 1,
-          "published": true,
-          "requireAuth": true,
-          "backendUrl": "docs?file=traitement_fichiers/ope_geofiles.md&css=default",
-          "accessLevel": 5
-        },
-        {
-          "id": "auth_logic",
-          "title": "Logique d'authentification",
-          "path": "auth/appcomponent-auth.md",
           "order": 2,
           "published": true,
           "requireAuth": true,
-          "backendUrl": null,
-          "accessLevel": 5
+          "backendUrl": "docs?file=traitement_fichiers/ope_geofiles.md&css=default"
         },
         {
           "id": "fichier_joints_logic",
@@ -119,8 +175,7 @@
           "order": 3,
           "published": true,
           "requireAuth": true,
-          "backendUrl": "docs?file=traitement_fichiers/gestion_fichiers_uploads.md&css=default",
-          "accessLevel": 5
+          "backendUrl": "docs?file=traitement_fichiers/gestion_fichiers_uploads.md&css=default"
         }
       ]
     }

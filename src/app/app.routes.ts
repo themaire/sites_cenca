@@ -11,9 +11,9 @@ import { IdeaBoxComponent } from './idea-box/idea-box.component';
 import { environment } from '../environments/environment';
 import { Route } from '@angular/router';
 
-const docplanRoute: Route = environment.cache_misere
-  ? { path: 'docplan', component: WipComponent }
-  : { path: 'docplan', loadChildren: () => import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES) };
+const docplanRoute: Route = environment.fonctionnalites.plansGestion
+  ? { path: 'docplan', loadChildren: () => import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES) }
+  : { path: 'docplan', component: WipComponent };
 
 export const routes: Routes = [
   {
@@ -39,6 +39,14 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./sites/sites.routes').then((mod) => mod.SITES_ROUTES),
     // canActivate: [isLoggedInGuard], // Désactivé temporairement
+  },
+
+  // Permalien d'une fiche site : /site/52134 ou /site/<uuid> (liens partagés, liens de Sonneur)
+  {
+    path: 'site/:id', // code du site (ex. 52134) ou uuid
+    loadComponent: () =>
+      import('./sites/site-permalien/site-permalien.component').then((mod) => mod.SitePermalienComponent),
+    canActivate: [isLoggedInGuard],
   },
 
   // Lazy-load

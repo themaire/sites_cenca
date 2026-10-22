@@ -29,14 +29,12 @@ export class AdminComponent {
   ngOnInit(): void {
 
     this.subrouteLength = this.route.snapshot.url.length + 1; // On ajoute 1 pour le segment 'foncier' (il a son propre fichier de route)
-    console.log("this.subrouteLength de ngOnInit() du component foncier  : " + this.subrouteLength);
 
     /**
      * 10 car c'est l'id du menu Foncier dans la base de données
      */
     this.menuService.loadSubMenuItem(28).then((subMenuItems) => {
       // Debug chaque élément
-      console.log("subMenuItems de ngOnInit() du component preferences  : ");
 
       subMenuItems.forEach((item, index) => {
         

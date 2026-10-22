@@ -29,7 +29,7 @@ export const isLoggedInGuard: CanActivateFn = (route, state) => {
       }),
       catchError(() => {
         console.log('isLoggedInGuard: Échec de la récupération des utilisateurs, redirection vers /login');
-        router.navigate(['login']);
+        router.navigate(['login'], { queryParams: { returnUrl: state.url } });
         return of(false);
       })
     );
@@ -37,7 +37,7 @@ export const isLoggedInGuard: CanActivateFn = (route, state) => {
 
   if (user === null) {
     console.log('isLoggedInGuard: Utilisateur non connecté, redirection vers /login');
-    router.navigate(['login']);
+    router.navigate(['login'], { queryParams: { returnUrl: state.url } });
     return false;
   }
 

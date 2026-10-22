@@ -1,7 +1,14 @@
 export const environment = {
     windows: false,
     production: false,
-    cache_misere: false,
+
+    /** Fonctionnalités activables (true = visible). En local, tout est visible. */
+    fonctionnalites: {
+        /** Plans de gestion (sinon page « travaux en cours »). */
+        plansGestion: true,
+        /** Assistant IA Sonneur (en prod : préproduction uniquement, voir environment.prod.ts). */
+        sonneur: true as boolean,
+    },
 
     apiUrl: 'http://192.168.1.50:8887/',
     apiLocalUrl: 'http://192.168.1.50:8887/',
