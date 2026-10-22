@@ -1,3 +1,5 @@
+/* Copie versionnée de node_modules/leaflet.fullscreen/Control.FullScreen.css,
+   chemin de l'icône adapté à src/assets/images/leaflet/. Chargée via angular.json. */
 .leaflet-fullscreen-icon {
 	background-image: url('../../images/leaflet/icon-fullscreen.svg');
 	background-size: 26px 52px;

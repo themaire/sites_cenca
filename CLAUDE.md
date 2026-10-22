@@ -67,4 +67,4 @@ The project works with a NODEJS / Express library backend server.
 
 - Docker support via `Dockerfile` in root.
 - Jenkins webhook: `main` branch → production, `dev` branch → staging.
-- A postinstall script (`scripts/fix-leaflet-fullscreen.js`) patches the Leaflet fullscreen plugin after `npm install`.
+- The Leaflet fullscreen plugin CSS is a versioned copy in `src/assets/styles/leaflet/Control.FullScreen.css` (icon path rewritten to `src/assets/images/leaflet/icon-fullscreen.svg`), referenced in `angular.json` — the CSS in `node_modules/leaflet.fullscreen` is not used.
