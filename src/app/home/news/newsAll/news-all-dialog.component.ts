@@ -13,7 +13,8 @@ import { TempsEcoulePipe } from '../temps-ecoule.pipe';
 const PAGE = 20;
 
 /**
- * Fenêtre listant tous les billets d'actualité publiés, du plus récent au plus ancien.
+ * Fenêtre listant tous les billets d'actualité, y compris ceux masqués de l'accueil,
+ * du plus récent au plus ancien.
  * Ouverte depuis la carte « Toutes les actualités » du fil d'accueil ;
  * un clic sur un billet ouvre la fenêtre de détail habituelle par-dessus.
  */
@@ -40,7 +41,7 @@ export class NewsAllDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.newsService
-      .getNews(PAGE)
+      .getNews(PAGE, 0, true)
       .then((news) => {
         this.news = news;
         this.hasMore = news.length === PAGE;
@@ -55,7 +56,7 @@ export class NewsAllDialogComponent implements OnInit {
   loadMore(): void {
     this.loadingMore = true;
     this.newsService
-      .getNews(PAGE, this.news.length)
+      .getNews(PAGE, this.news.length, true)
       .then((news) => {
         this.news = [...this.news, ...news];
         this.hasMore = news.length === PAGE;

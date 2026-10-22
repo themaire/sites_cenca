@@ -13,14 +13,14 @@ Fil d'actualités affiché sur la page d'accueil d'ATLAS, avec une petite dimens
 |---|---|---|
 | 🗂️ | **Fil en grille** | 4 cartes par ligne, puis 3 / 2 / 1 selon la largeur de l'écran |
 | 📏 | **Cartes alignées** | Même hauteur sur une ligne ; l'image remplit l'espace laissé libre par le texte (140 px minimum) |
-| 📚 | **Toutes les actualités** | Carte fine (bandeau vertical) à droite du fil : ouvre une fenêtre listant tous les billets publiés, par paquets de 20, et le détail de chacun au clic. À la fermeture, le fil d'accueil est rechargé (lu, réactions, commentaires) |
+| 📚 | **Toutes les actualités** | Carte fine (bandeau vertical) à droite du fil : ouvre une fenêtre listant tous les billets, y compris ceux masqués de l'accueil (pastille « Masqué », `GET /news?tous=true`), par paquets de 20, et le détail de chacun au clic. À la fermeture, le fil d'accueil est rechargé (lu, réactions, commentaires) |
 | ➕ | **Voir plus** | Pagination par paquets de 8 (`limite` + `offset`) ; le bouton disparaît quand tout est chargé |
 | 👍 | **Réactions** | 👍 ❤️ 🌿 👏 😮 — **une seule par personne** : recliquer la retire, en choisir une autre la remplace |
 | 💬 | **Commentaires** | Dans la fenêtre de détail : avatar à initiales, date relative, `Ctrl+Entrée` pour publier, 1000 caractères max |
 | 🗑️ | **Suppression** | Par l'auteur de son propre commentaire, ou par un admin (groupe 5) pour modérer, après confirmation. Les autres utilisateurs ne voient pas la croix sur les commentaires des collègues |
 | 🔔 | **Non lu** | Liseré orange + pastille « Nouveau » sur la carte, compteur « N nouvelles » à côté du titre ; marqué lu à l'ouverture |
 | 🕒 | **Dates relatives** | « à l'instant », « il y a 5 min », « il y a 3 h », « hier », « il y a 4 j », puis jj/mm/aaaa |
-| ✅ | **Publiée** | Case à cocher dans la fenêtre de détail, visible des admins uniquement |
+| ✅ | **Afficher sur l'accueil** | Booléen `publie` : ne sert **qu'à** l'affichage sur l'accueil, les billets masqués restent consultables dans « Toutes les actualités ». Case à cocher dans la fenêtre de détail (admins uniquement) et dans l'admin, où la colonne Statut indique « Publiée » / « Masqué » |
 
 ---
 
@@ -32,7 +32,7 @@ home/news/
 ├── newsAll/
 │   └── news-all-dialog.component.*  # Fenêtre « Toutes les actualités » : liste complète paginée
 ├── newsDetail/
-│   └── news-detail-dialog.component.*  # Fenêtre de détail : contenu, réactions, commentaires, case « Publiée »
+│   └── news-detail-dialog.component.*  # Fenêtre de détail : contenu, réactions, commentaires, case « Afficher sur l'accueil »
 ├── reactions/
 │   └── news-reactions.component.*   # Barre de réactions réutilisée par le fil ET la fenêtre de détail
 ├── temps-ecoule.pipe.ts             # Pipe `tempsEcoule` (dates relatives)
@@ -131,5 +131,5 @@ Couvre : affichage du fil, échec propre si le backend est absent, pagination «
 - **Pas de `<form (ngSubmit)>`** dans la fenêtre de détail : le composant n'importe que `ReactiveFormsModule`, sans `[formGroup]`. Le formulaire devient alors un submit HTML natif qui **recharge toute la page**. D'où un `<div>` + bouton `type="button" (click)`.
 - **Clic sur une réaction** : `stopPropagation()` est indispensable, sinon le clic remonte à la carte et ouvre la fenêtre de détail.
 - **Masquer la croix n'est pas une sécurité** : c'est le backend qui garantit qu'un non-admin ne supprime que ses propres commentaires (`403` sinon), un appel direct à l'API restant possible.
-- **Champs calculés** : `reactions`, `nb_commentaires` et `lu` sont retirés avant `AdminService.updateNews()` (case « Publiée ») : ils n'existent pas dans `gestint.news`.
+- **Champs calculés** : `reactions`, `nb_commentaires` et `lu` sont retirés avant `AdminService.updateNews()` (case « Afficher sur l'accueil ») : ils n'existent pas dans `gestint.news`.
 - **Accueil vide quelques secondes** après un rechargement : c'est le chargement en cascade des menus, pas un bug du module.

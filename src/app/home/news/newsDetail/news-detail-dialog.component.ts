@@ -91,8 +91,9 @@ export class NewsDetailDialogComponent implements OnInit {
         .catch((err) => console.error('Erreur lors du marquage comme lue', err));
     }
 
-    // Les routes publiques ne renvoient jamais `publie` (elles ne montrent que des news
-    // déjà publiées) : si cette news est visible ici, elle est forcément publiée.
+    // `publie` = affichée sur l'accueil. Le fil d'accueil ne contient que des news affichées ;
+    // la liste « Toutes les actualités » (tous=true) doit renvoyer `publie` pour les masquées.
+    // Valeur absente (backend pas encore à jour) : on considère la news affichée.
     this.publieControl.setValue(this.news.publie ?? true, { emitEvent: false });
 
     this.publieControl.valueChanges.subscribe((publie) => this.savePublie(publie));
