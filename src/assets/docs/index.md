@@ -18,7 +18,9 @@ Certaines fiches n'apparaissent que si vous avez les droits correspondants. Un l
 - [Guide de démarrage](/aide/getting-started) : connexion, page d'accueil, menu, déconnexion
 - [Questions fréquentes](/aide/faq)
 - [Utilisation de la carte](/aide/carte)
+<!-- fonctionnalite:sonneur -->
 - [Sonneur, l'assistant](/aide/sonneur) et ses [exemples de questions](/aide/sonneur-exemples)
+<!-- /fonctionnalite -->
 - [Actualités](/aide/actualites)
 
 ### Sites

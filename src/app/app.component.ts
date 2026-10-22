@@ -5,6 +5,7 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
 
+import { environment } from '../environments/environment';
 import { LoginService } from './login/login.service';
 import { User } from './login/user.model';
 
@@ -35,9 +36,13 @@ export class AppComponent implements OnInit {
   /** URL courante, mise à jour à chaque navigation. */
   private urlCourante = signal(this.router.url);
 
-  /** Le chatbot ne s'affiche que pour un utilisateur connecté, hors routes publiques. */
+  /**
+   * Le chatbot ne s'affiche que s'il est activé (préproduction uniquement en prod),
+   * pour un utilisateur connecté, hors routes publiques.
+   */
   afficherChatbot = computed(() =>
-    !!this.loginService.user() && !this.estRoutePublique(this.urlCourante())
+    environment.fonctionnalites.sonneur
+    && !!this.loginService.user() && !this.estRoutePublique(this.urlCourante())
   );
 
   constructor(private router: Router, private loginService: LoginService, private route: ActivatedRoute) {}

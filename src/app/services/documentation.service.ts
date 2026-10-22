@@ -13,6 +13,9 @@ import { LoginService } from '../login/login.service';
  */
 export type DocDroit = 'admin' | 'cadre' | 'edit' | 'chiro' | 'foncier';
 
+/** Fonctionnalité activable (voir `environment.fonctionnalites`) dont dépend une fiche d'aide. */
+export type DocFonctionnalite = keyof typeof environment.fonctionnalites;
+
 export interface DocSection {
   id: string;
   title: string;
@@ -23,6 +26,8 @@ export interface DocSection {
   backendUrl?: string | null;
   content?: string;
   droit?: DocDroit;
+  /** Fiche masquée tant que cette fonctionnalité est désactivée (ex. Sonneur en prod). */
+  fonctionnalite?: DocFonctionnalite;
 }
 
 export interface DocCategory {
@@ -82,6 +87,13 @@ export class DocumentationService {
   }
 
   /**
+   * Indique si la fonctionnalité dont dépend une fiche est activée (aucune = toujours visible)
+   */
+  estActivee(fonctionnalite?: DocFonctionnalite): boolean {
+    return !fonctionnalite || environment.fonctionnalites[fonctionnalite] === true;
+  }
+
+  /**
    * Récupère les catégories et leurs sections accessibles selon les droits de l'utilisateur
    */
   getHierarchicalSections(isAuthenticated: boolean = false): Observable<DocCategory[]> {
@@ -94,6 +106,7 @@ export class DocumentationService {
             .filter(section => section.published)
             .filter(section => !section.requireAuth || isAuthenticated)
             .filter(section => this.aLeDroit(section.droit))
+            .filter(section => this.estActivee(section.fonctionnalite))
             .sort((a, b) => a.order - b.order)
         }))
         .filter(cat => cat.sections.length > 0)
@@ -107,7 +120,23 @@ export class DocumentationService {
   loadMarkdownFile(filename: string): Observable<string> {
     const url = `${this.docsPath}${filename}`;
     return this.http.get(url, { responseType: 'text' }).pipe(
-      map(markdown => marked(markdown) as string)
+      map(markdown => marked(this.filtrerFonctionnalites(markdown)) as string)
+    );
+  }
+
+  /**
+   * Retire les passages d'une fonctionnalité désactivée, balisés sur des lignes à part :
+   *
+   *     <!-- fonctionnalite:sonneur -->
+   *     ...passage...
+   *     <!-- /fonctionnalite -->
+   *
+   * Les balises sont toujours retirées, pour ne pas couper une liste Markdown en deux.
+   */
+  filtrerFonctionnalites(markdown: string): string {
+    return markdown.replace(
+      /^[ \t]*<!--\s*fonctionnalite:(\w+)\s*-->[ \t]*\r?\n([\s\S]*?)^[ \t]*<!--\s*\/fonctionnalite\s*-->[ \t]*(?:\r?\n|$)/gm,
+      (_bloc, nom: string, contenu: string) => this.estActivee(nom as DocFonctionnalite) ? contenu : ''
     );
   }
 

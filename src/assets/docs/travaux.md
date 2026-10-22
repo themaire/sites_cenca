@@ -55,4 +55,8 @@ Si vous cliquez sur **Annuler** avant de sauvegarder, les photos en attente sont
 - La recherche et la consultation des projets sont ouvertes à tous les utilisateurs connectés.
 - Les boutons **Modifier**, **Dupliquer le projet** et **Supprimer le projet**, ainsi que l'ajout de photos, sont réservés aux utilisateurs ayant les droits d'édition.
 
-Voir aussi : [Gérer les sites](/aide/sites-management), [Sonneur](/aide/sonneur) pour interroger les travaux en langage courant.
+Voir aussi : [Gérer les sites](/aide/sites-management).
+
+<!-- fonctionnalite:sonneur -->
+Pour interroger les travaux en langage courant, demandez à [Sonneur](/aide/sonneur).
+<!-- /fonctionnalite -->

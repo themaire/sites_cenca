@@ -57,10 +57,12 @@ Sur téléphone, le menu est regroupé derrière l'icône à trois traits, en ha
 
 Le pied de page indique le contact de l'administrateur de l'application (rubrique « Contacter l'administrateur »).
 
-## Aide, Sonneur et Boîte à idées
+## Aide, assistant et Boîte à idées
 
 - **Aide** : le bouton de l'en-tête ouvre ces fiches, une fois connecté.
+<!-- fonctionnalite:sonneur -->
 - **Sonneur** : l'assistant de l'application s'ouvre par le bouton rond en bas à droite de l'écran, une fois connecté (voir [Sonneur, l'assistant](/aide/sonneur)).
+<!-- /fonctionnalite -->
 - **Boîte à idées** : menu **Administratif > Boite à idées**. La page affiche les idées déjà proposées ; le bouton **Ajouter une idée** ouvre, dans un nouvel onglet, le formulaire pour en proposer une ou signaler un problème.
 
 ## Se déconnecter

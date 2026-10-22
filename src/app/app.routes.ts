@@ -11,9 +11,9 @@ import { IdeaBoxComponent } from './idea-box/idea-box.component';
 import { environment } from '../environments/environment';
 import { Route } from '@angular/router';
 
-const docplanRoute: Route = environment.cache_misere
-  ? { path: 'docplan', component: WipComponent }
-  : { path: 'docplan', loadChildren: () => import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES) };
+const docplanRoute: Route = environment.fonctionnalites.plansGestion
+  ? { path: 'docplan', loadChildren: () => import('./sites/docplan/docplan.routes').then((mod) => mod.TRAVAUX_ROUTES) }
+  : { path: 'docplan', component: WipComponent };
 
 export const routes: Routes = [
   {

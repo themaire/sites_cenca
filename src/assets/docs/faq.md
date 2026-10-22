@@ -16,7 +16,9 @@ Vérifiez l'identifiant et le mot de passe saisis. Si le problème persiste, ré
 
 Votre session a expiré. L'application la vérifie à chaque changement de page et, si elle n'est plus valide, vous renvoie vers la connexion. Reconnectez-vous : vous revenez sur la page que vous vouliez ouvrir.
 
+<!-- fonctionnalite:sonneur -->
 Si cela se produit pendant une question posée à Sonneur, votre question est remise dans la zone de saisie : renvoyez-la après vous être reconnecté.
+<!-- /fonctionnalite -->
 
 ## Droits et menus
 
@@ -48,7 +50,11 @@ Les entrées marquées d'un cadenas ne sont pas encore disponibles.
 4. Dans la liste obtenue, le champ **Mots-clés** filtre encore les résultats.
 5. Cliquez sur une ligne pour ouvrir la fiche du site.
 
-Vous pouvez aussi demander un site à [Sonneur](/aide/sonneur), qui répond avec un lien vers la fiche. Voir aussi [Gestion des sites](/aide/sites-management).
+<!-- fonctionnalite:sonneur -->
+Vous pouvez aussi demander un site à [Sonneur](/aide/sonneur), qui répond avec un lien vers la fiche.
+
+<!-- /fonctionnalite -->
+Voir aussi [Gestion des sites](/aide/sites-management).
 
 ### Comment partager le lien d'une fiche site ?
 
@@ -66,9 +72,11 @@ Activez la couche « Parcelles Cadastrales » dans le sélecteur de couches, pui
 
 ## Aide et suggestions
 
+<!-- fonctionnalite:sonneur -->
 ### Je ne vois pas Sonneur
 
 Le bouton de Sonneur, en bas à droite de l'écran, n'apparaît qu'une fois connecté, et pas sur les pages de connexion ni d'aide.
+<!-- /fonctionnalite -->
 
 ### Une fiche d'aide affiche « Section introuvable. »
 
