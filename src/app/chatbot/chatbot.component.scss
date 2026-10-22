@@ -16,7 +16,7 @@ $marge-droite: 20px;
 
 .lanceur {
   position: relative;
-  @include dim(60px, 60px);
+  @include dim(76px, 76px);
   @include align(center, center);
   padding: 0;
   border: 3px solid white;
@@ -100,14 +100,23 @@ $marge-droite: 20px;
   background-color: $couleur-flore;
   color: white;
 
+  gap: 8px;
+
+  // Le titre cède la place aux boutons, qui restent toujours sur une seule ligne
   .identite {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
+
+    > div {
+      min-width: 0;
+    }
   }
 
   .avatar {
-    @include dim(40px, 40px);
+    flex-shrink: 0;
+    @include dim(48px, 48px);
     border-radius: 50%;
     border: 2px solid white;
   }
@@ -119,12 +128,26 @@ $marge-droite: 20px;
   }
 
   .sous-titre {
+    display: block;
     @include Typo($p12, $normal, white);
     opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  .actions {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+  }
+
+  // Boutons compacts (36px au lieu de 48px) : les 5 actions tiennent dans le panneau de 400px
   .actions button {
     color: white;
+    width: 36px;
+    height: 36px;
+    padding: 6px;
   }
 }
 
@@ -271,12 +294,12 @@ $marge-droite: 20px;
 
   .mini-avatar {
     flex-shrink: 0;
-    @include dim(28px, 28px);
+    @include dim(34px, 34px);
     border-radius: 50%;
   }
 
   .bulle {
-    max-width: calc(85% - 34px);
+    max-width: calc(85% - 40px);
   }
 }
 

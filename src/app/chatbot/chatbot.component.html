@@ -10,7 +10,7 @@
     aria-label="Ouvrir l'assistant Sonneur"
   >
     @if (!avatarIndisponible) {
-      <img [src]="avatar" alt="" (error)="avatarIndisponible = true" />
+      <img [src]="avatar" alt="" (error)="surErreurAvatar()" />
     } @else {
       <mat-icon>forum</mat-icon>
     }
@@ -31,7 +31,7 @@
     <header class="entete">
       <div class="identite">
         @if (!avatarIndisponible) {
-          <img class="avatar" [src]="avatar" alt="" (error)="avatarIndisponible = true" />
+          <img class="avatar" [src]="avatar" alt="" (error)="surErreurAvatar()" />
         } @else {
           <mat-icon class="avatar">forum</mat-icon>
         }
@@ -113,7 +113,7 @@
           <div class="bulle utilisateur">{{ message.content }}</div>
         } @else {
           <div class="ligne-assistant">
-            <img class="mini-avatar" [src]="avatar" alt="" [hidden]="avatarIndisponible" />
+            <img class="mini-avatar" [src]="avatar" alt="" [hidden]="avatarIndisponible" (error)="surErreurAvatar()" />
             <div class="bulle assistant" [class.erreur]="message.erreur"
               [attr.title]="message.modele ? 'Modèle : ' + message.modele : null">
               @if (message.erreur) {

@@ -11,6 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { AppelOutil, ChatbotService, ErreurChat, MessageChat, SONNEUR_OCCUPE } from '../shared/services/chatbot.service';
 import { ChantSonneur } from './chant-sonneur';
+import { AVATAR_SONNEUR, avatarSonneur } from './saison-sonneur';
 
 /** État d'affichage du chatbot : bouton seul, panneau ou plein écran. */
 export type ModeChatbot = 'replie' | 'panneau' | 'agrandi';
@@ -62,7 +63,8 @@ export class ChatbotComponent implements OnDestroy {
   @ViewChild('listeMessages') listeMessages?: ElementRef<HTMLElement>;
   @ViewChild('zoneSaisie') zoneSaisie?: ElementRef<HTMLTextAreaElement>;
 
-  readonly avatar = 'assets/chatbot/sonneur.svg';
+  /** Avatar de saison (Halloween, Noël) ou habituel, choisi à l'ouverture de l'application. */
+  avatar = avatarSonneur();
   readonly exemples = [
     'Quels actes fonciers arrivent à échéance dans les 6 mois ?',
     'Quels sont les nouveaux sites de 2025 dans l\'Aube ?',
@@ -156,6 +158,15 @@ export class ChatbotComponent implements OnDestroy {
   }
 
   // --- Affichage -----------------------------------------------------------
+
+  /** Avatar introuvable : repli sur l'avatar habituel, puis sur une icône. */
+  surErreurAvatar(): void {
+    if (this.avatar !== AVATAR_SONNEUR) {
+      this.avatar = AVATAR_SONNEUR;
+    } else {
+      this.avatarIndisponible = true;
+    }
+  }
 
   ouvrir(): void {
     this.reponseNonLue.set(false);

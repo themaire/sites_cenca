@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sonneur, version Pâques">
+  <!-- Sonneur version Pâques (lundi avant Pâques - lundi de Pâques) : oreilles de lapin, œuf décoré.
+       Sonneur, mascotte du chatbot : sonneur à ventre jaune (Bombina variegata), pupilles en cœur -->
+  <defs>
+    <clipPath id="sonneur-cadre">
+      <circle cx="32" cy="32" r="32"/>
+    </clipPath>
+    <!-- Pupille en cœur, centrée sur l'origine -->
+    <path id="sonneur-pupille" d="M0 3.2 C-4.6 0.2 -4.2 -3.6 -1.9 -3.6 C-0.9 -3.6 -0.2 -2.9 0 -2.2 C0.2 -2.9 0.9 -3.6 1.9 -3.6 C4.2 -3.6 4.6 0.2 0 3.2 Z"/>
+  </defs>
+
+  <g clip-path="url(#sonneur-cadre)">
+    <circle cx="32" cy="32" r="32" fill="#e9f6dd"/>
+    <!-- Œuf décoré et herbe -->
+    <g transform="translate(-42 -7) rotate(12 53 22)">
+      <ellipse cx="53" cy="22" rx="4.6" ry="6" fill="#bb7bb3"/>
+      <path d="M48.6 20.5 q2.2 -1.6 4.4 0 q2.2 1.6 4.4 0" fill="none" stroke="#fec700" stroke-width="1.3"/>
+      <path d="M48.5 24 q2.2 1.6 4.5 0 q2.2 -1.6 4.5 0" fill="none" stroke="#ffffff" stroke-width="1.2"/>
+    </g>
+    <path d="M3 26 l1.5 -3 l1.5 3 l1.5 -3.4 l1.5 3.4 l1.5 -3 l1.5 3 l1.5 -3.2 l1.5 3.2" fill="#76b82a"/>
+
+    <!-- Ventre jaune marbré de noir -->
+    <ellipse cx="32" cy="58" rx="24" ry="16" fill="#fec700"/>
+    <path d="M14 52 q4 -3 7 0 q-1 4 -5 4 q-3 -1 -2 -4 Z" fill="#26323a"/>
+    <path d="M27 50 q5 -2 9 1 q-2 3 -5 2 q-3 1 -4 -3 Z" fill="#26323a"/>
+    <path d="M42 53 q5 -3 8 1 q-2 4 -6 3 q-3 -1 -2 -4 Z" fill="#26323a"/>
+    <circle cx="23" cy="59" r="2.2" fill="#26323a"/>
+    <circle cx="38" cy="60" r="2.6" fill="#26323a"/>
+    <circle cx="48" cy="61" r="1.6" fill="#26323a"/>
+
+    <!-- Pattes avant, doigts jaunes -->
+    <ellipse cx="13" cy="51" rx="6" ry="3.2" fill="#fec700" transform="rotate(-25 13 51)"/>
+    <ellipse cx="51" cy="51" rx="6" ry="3.2" fill="#fec700" transform="rotate(25 51 51)"/>
+  </g>
+
+  <!-- Tête : dos gris-olive verruqueux -->
+  <ellipse cx="32" cy="35" rx="24" ry="14" fill="#6b6a4c"/>
+  <circle cx="20" cy="40" r="1.4" fill="#57563c"/>
+  <circle cx="44" cy="40" r="1.4" fill="#57563c"/>
+  <circle cx="26" cy="27" r="1.2" fill="#7f7d5a"/>
+  <circle cx="38" cy="27" r="1.2" fill="#7f7d5a"/>
+  <circle cx="32" cy="25" r="1" fill="#7f7d5a"/>
+
+  <!-- Oreilles de lapin, derrière les yeux -->
+  <g transform="rotate(-10 26 18)">
+    <ellipse cx="26" cy="9" rx="4.2" ry="10" fill="#ffffff" stroke="#d6dbe6" stroke-width="0.8"/>
+    <ellipse cx="26" cy="9.5" rx="2.2" ry="7.2" fill="#f8baba"/>
+  </g>
+  <g transform="rotate(14 38 18)">
+    <ellipse cx="38" cy="9" rx="4.2" ry="10" fill="#ffffff" stroke="#d6dbe6" stroke-width="0.8"/>
+    <ellipse cx="38" cy="9.5" rx="2.2" ry="7.2" fill="#f8baba"/>
+  </g>
+  <!-- Yeux saillants -->
+  <circle cx="20" cy="24" r="9" fill="#6b6a4c"/>
+  <circle cx="44" cy="24" r="9" fill="#6b6a4c"/>
+  <circle cx="20" cy="24" r="6.6" fill="#e8b23a"/>
+  <circle cx="44" cy="24" r="6.6" fill="#e8b23a"/>
+  <use href="#sonneur-pupille" transform="translate(20 24.5)" fill="#1b1b1b"/>
+  <use href="#sonneur-pupille" transform="translate(44 24.5)" fill="#1b1b1b"/>
+  <circle cx="22.4" cy="21.4" r="1.3" fill="#ffffff"/>
+  <circle cx="46.4" cy="21.4" r="1.3" fill="#ffffff"/>
+
+  <!-- Narines, joues et sourire -->
+  <circle cx="29.5" cy="33" r="0.9" fill="#3b3a28"/>
+  <circle cx="34.5" cy="33" r="0.9" fill="#3b3a28"/>
+  <circle cx="15.5" cy="38" r="2.4" fill="#f8baba" opacity="0.8"/>
+  <circle cx="48.5" cy="38" r="2.4" fill="#f8baba" opacity="0.8"/>
+  <path d="M19 39 Q32 47 45 39" fill="none" stroke="#3b3a28" stroke-width="2" stroke-linecap="round"/>
+
+
+  <!-- Liseré discret : la pastille reste détourée sur une page blanche -->
+  <circle cx="32" cy="32" r="31.25" fill="none" stroke="#d6dbe6" stroke-width="1.5"/>
+</svg>
