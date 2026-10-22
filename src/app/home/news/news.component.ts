@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NewsService } from '../../shared/services/news.service';
 import { News } from '../../shared/interfaces/news';
 import { NewsDetailDialogComponent } from './newsDetail/news-detail-dialog.component';
+import { NewsAllDialogComponent } from './newsAll/news-all-dialog.component';
 import { NewsReactionsComponent } from './reactions/news-reactions.component';
 import { TempsEcoulePipe } from './temps-ecoule.pipe';
 
@@ -79,5 +80,26 @@ export class NewsComponent implements OnInit {
         // nouvelle référence de tableau pour rafraîchir l'affichage
         this.news = [...this.news];
       });
+  }
+
+  /** Ouvre la liste de tous les billets */
+  openAll(): void {
+    this.dialog
+      .open(NewsAllDialogComponent, {
+        width: '720px',
+        maxWidth: '90vw',
+        maxHeight: '90vh',
+      })
+      .afterClosed()
+      .subscribe(() => this.refresh());
+  }
+
+  /** Recharge les billets déjà affichés : la liste complète a pu en marquer comme lus
+   * ou y ajouter réactions et commentaires, sur d'autres objets que ceux du fil */
+  private refresh(): void {
+    this.newsService
+      .getNews(Math.max(this.news.length, PAGE))
+      .then((news) => (this.news = news))
+      .catch((err) => console.error('Erreur lors du rafraîchissement des actualités', err));
   }
 }

@@ -13,6 +13,7 @@ Fil d'actualités affiché sur la page d'accueil d'ATLAS, avec une petite dimens
 |---|---|---|
 | 🗂️ | **Fil en grille** | 4 cartes par ligne, puis 3 / 2 / 1 selon la largeur de l'écran |
 | 📏 | **Cartes alignées** | Même hauteur sur une ligne ; l'image remplit l'espace laissé libre par le texte (140 px minimum) |
+| 📚 | **Toutes les actualités** | Carte fine (bandeau vertical) à droite du fil : ouvre une fenêtre listant tous les billets publiés, par paquets de 20, et le détail de chacun au clic. À la fermeture, le fil d'accueil est rechargé (lu, réactions, commentaires) |
 | ➕ | **Voir plus** | Pagination par paquets de 8 (`limite` + `offset`) ; le bouton disparaît quand tout est chargé |
 | 👍 | **Réactions** | 👍 ❤️ 🌿 👏 😮 — **une seule par personne** : recliquer la retire, en choisir une autre la remplace |
 | 💬 | **Commentaires** | Dans la fenêtre de détail : avatar à initiales, date relative, `Ctrl+Entrée` pour publier, 1000 caractères max |
@@ -28,6 +29,8 @@ Fil d'actualités affiché sur la page d'accueil d'ATLAS, avec une petite dimens
 ```
 home/news/
 ├── news.component.*                 # Fil d'accueil (grille, pagination, compteur non lus)
+├── newsAll/
+│   └── news-all-dialog.component.*  # Fenêtre « Toutes les actualités » : liste complète paginée
 ├── newsDetail/
 │   └── news-detail-dialog.component.*  # Fenêtre de détail : contenu, réactions, commentaires, case « Publiée »
 ├── reactions/
