@@ -24,16 +24,20 @@ export class NewsService {
 
   constructor(private http: HttpClient) {}
 
-  /** Récupère les actualités publiées, les plus récentes en premier
+  /** Récupère les actualités, les plus récentes en premier.
+   * `publie` ne sert qu'à l'affichage sur l'accueil : sans `tous`, seules celles affichées sur l'accueil
+   * sont renvoyées ; avec `tous`, les masquées aussi (liste « Toutes les actualités »).
    * @param limite Nombre maximum d'actualités à récupérer (par défaut 5)
    * @param offset Nombre d'actualités à sauter (pagination « Voir plus »)
+   * @param tous Inclure les actualités masquées de l'accueil
    */
-  getNews(limite: number = 5, offset: number = 0): Promise<News[]> {
-    return firstValueFrom(this.http.get<News[]>(`${this.baseUrl}?limite=${limite}&offset=${offset}`))
+  getNews(limite: number = 5, offset: number = 0, tous: boolean = false): Promise<News[]> {
+    const params = `?limite=${limite}&offset=${offset}${tous ? '&tous=true' : ''}`;
+    return firstValueFrom(this.http.get<News[]>(`${this.baseUrl}${params}`))
       .then((news) => news ?? []);
   }
 
-  /** Récupère le détail complet (avec contenu) d'une actualité publiée
+  /** Récupère le détail complet (avec contenu) d'une actualité, affichée sur l'accueil ou non
    * @param id L'ID de l'actualité
    */
   getNewsById(id: number): Promise<News> {

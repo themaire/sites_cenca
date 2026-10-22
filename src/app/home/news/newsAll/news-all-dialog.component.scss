@@ -86,6 +86,11 @@ h2 {
     border: 1px solid $couleur-faune;
     border-radius: 8px;
     text-transform: uppercase;
+
+    &.masque {
+      color: rgba(0, 0, 0, 0.5);
+      border-color: rgba(0, 0, 0, 0.3);
+    }
   }
 
   .commentaires {

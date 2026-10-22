@@ -9,7 +9,7 @@
     </div>
 
     <p class="vide" *ngIf="error">Impossible de charger les actualités.</p>
-    <p class="vide" *ngIf="!loading && !error && news.length === 0">Aucune actualité publiée.</p>
+    <p class="vide" *ngIf="!loading && !error && news.length === 0">Aucune actualité.</p>
 
     <ul class="billets" *ngIf="!loading && news.length > 0">
       <li
@@ -29,6 +29,7 @@
               {{ item.date_publication | tempsEcoule }}
             </span>
             <span class="pastille" *ngIf="item.lu === false">Nouveau</span>
+            <span class="pastille masque" *ngIf="item.publie === false" title="Non affichée sur l'accueil">Masqué</span>
             <span class="commentaires" *ngIf="item.nb_commentaires">💬 {{ item.nb_commentaires }}</span>
           </div>
           <div class="titre">{{ item.titre }}</div>

@@ -32,8 +32,8 @@
 		<ng-container matColumnDef="publie">
 			<th mat-header-cell *matHeaderCellDef> Statut </th>
 			<td mat-cell *matCellDef="let row">
-				<span *ngIf="row.publie; else brouillon">Publiée</span>
-				<ng-template #brouillon>Brouillon</ng-template>
+				<span *ngIf="row.publie; else masque">Publiée</span>
+				<ng-template #masque>Masqué</ng-template>
 			</td>
 		</ng-container>
 
