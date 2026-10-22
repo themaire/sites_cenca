@@ -65,6 +65,5 @@ export class HomeComponent {
       this.menuItems = findAccueilItems(data['menuItems']);
     });
     
-    console.log("Menu items filtré avec les acceuils is true :", this.menuItems);
   }
 }

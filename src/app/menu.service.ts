@@ -1,75 +1,91 @@
 import { environment } from '../environments/environment';
 
 import { Injectable } from '@angular/core';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-// import { catchError } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject, firstValueFrom, map, shareReplay } from 'rxjs';
 
 // prototypes utilisés dans la promise de la fonction
 import { MenuItem } from './menuItem';
+import { LoginService } from './login/login.service';
+
+/** Nœud tel que renvoyé par GET menu/arbre : les sous-menus sont dans `enfants`. */
+type MenuNode = Omit<MenuItem, 'children'> & { enfants?: MenuNode[] };
 
 @Injectable({
   providedIn: 'root',
 })
 export class MenuService {
 
-  private activeUrl: string = environment.apiUrl + "menu/"; // Bureau
+  private activeUrl: string = environment.apiUrl + "menu/";
 
   private menuItemsSubject = new BehaviorSubject<MenuItem[]>([]);
   menuItems$ = this.menuItemsSubject.asObservable();
 
-  // Cache pour éviter de recharger les données à chaque fois
-  private cachedMenuItems: MenuItem[] | null = null;
-  private cachedUserGroId: number | null = null;
+  // Arbre complet du menu, chargé en un seul appel et gardé en mémoire
+  // (une entrée pour l'arbre public, une pour l'arbre admin avec « Paramètres »)
+  private arbres = new Map<boolean, Observable<MenuItem[]>>();
 
-  async getMenu(subroute: string): Promise<MenuItem[]> {
-    const data = await fetch(this.activeUrl + subroute);
-    return (await data.json()) ?? [];
+  constructor(
+    private http: HttpClient,
+    private loginService: LoginService
+  ) {}
+
+  /**
+   * Arbre complet du menu, déjà trié côté backend.
+   * - menu/arbre : sans « Paramètres »
+   * - menu/arbre/admin : avec « Paramètres » (JWT obligatoire)
+   */
+  getMenu(admin: boolean = this.loginService.isAdmin()): Observable<MenuItem[]> {
+    let arbre$ = this.arbres.get(admin);
+    if (!arbre$) {
+      arbre$ = this.http
+        .get<MenuNode[]>(this.activeUrl + (admin ? 'arbre/admin' : 'arbre'))
+        .pipe(
+          map((nodes) => MenuService.toMenuItems(nodes)),
+          shareReplay(1)
+        );
+      this.arbres.set(admin, arbre$);
+    }
+    return arbre$;
   }
 
-  async loadMenuItems(userGroId: number, forceReload: boolean = false): Promise<void> {
-    // Si on a déjà les données en cache pour ce même utilisateur, on les retourne directement
-    if (!forceReload && this.cachedMenuItems && this.cachedUserGroId === userGroId) {
-      this.menuItemsSubject.next(this.cachedMenuItems);
-      return;
-    }
-
-    let subroute: string = 'parent=null'
-
-    // Surcharger la subroute pour les admins
-    if (userGroId && userGroId == 5) {
-      subroute += '/admin';
-    }
-
-    // Fonction pour trier par ordre alphabétique
-    const sortAlphabetically = (items: MenuItem[]) => {
-      return items.sort((a, b) => a.name.localeCompare(b.name));
-    };
-
-    this.getMenu(subroute).then((mainMenuItems) => {
-      // Ici, compléter les sous-menus pour chaque élément
-      const loadChildren = async () => {
-        for (let item of mainMenuItems) {
-          let subroute: string = `parent=${item.id}`;
-          item.children = await this.getMenu(subroute);
-          item.children = sortAlphabetically(item.children); // Trie les sous-menus
-        }
-        
-        // Mettre en cache les données chargées
-        this.cachedMenuItems = mainMenuItems;
-        this.cachedUserGroId = userGroId;
-        
-        // Met à jour le BehaviorSubject une fois les données chargées
-        this.menuItemsSubject.next(mainMenuItems);
-      };
-
-      loadChildren();
+  /** Charge l'arbre du menu et le diffuse via menuItems$ (header). */
+  loadMenuItems(admin: boolean = this.loginService.isAdmin()): void {
+    this.getMenu(admin).subscribe({
+      next: (items) => this.menuItemsSubject.next(items),
+      error: () => this.arbres.delete(admin), // pas de cache en cas d'échec
     });
-
   }
-  
+
+  /**
+   * Enfants d'une entrée du menu, recherchée dans l'arbre en mémoire (aucun appel supplémentaire).
+   * Renvoie une copie : les appelants (foncier, admin) modifient route/parent_name
+   * et ne doivent pas altérer l'arbre partagé avec le header.
+   */
   async loadSubMenuItem(menu_parent: number): Promise<MenuItem[]> {
-    const subroute: string = `parent=${menu_parent}`;
-    const subMenuItems = await this.getMenu(subroute);
-    return subMenuItems;
+    const arbre = await firstValueFrom(this.getMenu());
+    return structuredClone(MenuService.findById(arbre, menu_parent)?.children ?? []);
+  }
+
+  /** Vide l'arbre en mémoire (à appeler à la déconnexion). */
+  clearCache(): void {
+    this.arbres.clear();
+    this.menuItemsSubject.next([]);
+  }
+
+  private static toMenuItems(nodes: MenuNode[]): MenuItem[] {
+    return nodes.map(({ enfants, ...item }) => ({
+      ...item,
+      children: MenuService.toMenuItems(enfants ?? []),
+    }));
+  }
+
+  private static findById(items: MenuItem[], id: number): MenuItem | undefined {
+    for (const item of items) {
+      if (item.id === id) return item;
+      const found = MenuService.findById(item.children ?? [], id);
+      if (found) return found;
+    }
+    return undefined;
   }
 }

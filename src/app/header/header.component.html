@@ -1,227 +1,165 @@
-<header>
-  <div *ngIf="isMobile; then mobile; else desktop"></div>
-  <!-- Desktop -->
-  <ng-template #desktop>
-    <div class="conteneur">
-      <nav>
-        <div class="logo-conteneur">
-          <img
-            class="logoGrand"
-            src="../assets/images/logo/atlas_logo1.png"
-            alt="logo du CENCA"
-            (click)="navigateToHome()"
-          />
-        </div>
-        <div class="menu-conteneur" *ngIf="loginService.user()">
-          <div class="menu">
-            <ng-container *ngFor="let item of menuItems[0].children">
-              <!-- Un bouton pour chaque axe du CENCA (hors Paramètres:28) -->
-              <ng-container *ngIf="item.id != 28">
-                <button
-                  mat-button
-                  [ngStyle]="{ 'border-radius': '20px' }"
-                  [ngClass]="item.class_color"
-                  [matMenuTriggerFor]="menuButtons"
-                >
-                  {{ item.name }}
-                </button>
-
-                <!-- Elements de l'axe en question -->
-                <mat-menu #menuButtons="matMenu">
-                  <ng-container *ngFor="let child of item.children">
-                    <ng-container *ngIf="child.url; then externalBtnLink; else internalBtnLink">
-                    </ng-container>
-
-                    <ng-template #externalBtnLink>
-                      <a
-                        mat-menu-item
-                        [ngClass]="item.class_color"
-                        *ngIf="!child.children"
-                        [href]="child.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        (click)="$event.stopPropagation()"
-                      >
-                        <span>{{ child.name }}</span>
-                      </a>
-                    </ng-template>
-
-                    <ng-template #internalBtnLink>
-                      <button
-                        mat-menu-item
-                        [ngClass]="item.class_color"
-                        *ngIf="!child.children"
-                        [routerLink]="child.route"
-                      >
-                        <span>{{ child.name }}</span>
-                      </button>
-                    </ng-template>
-                  </ng-container>
-                </mat-menu>
-              </ng-container>
-            </ng-container>
-
-            <!-- Bouton Chiroptères (groupes 3, 5, 6 uniquement) -->
-            <button
-              *ngIf="hasChiroAccess"
-              mat-button
-              class="c-chiro"
-              [ngStyle]="{ 'border-radius': '20px' }"
-              routerLink="/chiro"
-            >
-              Chiroptères
-            </button>
-
-            <!-- Bouton Paramètres -->
-            <button
-              *ngIf="parametresMenuItem"
-              mat-button
-              [ngStyle]="{ 'border-radius': '20px' }"
-              [ngClass]="parametresMenuItem!.class_color + '_hover'"
-              [routerLink]="parametresMenuItem!.route"
-            >
-              {{ parametresMenuItem!.name }}
-            </button>
-          </div>
-        </div>
-        <div class="connexion">
-          <!-- Bouton Aide - réservé aux utilisateurs connectés -->
-          <div class="aide-button" *ngIf="loginService.user()">
-            <button 
-              mat-button
-              class="btn-aide"
-              routerLink="/aide"
-              [ngStyle]="{
-                'border-radius': '20px'
-              }"
-            >
-              <mat-icon>help</mat-icon>
-              Aide
-            </button>
-          </div>
-          
-          <div class="user" *ngIf="loginService.user()">
-            <button class="btn-initiales">
-              {{ loginService.user()?.cd_salarie }}
-            </button>
-            <!--   <img
-              src="https://randomuser.me/api/portraits/med/women/56.jpg"
-              alt="Icône de connexion"
-            />-->
-            <button mat-icon-button class="btn-deconnexion" (click)="logout()">
-              <mat-icon>logout</mat-icon>
-            </button>
-          </div>
-        </div>
-      </nav>
-    </div>
-  </ng-template>
-
-  <!-- Mobile -->
-  <ng-template #mobile>
-    <div class="conteneur">
-      <nav>
-        <div class="logo-conteneur">
+<header [class.compact]="isCompact()" [class.mobile]="isMobile()">
+  <div class="conteneur">
+    <nav>
+      <div class="logo-conteneur">
+        @if (isCompact()) {
           <img
             class="logoPetit"
-            src="../../assets/images/logo/logocen-color-petit.png"
+            src="assets/images/logo/logocen-color-petit.png"
             alt="logo du CENCA"
             (click)="navigateToHome()"
           />
-        </div>
-        <div class="connexion">
-          <!-- Bouton Aide - réservé aux utilisateurs connectés -->
-          <div class="aide-button" *ngIf="loginService.user()">
-            <button 
-              mat-icon-button
-              class="btn-aide-mobile"
-              routerLink="/aide"
-            >
-              <mat-icon>help</mat-icon>
-            </button>
-          </div>
-          
-          <div class="user" *ngIf="loginService.user()">
-            <div class="deconnexion">
+        } @else {
+          <img
+            class="logoGrand"
+            src="assets/images/logo/atlas_logo1.png"
+            alt="logo du CENCA"
+            (click)="navigateToHome()"
+          />
+        }
+      </div>
+
+      <!-- Desktop : un bouton par axe du CENCA -->
+      @if (!isMobile() && loginService.user()) {
+        <div class="menu-conteneur">
+          <div class="menu">
+            @for (item of axes(); track item.id) {
               <button
                 mat-button
-                class="btn-initiales"
-                [matMenuTriggerFor]="login"
+                class="btn-pill"
+                [ngClass]="item.class_color"
+                [matMenuTriggerFor]="axeMenu"
               >
-                {{ loginService.user()?.cd_salarie }}
+                {{ item.name }}
               </button>
-              <mat-menu #login="matMenu">
-                <!-- Bouton deconnexion -->
-                <button
-                  mat-menu-item
-                  class="btn-deconnexion"
-                  (click)="logout()"
-                >
+              <mat-menu #axeMenu="matMenu">
+                <ng-container
+                  *ngTemplateOutlet="menuLinks; context: { $implicit: item }"
+                ></ng-container>
+              </mat-menu>
+            }
+
+            <!-- Bouton Chiroptères (groupes 3, 5, 6 uniquement) -->
+            @if (hasChiroAccess()) {
+              <button mat-button class="btn-pill c-chiro" routerLink="/chiro">
+                Chiroptères
+              </button>
+            }
+
+            <!-- Bouton Paramètres -->
+            @if (parametresMenuItem(); as parametres) {
+              <button
+                mat-button
+                class="btn-pill"
+                [ngClass]="parametres.class_color + '_hover'"
+                [routerLink]="parametres.route"
+              >
+                {{ parametres.name }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="connexion">
+        @if (loginService.user(); as user) {
+          @if (isMobile()) {
+            <!-- Mobile : aide, utilisateur (menu déconnexion), hamburger -->
+            <div class="aide-button">
+              <button mat-icon-button class="btn-aide-mobile" routerLink="/aide">
+                <mat-icon>help</mat-icon>
+              </button>
+            </div>
+
+            <div class="user">
+              <button mat-button class="btn-initiales" [matMenuTriggerFor]="userMenu">
+                {{ user.cd_salarie }}
+              </button>
+              <mat-menu #userMenu="matMenu">
+                <button mat-menu-item class="btn-deconnexion" (click)="logout()">
                   <mat-icon>logout</mat-icon>
                   Déconnexion
                 </button>
               </mat-menu>
             </div>
 
-            <!--   <img
-                src="https://randomuser.me/api/portraits/med/women/56.jpg"
-              alt="Icône de connexion"
-            />-->
-          </div>
-
-          <!--  Bouton du menu hamburger visible uniquement en version mobile 
-            Bouton du menu hamburger -->
-          <div class="hamburger" *ngIf="isMobile">
-            <button
-              mat-icon-button
-              [matMenuTriggerFor]="hamburgerMenu"
-              class="btn-hamburger"
-            >
-              <mat-icon>menu</mat-icon>
-            </button>
-
-            <!-- Menu principal -->
-            <mat-menu #hamburgerMenu="matMenu">
-              <ng-container *ngFor="let item of menuItems[0].children">
-                <button
-                  mat-menu-item
-                  [ngClass]="item.class_color"
-                  [matMenuTriggerFor]="item.children?.length ? subMenu : null"
-                >
-                  <span>{{ item.name }}</span>
-                </button>
-                <mat-menu #subMenu="matMenu">
-                  <ng-container *ngFor="let child of item.children">
-                    <button
-                      mat-menu-item
-                      [ngClass]="item.class_color"
-                      [routerLink]="child.route"
-                      [matMenuTriggerFor]="
-                        child.children?.length ? childSubMenu : null
-                      "
-                    >
-                      <span>{{ child.name }}</span>
-                    </button>
-                    <mat-menu #childSubMenu="matMenu">
-                      <!-- Appel récursif du template pour les sous-sous-menus -->
-                      <ng-container *ngFor="let subChild of child.children">
-                        <button mat-menu-item [ngClass]="item.class_color">
-                          subchild {{ subChild.name }}
-                        </button>
-                      </ng-container>
-                    </mat-menu>
-                  </ng-container>
-                </mat-menu>
-              </ng-container>
-              <!-- Documentation utilisateur pour mobile -->
-              <button mat-menu-item routerLink="/aide">
-                <mat-icon>help</mat-icon>
-                <span>Aide Utilisateur</span>
+            <div class="hamburger">
+              <button mat-icon-button class="btn-hamburger" [matMenuTriggerFor]="hamburgerMenu">
+                <mat-icon>menu</mat-icon>
               </button>
-            </mat-menu>
-          </div>
-        </div>
-      </nav>
-    </div>
-  </ng-template>
+
+              <mat-menu #hamburgerMenu="matMenu">
+                @for (item of axes(); track item.id) {
+                  <button mat-menu-item [ngClass]="item.class_color" [matMenuTriggerFor]="subMenu">
+                    <span>{{ item.name }}</span>
+                  </button>
+                  <mat-menu #subMenu="matMenu">
+                    <ng-container
+                      *ngTemplateOutlet="menuLinks; context: { $implicit: item }"
+                    ></ng-container>
+                  </mat-menu>
+                }
+                @if (hasChiroAccess()) {
+                  <button mat-menu-item class="c-chiro" routerLink="/chiro">
+                    <span>Chiroptères</span>
+                  </button>
+                }
+                @if (parametresMenuItem(); as parametres) {
+                  <button mat-menu-item [ngClass]="parametres.class_color" [routerLink]="parametres.route">
+                    <span>{{ parametres.name }}</span>
+                  </button>
+                }
+                <button mat-menu-item routerLink="/aide">
+                  <mat-icon>help</mat-icon>
+                  <span>Aide Utilisateur</span>
+                </button>
+              </mat-menu>
+            </div>
+          } @else {
+            <!-- Desktop : aide (icône seule en compact), utilisateur, déconnexion -->
+            <div class="aide-button">
+              @if (isCompact()) {
+                <button mat-icon-button class="btn-aide-mobile" routerLink="/aide" aria-label="Aide">
+                  <mat-icon>help</mat-icon>
+                </button>
+              } @else {
+                <button mat-button class="btn-pill btn-aide" routerLink="/aide">
+                  <mat-icon>help</mat-icon>
+                  Aide
+                </button>
+              }
+            </div>
+
+            <div class="user">
+              <button class="btn-initiales">{{ user.cd_salarie }}</button>
+              <button mat-icon-button class="btn-deconnexion" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </nav>
+  </div>
 </header>
+
+<!-- Liens d'un axe : externes (url, nouvel onglet) ou internes (route) -->
+<ng-template #menuLinks let-item>
+  @for (child of item.children; track child.id) {
+    @if (child.url) {
+      <a
+        mat-menu-item
+        [ngClass]="item.class_color"
+        [href]="child.url"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>{{ child.name }}</span>
+      </a>
+    } @else {
+      <button mat-menu-item [ngClass]="item.class_color" [routerLink]="child.route">
+        <span>{{ child.name }}</span>
+      </button>
+    }
+  }
+</ng-template>

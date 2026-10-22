@@ -8,13 +8,18 @@
   }
 }
 
+// Grille fluide : 4 colonnes au maximum, une carte ne descend jamais sous 260px
+// (passe automatiquement à 3, 2 puis 1 colonne)
 .home {
+  --gap: 20px;
   margin: 50px;
-  @include align(top, space-between);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  flex-wrap: wrap;
-  gap: 20px;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(max(260px, (100% - 3 * var(--gap)) / 4), 1fr)
+  );
+  align-items: stretch;
+  gap: var(--gap);
 }
 
 .map {
@@ -27,7 +32,6 @@
 
 @media screen and (max-width: $mobile) {
   .home {
-    grid-template-columns: repeat(2, 1fr);
     margin: 50px 25px;
   }
 

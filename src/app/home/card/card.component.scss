@@ -1,11 +1,16 @@
 @import "../../../app/styles/variables.scss";
 @import "../../../app/styles/mixins.scss";
 
+:host {
+  display: block; // l'hôte est l'élément de grille : la carte peut en prendre toute la hauteur
+}
+
 .carte {
   position: relative; // Pour le label "New"
   display: grid;
-  grid-template-columns: 15% 1fr;
-  height: 150px;
+  grid-template-columns: 44px 1fr; // bandeau titre vertical à largeur fixe
+  min-height: 150px; // la carte grandit avec sa description au lieu de déborder
+  height: 100%; // cartes d'une même ligne à la même hauteur
   text-decoration: none;
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.8);
@@ -24,25 +29,27 @@
   }
 
   .infos {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr);
-    flex-wrap: wrap;
-    padding: 15px;
-    // @include dim(100%, 100%);
-    @include align(center, start);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0; // autorise le retour à la ligne dans la colonne 1fr
+    padding: 15px 20px 15px 15px;
+    overflow-wrap: anywhere;
 
     .liens {
-      flex: 1 1 100%;
       @include Typo($p16, $semiGras, black);
       text-transform: uppercase;
-      @include dim(100%, auto);
     }
     .description {
-      flex: 1 1 100%;
       @include Typo($p14, $normal, black);
-      @include dim(100%, auto);
     }
   }
+}
+
+// Place pour le label "New" à droite du nom
+.carte:has(.new-label) .liens {
+  padding-right: 50px;
 }
 
 .new-label {
