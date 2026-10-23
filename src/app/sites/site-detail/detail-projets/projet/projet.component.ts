@@ -11,6 +11,7 @@ import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { Localisation } from '../../../../shared/interfaces/localisation';
 
 import { ProjetService, DeleteItemTypeEnum } from '../projets.service';
+import { SitesService } from '../../../sites.service';
 import { FormService } from '../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
 
@@ -45,7 +46,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackB
 
 import { AsyncPipe } from '@angular/common';
 import { map, finalize } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { ObjectifComponent } from './objectif/objectif.component';
@@ -180,6 +181,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private loginService: LoginService, // Inject LoginService
+    private sitesService: SitesService,
     @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
@@ -208,6 +210,32 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       type = 'autre';
     }
     return type;
+  }
+
+  /**
+   * Complète les infos du site du projetLite (nom, code, communes, département, localisation)
+   * quand le parent ne les a pas fournies (ex. projet ouvert depuis la liste Travaux).
+   * Seuls les champs vides sont remplis. En cas d'erreur, le projet s'ouvre quand même.
+   */
+  private async completerInfosSite(uuid_site: string): Promise<void> {
+    try {
+      const [site, communes] = await Promise.all([
+        this.sitesService.getSiteUUID('uuid=' + uuid_site),
+        firstValueFrom(this.sitesService.getCommunesSite(uuid_site))
+      ]);
+
+      if (!this.projetLite.uuid_site) this.projetLite.uuid_site = uuid_site;
+      if (!this.projetLite.nom) this.projetLite.nom = site.nom;
+      if (!this.projetLite.code) this.projetLite.code = site.code;
+      if (!this.projetLite.communes?.length) this.projetLite.communes = communes as ProjetLite['communes'];
+      if (!this.projetLite.departement) {
+        const departements = [...new Set(communes.map(c => c.departement).filter(Boolean))];
+        this.projetLite.departement = departements.join(', ');
+      }
+      if (!this.projetLite.localisation_site) this.projetLite.localisation_site = site.localisation;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des infos du site', error);
+    }
   }
 
   async fetch(table: 'projets' | 'operations' | 'objectifs', uuid_proj: String, type?: String): Promise<Projet | OperationLite[] | Objectif[] | undefined> {
@@ -286,6 +314,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
           // Accéder données du projet
           // Assigner l'objet projet directement et forcer le type Projet
           this.projet = await this.fetch('projets', this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation)) as Projet;
+          // Ouvert sans les infos du site (ex. depuis la liste Travaux) : on les complète
+          if (!this.projetLite.nom && this.projet?.site) {
+            await this.completerInfosSite(this.projet.site);
+          }
           this.operations_bilan = await this.fetch('operations', this.projetLite.uuid_proj) as OperationLite[];
           this.localisations_operations_projet = await this.projetService.getOperationsGeoJson(this.projetLite.uuid_proj);
 
