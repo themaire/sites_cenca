@@ -3,6 +3,7 @@ import { Component, Inject, ChangeDetectionStrategy, ChangeDetectorRef, ElementR
 import { CommonModule } from '../../../../node_modules/@angular/common';
 import { LoginService } from '../../login/login.service';
 import {MatIconModule} from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   MatDialogRef,
   MatDialogModule,
@@ -18,7 +19,7 @@ interface DialogData {
 @Component({
   selector: 'app-image-view',
   standalone: true,
-  imports: [MatDialogModule, CommonModule, MatIconModule],
+  imports: [MatDialogModule, CommonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './image-view.component.html',
   styleUrl: './image-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +31,10 @@ export class ImageViewComponent {
 
   images: string[];
   currentIndex: number = 0;
+
+  // Chargement de la photo affichée (spinner tant que l'événement load n'est pas reçu)
+  isLoading = true;
+  hasError = false;
 
   // Zoom : clic sur l'image = taille réelle centrée sur le point cliqué, re-clic = image entière
   @ViewChild('frame') frame?: ElementRef<HTMLDivElement>;
@@ -52,25 +57,31 @@ export class ImageViewComponent {
     this.currentIndex = Math.max(data.images?.indexOf(data.selected) ?? 0, 0);
   }
   prev() {
-    this.resetZoom();
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-    } else {
-      this.currentIndex = this.images.length - 1; // boucle sur la dernière
-    }
+    // boucle sur la dernière
+    this.goTo(this.currentIndex > 0 ? this.currentIndex - 1 : this.images.length - 1);
   }
 
   next() {
-    this.resetZoom();
-    if (this.currentIndex < this.images.length - 1) {
-      this.currentIndex++;
-    } else {
-      this.currentIndex = 0; // boucle sur la première
-    }
+    // boucle sur la première
+    this.goTo(this.currentIndex < this.images.length - 1 ? this.currentIndex + 1 : 0);
   }
   goTo(index: number) {
     this.resetZoom();
+    // Même image (ex. une seule photo) : pas de nouvel événement load, on ne relance pas le spinner
+    if (index === this.currentIndex) return;
     this.currentIndex = index;
+    this.isLoading = true;
+    this.hasError = false;
+  }
+
+  onImageLoad() {
+    this.isLoading = false;
+    this.hasError = false;
+  }
+
+  onImageError() {
+    this.isLoading = false;
+    this.hasError = true;
   }
 
   resetZoom() {
