@@ -79,12 +79,12 @@ export class TravauxDisplayComponent implements AfterViewInit {
       params['statut'];
     
     this.research.getProjets(subroute).then((projetsGuetted: ProjetTravaux[]) => {
-    this.projets = projetsGuetted;
-    this.dataSource = new MatTableDataSource(this.projets); // Pour le filtre du tableau mat-table. Mettre une valeur dans value et dans le filtre du mat input SELECTION DES SITES
-    const fakeEvent = { target: { value: '' } } as unknown as Event;
-    this.applyFilter(fakeEvent);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+      this.projets = projetsGuetted;
+      this.dataSource = new MatTableDataSource(this.projets); // Pour le filtre du tableau mat-table. Mettre une valeur dans value et dans le filtre du mat input SELECTION DES SITES
+      const fakeEvent = { target: { value: '' } } as unknown as Event;
+      this.applyFilter(fakeEvent);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
   }
 
