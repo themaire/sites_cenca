@@ -122,7 +122,7 @@ export class DetailProjetsComponent {
       subroute = `projets/uuid=${this.siteDetailProjet.uuid_espace}/lite?webapp=1`; // On récupère les projets du site sélectionné
       console.log("Ouais on est dans le OnChanges 'onglet PROJETS' . UUID:" + this.siteDetailProjet["uuid_espace"]);
       
-      // ChatGPT 19/07/2024
+      // Chargement des données du tableau mat-table des projets du site selectionné
       try {
         // On récupère la liste des projets du site
         this.projetsLite = await this.research.getProjets(subroute);

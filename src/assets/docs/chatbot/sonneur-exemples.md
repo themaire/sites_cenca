@@ -1,6 +1,6 @@
 # Exemples de questions à poser à Sonneur
 
-Posez votre question en français, comme à un collègue : Sonneur choisit lui-même les données à consulter. Les exemples ci-dessous ont été vérifiés sur les données le 20 octobre 2026 ; un clic ne les envoie pas, recopiez-les ou adaptez-les dans la zone de saisie. Pour le fonctionnement général, voir [Sonneur, l'assistant de consultation](/aide/sonneur).
+Posez votre question en français, comme à un collègue : Sonneur choisit lui-même les données à consulter. Les exemples ci-dessous ont été vérifiés sur les données le 20 octobre 2026 (le 23 octobre pour les périmètres modifiés, les objectifs de gestion, les mesures compensatoires et les habitats naturels) ; un clic ne les envoie pas, recopiez-les ou adaptez-les dans la zone de saisie. Pour le fonctionnement général, voir [Sonneur, l'assistant de consultation](/aide/sonneur).
 
 ## Conseils pour bien formuler
 
@@ -69,6 +69,14 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Combien de sites bénéficient d'une protection forte ?
 - Combien de nouveaux sites par an depuis le début ?
 
+### Périmètres modifiés
+
+Sites dont le contour a été modifié une année donnée (hors sites créés cette année-là), comme dans l'export annuel à la FCEN. Sans année précisée, Sonneur prend l'année précédente.
+
+- Quels sites ont changé de périmètre l'année dernière ?
+- Quels sites ont changé de périmètre en 2024 ?
+- Liste des contours de sites modifiés en 2025, avec leur surface actuelle.
+
 ### Indicateurs d'activité
 
 - Combien d'animations l'année dernière, et combien de personnes sensibilisées ?
@@ -98,6 +106,16 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Quels actes arrivent à échéance d'ici 2 ans ?
 - Quels actes sont échus depuis moins de 3 mois ?
 
+## Mesures compensatoires
+
+Projets (éolien, carrière, photovoltaïque…) pour lesquels le CENCA assure des mesures compensatoires : société, durée, année de début, objectifs et sites concernés.
+
+- Quelles mesures compensatoires suit-on ?
+- Mesures compensatoires liées aux carrières.
+- Quels parcs éoliens ont des mesures compensatoires sur nos sites ?
+- Quelles mesures compensatoires concernent le site 10060 ?
+- Quels sont les objectifs des mesures compensatoires de CEMEX ?
+
 ## Projets et travaux
 
 ### Travaux d'un site
@@ -120,12 +138,42 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Détaille les opérations du projet de pâturage 2025 de la Pelouse de Champ Cognier : maître d'œuvre, financeurs, animaux.
 - Qui a réalisé les travaux du projet « Milieu - Restaurer / Trait. végét » 2026 du site 10030 ?
 
+### Objectifs de gestion
+
+Ce que visent les projets d'un site : niveau d'enjeu (espèces, habitat…), enjeux écologiques, objectif opérationnel (conserver, restaurer, entretenir…), pressions à maîtriser (dynamique ligneuse…) et, quand ils sont saisis, résultats attendus et surfaces. Pour ce qui a été réalisé, demandez plutôt les travaux du site.
+
+- Quels sont les objectifs de gestion du Marais de Villechétif ?
+- Quels enjeux écologiques visent les projets du site 10035 ?
+- Objectifs des projets de la Pelouse de Champ Cognier depuis 2024.
+- Quelles pressions le projet de pâturage 2026 du site 10030 doit-il maîtriser ?
+
 ### Bilan des opérations
 
 - Bilan des travaux réalisés en 2025 par type d'action.
 - Combien d'hectares pâturés chaque année depuis 2022 ?
 - Bilan des opérations par site en 2025.
 - Bilan des opérations du site 10030 depuis 2020.
+
+## Habitats naturels (cartographie des végétations)
+
+Les données viennent de la cartographie des habitats (relevés de végétation depuis 2006). Tous les sites ne sont pas cartographiés, ou seulement en partie : Sonneur indique la surface et le pourcentage cartographiés, et les années de relevé.
+
+### Habitats d'un site
+
+- Quels habitats sur la Pelouse de Champ Cognier ?
+- État de conservation des habitats du site 10035.
+- Quelle part du Marais de Villechétif est en zone humide ?
+- Quels habitats ont été relevés en 2021 sur le site 10030 ?
+- Quand les habitats du site 10035 ont-ils été cartographiés ?
+
+### Synthèses de la cartographie
+
+- Combien d'hectares d'habitats cartographiés par an ?
+- Quels sites gérés sont les moins cartographiés ?
+- Quels sites de l'Aube sont les mieux cartographiés ?
+- Sur quels sites trouve-t-on des pelouses calcicoles ?
+- Sur quels sites de la Marne trouve-t-on des phragmitaies ?
+- Quelles végétations de zone humide sont les plus cartographiées ?
 
 ## Observations naturalistes (WebObs)
 
@@ -175,3 +223,4 @@ Les données viennent d'un export WebObs (faune et flore depuis 2000), arrêté 
 - Il ne modifie aucune donnée : il fonctionne en lecture seule.
 - Il n'exécute pas de requête libre et ne fait pas de calcul spatial en dehors des questions ci-dessus (par exemple croiser deux couches au choix, ou mesurer une distance entre deux sites).
 - Il ne voit pas les saisies WebObs postérieures à l'export.
+- Il ne connaît les habitats que là où ils ont été cartographiés : un site non relevé n'a pas d'habitats dans ses réponses.

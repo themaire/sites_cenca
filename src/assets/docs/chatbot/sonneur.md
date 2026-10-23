@@ -1,6 +1,6 @@
 # Sonneur, l'assistant de consultation
 
-Sonneur répond à vos questions sur les sites, le foncier, les travaux et les observations naturalistes (WebObs) à partir des données de l'application. Il est disponible dès que vous êtes connecté : on l'ouvre avec la mascotte en bas à droite de l'écran.
+Sonneur répond à vos questions sur les sites, le foncier, les travaux et objectifs de gestion, les mesures compensatoires, les habitats naturels cartographiés et les observations naturalistes (WebObs) à partir des données de l'application. Il est disponible dès que vous êtes connecté : on l'ouvre avec la mascotte en bas à droite de l'écran.
 
 > Pourquoi « Sonneur » ? En hommage au **sonneur à ventre jaune**, petit crapaud emblématique de l'Argonne et des Ardennes, aux pupilles en forme de cœur… et parce qu'il vous « sonne » quand votre réponse est prête.
 
@@ -18,7 +18,7 @@ Pour savoir ce qu'il sait faire, tapez simplement **« aide »** dans la zone de
 
 Sur une conversation vide, Sonneur propose aussi des **exemples de questions** et ces questions d'aide sous forme de boutons : un clic envoie la question.
 
-Une centaine d'exemples classés par thème (sites, chiffres clés, foncier, travaux, observations WebObs) sont réunis dans la fiche [Exemples de questions à poser à Sonneur](/aide/sonneur-exemples).
+Plus d'une centaine d'exemples classés par thème (sites, chiffres clés, foncier, mesures compensatoires, travaux et objectifs, habitats naturels, observations WebObs) sont réunis dans la fiche [Exemples de questions à poser à Sonneur](/aide/sonneur-exemples).
 
 ---
 
