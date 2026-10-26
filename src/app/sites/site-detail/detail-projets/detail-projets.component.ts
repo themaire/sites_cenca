@@ -187,12 +187,13 @@ export class DetailProjetsComponent {
 
     if(projetlite !== undefined){
       // Ca se passe dans la vue du component dialog-operation
-      if(projetlite.uuid_proj !== undefined && projetlite.generation == "1_TVX"){
+      if(projetlite.uuid_proj !== undefined && (projetlite.generation == "1_TVX" || projetlite.generation == "1_AUT")){
         projetlite.localisation_site = this.siteDetailProjet?.localisation; // On donne la localisation du site au projetLite
+        projetlite.uuid_espace = this.siteDetailProjet?.uuid_espace; // Localisation pré-remplie des opérations « autres »
         // OUVRIR LA FENETRE DE DIALOGUE
         this.openDialog(projetlite);
       }else{
-        console.log("Pas un projet TRAVAUX ( " + projetlite.generation + " ) ou pas un vrai projet passé en parametre. uuid_proj : " + projetlite.uuid_proj);
+        console.log("Projet non géré ( " + projetlite.generation + " ) ou pas un vrai projet passé en parametre. uuid_proj : " + projetlite.uuid_proj);
       }
     }else{
       // Si on ne fournit pas de projetLite en paramètre
@@ -225,7 +226,10 @@ export class DetailProjetsComponent {
       // Sinon on charge un projet vide
       console.log("Charge un projet vide");
       projetlite = {
-        uuid_site: this.siteDetailProjet?.uuid_site
+        uuid_site: this.siteDetailProjet?.uuid_site,
+        uuid_espace: this.siteDetailProjet?.uuid_espace,
+        nom: this.siteDetailProjet?.nom,
+        code: this.siteDetailProjet?.code,
       } as ProjetLite;
       
       console.log("--------------ProjetLite : ");

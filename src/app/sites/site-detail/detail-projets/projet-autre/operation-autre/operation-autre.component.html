@@ -1,0 +1,260 @@
+<div class="operation-autre" *ngIf="!isLoading; else chargement">
+
+  <h3 class="titre-ope">{{ isNouvelle ? 'Nouvelle opération' : 'Modification de l\'opération' }}</h3>
+
+  <!-- 1. Action en trois listes en cascade -->
+  <section class="bloc" [formGroup]="form">
+    <div class="bloc-titre">Action <span class="obligatoire">*</span></div>
+    <div class="ligne">
+      <mat-form-field class="champ-large">
+        <mat-label>Niveau 1</mat-label>
+        <mat-select formControlName="niveau1" (selectionChange)="onNiveauChange(1)">
+          <mat-optgroup *ngIf="branchesConseillees.length" label="Conseillées pour ce type de projet">
+            <mat-option *ngFor="let a of branchesConseillees" [value]="a.cd_action">{{ a.libelle }}</mat-option>
+          </mat-optgroup>
+          <mat-optgroup label="Autres branches">
+            <mat-option *ngFor="let a of autresBranches" [value]="a.cd_action">{{ a.libelle }}</mat-option>
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="champ-large">
+        <mat-label>Niveau 2</mat-label>
+        <mat-select formControlName="niveau2" (selectionChange)="onNiveauChange(2)">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let a of niveau2Options" [value]="a.cd_action">{{ a.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="champ-large">
+        <mat-label>Niveau 3</mat-label>
+        <mat-select formControlName="niveau3" (selectionChange)="actionProfondeEffacee()">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let a of niveau3Options" [value]="a.cd_action">{{ a.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="aide" *ngIf="libelleActionProfonde">Action plus précise enregistrée : {{ libelleActionProfonde }}</div>
+    <div class="aide" *ngIf="commentaireAction">{{ commentaireAction }}</div>
+  </section>
+
+  <!-- 2. Dates -->
+  <section class="bloc" [formGroup]="form">
+    <div class="bloc-titre">Dates</div>
+    <div class="ligne">
+      <mat-form-field>
+        <mat-label>Date de début</mat-label>
+        <input matInput [matDatepicker]="pickerDeb" formControlName="date_deb">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerDeb"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDeb></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Date de fin</mat-label>
+        <input matInput [matDatepicker]="pickerFin" formControlName="date_fin" [min]="form.get('date_deb')?.value">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFin></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- 3. Localisations : catégorie puis lieu -->
+  <section class="bloc">
+    <div class="bloc-titre">Localisations</div>
+    <div class="liste-chips" *ngIf="localisations.length; else aucuneLoc">
+      <span class="chip" *ngFor="let lieu of localisations">
+        <span class="badge">{{ lieu.cat }}</span>
+        {{ lieu.libelle }}<span class="code" *ngIf="lieu.code"> ({{ lieu.code }})</span>
+        <button mat-icon-button type="button" class="btn-retirer" matTooltip="Retirer" (click)="retirerLieu(lieu)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </span>
+    </div>
+    <ng-template #aucuneLoc><div class="vide">Aucune localisation.</div></ng-template>
+
+    <div class="ligne">
+      <mat-form-field>
+        <mat-label>Catégorie</mat-label>
+        <mat-select [formControl]="catLocCtrl">
+          <mat-option *ngFor="let c of categories" [value]="c.cat">{{ c.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="champ-large">
+        <mat-label>Lieu (nom ou code, 2 caractères mini)</mat-label>
+        <input matInput [formControl]="lieuCtrl" [matAutocomplete]="autoLieu">
+        <mat-spinner matSuffix diameter="18" *ngIf="rechercheLieuEnCours"></mat-spinner>
+        <mat-autocomplete #autoLieu="matAutocomplete" [displayWith]="afficherLieu" (optionSelected)="ajouterLieu($event)">
+          <mat-option *ngFor="let lieu of lieuxProposes" [value]="lieu">
+            <span class="badge">{{ lieu.cat }}</span> {{ lieu.libelle }} <span class="code" *ngIf="lieu.code">({{ lieu.code }})</span>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- 4. Cibles -->
+  <section class="bloc">
+    <div class="bloc-titre">Cibles</div>
+    <div class="lignes-ajoutees" *ngIf="cibles.length; else aucuneCible">
+      <div class="ligne-ajoutee" *ngFor="let cible of cibles">
+        <span class="libelle">{{ cible.libelle || libelleCible(cible.typ_cible) }}</span>
+        <span class="detail" *ngIf="cible.detail">{{ cible.detail }}</span>
+        <button mat-icon-button type="button" class="btn-retirer" matTooltip="Retirer" (click)="retirerCible(cible)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+    <ng-template #aucuneCible><div class="vide">Aucune cible.</div></ng-template>
+
+    <mat-button-toggle-group class="familles" [value]="familleCibles" (change)="onFamilleCiblesChange($event.value)">
+      <mat-button-toggle value="publics">Publics</mat-button-toggle>
+      <mat-button-toggle value="ecologiques">Écologiques</mat-button-toggle>
+      <mat-button-toggle value="autres" *ngIf="nomenclatures.cibles.autres.length">Autres</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <div class="ligne">
+      <mat-form-field class="champ-large">
+        <mat-label>Cible</mat-label>
+        <mat-select [formControl]="cibleCtrl">
+          <ng-container *ngIf="familleCibles === 'ecologiques'; else listeSimple">
+            <mat-optgroup *ngFor="let g of groupesEcologiques" [label]="g.groupe.libelle">
+              <mat-option *ngFor="let c of g.cibles" [value]="c.cd_type" [disabled]="cibleDejaPresente(c.cd_type!)">
+                {{ c.libelle }}
+              </mat-option>
+            </mat-optgroup>
+          </ng-container>
+          <ng-template #listeSimple>
+            <mat-option *ngFor="let c of ciblesFamille" [value]="c.cd_type" [disabled]="cibleDejaPresente(c.cd_type!)">
+              {{ c.libelle }}
+            </mat-option>
+          </ng-template>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="champ-large">
+        <mat-label>Détail de la cible</mat-label>
+        <input matInput [formControl]="cibleDetailCtrl" placeholder="ex. classe de CM2">
+      </mat-form-field>
+      <button mat-stroked-button type="button" class="btn-ajouter" [disabled]="!cibleCtrl.value" (click)="ajouterCible()">
+        <mat-icon>add</mat-icon> Ajouter
+      </button>
+    </div>
+  </section>
+
+  <!-- 5. Indicateurs -->
+  <section class="bloc">
+    <div class="bloc-titre">Indicateurs</div>
+    <div class="lignes-ajoutees" *ngIf="indicateurs.length; else aucunIndic">
+      <div class="ligne-ajoutee" *ngFor="let indic of indicateurs">
+        <span class="libelle">{{ indic.libelle || libelleIndicateur(indic.typ_indicateur) }}</span>
+        <span class="valeur">= {{ indic.evaluation }}</span>
+        <button mat-icon-button type="button" class="btn-retirer" matTooltip="Retirer" (click)="retirerIndicateur(indic)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+    <ng-template #aucunIndic><div class="vide">Aucun indicateur.</div></ng-template>
+
+    <div class="ligne">
+      <mat-form-field class="champ-large">
+        <mat-label>Indicateur</mat-label>
+        <mat-select [formControl]="indicateurCtrl">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let i of nomenclatures.indicateurs" [value]="i.cd_type">{{ i.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Valeur</mat-label>
+        <input matInput [formControl]="evaluationCtrl" (keydown.enter)="ajouterIndicateur()">
+      </mat-form-field>
+      <button mat-stroked-button type="button" class="btn-ajouter"
+              [disabled]="!indicateurCtrl.value || !evaluationCtrl.value" (click)="ajouterIndicateur()">
+        <mat-icon>add</mat-icon> Ajouter
+      </button>
+    </div>
+  </section>
+
+  <!-- 6. Intervenants : type de contact, contact de l'annuaire, rôle -->
+  <section class="bloc">
+    <div class="bloc-titre">Intervenants</div>
+    <div class="lignes-ajoutees" *ngIf="intervenants.length; else aucunInterv">
+      <div class="ligne-ajoutee" *ngFor="let interv of intervenants">
+        <span class="libelle">{{ interv.nom || interv.intervenant }}</span>
+        <span class="badge">{{ interv.role_libelle || libelleRole(interv.typ_role) }}</span>
+        <button mat-icon-button type="button" class="btn-retirer" matTooltip="Retirer" (click)="retirerIntervenant(interv)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+    <ng-template #aucunInterv><div class="vide">Aucun intervenant.</div></ng-template>
+
+    <div class="ligne">
+      <mat-form-field>
+        <mat-label>Type de contact</mat-label>
+        <mat-select [formControl]="typPersonneCtrl">
+          <mat-option [value]="null">Tous</mat-option>
+          <mat-option *ngFor="let t of typPersonnes" [value]="t.cd_type">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="champ-large">
+        <mat-label>Contact de l'annuaire</mat-label>
+        <input matInput [formControl]="contactCtrl" [matAutocomplete]="autoContact" placeholder="Tapez un nom">
+        <button mat-icon-button matSuffix type="button" matTooltip="Nouveau contact dans l'annuaire" (click)="nouveauContact()">
+          <mat-icon>person_add</mat-icon>
+        </button>
+        <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="afficherContact">
+          <mat-option *ngFor="let c of contactsProposes" [value]="c">{{ c.nom }}</mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Rôle</mat-label>
+        <mat-select [formControl]="roleCtrl">
+          <mat-option *ngFor="let r of nomenclatures.roles" [value]="r.cd_type">{{ r.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-stroked-button type="button" class="btn-ajouter"
+              [disabled]="!contactChoisi || !roleCtrl.value || intervenantDejaPresent()" (click)="ajouterIntervenant()">
+        <mat-icon>add</mat-icon> Ajouter
+      </button>
+    </div>
+    <div class="aide erreur-inline" *ngIf="intervenantDejaPresent()">Ce contact a déjà ce rôle sur l'opération.</div>
+  </section>
+
+  <!-- 7. Détail et mode d'intervention -->
+  <section class="bloc" [formGroup]="form">
+    <div class="bloc-titre">Détail et mode d'intervention</div>
+    <mat-form-field class="champ-plein">
+      <mat-label>Détail</mat-label>
+      <textarea matInput formControlName="detail" rows="4" maxlength="2000"></textarea>
+      <mat-hint align="end">{{ form.get('detail')?.value?.length || 0 }} / 2000</mat-hint>
+    </mat-form-field>
+    <div class="ligne">
+      <mat-form-field class="champ-large">
+        <mat-label>Mode d'intervention</mat-label>
+        <mat-select formControlName="typ_interv">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let t of nomenclatures.typ_interventions" [value]="t.cd_type">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="champ-plein">
+        <mat-label>Commentaire sur l'intervention</mat-label>
+        <textarea matInput formControlName="com_interv" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- Erreurs de saisie (toutes à la fois, y compris celles du backend) -->
+  <div class="erreurs" *ngIf="erreurs.length">
+    <mat-icon>error</mat-icon>
+    <ul><li *ngFor="let e of erreurs">{{ e }}</li></ul>
+  </div>
+
+  <div class="actions-ope">
+    <button mat-button type="button" (click)="annuler()" [disabled]="isSaving">Annuler</button>
+    <button mat-flat-button type="button" class="btn-enregistrer" (click)="enregistrer()" [disabled]="isSaving || !actionChoisie">
+      <mat-icon>save</mat-icon> {{ isSaving ? 'Enregistrement…' : 'Enregistrer l\'opération' }}
+    </button>
+  </div>
+</div>
+
+<ng-template #chargement>
+  <div class="chargement"><mat-spinner diameter="40"></mat-spinner></div>
+</ng-template>

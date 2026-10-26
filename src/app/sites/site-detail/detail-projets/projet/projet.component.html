@@ -12,7 +12,15 @@
       -- Variable newProjet : {{ newProjet }}<br>
       <ng-container *ngIf="projet?.pro_webapp">-- pro_webapp : {{ projet?.pro_webapp }}<br></ng-container> -->
 
-      <ng-container *ngTemplateOutlet="stepper"></ng-container>
+      <!-- Projet « autre » (sensibilisation, étude, police...) : formulaire dédié -->
+      <app-projet-autre
+        *ngIf="isAutre; else stepper"
+        [uuidProj]="newProjet ? undefined : projetLite.uuid_proj"
+        [typProjet]="selectedProjetType"
+        [siteLocalisant]="siteLocalisant"
+        (typProjetChange)="onTypeProjetAutreChange($event)"
+        (supprime)="fermer()"
+      ></app-projet-autre>
 
     </div>
     

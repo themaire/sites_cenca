@@ -4,7 +4,7 @@ import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/materia
 import { MatButton } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
-type Mode = 'delete' | 'duplicate';
+type Mode = 'delete' | 'duplicate' | 'confirm';
 export interface ExcludeOption { key: string; label: string }
 
 @Component({

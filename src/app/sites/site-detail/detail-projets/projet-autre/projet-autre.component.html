@@ -1,0 +1,174 @@
+<div class="projet-autre" *ngIf="!isLoading; else chargement">
+
+  <!-- Fiche ouverte dans Access par un collègue : on informe, on ne bloque pas -->
+  <div class="bandeau-access" *ngIf="ouvertPar().length">
+    <mat-icon>warning</mat-icon>
+    <span>
+      Ce projet est ouvert en modification dans Access par <strong>{{ nomsOuvertPar }}</strong>.
+      Vos modifications et les siennes peuvent s'écraser : coordonnez-vous.
+    </span>
+  </div>
+
+  <!-- En-tête : boutons, titre, suppression -->
+  <div class="entete">
+    <div class="form-buttons" *ngIf="isEditAllowed && !isCreation && operationEnCours === undefined">
+      <app-form-buttons
+        [isEditActive]="isEditProjet"
+        icone="edit"
+        [theme]="'gerer'"
+        [isFormValid]="form.valid"
+        (toggleAction)="toggleEditProjet()"
+        (onSubmit)="enregistrerProjet()"
+      ></app-form-buttons>
+    </div>
+
+    <div class="titre">
+      <h2 *ngIf="isCreation">Nouveau projet {{ libelle(form.get('typ_projet')?.value, typesProjet) | lowercase }}</h2>
+      <ng-container *ngIf="!isCreation">
+        <span class="badge-type" [matTooltip]="projet?.typ_projet_libelle || ''">{{ projet?.typ_projet }}</span>
+        <h2>{{ nomTitre }}</h2>
+      </ng-container>
+    </div>
+
+    <div class="suppression" *ngIf="isEditAllowed && !isCreation && operationEnCours === undefined">
+      <button mat-button type="button" (click)="supprimerProjet()">Supprimer le projet</button>
+    </div>
+  </div>
+
+  <!-- Projet : consultation -->
+  <section class="bloc-projet" *ngIf="!isEditProjet && projet">
+    <div class="grille">
+      <div class="champ"><span class="etiquette">Type</span>{{ projet.typ_projet_libelle || libelle(projet.typ_projet, typesProjet) }}</div>
+      <div class="champ"><span class="etiquette">Année</span>{{ projet.annee }}</div>
+      <div class="champ"><span class="etiquette">Statut</span>{{ projet.statut }}</div>
+      <div class="champ"><span class="etiquette">Responsable</span>{{ projet.responsable_str || projet.responsable }}</div>
+      <div class="champ" *ngIf="projet.programme"><span class="etiquette">Programme</span>{{ libelle(projet.programme, nomenclatures?.programmes) }}</div>
+      <div class="champ"><span class="etiquette">Code</span>{{ projet.code }}</div>
+      <div class="champ"><span class="etiquette">Créé par</span>{{ projet.createur }} le {{ projet.date_crea | date:'dd/MM/yyyy' }}</div>
+    </div>
+    <div class="nom-multiligne" *ngIf="multiligne(projet.nom).includes('\n')">{{ multiligne(projet.nom) }}</div>
+  </section>
+
+  <!-- Projet : création / modification -->
+  <section class="bloc-projet" *ngIf="isEditProjet" [formGroup]="form">
+    <div class="ligne">
+      <mat-form-field class="champ-plein">
+        <mat-label>Nom du projet</mat-label>
+        <textarea matInput formControlName="nom" rows="2" required></textarea>
+      </mat-form-field>
+    </div>
+    <div class="ligne">
+      <mat-form-field>
+        <mat-label>Type de projet</mat-label>
+        <mat-select formControlName="typ_projet" required (selectionChange)="onTypeChange($event.value)">
+          <mat-option *ngIf="isCreation" value="TRV">Intervention sur site (travaux)</mat-option>
+          <mat-option *ngFor="let t of typesProjet" [value]="t.cd_type">{{ t.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="champ-court">
+        <mat-label>Année</mat-label>
+        <input matInput type="number" formControlName="annee" required>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="statut" required>
+          <mat-option *ngFor="let s of nomenclatures?.statuts" [value]="s">{{ s }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Responsable</mat-label>
+        <mat-select formControlName="responsable" required>
+          <mat-option *ngFor="let s of salaries" [value]="s.cd_type">{{ s.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="champ-large">
+        <mat-label>Programme (facultatif)</mat-label>
+        <mat-select formControlName="programme">
+          <mat-option [value]="null">—</mat-option>
+          <mat-option *ngFor="let p of nomenclatures?.programmes" [value]="p.cd_type">{{ p.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="actions-creation" *ngIf="isCreation">
+      <button mat-flat-button type="button" class="btn-enregistrer" (click)="enregistrerProjet()" [disabled]="isSaving">
+        <mat-icon>save</mat-icon> {{ isSaving ? 'Création…' : 'Créer le projet' }}
+      </button>
+      <span class="aide">Les opérations se saisissent juste après la création.</span>
+    </div>
+  </section>
+
+  <div class="erreurs" *ngIf="erreurs.length">
+    <mat-icon>error</mat-icon>
+    <ul><li *ngFor="let e of erreurs">{{ e }}</li></ul>
+  </div>
+
+  <!-- Formulaire d'une opération -->
+  <app-operation-autre
+    *ngIf="projet && nomenclatures && operationEnCours !== undefined"
+    [operation]="operationEnCours"
+    [uuidProj]="projet.uuid_proj"
+    [typProjet]="projet.typ_projet"
+    [nomenclatures]="nomenclatures"
+    [siteLocalisant]="siteLocalisant"
+    (enregistree)="onOperationEnregistree($event)"
+    (annulee)="onOperationAnnulee()"
+  ></app-operation-autre>
+
+  <!-- Liste des opérations -->
+  <section class="operations" *ngIf="projet && operationEnCours === undefined">
+    <div class="edition" *ngIf="isEditAllowed">
+      Opérations ({{ projet.operations.length }}) :
+      <button mat-icon-button matTooltip="Ajouter une opération" class="btn-edition" (click)="nouvelleOperation()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    <div class="edition" *ngIf="!isEditAllowed">Opérations ({{ projet.operations.length }})</div>
+
+    <div class="vide" *ngIf="!projet.operations.length">Aucune opération pour ce projet.</div>
+
+    <article class="carte-ope" *ngFor="let ope of projet.operations">
+      <header>
+        <div class="action">{{ cheminAction(ope) }}</div>
+        <div class="periode">{{ periode(ope) }}</div>
+        <div class="boutons" *ngIf="isEditAllowed">
+          <button mat-icon-button matTooltip="Modifier" (click)="modifierOperation(ope)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button matTooltip="Dupliquer (nouvelle date)" (click)="dupliquerOperation(ope)"><mat-icon>content_copy</mat-icon></button>
+          <button mat-icon-button matTooltip="Supprimer" class="btn-supprimer" (click)="supprimerOperation(ope)"><mat-icon>delete</mat-icon></button>
+        </div>
+      </header>
+
+      <div class="localisations" *ngIf="ope.localisations.length">
+        <span class="chip" *ngFor="let l of ope.localisations"><span class="badge">{{ l.cat }}</span> {{ l.libelle }}</span>
+      </div>
+
+      <div class="details">
+        <div *ngIf="ope.cibles.length">
+          <span class="etiquette">Cibles</span>
+          <span *ngFor="let c of ope.cibles; let last = last">{{ c.libelle || c.typ_cible }}<ng-container *ngIf="c.detail"> ({{ multiligne(c.detail) }})</ng-container>{{ last ? '' : ', ' }}</span>
+        </div>
+        <div *ngIf="ope.indicateurs.length">
+          <span class="etiquette">Indicateurs</span>
+          <span *ngFor="let i of ope.indicateurs; let last = last">{{ i.libelle || i.typ_indicateur }} = {{ i.evaluation }}{{ last ? '' : ', ' }}</span>
+        </div>
+        <div *ngIf="ope.intervenants.length">
+          <span class="etiquette">Intervenants</span>
+          <span *ngFor="let i of ope.intervenants; let last = last">{{ i.nom || i.intervenant }} ({{ i.role_libelle || i.typ_role }}){{ last ? '' : ', ' }}</span>
+        </div>
+        <div *ngIf="ope.typ_interv">
+          <span class="etiquette">Mode d'intervention</span>{{ ope.typ_interv_libelle || ope.typ_interv }}
+          <ng-container *ngIf="ope.com_interv"> — {{ multiligne(ope.com_interv) }}</ng-container>
+        </div>
+      </div>
+
+      <div class="texte-detail" *ngIf="ope.detail">{{ multiligne(ope.detail) }}</div>
+    </article>
+  </section>
+</div>
+
+<ng-template #chargement>
+  <div class="chargement">
+    <mat-spinner class="spinner-vert"></mat-spinner>
+    <p>Chargement ...</p>
+  </div>
+</ng-template>

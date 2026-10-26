@@ -13,6 +13,7 @@ export interface ProjetLite {
     statut: string;
     webapp: boolean;
     uuid_site: string;
+    uuid_espace?: string; // cd_localisation du site pour les projets « autres »
     geojson_site: string;
     nom?: string;
     communes?: Commune[];

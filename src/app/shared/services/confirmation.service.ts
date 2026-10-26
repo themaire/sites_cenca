@@ -29,12 +29,16 @@ dialogConfig = {
   scrollStrategy: this.overlay.scrollStrategies.close(), // ✅ Résout le décalage du fond (ne ferme pas car scroll interne)
 };
 
-  confirm(title: string, message: string, mode: 'delete' | 'duplicate', context?: string): Observable<boolean | string[]> {
+  confirm(title: string, message: string, mode: 'delete' | 'duplicate' | 'confirm', context?: string): Observable<boolean | string[]> {
     if (mode === 'duplicate') {
       this.dialogConfig.height = '350px'; // Laisser de la place pour les checkbox en mode duplication
       this.dialogConfig.backdropClass = 'custom-backdrop-duplicate'; // Classe personnalisée pour le fond en mode duplication
     } else if (mode === 'delete') {
+      this.dialogConfig.height = '250px';
       this.dialogConfig.backdropClass = 'custom-backdrop-delete'; // Classe personnalisée pour le fond en mode suppression
+    } else if (mode === 'confirm') {
+      this.dialogConfig.height = '260px';
+      this.dialogConfig.backdropClass = 'custom-backdrop-duplicate';
     }
     
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
