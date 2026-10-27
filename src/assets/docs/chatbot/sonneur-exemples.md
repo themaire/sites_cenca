@@ -1,6 +1,6 @@
 # Exemples de questions à poser à Sonneur
 
-Posez votre question en français, comme à un collègue : Sonneur choisit lui-même les données à consulter. Les exemples ci-dessous ont été vérifiés sur les données le 20 octobre 2026 (le 23 octobre pour les périmètres modifiés, les objectifs de gestion, les mesures compensatoires et les habitats naturels) ; un clic ne les envoie pas, recopiez-les ou adaptez-les dans la zone de saisie. Pour le fonctionnement général, voir [Sonneur, l'assistant de consultation](/aide/sonneur).
+Posez votre question en français, comme à un collègue : Sonneur choisit lui-même les données à consulter. Les exemples ci-dessous ont été vérifiés sur les données le 20 octobre 2026 (le 23 octobre pour les périmètres modifiés, les objectifs de gestion, les mesures compensatoires et les habitats naturels ; le 27 octobre pour les bassins d'agence, les informations sur une commune et la recherche dans les textes) ; un clic ne les envoie pas, recopiez-les ou adaptez-les dans la zone de saisie. Pour le fonctionnement général, voir [Sonneur, l'assistant de consultation](/aide/sonneur).
 
 ## Conseils pour bien formuler
 
@@ -21,12 +21,26 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Quels sont les nouveaux sites de 2025 ?
 - Quels sites sont entrés depuis 2020 dans la Marne ?
 - Liste des sites gérés en Haute-Marne, du plus grand au plus petit.
+- Quels sont les sites du bassin Rhin-Meuse ?
+- Quels sites gérés de la Marne sont dans le bassin Seine-Normandie ?
+
+Le bassin d'agence de l'eau est déterminé par croisement des contours (il n'est pas renseigné pour tous les sites dans la base) : un site à cheval sur deux bassins apparaît dans les deux.
 
 ### Sites d'une commune
 
 - Quels sites gère-t-on à Villechétif ?
 - Y a-t-il des sites du CENCA à Saint-Dizier ?
 - Quels sites se trouvent sur la commune des Riceys ?
+
+### Informations sur une commune
+
+Pour une commune, Sonneur donne le ou les **bassins d'agence de l'eau** (avec le sous-bassin Seine-Normandie et la part de la commune dans chacun) et tous les **espaces naturels** qui la touchent, regroupés par type (sites du CENCA, Natura 2000, ZNIEFF, APB, réserves, PNR, Ramsar…), avec leur surface dans la commune. Les contours sont croisés sur la carte : une ZNIEFF qui ne fait qu'effleurer la commune est comptée, pour sa seule surface dans la commune.
+
+- Dans quel bassin d'agence de l'eau se trouve Villechétif ?
+- Givet est-elle en Rhin-Meuse ou en Seine-Normandie ?
+- Quels espaces naturels (Natura 2000, ZNIEFF, réserves…) touchent la commune de Givet ?
+- Quelle surface de ZNIEFF sur la commune de Villechétif ?
+- Y a-t-il un site Natura 2000 ou un arrêté de protection de biotope à Saint-Dizier ?
 
 ### Sites autour d'un point GPS
 
@@ -153,6 +167,22 @@ Ce que visent les projets d'un site : niveau d'enjeu (espèces, habitat…), enj
 - Combien d'hectares pâturés chaque année depuis 2022 ?
 - Bilan des opérations par site en 2025.
 - Bilan des opérations du site 10030 depuis 2020.
+
+## Rechercher un mot dans les textes
+
+Sonneur cherche un mot ou une expression (sans tenir compte des accents ni des majuscules) dans les textes libres de la base :
+
+- les **descriptions** des sites et leurs **remarques de sensibilité** ;
+- les **descriptions et remarques des opérations de travaux**, y compris les opérations anciennes reprises de l'ancienne base ;
+- les **remarques des actes fonciers**.
+
+Pour chaque texte trouvé, il indique d'où il vient, le site, l'année et un extrait autour du mot. Mettez le mot cherché entre guillemets pour lever toute ambiguïté.
+
+- Où parle-t-on de « grille » dans la base ?
+- Quels sites mentionnent « cadenas » dans leur description ?
+- Quelles opérations de travaux parlent de « grille à chauves-souris » ?
+- Quels actes fonciers ont une remarque sur le « droit de chasse » ?
+- Cherche « castor » dans les descriptions des sites et les travaux.
 
 ## Habitats naturels (cartographie des végétations)
 

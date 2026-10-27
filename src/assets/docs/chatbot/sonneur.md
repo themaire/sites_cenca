@@ -1,6 +1,6 @@
 # Sonneur, l'assistant de consultation
 
-Sonneur répond à vos questions sur les sites, le foncier, les travaux et objectifs de gestion, les mesures compensatoires, les habitats naturels cartographiés et les observations naturalistes (WebObs) à partir des données de l'application. Il est disponible dès que vous êtes connecté : on l'ouvre avec la mascotte en bas à droite de l'écran.
+Sonneur répond à vos questions sur les sites, les communes (bassin d'agence de l'eau, espaces naturels), le foncier, les travaux et objectifs de gestion, les mesures compensatoires, les habitats naturels cartographiés et les observations naturalistes (WebObs) à partir des données de l'application. Il sait aussi **chercher un mot** dans les textes de la base (descriptions des sites, travaux, remarques des actes fonciers). Il est disponible dès que vous êtes connecté : on l'ouvre avec la mascotte en bas à droite de l'écran.
 
 > Pourquoi « Sonneur » ? En hommage au **sonneur à ventre jaune**, petit crapaud emblématique de l'Argonne et des Ardennes, aux pupilles en forme de cœur… et parce qu'il vous « sonne » quand votre réponse est prête.
 
@@ -18,7 +18,7 @@ Pour savoir ce qu'il sait faire, tapez simplement **« aide »** dans la zone de
 
 Sur une conversation vide, Sonneur propose aussi des **exemples de questions** et ces questions d'aide sous forme de boutons : un clic envoie la question.
 
-Plus d'une centaine d'exemples classés par thème (sites, chiffres clés, foncier, mesures compensatoires, travaux et objectifs, habitats naturels, observations WebObs) sont réunis dans la fiche [Exemples de questions à poser à Sonneur](/aide/sonneur-exemples).
+Plus d'une centaine d'exemples classés par thème (sites et communes, chiffres clés, foncier, mesures compensatoires, travaux et objectifs, recherche dans les textes, habitats naturels, observations WebObs) sont réunis dans la fiche [Exemples de questions à poser à Sonneur](/aide/sonneur-exemples).
 
 ---
 
@@ -78,6 +78,7 @@ Le bouton en forme de haut-parleur, en haut du panneau, coupe ou rétablit le ch
 
 Les boutons en haut du panneau :
 
+- **Enregistrer la conversation** : télécharge toute la conversation dans un fichier texte (`.txt`) : chaque question, sa réponse et les requêtes utilisées. Pratique pour garder une trace ou la transmettre à un collègue ;
 - **Nouvelle conversation** : efface l'échange en cours et repart de zéro ;
 - **Agrandir** / **Réduire** : passe le panneau en grand format, ou le ramène à sa taille normale ;
 - **Replier** : referme le panneau sur la mascotte, sans interrompre une réponse en cours.

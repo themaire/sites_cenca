@@ -30,6 +30,8 @@ const LIBELLES_OUTILS: Record<string, string> = {
   operations_projet: 'Opérations du projet',
   bilan_operations: 'Bilan des opérations',
   travaux_site: 'Travaux du site',
+  rechercher_texte: 'Recherche dans les textes',
+  infos_commune: 'Informations sur la commune',
 };
 
 const CLE_HISTORIQUE = 'chatbot_historique';
