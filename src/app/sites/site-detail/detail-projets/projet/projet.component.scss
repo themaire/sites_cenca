@@ -62,7 +62,7 @@ mat-dialog-content.dialogue {
 }
 
 .conteneur-projet {
-  background-color: $vertTC;
+  background-color: transparent; // laisse voir le fond du crédo porté par .dialogue
   height: 100%;
   min-height: 100%;
   display: flex;
@@ -72,9 +72,15 @@ mat-dialog-content.dialogue {
 }
 
 // bande sur le coté
-.gerer {
+// Bandeau du crédo (cf. credos-projets.ts)
+.bandeau {
   padding-bottom: 15px;
   @include bandeau($gerer);
+  &.credo-proteger { background-color: $proteger; }
+  &.credo-connaitre { background-color: $connaitre; }
+  &.credo-valoriser { background-color: $valoriser; }
+  &.credo-accompagner { background-color: $accompagner; }
+  &.credo-administratif { background-color: $administratif; }
 }
 
 .projet {
@@ -167,6 +173,17 @@ mat-dialog-content.dialogue {
 ::ng-deep .mat-stepper-content {
   background-color: $vertTC !important;
 }
+
+// Fond de la fiche selon le crédo (gerer garde $vertTC ci-dessus) : teinte très claire, comme $vertTC
+.dialogue {
+  &.fond-proteger { background-color: mix(white, $proteger, 93%) !important; }
+  &.fond-connaitre { background-color: mix(white, $connaitre, 93%) !important; }
+  &.fond-valoriser { background-color: mix(white, $valoriser, 93%) !important; }
+  &.fond-accompagner { background-color: mix(white, $accompagner, 93%) !important; }
+  &.fond-administratif { background-color: mix(white, $administratif, 93%) !important; }
+}
+
+// Thème Material selon le crédo : dans src/styles.scss (5 thèmes ici dépassaient le budget de style du composant)
 
 // ::ng-deep .mat-mdc-dialog-container {
 //   background-color: $vertTC !important;

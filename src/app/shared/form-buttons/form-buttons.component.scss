@@ -52,9 +52,29 @@
       @include icon($bleuF, white);
     }
 
+    // Theme valoriser (fond jaune : icône foncée pour rester lisible)
+    .btn-edition-valoriser {
+      @include btn-icon($valoriser, $jauneM);
+      @include icon($orangeF, black);
+    }
+    .btn-sauvegarde-valoriser {
+      @include btn-icon(white, $valoriser);
+      @include icon($orangeF, $orangeF);
+    }
+
+    // Theme accompagner
+    .btn-edition-accompagner {
+      @include btn-icon($accompagner, $violetC);
+      @include icon(white, black);
+    }
+    .btn-sauvegarde-accompagner {
+      @include btn-icon(white, $accompagner);
+      @include icon($violetF, white);
+    }
+
     // Theme administratif
     .btn-edition-administratif {
-      @include btn-icon($administratif, $bleuC);
+      @include btn-icon($administratif, lighten($administratif, 40%));
       @include icon(white, black);
     }
     .btn-sauvegarde-administratif {

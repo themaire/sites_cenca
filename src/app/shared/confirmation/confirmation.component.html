@@ -23,7 +23,7 @@
   <button mat-button
           [ngClass]="{
             'btn-warn': data.mode === 'delete',
-            'btn-blue': data.mode === 'duplicate'
+            'btn-blue': data.mode === 'duplicate' || data.mode === 'confirm'
           }"
           (click)="onYesClick()"
   >
