@@ -21,6 +21,7 @@ import { FormButtonsComponent } from '../../../../shared/form-buttons/form-butto
 
 import { ProjetsAutresService } from './projets-autres.service';
 import { OperationAutreComponent } from './operation-autre/operation-autre.component';
+import { Credo, credoDuProjet, credoDuTypeProjet } from '../credos-projets';
 import {
   Localisant,
   NomenclaturesAutres,
@@ -64,6 +65,8 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
 
   /** Choix du type « travaux » pendant une création : la fiche parente reprend la main */
   @Output() typProjetChange = new EventEmitter<string>();
+  /** Crédo du projet chargé (type, ou branche de la 1re opération) : la fiche parente adapte son bandeau */
+  @Output() credoCharge = new EventEmitter<Credo>();
   /** Le projet a été supprimé : la fiche parente se ferme */
   @Output() supprime = new EventEmitter<void>();
 
@@ -110,6 +113,13 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
 
   get nomsOuvertPar(): string {
     return this.ouvertPar().map(o => o.nom || o.compte).join(', ');
+  }
+
+  /** Crédo (couleurs du composant) : type du projet, ou branche de sa 1re opération ; en création, le type choisi */
+  get credo(): Credo {
+    if (!this.projet) return credoDuTypeProjet(this.form?.get('typ_projet')?.value ?? this.typProjet);
+    const branche = this.projet.operations[0]?.action_chemin?.[0]?.cd_action;
+    return credoDuProjet(this.projet.typ_projet, branche);
   }
 
   /** Nom du projet sur une ligne pour le titre (les retours à la ligne sont stockés « | ») */
@@ -174,6 +184,8 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
 
   private remplirFormulaire(): void {
     if (!this.projet) return;
+    this.signalerCredo();
+    this.ajouterResponsableInactif();
     this.form.reset({
       nom: pipesVersSautsDeLigne(this.projet.nom),
       typ_projet: this.projet.typ_projet,
@@ -182,6 +194,18 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
       responsable: this.projet.responsable,
       programme: this.projet.programme,
     });
+  }
+
+  private signalerCredo(): void {
+    if (this.projet) this.credoCharge.emit(this.credo);
+  }
+
+  /** Responsable parti (absent de admin.salaries, qui ne liste que les actifs) : on l'ajoute au select pour ne pas le perdre */
+  private ajouterResponsableInactif(): void {
+    const responsable = this.projet?.responsable;
+    if (!responsable || this.salaries.some(s => s.cd_type === responsable)) return;
+    const nom = this.projet?.responsable_str || responsable;
+    this.salaries = [...this.salaries, { cd_type: responsable, libelle: `${nom} (inactif)` }];
   }
 
   // ── Libellés ────────────────────────────────────────────────────────────────
@@ -359,6 +383,7 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
     this.projet!.operations = index >= 0
       ? operations.map(o => (o.uuid_ope === ope.uuid_ope ? ope : o))
       : [...operations, ope];
+    this.signalerCredo(); // un projet sans type prend le crédo de sa première opération
     this.operationEnCours = undefined;
     this.snackbar.success('Opération enregistrée.');
   }
@@ -411,6 +436,7 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
       this.projetsAutresService.deleteOperation(ope.uuid_ope).subscribe({
         next: () => {
           this.projet!.operations = this.projet!.operations.filter(o => o.uuid_ope !== ope.uuid_ope);
+          this.signalerCredo();
           this.snackbar.success('Opération supprimée.');
         },
         error: (error: HttpErrorResponse) => {

@@ -1,4 +1,4 @@
-<div class="projet-autre" *ngIf="!isLoading; else chargement">
+<div class="projet-autre" [ngClass]="'credo-' + credo.cle" *ngIf="!isLoading; else chargement">
 
   <!-- Fiche ouverte dans Access par un collègue : on informe, on ne bloque pas -->
   <div class="bandeau-access" *ngIf="ouvertPar().length">
@@ -15,7 +15,7 @@
       <app-form-buttons
         [isEditActive]="isEditProjet"
         icone="edit"
-        [theme]="'gerer'"
+        [theme]="credo.cle"
         [isFormValid]="form.valid"
         (toggleAction)="toggleEditProjet()"
         (onSubmit)="enregistrerProjet()"
@@ -37,16 +37,18 @@
 
   <!-- Projet : consultation -->
   <section class="bloc-projet" *ngIf="!isEditProjet && projet">
+    <div class="champ nom-projet"><span class="etiquette">Nom du projet</span>{{ multiligne(projet.nom) }}</div>
     <div class="grille">
       <div class="champ"><span class="etiquette">Type</span>{{ projet.typ_projet_libelle || libelle(projet.typ_projet, typesProjet) }}</div>
       <div class="champ"><span class="etiquette">Année</span>{{ projet.annee }}</div>
       <div class="champ"><span class="etiquette">Statut</span>{{ projet.statut }}</div>
       <div class="champ"><span class="etiquette">Responsable</span>{{ projet.responsable_str || projet.responsable }}</div>
       <div class="champ" *ngIf="projet.programme"><span class="etiquette">Programme</span>{{ libelle(projet.programme, nomenclatures?.programmes) }}</div>
+      <!-- Code masqué pour l'instant (à revoir)
       <div class="champ"><span class="etiquette">Code</span>{{ projet.code }}</div>
+      -->
       <div class="champ"><span class="etiquette">Créé par</span>{{ projet.createur }} le {{ projet.date_crea | date:'dd/MM/yyyy' }}</div>
     </div>
-    <div class="nom-multiligne" *ngIf="multiligne(projet.nom).includes('\n')">{{ multiligne(projet.nom) }}</div>
   </section>
 
   <!-- Projet : création / modification -->
@@ -88,6 +90,12 @@
           <mat-option *ngFor="let p of nomenclatures?.programmes" [value]="p.cd_type">{{ p.libelle }}</mat-option>
         </mat-select>
       </mat-form-field>
+      <!-- Code attribué par le serveur, masqué pour l'instant (à revoir)
+      <mat-form-field *ngIf="projet">
+        <mat-label>Code</mat-label>
+        <input matInput [value]="projet.code" readonly matTooltip="Attribué automatiquement">
+      </mat-form-field>
+      -->
     </div>
 
     <div class="actions-creation" *ngIf="isCreation">

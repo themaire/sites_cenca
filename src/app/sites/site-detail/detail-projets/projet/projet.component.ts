@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 // import { ApiResponse } from '../../../../shared/interfaces/api';
 import { ProjetLite, Projet } from '../projets';
+import { Credo, credoDuTypeProjet } from '../credos-projets';
 import { OperationLite } from './operation/operations';
 import { Objectif } from './objectif/objectifs';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
@@ -158,6 +159,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   // Listes de choix du formulaire
   projectTypes!: SelectValue[];
   selectedProjetType: string = '';
+  /** Crédo du projet « autre » calculé par app-projet-autre une fois chargé (le type est absent de ProjetLite) */
+  credoAutre?: Credo;
   
   // projectTypes: SelectValue[] = [
   //   {value: 'TRV', viewValue: 'Travaux'},
@@ -210,6 +213,12 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   get isAutre(): boolean {
     if (!this.newProjet) return this.projetLite?.generation === '1_AUT';
     return !!this.selectedProjetType && this.selectedProjetType !== 'TRV' && this.selectedProjetType !== 'NR';
+  }
+
+  /** Crédo du bandeau : travaux → Gérer ; projet « autre » → celui calculé par app-projet-autre, ou le type choisi en création */
+  get credo(): Credo {
+    if (!this.isAutre) return credoDuTypeProjet('TRV');
+    return this.credoAutre ?? credoDuTypeProjet(this.selectedProjetType);
   }
 
   /** Le site d'où l'on vient, comme localisation des opérations « autres » */

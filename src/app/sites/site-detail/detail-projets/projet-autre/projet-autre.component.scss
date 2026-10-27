@@ -1,6 +1,26 @@
 @import "../../../../styles/mixins.scss";
 @import "../../../../styles/variables.scss";
 
+// Couleurs du crédo (cf. credos-projets.ts), exposées en variables CSS :
+// principale, texte posé dessus, foncée (titres), bordure claire, fond très clair
+$credos-couleurs: (
+  gerer:         ($gerer,         white,     $VertF,                          #cfe3c6, $vertTC),
+  proteger:      ($proteger,      white,     mix(black, $proteger, 40%),      mix(white, $proteger, 70%),      mix(white, $proteger, 92%)),
+  connaitre:     ($connaitre,     white,     mix(black, $connaitre, 40%),     mix(white, $connaitre, 70%),     mix(white, $connaitre, 92%)),
+  valoriser:     ($valoriser,     $orangeF,  $orangeF,                        mix(white, $valoriser, 60%),     mix(white, $valoriser, 88%)),
+  accompagner:   ($accompagner,   white,     mix(black, $accompagner, 40%),   mix(white, $accompagner, 70%),   mix(white, $accompagner, 92%)),
+  administratif: ($administratif, white,     mix(black, $administratif, 30%), mix(white, $administratif, 70%), mix(white, $administratif, 92%)),
+);
+@each $cle, $c in $credos-couleurs {
+  .credo-#{$cle} {
+    --credo: #{nth($c, 1)};
+    --credo-texte: #{nth($c, 2)};
+    --credo-fonce: #{nth($c, 3)};
+    --credo-bord: #{nth($c, 4)};
+    --credo-clair: #{nth($c, 5)};
+  }
+}
+
 .projet-autre {
   display: flex;
   flex-direction: column;
@@ -53,8 +73,8 @@
 .badge-type {
   padding: 3px 10px;
   border-radius: 12px;
-  background-color: $couleur-territoire;
-  color: white;
+  background-color: var(--credo);
+  color: var(--credo-texte);
   font-weight: 700;
   font-size: 0.9em;
 }
@@ -77,7 +97,7 @@
     padding-bottom: 8px;
   }
 
-  .nom-multiligne {
+  .nom-projet {
     white-space: pre-line;
     padding-bottom: 8px;
   }
@@ -135,8 +155,8 @@
 }
 
 .btn-enregistrer {
-  background-color: $couleur-territoire;
-  color: white;
+  background-color: var(--credo);
+  color: var(--credo-texte);
 }
 
 .erreurs {
@@ -161,9 +181,16 @@
   gap: 15px;
   font-weight: 600;
 
+  // Bouton « + » d'ajout d'opération, aux couleurs du crédo
   .btn-edition {
     @include btn-icon($proteger, $orangeC);
     @include icon(white, black);
+    background-color: var(--credo);
+    color: var(--credo-texte);
+    &:hover {
+      background-color: var(--credo-bord);
+      color: black;
+    }
   }
 }
 
@@ -173,8 +200,8 @@
 
 .carte-ope {
   background-color: white;
-  border: 1px solid #d8e6d2;
-  border-left: 4px solid $couleur-territoire;
+  border: 1px solid var(--credo-bord);
+  border-left: 4px solid var(--credo);
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 10px;
@@ -187,7 +214,7 @@
 
     .action {
       font-weight: 600;
-      color: $VertF;
+      color: var(--credo-fonce);
     }
 
     .periode {
@@ -213,8 +240,8 @@
     .chip {
       padding: 1px 8px 1px 2px;
       border-radius: 12px;
-      background-color: $vertTC;
-      border: 1px solid #cfe3c6;
+      background-color: var(--credo-clair);
+      border: 1px solid var(--credo-bord);
       font-size: 0.9em;
     }
   }
@@ -234,8 +261,8 @@
   display: inline-block;
   padding: 1px 6px;
   border-radius: 10px;
-  background-color: $couleur-territoire;
-  color: white;
+  background-color: var(--credo);
+  color: var(--credo-texte);
   font-size: 0.75em;
   font-weight: 600;
 }

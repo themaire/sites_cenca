@@ -1,6 +1,7 @@
-<mat-dialog-content class="dialogue" *ngIf="!isLoading; else loading">
+<mat-dialog-content class="dialogue" [ngClass]="'fond-' + credo.cle" *ngIf="!isLoading; else loading">
   <div class="conteneur-projet">
-    <div class="gerer">Gérer</div>
+    <!-- Bandeau du crédo (cf. credos-projets.ts) ; la classe colore aussi le fond derrière le dialogue (styles.scss) -->
+    <div class="bandeau" [ngClass]="'credo-' + credo.cle">{{ credo.libelle }}</div>
     <div class="projet">
 
       <!-- -- Variable isEditProjet : {{ isEditProjet }}<br>
@@ -19,6 +20,7 @@
         [typProjet]="selectedProjetType"
         [siteLocalisant]="siteLocalisant"
         (typProjetChange)="onTypeProjetAutreChange($event)"
+        (credoCharge)="credoAutre = $event"
         (supprime)="fermer()"
       ></app-projet-autre>
 

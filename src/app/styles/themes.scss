@@ -125,11 +125,79 @@ $custom-connaitre: (
   )
 );
 
+// Palette gris ardoise basée sur $administratif
+$custom-administratif: (
+  50:  lighten($administratif, 45%),
+  100: lighten($administratif, 38%),
+  200: lighten($administratif, 28%),
+  300: lighten($administratif, 18%),
+  400: lighten($administratif, 8%),
+  500: $administratif,
+  600: darken($administratif, 5%),
+  700: darken($administratif, 10%),
+  800: darken($administratif, 15%),
+  900: darken($administratif, 22%),
+  contrast: (
+    50:  rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: white,
+    A700: white,
+  )
+);
+
+// Palette Material construite à partir d'une seule couleur de crédo ($texte : couleur posée sur les teintes 400 à 900)
+@function palette-depuis($c, $texte: white) {
+  @return (
+    50:  mix(white, $c, 88%),
+    100: mix(white, $c, 72%),
+    200: mix(white, $c, 52%),
+    300: mix(white, $c, 32%),
+    400: mix(white, $c, 14%),
+    500: $c,
+    600: mix(black, $c, 10%),
+    700: mix(black, $c, 22%),
+    800: mix(black, $c, 34%),
+    900: mix(black, $c, 48%),
+    contrast: (
+      50:  rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      200: rgba(black, 0.87),
+      300: rgba(black, 0.87),
+      400: $texte,
+      500: $texte,
+      600: $texte,
+      700: white,
+      800: white,
+      900: white,
+      A100: rgba(black, 0.87),
+      A200: rgba(black, 0.87),
+      A400: $texte,
+      A700: white,
+    )
+  );
+}
+
+$custom-valoriser: palette-depuis($valoriser, $orangeF); // jaune : texte foncé
+$custom-accompagner: palette-depuis($accompagner);
+
 // Création des palettes
 $gerer-palette: mat.m2-define-palette($custom-gerer);
 $connaitre-palette: mat.m2-define-palette($custom-connaitre, 500, 300, 700);
+$administratif-palette: mat.m2-define-palette($custom-administratif, 500, 300, 700);
 $red-palette: mat.m2-define-palette($custom-red);
 $proteger-palette: mat.m2-define-palette($custom-proteger);
+$valoriser-palette: mat.m2-define-palette($custom-valoriser, 600, 300, 800);
+$accompagner-palette: mat.m2-define-palette($custom-accompagner);
 
 // Thème associé à la palette gerer
 $gerer-theme: mat.m2-define-light-theme((

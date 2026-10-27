@@ -1,6 +1,7 @@
 @import "../../../../../styles/mixins.scss";
 @import "../../../../../styles/variables.scss";
 
+// Couleurs du crédo : variables CSS --credo* héritées de projet-autre (valeur de repli = vert Gérer)
 .operation-autre {
   display: flex;
   flex-direction: column;
@@ -10,18 +11,18 @@
 
 .titre-ope {
   margin: 0;
-  color: $VertF;
+  color: var(--credo-fonce, #{$VertF});
 }
 
 .bloc {
   background-color: white;
-  border: 1px solid #d8e6d2;
+  border: 1px solid var(--credo-bord, #d8e6d2);
   border-radius: 8px;
   padding: 10px 14px 4px;
 
   .bloc-titre {
     font-weight: 600;
-    color: $VertF;
+    color: var(--credo-fonce, #{$VertF});
     margin-bottom: 8px;
   }
 }
@@ -71,8 +72,8 @@
   display: inline-block;
   padding: 1px 6px;
   border-radius: 10px;
-  background-color: $couleur-territoire;
-  color: white;
+  background-color: var(--credo, #{$couleur-territoire});
+  color: var(--credo-texte, white);
   font-size: 0.75em;
   font-weight: 600;
   white-space: nowrap;
@@ -94,8 +95,8 @@
     gap: 6px;
     padding: 2px 2px 2px 8px;
     border-radius: 16px;
-    background-color: $vertTC;
-    border: 1px solid #cfe3c6;
+    background-color: var(--credo-clair, #{$vertTC});
+    border: 1px solid var(--credo-bord, #cfe3c6);
   }
 }
 
@@ -111,7 +112,7 @@
     gap: 10px;
     padding: 2px 8px;
     border-radius: 6px;
-    background-color: $vertTC;
+    background-color: var(--credo-clair, #{$vertTC});
 
     .libelle {
       font-weight: 500;
@@ -174,8 +175,8 @@
   gap: 10px;
 
   .btn-enregistrer {
-    background-color: $couleur-territoire;
-    color: white;
+    background-color: var(--credo, #{$couleur-territoire});
+    color: var(--credo-texte, white);
   }
 }
 
