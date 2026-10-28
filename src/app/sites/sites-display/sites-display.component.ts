@@ -89,7 +89,8 @@ export class SitesDisplayComponent implements AfterViewInit {
     if (params['type'] !== undefined) {
       const subroute = 'criteria/' + params['type'] + '/' + params['code'] + '/' + 
         params['nom'] + '/' + params['commune'] + '/' + 
-        params['milieux_naturels'] + '/' + params['responsable'];
+        params['milieux_naturels'] + '/' + params['responsable'] + '/' +
+        (params['annee'] ?? '*');
   
       console.log('subroute : ' + subroute);
 

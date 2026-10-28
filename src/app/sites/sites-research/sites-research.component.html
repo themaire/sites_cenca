@@ -1,105 +1,89 @@
 <div class="conteneur">
   <div class="recherche">
-    <!--  Sélection du type de site.-->
-    <mat-form-field appearance="fill" ngClass="type">
-      <mat-label ngClass="label" for="type">Type :</mat-label>
-      <mat-select
-        id="type"
-        (selectionChange)="selectionSelectors($event, 'type', true)"
-      >
-        <mat-option [value]="{ id: 0, name: 'Type' }" selected>Type</mat-option>
-        <mat-option [value]="{ id: 1, name: 'Site géré' }"
-          >Site géré</mat-option
-        >
-        <mat-option [value]="{ id: 2, name: 'CAST' }">CAST</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <!-- 1re ligne : année de création, code, nom -->
+    <div class="ligne">
+      <!-- Sélection de l'année de création (sélecteur prem_ctr du backend). -->
+      <ng-container *ngIf="selecteurAnnee">
+        <ng-container *ngTemplateOutlet="champSelecteur; context: { $implicit: selecteurAnnee }"></ng-container>
+      </ng-container>
 
-    <!-- Sélection du code. -->
-    <mat-form-field appearance="fill" ngClass="code">
-      <mat-label ngClass="label" for="code">Code :</mat-label>
-      <input
-        matInput
-        id="code"
-        type="text"
-        inputmode="numeric"
-        pattern="[0-9]*"
-        [formControl]="codeFormControl"
-        (change)="stringChange($event)"
-        [(ngModel)]="codeFormControl.value"
-        (keyup.enter)="siteSelection()"
-      />
-      <mat-error *ngIf="codeFormControl.hasError('minlength')"
-        ><li>Code trop court</li></mat-error
-      >
-      <mat-error *ngIf="codeFormControl.hasError('pattern')"
-        ><li>Chiffres uniquement</li></mat-error
-      >
-      <!-- *ngIf="codeFormControl.value" : affiche le bouton clear si le code est renseigné -->
-      <button
-        ngClass="close"
-        *ngIf="codeFormControl.value"
-        matSuffix
-        mat-icon-button
-        aria-label="Clear"
-        (click)="clearCode('code')"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
+      <!-- Sélection du code. -->
+      <mat-form-field appearance="fill" ngClass="code" subscriptSizing="dynamic">
+        <mat-label ngClass="label" for="code">Code :</mat-label>
+        <input
+          matInput
+          id="code"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          [formControl]="codeFormControl"
+          (change)="stringChange($event)"
+          [(ngModel)]="codeFormControl.value"
+          (keyup.enter)="siteSelection()"
+        />
+        <mat-error *ngIf="codeFormControl.hasError('pattern')">Chiffres uniquement</mat-error>
+        <mat-error *ngIf="!codeFormControl.hasError('pattern') && codeFormControl.hasError('minlength')">Code trop court (4 chiffres minimum)</mat-error>
+        <!-- *ngIf="codeFormControl.value" : affiche le bouton clear si le code est renseigné -->
+        <button
+          ngClass="close"
+          *ngIf="codeFormControl.value"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="clearCode('code')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
 
-    <!-- Sélection du nom. -->
-    <mat-form-field appearance="fill" ngClass="nom">
-      <mat-label ngClass="label" for="nom">Nom :</mat-label>
-      <input
-        matInput
-        id="nom"
-        type="text"
-        [formControl]="nameFormControl"
-        (change)="stringChange($event)"
-        [(ngModel)]="nameFormControl.value"
-        (keyup.enter)="siteSelection()"
-      />
-      <mat-error *ngIf="nameFormControl.hasError('minlength')"
-        ><li>Minimum 3 caractères</li></mat-error
-      >
-      <button
-        ngClass="close"
-        *ngIf="nameFormControl.value"
-        matSuffix
-        mat-icon-button
-        aria-label="Clear"
-        (click)="clearCode('nom')"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
+      <!-- Sélection du nom. -->
+      <mat-form-field appearance="fill" ngClass="nom" subscriptSizing="dynamic">
+        <mat-label ngClass="label" for="nom">Nom :</mat-label>
+        <input
+          matInput
+          id="nom"
+          type="text"
+          [formControl]="nameFormControl"
+          (change)="stringChange($event)"
+          [(ngModel)]="nameFormControl.value"
+          (keyup.enter)="siteSelection()"
+        />
+        <mat-error *ngIf="nameFormControl.hasError('minlength')">Minimum 3 caractères</mat-error>
+        <button
+          ngClass="close"
+          *ngIf="nameFormControl.value"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="clearCode('nom')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
 
-    <!-- Sélecteurs dynamiques. -->
-    <mat-form-field
-      *ngFor="let selector of selectors"
-      appearance="fill"
-      ngClass="selecteur"
-    >
-      <mat-label ngClass="label">{{ selector.title }} :</mat-label>
-      <mat-select
-        id="{{ selector.name }}"
-        (selectionChange)="selectionSelectors($event, selector.name)"
-      >
-        <mat-option
-          [value]="{ id: selector.name, name: selector.name }"
-          selected
+    <!-- 2e ligne : type puis les autres sélecteurs dynamiques -->
+    <div class="ligne">
+      <!--  Sélection du type de site.-->
+      <mat-form-field appearance="fill" ngClass="type" subscriptSizing="dynamic">
+        <mat-label ngClass="label" for="type">Type de site :</mat-label>
+        <mat-select
+          id="type"
+          (selectionChange)="selectionSelectors($event, 'type', true)"
         >
-          Sélectionner {{ selector.name }}</mat-option
-        >
-        <mat-option
-          *ngFor="let value of selector.values"
-          [value]="{ id: value, name: value }"
-        >
-          {{ value }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+          <mat-option [value]="{ id: 0, name: 'Type' }" selected>Tous les types de site</mat-option>
+          <mat-option [value]="{ id: 1, name: 'Site géré' }"
+            >Site géré</mat-option
+          >
+          <mat-option [value]="{ id: 2, name: 'CAST' }">CAST</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Sélecteurs dynamiques. -->
+      <ng-container *ngFor="let selector of autresSelecteurs">
+        <ng-container *ngTemplateOutlet="champSelecteur; context: { $implicit: selector }"></ng-container>
+      </ng-container>
+    </div>
   </div>
 
   <!-- Validation du filtre.-->
@@ -109,3 +93,33 @@
     </button>
   </div>
 </div>
+
+<!-- Un sélecteur dynamique (selectors_sites), à la largeur de son plus long texte -->
+<ng-template #champSelecteur let-selector>
+  <mat-form-field
+    appearance="fill"
+    ngClass="selecteur"
+    subscriptSizing="dynamic"
+    [style.min-width.ch]="largeurSelecteur(selector)"
+  >
+    <mat-label ngClass="label">{{ selector.title }} :</mat-label>
+    <mat-select
+      id="{{ selector.name }}"
+      panelWidth=""
+      (selectionChange)="selectionSelectors($event, selector.name)"
+    >
+      <mat-option
+        [value]="{ id: selector.name, name: selector.name }"
+        selected
+      >
+        Sélectionner {{ selector.title | lowercase }}</mat-option
+      >
+      <mat-option
+        *ngFor="let value of selector.values"
+        [value]="{ id: value, name: value }"
+      >
+        {{ selector.libelles?.[value] ?? value }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</ng-template>
