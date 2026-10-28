@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { Operation } from '../sites/site-detail/detail-projets/projet/operation/operations';
+import { Operation } from '../sites/site-detail/detail-actions/action_travaux/operation/operations';
 import { Extraction } from '../sites/foncier/foncier';
 
 import { MatSnackBar } from '@angular/material/snack-bar';

@@ -20,6 +20,10 @@ export interface ProjetLite {
     code?: string;
     departement?: string;
     localisation_site?: Localisation;
+    typ_projet?: string;     // type du projet (SEN, ETU...), si la route lite le fournit
+    typ_projet_libelle?: string; // libellé du type (« Sensibilisation et Communication »)
+    branche_action?: string; // cd_action racine de l'action (ex. '9'), si la route lite le fournit
+    credo?: string; // clé du crédo (couleur de la ligne), calculée par detail-actions
 }
 
 // A EFFACTER DES QUE POSSIBLE

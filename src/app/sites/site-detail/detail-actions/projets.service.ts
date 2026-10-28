@@ -20,8 +20,8 @@ import {
   Operation,
   OperationLite,
   OperationCheckbox,
-} from './projet/operation/operations';
-import { Objectif } from './projet/objectif/objectifs';
+} from './action_travaux/operation/operations';
+import { Objectif } from './action_travaux/objectif/objectifs';
 import { SelectValue } from '../../../shared/interfaces/formValues';
 import { ApiResponse } from '../../../shared/interfaces/api';
 import { Localisation } from '../../../shared/interfaces/localisation';
@@ -47,7 +47,7 @@ export class ProjetService {
   ) {}
 
   // PROJETS
-  // Utilisé dans projet.component.ts
+  // Utilisé dans action_travaux.component.ts
   async getProjet(subroute: string): Promise<Projet> {
     const data = await fetch(this.activeUrl + subroute);
     return (await data.json()) ?? [];

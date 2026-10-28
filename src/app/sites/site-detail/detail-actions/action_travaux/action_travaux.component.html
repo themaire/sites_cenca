@@ -14,7 +14,7 @@
       <ng-container *ngIf="projet?.pro_webapp">-- pro_webapp : {{ projet?.pro_webapp }}<br></ng-container> -->
 
       <!-- Projet « autre » (sensibilisation, étude, police...) : formulaire dédié -->
-      <app-projet-autre
+      <app-action-autre
         *ngIf="isAutre; else stepper"
         [uuidProj]="newProjet ? undefined : projetLite.uuid_proj"
         [typProjet]="selectedProjetType"
@@ -22,7 +22,7 @@
         (typProjetChange)="onTypeProjetAutreChange($event)"
         (credoCharge)="credoAutre = $event"
         (supprime)="fermer()"
-      ></app-projet-autre>
+      ></app-action-autre>
 
     </div>
     
@@ -500,7 +500,7 @@
 <!-- Template de chargement -->
 <ng-template #loading>
   <div class="loading-container">
-    <mat-spinner class="spinner-vert"></mat-spinner>
+    <mat-spinner class="spinner-neutre"></mat-spinner>
     <p>Chargement ...</p>
   </div>
 </ng-template>

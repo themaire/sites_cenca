@@ -37,7 +37,7 @@ import {
  * Un seul formulaire pour tous les types : le type sert à préremplir et ordonner les listes.
  */
 @Component({
-  selector: 'app-projet-autre',
+  selector: 'app-action-autre',
   standalone: true,
   imports: [
     CommonModule,
@@ -52,10 +52,10 @@ import {
     FormButtonsComponent,
     OperationAutreComponent,
   ],
-  templateUrl: './projet-autre.component.html',
-  styleUrl: './projet-autre.component.scss',
+  templateUrl: './action-autre.component.html',
+  styleUrl: './action-autre.component.scss',
 })
-export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
+export class ActionAutreComponent implements OnInit, OnChanges, OnDestroy {
   /** Projet existant ; absent pour une création */
   @Input() uuidProj?: string;
   /** Type choisi dans la fiche projet parente lors d'une création */
@@ -299,7 +299,7 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
     try {
       relu = await this.projetsAutresService.getProjet(this.projet!.uuid_proj);
     } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
+      if (this.projetsAutresService.estIntrouvable(error)) {
         this.snackbar.error('Ce projet a été supprimé entre-temps.');
         this.projetSupprime = true;
         this.supprime.emit();
@@ -355,7 +355,7 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
           this.supprime.emit();
         },
         error: (error: HttpErrorResponse) => {
-          if (error.status === 404) {
+          if (this.projetsAutresService.estIntrouvable(error)) {
             this.snackbar.info('Ce projet avait déjà été supprimé.');
             this.projetSupprime = true;
             this.supprime.emit();
@@ -423,7 +423,7 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
       },
       error: (error: HttpErrorResponse) => {
         this.erreurs = this.projetsAutresService.erreursDe(error);
-        if (error.status === 404) this.rechargerProjet();
+        if (this.projetsAutresService.estIntrouvable(error)) this.rechargerProjet();
       },
     });
   }
@@ -440,7 +440,7 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
           this.snackbar.success('Opération supprimée.');
         },
         error: (error: HttpErrorResponse) => {
-          if (error.status === 404) {
+          if (this.projetsAutresService.estIntrouvable(error)) {
             this.snackbar.info('Cette opération avait déjà été supprimée : liste rechargée.');
             this.rechargerProjet();
           } else {
@@ -455,7 +455,7 @@ export class ProjetAutreComponent implements OnInit, OnChanges, OnDestroy {
     try {
       await this.chargerProjet();
     } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
+      if (this.projetsAutresService.estIntrouvable(error)) {
         this.snackbar.info('Ce projet a été supprimé entre-temps.');
         this.projetSupprime = true;
         this.supprime.emit();

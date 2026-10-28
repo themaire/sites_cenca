@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 // import { ApiResponse } from '../../../../shared/interfaces/api';
 import { ProjetLite, Projet } from '../projets';
-import { Credo, credoDuTypeProjet } from '../credos-projets';
+import { Credo, CREDO_NEUTRE, credoDuTypeProjet } from '../credos-projets';
 import { OperationLite } from './operation/operations';
 import { Objectif } from './objectif/objectifs';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
@@ -54,8 +54,8 @@ import { ObjectifComponent } from './objectif/objectif.component';
 import { OperationComponent } from './operation/operation.component';
 import { MapComponent } from '../../../../map/map.component';
 import { ProjetMediasComponent } from './medias/projet-medias.component';
-import { ProjetAutreComponent } from '../projet-autre/projet-autre.component';
-import { Localisant } from '../projet-autre/projets-autres';
+import { ActionAutreComponent } from '../action-autre/action-autre.component';
+import { Localisant } from '../action-autre/projets-autres';
 
 // import { Projection } from 'leaflet';
 // NE PAS oublier de décommenter la
@@ -77,7 +77,7 @@ export const MY_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'app-dialog-operation',
+  selector: 'app-action-travaux',
   standalone: true,
   providers: [
       {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
@@ -119,12 +119,12 @@ export const MY_DATE_FORMATS = {
     AsyncPipe, // Ajouté pour le spinner
     ObjectifComponent,
     OperationComponent,
-    ProjetAutreComponent
+    ActionAutreComponent
 ],
-  templateUrl: './projet.component.html',
-  styleUrls: ['./projet.component.scss', '../../detail-infos/detail-infos.component.scss'], // Correct 'styleUrl' to 'styleUrls'
+  templateUrl: './action_travaux.component.html',
+  styleUrls: ['./action_travaux.component.scss', '../../detail-infos/detail-infos.component.scss'], // Correct 'styleUrl' to 'styleUrls'
 })
-export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnInit to use the lifecycle method
+export class ActionTravauxComponent implements OnInit, OnDestroy  { // Implements OnInit to use the lifecycle method
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
   private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
@@ -159,7 +159,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   // Listes de choix du formulaire
   projectTypes!: SelectValue[];
   selectedProjetType: string = '';
-  /** Crédo du projet « autre » calculé par app-projet-autre une fois chargé (le type est absent de ProjetLite) */
+  /** Crédo du projet « autre » calculé par app-action-autre une fois chargé (le type est absent de ProjetLite) */
   credoAutre?: Credo;
   
   // projectTypes: SelectValue[] = [
@@ -179,7 +179,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
-    private dialogRef: MatDialogRef<ProjetComponent>,
+    private dialogRef: MatDialogRef<ActionTravauxComponent>,
     private projetService: ProjetService,
     private formService: FormService,
     private confirmationService: ConfirmationService,
@@ -207,7 +207,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
   /**
    * Projet « autre » (hors travaux, schéma opeautres) : projet existant de génération 1_AUT,
-   * ou projet neuf dont le type choisi n'est pas TRV. Il s'affiche avec app-projet-autre
+   * ou projet neuf dont le type choisi n'est pas TRV. Il s'affiche avec app-action-autre
    * à la place du stepper des travaux.
    */
   get isAutre(): boolean {
@@ -215,10 +215,15 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     return !!this.selectedProjetType && this.selectedProjetType !== 'TRV' && this.selectedProjetType !== 'NR';
   }
 
-  /** Crédo du bandeau : travaux → Gérer ; projet « autre » → celui calculé par app-projet-autre, ou le type choisi en création */
-  get credo(): Credo {
+  /**
+   * Crédo du bandeau : travaux → Gérer ; projet « autre » → celui calculé par app-action-autre, ou le type choisi en création.
+   * Neutre tant qu'il n'est pas connu : projet « autre » pas encore chargé, projet neuf sans type choisi.
+   */
+  get credo(): Credo | typeof CREDO_NEUTRE {
+    if (this.newProjet && !this.selectedProjetType) return CREDO_NEUTRE;
     if (!this.isAutre) return credoDuTypeProjet('TRV');
-    return this.credoAutre ?? credoDuTypeProjet(this.selectedProjetType);
+    if (this.credoAutre) return this.credoAutre;
+    return this.newProjet ? credoDuTypeProjet(this.selectedProjetType) : CREDO_NEUTRE;
   }
 
   /** Le site d'où l'on vient, comme localisation des opérations « autres » */
@@ -348,7 +353,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     // Récupérer les données d'un projet ou créer un nouveau projet
     // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
     if (this.projetLite?.uuid_proj && this.isAutre) {
-      // Projet « autre » : app-projet-autre charge lui-même ses données (routes sites/autres)
+      // Projet « autre » : app-action-autre charge lui-même ses données (routes sites/autres)
       this.isLoading = false;
     } else if (this.projetLite?.uuid_proj) {
       // Quand un UUID est passé en paramètre

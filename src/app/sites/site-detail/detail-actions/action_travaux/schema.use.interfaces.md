@@ -1,5 +1,5 @@
 |
-|_projet.component
+|_action_travaux.component
 | |
 | |___onSubmit()
 |      |   Si modification
@@ -30,7 +30,7 @@
 
 
 |
-|_projet.component
+|_action_travaux.component
   |
   |___fetchOperations(uuid_ope VIDE) / Pour avoir la liste des opérations avec ...
        |

@@ -21,7 +21,7 @@ $credos-couleurs: (
   }
 }
 
-.projet-autre {
+.action-autre {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -272,4 +272,9 @@ $credos-couleurs: (
   flex-direction: column;
   align-items: center;
   padding: 40px;
+}
+
+// Chargement : le crédo n'est pas encore connu
+.spinner-neutre {
+  --mdc-circular-progress-active-indicator-color: #{$neutre};
 }

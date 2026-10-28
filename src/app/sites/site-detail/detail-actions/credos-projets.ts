@@ -4,10 +4,13 @@
  * Le crédo donne le texte et la couleur du bandeau vertical de la fiche projet,
  * ainsi que la couleur du fond derrière la fenêtre de dialogue.
  * Les couleurs sont dans src/app/styles/_variables.scss ($proteger, $connaitre...),
- * appliquées par les classes .credo-<cle> (projet.component.scss et styles.scss).
+ * appliquées par les classes .credo-<cle> (action_travaux.component.scss et styles.scss).
  */
 
 export type CleCredo = 'proteger' | 'connaitre' | 'gerer' | 'valoriser' | 'accompagner' | 'administratif';
+
+/** Crédo pas encore connu (chargement, type de projet pas choisi) : couleurs neutres, bandeau sans texte */
+export const CREDO_NEUTRE = { cle: 'neutre', libelle: '' } as const;
 
 export interface Credo {
   cle: CleCredo;

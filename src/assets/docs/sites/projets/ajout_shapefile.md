@@ -7,10 +7,10 @@ Toutes les actions décrites ici demandent le droit d'édition.
 ## Où se trouvent les opérations
 
 1. Ouvrez la fiche du site (voir [Gestion des sites](/aide/sites-management)).
-2. Ouvrez l'onglet **Projets**, puis cliquez sur la ligne du projet.
+2. Ouvrez l'onglet **Actions**, puis cliquez sur la ligne du projet.
 3. Dans la fenêtre du projet, allez à l'étape **Opérations**.
 
-L'étape Opérations n'existe que pour les projets saisis dans l'application. Pour créer un projet, cliquez sur l'icône **+** (**Ajouter un projet**) en haut de l'onglet Projets.
+L'étape Opérations n'existe que pour les projets saisis dans l'application. Pour créer un projet, cliquez sur l'icône **+** (**Ajouter une action**) en haut de l'onglet Actions.
 
 ## Créer l'opération
 

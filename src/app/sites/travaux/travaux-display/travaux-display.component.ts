@@ -14,8 +14,8 @@ import { Overlay } from '@angular/cdk/overlay';
 
 import { ProjetTravaux } from '../travaux';
 import { TravauxService } from '../travaux.service';
-import { ProjetLite } from '../../site-detail/detail-projets/projets';
-import { ProjetComponent } from '../../site-detail/detail-projets/projet/projet.component';
+import { ProjetLite } from '../../site-detail/detail-actions/projets';
+import { ActionTravauxComponent } from '../../site-detail/detail-actions/action_travaux/action_travaux.component';
 
 @Component({
   selector: 'app-travaux-display',
@@ -125,7 +125,7 @@ export class TravauxDisplayComponent implements AfterViewInit {
   }
 
   openDialog(projet: ProjetTravaux): void {
-    // Construit un ProjetLite minimal à partir du ProjetTravaux pour alimenter ProjetComponent
+    // Construit un ProjetLite minimal à partir du ProjetTravaux pour alimenter ActionTravauxComponent
     const projetLite: ProjetLite = {
       uuid_proj: projet.uuid_proj,
       responsable: projet.responsable,
@@ -140,7 +140,7 @@ export class TravauxDisplayComponent implements AfterViewInit {
       geojson_site: '',
     };
 
-    const dialogRef = this.dialog.open(ProjetComponent, {
+    const dialogRef = this.dialog.open(ActionTravauxComponent, {
       data: projetLite,
       minWidth: '50vw',
       maxWidth: '95vw',
