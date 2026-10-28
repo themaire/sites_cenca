@@ -13,12 +13,17 @@ export interface ProjetLite {
     statut: string;
     webapp: boolean;
     uuid_site: string;
+    uuid_espace?: string; // cd_localisation du site pour les projets « autres »
     geojson_site: string;
     nom?: string;
     communes?: Commune[];
     code?: string;
     departement?: string;
     localisation_site?: Localisation;
+    typ_projet?: string;     // type du projet (SEN, ETU...), si la route lite le fournit
+    typ_projet_libelle?: string; // libellé du type (« Sensibilisation et Communication »)
+    branche_action?: string; // cd_action racine de l'action (ex. '9'), si la route lite le fournit
+    credo?: string; // clé du crédo (couleur de la ligne), calculée par detail-actions
 }
 
 // A EFFACTER DES QUE POSSIBLE

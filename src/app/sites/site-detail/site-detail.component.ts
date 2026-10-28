@@ -35,7 +35,7 @@ import { DetailDescriptionComponent } from './detail-description/detail-descript
 import { DetailMfuComponent } from './detail-mfu/detail-mfu.component';
 import { DetailGestionComponent } from './detail-gestion/detail-gestion.component'; 
 import { DetailHabitatsComponent } from './detail-habitats/detail-habitats.component'; 
-import { DetailProjetsComponent } from './detail-projets/detail-projets.component'; 
+import { DetailActionsComponent } from './detail-actions/detail-actions.component'; 
 // Composant qui affiche une fiche site (6 sous-composants).
 
 @Component({
@@ -56,7 +56,7 @@ import { DetailProjetsComponent } from './detail-projets/detail-projets.componen
     DetailMfuComponent,
     DetailGestionComponent,
     DetailHabitatsComponent,
-    DetailProjetsComponent,
+    DetailActionsComponent,
   ],
   templateUrl: './site-detail.component.html',
   styleUrl: './site-detail.component.scss',
@@ -224,7 +224,7 @@ Seront aussi supprimés : ${cascade}.` : '') +
         this.siteDetail = siteGuetted;
 
         const subrouteCommunes = `commune/uuid=${siteGuetted.uuid_site}`;
-        // Pour donner au composant detail-projets.component.ts <app-detail-projets>
+        // Pour donner au composant detail-actions.component.ts <app-detail-actions>
         this.siteDetailProjet = {
           uuid_site: siteGuetted.uuid_site,
           uuid_espace: siteGuetted.uuid_espace,

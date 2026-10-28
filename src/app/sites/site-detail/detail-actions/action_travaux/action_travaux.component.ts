@@ -5,12 +5,14 @@ import { MatButtonModule } from '@angular/material/button';
 
 // import { ApiResponse } from '../../../../shared/interfaces/api';
 import { ProjetLite, Projet } from '../projets';
+import { Credo, CREDO_NEUTRE, credoDuTypeProjet } from '../credos-projets';
 import { OperationLite } from './operation/operations';
 import { Objectif } from './objectif/objectifs';
 import { SelectValue } from '../../../../shared/interfaces/formValues';
 import { Localisation } from '../../../../shared/interfaces/localisation';
 
 import { ProjetService, DeleteItemTypeEnum } from '../projets.service';
+import { SitesService } from '../../../sites.service';
 import { FormService } from '../../../../shared/services/form.service';
 import { ConfirmationService } from '../../../../shared/services/confirmation.service';
 
@@ -45,13 +47,15 @@ import { MatSnackBar } from '@angular/material/snack-bar'; // Importer MatSnackB
 
 import { AsyncPipe } from '@angular/common';
 import { map, finalize } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { ObjectifComponent } from './objectif/objectif.component';
 import { OperationComponent } from './operation/operation.component';
 import { MapComponent } from '../../../../map/map.component';
 import { ProjetMediasComponent } from './medias/projet-medias.component';
+import { ActionAutreComponent } from '../action-autre/action-autre.component';
+import { Localisant } from '../action-autre/projets-autres';
 
 // import { Projection } from 'leaflet';
 // NE PAS oublier de décommenter la
@@ -73,7 +77,7 @@ export const MY_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'app-dialog-operation',
+  selector: 'app-action-travaux',
   standalone: true,
   providers: [
       {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
@@ -114,12 +118,13 @@ export const MY_DATE_FORMATS = {
     MatProgressSpinnerModule,
     AsyncPipe, // Ajouté pour le spinner
     ObjectifComponent,
-    OperationComponent
+    OperationComponent,
+    ActionAutreComponent
 ],
-  templateUrl: './projet.component.html',
-  styleUrls: ['./projet.component.scss', '../../detail-infos/detail-infos.component.scss'], // Correct 'styleUrl' to 'styleUrls'
+  templateUrl: './action_travaux.component.html',
+  styleUrls: ['./action_travaux.component.scss', '../../detail-infos/detail-infos.component.scss'], // Correct 'styleUrl' to 'styleUrls'
 })
-export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnInit to use the lifecycle method
+export class ActionTravauxComponent implements OnInit, OnDestroy  { // Implements OnInit to use the lifecycle method
   private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
   private readonly _intl = inject(MatDatepickerIntl);
   private readonly _locale = signal(inject<unknown>(MAT_DATE_LOCALE));
@@ -154,6 +159,8 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   // Listes de choix du formulaire
   projectTypes!: SelectValue[];
   selectedProjetType: string = '';
+  /** Crédo du projet « autre » calculé par app-action-autre une fois chargé (le type est absent de ProjetLite) */
+  credoAutre?: Credo;
   
   // projectTypes: SelectValue[] = [
   //   {value: 'TRV', viewValue: 'Travaux'},
@@ -172,7 +179,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
   stepperOrientation: Observable<StepperOrientation>;
   
   constructor(
-    private dialogRef: MatDialogRef<ProjetComponent>,
+    private dialogRef: MatDialogRef<ActionTravauxComponent>,
     private projetService: ProjetService,
     private formService: FormService,
     private confirmationService: ConfirmationService,
@@ -180,6 +187,7 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private loginService: LoginService, // Inject LoginService
+    private sitesService: SitesService,
     @Inject(MAT_DIALOG_DATA) public data: ProjetLite, // Inject MAT_DIALOG_DATA to access the passed data
     ) {
       // Données en entrée provenant de la liste simple des projets tous confondus
@@ -197,6 +205,48 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
     return this.loginService.isEdit();
   }
 
+  /**
+   * Projet « autre » (hors travaux, schéma opeautres) : projet existant de génération 1_AUT,
+   * ou projet neuf dont le type choisi n'est pas TRV. Il s'affiche avec app-action-autre
+   * à la place du stepper des travaux.
+   */
+  get isAutre(): boolean {
+    if (!this.newProjet) return this.projetLite?.generation === '1_AUT';
+    return !!this.selectedProjetType && this.selectedProjetType !== 'TRV' && this.selectedProjetType !== 'NR';
+  }
+
+  /**
+   * Crédo du bandeau : travaux → Gérer ; projet « autre » → celui calculé par app-action-autre, ou le type choisi en création.
+   * Neutre tant qu'il n'est pas connu : projet « autre » pas encore chargé, projet neuf sans type choisi.
+   */
+  get credo(): Credo | typeof CREDO_NEUTRE {
+    if (this.newProjet && !this.selectedProjetType) return CREDO_NEUTRE;
+    if (!this.isAutre) return credoDuTypeProjet('TRV');
+    if (this.credoAutre) return this.credoAutre;
+    return this.newProjet ? credoDuTypeProjet(this.selectedProjetType) : CREDO_NEUTRE;
+  }
+
+  /** Le site d'où l'on vient, comme localisation des opérations « autres » */
+  get siteLocalisant(): Localisant | null {
+    if (!this.projetLite?.uuid_espace) return null;
+    return {
+      cd_localisation: this.projetLite.uuid_espace,
+      libelle: this.projetLite.nom || 'Site',
+      code: this.projetLite.code,
+      cat: 'SITE CENCA',
+    };
+  }
+
+  fermer(): void {
+    this.dialogRef.close();
+  }
+
+  /** Retour au type travaux depuis la création d'un projet « autre » */
+  onTypeProjetAutreChange(typ_projet: string): void {
+    this.selectedProjetType = typ_projet;
+    this.step1Form?.patchValue({ typ_projet });
+  }
+
 
   getTypeInterv(generation: string): string {
     // Renvoie le type d'intervention en fonction de son code : "gestion" ou "autre"
@@ -208,6 +258,32 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
       type = 'autre';
     }
     return type;
+  }
+
+  /**
+   * Complète les infos du site du projetLite (nom, code, communes, département, localisation)
+   * quand le parent ne les a pas fournies (ex. projet ouvert depuis la liste Travaux).
+   * Seuls les champs vides sont remplis. En cas d'erreur, le projet s'ouvre quand même.
+   */
+  private async completerInfosSite(uuid_site: string): Promise<void> {
+    try {
+      const [site, communes] = await Promise.all([
+        this.sitesService.getSiteUUID('uuid=' + uuid_site),
+        firstValueFrom(this.sitesService.getCommunesSite(uuid_site))
+      ]);
+
+      if (!this.projetLite.uuid_site) this.projetLite.uuid_site = uuid_site;
+      if (!this.projetLite.nom) this.projetLite.nom = site.nom;
+      if (!this.projetLite.code) this.projetLite.code = site.code;
+      if (!this.projetLite.communes?.length) this.projetLite.communes = communes as ProjetLite['communes'];
+      if (!this.projetLite.departement) {
+        const departements = [...new Set(communes.map(c => c.departement).filter(Boolean))];
+        this.projetLite.departement = departements.join(', ');
+      }
+      if (!this.projetLite.localisation_site) this.projetLite.localisation_site = site.localisation;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des infos du site', error);
+    }
   }
 
   async fetch(table: 'projets' | 'operations' | 'objectifs', uuid_proj: String, type?: String): Promise<Projet | OperationLite[] | Objectif[] | undefined> {
@@ -276,7 +352,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
 
     // Récupérer les données d'un projet ou créer un nouveau projet
     // this.projetLite est assigné dans le constructeur et vient de data (fenetre de dialogue)
-    if (this.projetLite?.uuid_proj) {
+    if (this.projetLite?.uuid_proj && this.isAutre) {
+      // Projet « autre » : app-action-autre charge lui-même ses données (routes sites/autres)
+      this.isLoading = false;
+    } else if (this.projetLite?.uuid_proj) {
       // Quand un UUID est passé en paramètre
       try {
         // Simuler un délai artificiel
@@ -286,6 +365,10 @@ export class ProjetComponent implements OnInit, OnDestroy  { // Implements OnIni
           // Accéder données du projet
           // Assigner l'objet projet directement et forcer le type Projet
           this.projet = await this.fetch('projets', this.projetLite.uuid_proj, this.getTypeInterv(this.projetLite.generation)) as Projet;
+          // Ouvert sans les infos du site (ex. depuis la liste Travaux) : on les complète
+          if (!this.projetLite.nom && this.projet?.site) {
+            await this.completerInfosSite(this.projet.site);
+          }
           this.operations_bilan = await this.fetch('operations', this.projetLite.uuid_proj) as OperationLite[];
           this.localisations_operations_projet = await this.projetService.getOperationsGeoJson(this.projetLite.uuid_proj);
 

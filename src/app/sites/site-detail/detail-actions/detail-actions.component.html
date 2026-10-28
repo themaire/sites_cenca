@@ -1,7 +1,7 @@
 <div class="edition" *ngIf="isEditAllowed">
-  Ajouter un nouveau projet :
+  Ajouter une nouvelle action :
   <button mat-icon-button
-      matTooltip="Ajouter un projet"
+      matTooltip="Ajouter une action"
       class="btn-edition"
       (click)="onSelect()">
       <mat-icon>add</mat-icon>
@@ -10,18 +10,18 @@
 
 <div *ngIf="projetsLite.length > 0; then thenBlock; else elseBlock"></div>
 
-<div class="detail-projets">
+<div class="detail-actions">
   <ng-template #thenBlock>
     <div>
       <!-- <h2 *ngIf="projetsLite.length == 1">{{ projetsLite.length }} projet.</h2>
       <h2 *ngIf="projetsLite.length > 1">{{ projetsLite.length }} projets.</h2> -->
-      <h2>Listes des projets au nombre de : {{ projetsLite.length }}.</h2>
+      <h2>Liste des actions : {{ projetsLite.length }}</h2>
 
       <!-- Filtre dynamique sur les valeurs uniques trouvées dans la colonne Type (Action) -->
       <mat-chip-listbox class="action-chips" [value]="filterAction" (change)="applyActionFilter($event)" aria-label="Filtrer par type d'action">
         <mat-chip-option value="tous">Tous ({{ projetsLite.length }})</mat-chip-option>
-        <mat-chip-option *ngFor="let action of uniqueActionTypes; let i = index" [value]="action">
-          <span class="chip-dot" [style.background-color]="getChipColor(i)"></span>
+        <mat-chip-option *ngFor="let action of uniqueActionTypes" [value]="action">
+          <span class="chip-dot" [ngClass]="'credo-' + getChipCredo(action)"></span>
           {{ action }} ({{ countByActionType(action) }})
         </mat-chip-option>
       </mat-chip-listbox>
@@ -32,7 +32,7 @@
           <mat-header-cell *matHeaderCellDef class="responsable">
             Responsable
           </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="responsable" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          <mat-cell *matCellDef="let element; let i = index" class="responsable" [ngClass]="classesLigne(element, i)">
             {{ element.responsable }}
           </mat-cell>
         </ng-container>
@@ -41,7 +41,7 @@
           <mat-header-cell *matHeaderCellDef class="annee">
             Année
           </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="annee" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          <mat-cell *matCellDef="let element; let i = index" class="annee" [ngClass]="classesLigne(element, i)">
             {{ element.annee }}
           </mat-cell>
         </ng-container>
@@ -50,7 +50,7 @@
           <mat-header-cell *matHeaderCellDef class="projet">
             Nom (Projet)
           </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="projet" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          <mat-cell *matCellDef="let element; let i = index" class="projet" [ngClass]="classesLigne(element, i)">
             {{ element.projet }}
           </mat-cell>
         </ng-container>
@@ -59,7 +59,7 @@
           <mat-header-cell *matHeaderCellDef class="action">
             Type (Action)
           </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="action" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          <mat-cell *matCellDef="let element; let i = index" class="action" [ngClass]="classesLigne(element, i)">
             {{ element.action }}
           </mat-cell>
         </ng-container>
@@ -68,7 +68,7 @@
           <mat-header-cell *matHeaderCellDef class="date_deb">
             Date début
           </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="date_deb" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          <mat-cell *matCellDef="let element; let i = index" class="date_deb" [ngClass]="classesLigne(element, i)">
             {{ element.date_deb }}
           </mat-cell>
         </ng-container>
@@ -77,7 +77,7 @@
           <mat-header-cell *matHeaderCellDef class="statut">
             Statut
           </mat-header-cell>
-          <mat-cell *matCellDef="let element; let i = index" class="statut" [ngClass]="{'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0}">
+          <mat-cell *matCellDef="let element; let i = index" class="statut" [ngClass]="classesLigne(element, i)">
             {{ element.statut }}
           </mat-cell>
         </ng-container>
@@ -85,11 +85,12 @@
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row
           *matRowDef="let row; columns: displayedColumns"
+          [matTooltip]="row.typ_projet_libelle || ''"
           (click)="onSelect(row)"
         ></mat-row>
       </mat-table>
     </div>
   </ng-template>
 
-  <ng-template #elseBlock> Il n'y a pas de projets sur ce site. </ng-template>
+  <ng-template #elseBlock> Il n'y a pas d'action sur ce site. </ng-template>
 </div>

@@ -3,7 +3,7 @@ import { environment } from '../../../environments/environment';
 import { Injectable, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ApiResponse } from '../interfaces/api';
-import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
+import { ProjetService } from '../../sites/site-detail/detail-actions/projets.service';
 import { SitesService } from '../../sites/sites.service';
 import { Localisation } from '../../shared/interfaces/localisation';
 import {

@@ -1,0 +1,187 @@
+@import "../../../../../styles/mixins.scss";
+@import "../../../../../styles/variables.scss";
+
+// Couleurs du crédo : variables CSS --credo* héritées de action-autre (valeur de repli = vert Gérer)
+.operation-autre {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 20px 20px;
+}
+
+.titre-ope {
+  margin: 0;
+  color: var(--credo-fonce, #{$VertF});
+}
+
+.bloc {
+  background-color: white;
+  border: 1px solid var(--credo-bord, #d8e6d2);
+  border-radius: 8px;
+  padding: 10px 14px 4px;
+
+  .bloc-titre {
+    font-weight: 600;
+    color: var(--credo-fonce, #{$VertF});
+    margin-bottom: 8px;
+  }
+}
+
+.obligatoire {
+  color: $superRed;
+}
+
+.ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 12px;
+
+  mat-form-field {
+    min-width: 180px;
+  }
+}
+
+.champ-large {
+  flex: 1 1 260px;
+}
+
+.champ-plein {
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.aide {
+  font-size: 0.85em;
+  color: #5b6b57;
+  margin: -8px 0 8px;
+  font-style: italic;
+
+  &.erreur-inline {
+    color: $superRed;
+  }
+}
+
+.vide {
+  font-size: 0.9em;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background-color: var(--credo, #{$couleur-territoire});
+  color: var(--credo-texte, white);
+  font-size: 0.75em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.code {
+  color: #777;
+}
+
+.liste-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 2px 2px 8px;
+    border-radius: 16px;
+    background-color: var(--credo-clair, #{$vertTC});
+    border: 1px solid var(--credo-bord, #cfe3c6);
+  }
+}
+
+.lignes-ajoutees {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+
+  .ligne-ajoutee {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: var(--credo-clair, #{$vertTC});
+
+    .libelle {
+      font-weight: 500;
+    }
+
+    .detail {
+      color: #555;
+      white-space: pre-line;
+      flex: 1;
+    }
+
+    .valeur {
+      flex: 1;
+    }
+
+    .btn-retirer {
+      margin-left: auto;
+    }
+  }
+}
+
+.btn-retirer {
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  line-height: 24px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.familles {
+  margin-bottom: 10px;
+}
+
+.btn-ajouter {
+  align-self: center;
+}
+
+.erreurs {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: $redC;
+  color: #7a0000;
+
+  ul {
+    margin: 0;
+    padding-left: 16px;
+  }
+}
+
+.actions-ope {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  .btn-enregistrer {
+    background-color: var(--credo, #{$couleur-territoire});
+    color: var(--credo-texte, white);
+  }
+}
+
+.chargement {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}

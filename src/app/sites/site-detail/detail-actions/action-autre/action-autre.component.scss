@@ -1,0 +1,280 @@
+@import "../../../../styles/mixins.scss";
+@import "../../../../styles/variables.scss";
+
+// Couleurs du crédo (cf. credos-projets.ts), exposées en variables CSS :
+// principale, texte posé dessus, foncée (titres), bordure claire, fond très clair
+$credos-couleurs: (
+  gerer:         ($gerer,         white,     $VertF,                          #cfe3c6, $vertTC),
+  proteger:      ($proteger,      white,     mix(black, $proteger, 40%),      mix(white, $proteger, 70%),      mix(white, $proteger, 92%)),
+  connaitre:     ($connaitre,     white,     mix(black, $connaitre, 40%),     mix(white, $connaitre, 70%),     mix(white, $connaitre, 92%)),
+  valoriser:     ($valoriser,     $orangeF,  $orangeF,                        mix(white, $valoriser, 60%),     mix(white, $valoriser, 88%)),
+  accompagner:   ($accompagner,   white,     mix(black, $accompagner, 40%),   mix(white, $accompagner, 70%),   mix(white, $accompagner, 92%)),
+  administratif: ($administratif, white,     mix(black, $administratif, 30%), mix(white, $administratif, 70%), mix(white, $administratif, 92%)),
+);
+@each $cle, $c in $credos-couleurs {
+  .credo-#{$cle} {
+    --credo: #{nth($c, 1)};
+    --credo-texte: #{nth($c, 2)};
+    --credo-fonce: #{nth($c, 3)};
+    --credo-bord: #{nth($c, 4)};
+    --credo-clair: #{nth($c, 5)};
+  }
+}
+
+.action-autre {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 20px;
+}
+
+.bandeau-access {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 20px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: $jauneC;
+  border: 1px solid $jauneF;
+  color: $orangeF;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 5px 0 0 5px;
+
+  .titre {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+
+    h2 {
+      margin: 10px;
+    }
+  }
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.suppression {
+  @include suppression-btn();
+}
+
+.badge-type {
+  padding: 3px 10px;
+  border-radius: 12px;
+  background-color: var(--credo);
+  color: var(--credo-texte);
+  font-weight: 700;
+  font-size: 0.9em;
+}
+
+.bloc-projet,
+.operations {
+  margin: 0 20px;
+}
+
+.bloc-projet {
+  background-color: white;
+  border: 1px solid #d8e6d2;
+  border-radius: 8px;
+  padding: 12px 14px 4px;
+
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px 16px;
+    padding-bottom: 8px;
+  }
+
+  .nom-projet {
+    white-space: pre-line;
+    padding-bottom: 8px;
+  }
+}
+
+.etiquette {
+  display: block;
+  font-size: 0.8em;
+  color: #5b6b57;
+}
+
+.details .etiquette {
+  display: inline;
+  margin-right: 6px;
+  font-weight: 600;
+
+  &::after {
+    content: " :";
+  }
+}
+
+.ligne {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+
+  mat-form-field {
+    min-width: 180px;
+  }
+}
+
+.champ-plein {
+  flex: 1 1 100%;
+}
+
+.champ-large {
+  flex: 1 1 300px;
+}
+
+.champ-court {
+  max-width: 120px;
+  min-width: 100px !important;
+}
+
+.actions-creation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+
+  .aide {
+    font-style: italic;
+    color: #5b6b57;
+  }
+}
+
+.btn-enregistrer {
+  background-color: var(--credo);
+  color: var(--credo-texte);
+}
+
+.erreurs {
+  display: flex;
+  gap: 8px;
+  margin: 0 20px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: $redC;
+  color: #7a0000;
+
+  ul {
+    margin: 0;
+    padding-left: 16px;
+  }
+}
+
+.edition {
+  display: flex;
+  @include align(center, start);
+  margin-bottom: 10px;
+  gap: 15px;
+  font-weight: 600;
+
+  // Bouton « + » d'ajout d'opération, aux couleurs du crédo
+  .btn-edition {
+    @include btn-icon($proteger, $orangeC);
+    @include icon(white, black);
+    background-color: var(--credo);
+    color: var(--credo-texte);
+    &:hover {
+      background-color: var(--credo-bord);
+      color: black;
+    }
+  }
+}
+
+.vide {
+  color: #888;
+}
+
+.carte-ope {
+  background-color: white;
+  border: 1px solid var(--credo-bord);
+  border-left: 4px solid var(--credo);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+
+  header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+
+    .action {
+      font-weight: 600;
+      color: var(--credo-fonce);
+    }
+
+    .periode {
+      color: #555;
+    }
+
+    .boutons {
+      margin-left: auto;
+      display: flex;
+
+      .btn-supprimer mat-icon {
+        color: $superRed;
+      }
+    }
+  }
+
+  .localisations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0;
+
+    .chip {
+      padding: 1px 8px 1px 2px;
+      border-radius: 12px;
+      background-color: var(--credo-clair);
+      border: 1px solid var(--credo-bord);
+      font-size: 0.9em;
+    }
+  }
+
+  .details > div {
+    margin: 2px 0;
+  }
+
+  .texte-detail {
+    margin-top: 6px;
+    white-space: pre-line;
+    color: #333;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background-color: var(--credo);
+  color: var(--credo-texte);
+  font-size: 0.75em;
+  font-weight: 600;
+}
+
+.chargement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+// Chargement : le crédo n'est pas encore connu
+.spinner-neutre {
+  --mdc-circular-progress-active-indicator-color: #{$neutre};
+}

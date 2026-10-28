@@ -5,7 +5,8 @@
  * fusion de dev dans main ne rende jamais visible en prod une fonctionnalité en test.
  */
 const HOTES_PREPROD: string[] = [
-    // TODO : adresse du serveur de préproduction
+    // https://si-10.cen-champagne-ardenne.org:444/ (la prod est sur le port 443 par défaut)
+    'si-10.cen-champagne-ardenne.org:444',
 ];
 
 /** Vrai si le site est servi par le serveur de préproduction. */

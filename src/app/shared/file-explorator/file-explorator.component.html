@@ -58,33 +58,23 @@
   <div class="droite galerie" *ngIf="galerie">
     <div
       class="card"
-      *ngFor="let image of galerie"
-      [ngStyle]="{
-        'background-color': getColorForImage(image),
-        color: getTextColor(getColorForImage(image))
-      }">
-      
+      *ngFor="let image of galerie; let i = index">
+
       <img
         [src]="image"
-        (click)="openImage(imagePathList ? imagePathList[galerie.indexOf(image)] : '')"
+        [alt]="nomImage(i)"
+        loading="lazy"
+        (click)="openImage(imagePathList ? imagePathList[i] : '')"
         class="galerie-img"/>
 
-      <div>
-        
-        <p>
-          {{
-            (imagePathList ? imagePathList[galerie.indexOf(image)] : "")
-              .split(".")[0]
-              .split( this.separator)
-              .pop()
-          }}
-        </p>
-
+      <div class="card-pied">
+        <p class="card-nom" [title]="nomImage(i)">{{ nomImage(i) }}</p>
         <button
-          mat-button
-          (click)="deleteImage(imagePathList ? imagePathList[galerie.indexOf(image)] : '')"
-          [ngStyle]="{ color: getTextColor(getColorForImage(image)) }">
-          Supprimer la photo
+          mat-icon-button
+          class="delete-file"
+          title="Supprimer la photo"
+          (click)="deleteImage(imagePathList ? imagePathList[i] : '')">
+          <mat-icon>delete</mat-icon>
         </button>
       </div>
 

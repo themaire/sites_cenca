@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import {
   Observable,
@@ -44,6 +44,7 @@ export interface Folder {
     CommonModule,
     MatIconModule,
     MatButton,
+    MatIconButton,
   ],
   templateUrl: './file-explorator.component.html',
   styleUrl: './file-explorator.component.scss',
@@ -274,7 +275,7 @@ export class FileExploratorComponent {
   getGalerie(docPaths: string[]) {
     this.imagePathList = [...docPaths];
     this.galerie = docPaths.map(
-      (path) => `${this.activeUrl}picts/img?file=${path}&width=200`
+      (path) => `${this.activeUrl}picts/img?file=${path}&width=800`
     );
     console.log('imagePathList (doc_paths):', this.imagePathList);
     console.log('galerie (thumbnail urls):', this.galerie);
@@ -324,50 +325,11 @@ export class FileExploratorComponent {
     });
   }
 
-  colors = [
-    '#f5fff7',
-    '#e0de12',
-    '#c1d112',
-    '#4b6426', // verts
-    '#fec700',
-    '#b44917',
-    '#63340d', // oranges
-    '#8cd2f5',
-    '#089cd9',
-    '#495fa9', // bleus
-    '#f8f4ba',
-    '#f4ee92',
-    '#ebe01f', // jaunes
-    '#d0a9cf',
-    '#bb7bb3',
-    '#430035', // violets
-    '#f8baba',
-    '#f4a2a2', // rouges
-  ];
-
-  // fonction hash simple pour générer un index stable
-  private hashString(str: string): number {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0; // Convert to 32bit int
-    }
-    return Math.abs(hash);
-  }
-
-  getColorForImage(image: string): string {
-    const index = this.hashString(image) % this.colors.length;
-    return this.colors[index];
-  }
-
-  getTextColor(bg: string): string {
-    const c = bg.substring(1); // enlève le "#"
-    const rgb = parseInt(c, 16);
-    const r = (rgb >> 16) & 0xff;
-    const g = (rgb >> 8) & 0xff;
-    const b = (rgb >> 0) & 0xff;
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance > 150 ? '#000' : '#fff';
+  /** Nom de la photo sans le chemin, le préfixe doc_<id>_ ajouté par le backend ni l'extension */
+  nomImage(index: number): string {
+    const nom = ((this.imagePathList?.[index] ?? '').split(this.separator).pop() ?? '').replace(/^doc_\d+_/, '');
+    const point = nom.lastIndexOf('.');
+    return point > 0 ? nom.substring(0, point) : nom;
   }
 
   downloadDocx(): void {

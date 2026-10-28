@@ -22,7 +22,7 @@
   margin-bottom: 20px;
   gap: 15px;
   .btn-edition {
-    @include btn-icon($administratif, $bleuC);
+    @include btn-icon($administratif, lighten($administratif, 40%));
     @include icon(white, black);
   }
 }

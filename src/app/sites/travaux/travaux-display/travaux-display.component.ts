@@ -14,8 +14,8 @@ import { Overlay } from '@angular/cdk/overlay';
 
 import { ProjetTravaux } from '../travaux';
 import { TravauxService } from '../travaux.service';
-import { ProjetLite } from '../../site-detail/detail-projets/projets';
-import { ProjetComponent } from '../../site-detail/detail-projets/projet/projet.component';
+import { ProjetLite } from '../../site-detail/detail-actions/projets';
+import { ActionTravauxComponent } from '../../site-detail/detail-actions/action_travaux/action_travaux.component';
 
 @Component({
   selector: 'app-travaux-display',
@@ -79,12 +79,12 @@ export class TravauxDisplayComponent implements AfterViewInit {
       params['statut'];
     
     this.research.getProjets(subroute).then((projetsGuetted: ProjetTravaux[]) => {
-    this.projets = projetsGuetted;
-    this.dataSource = new MatTableDataSource(this.projets); // Pour le filtre du tableau mat-table. Mettre une valeur dans value et dans le filtre du mat input SELECTION DES SITES
-    const fakeEvent = { target: { value: '' } } as unknown as Event;
-    this.applyFilter(fakeEvent);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+      this.projets = projetsGuetted;
+      this.dataSource = new MatTableDataSource(this.projets); // Pour le filtre du tableau mat-table. Mettre une valeur dans value et dans le filtre du mat input SELECTION DES SITES
+      const fakeEvent = { target: { value: '' } } as unknown as Event;
+      this.applyFilter(fakeEvent);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
   }
 
@@ -125,7 +125,7 @@ export class TravauxDisplayComponent implements AfterViewInit {
   }
 
   openDialog(projet: ProjetTravaux): void {
-    // Construit un ProjetLite minimal à partir du ProjetTravaux pour alimenter ProjetComponent
+    // Construit un ProjetLite minimal à partir du ProjetTravaux pour alimenter ActionTravauxComponent
     const projetLite: ProjetLite = {
       uuid_proj: projet.uuid_proj,
       responsable: projet.responsable,
@@ -140,7 +140,7 @@ export class TravauxDisplayComponent implements AfterViewInit {
       geojson_site: '',
     };
 
-    const dialogRef = this.dialog.open(ProjetComponent, {
+    const dialogRef = this.dialog.open(ActionTravauxComponent, {
       data: projetLite,
       minWidth: '50vw',
       maxWidth: '95vw',

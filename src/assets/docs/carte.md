@@ -6,7 +6,7 @@ La même carte interactive est utilisée dans toute l'application. Cette fiche d
 
 - **Accueil** : carte « Les antennes du CENCA. », en bas de page.
 - **Fiche site**, onglet **Infos générales** : localisation du site.
-- **Projets** d'un site : en consultation, carte des opérations du projet ; dans une opération, étape **Données spatiales**.
+- **Actions** d'un site (projets) : en consultation, carte des opérations du projet ; dans une opération, étape **Données spatiales**.
 - **Projets de maîtrise foncière et d'usage**, étape **Parcelles cadastrales concernées** : sélection des parcelles (voir [Projets de maîtrise foncière et d'usage](/aide/projets-mfu)).
 - **Chiroptères** : placement d'un site ou d'un relevé sur la carte (voir [Chiroptères](/aide/chiro)).
 

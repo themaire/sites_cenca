@@ -4,6 +4,7 @@
 // PUIS LES @import
 @import "app/styles/variables.scss";
 @import "app/styles/mixins.scss";
+@import "app/styles/themes.scss"; // palettes des crédos (ne génère aucun CSS seul)
 
 // Définir une palette personnalisée (syntaxe v18)
 // $primary-palette: mat.m2-define-palette(mat.$m2-green-palette);
@@ -147,8 +148,65 @@ body {
   @include custom-backdrop($gererBackdrop);
 }
 
+// Fiche projet à l'ouverture : neutre tant que le crédo n'est pas connu (cf. .credo-* ci-dessous)
+.custom-backdrop-neutre {
+  @include custom-backdrop($neutreBackdrop);
+}
+
 .custom-backdrop-administratif {
   @include custom-backdrop($blueBackdrop);
+}
+
+// Fiche projet : le fond suit le crédo du bandeau (.credo-<cle>, cf. credos-projets.ts).
+// Le dialogue s'ouvre en custom-backdrop-neutre ; ces règles, plus spécifiques, prennent le relais.
+$credos-backdrops: (
+  gerer: $gererBackdrop,
+  proteger: $protegerBackdrop,
+  connaitre: $connaitreBackdrop,
+  valoriser: $valoriserBackdrop,
+  accompagner: $accompagnerBackdrop,
+  administratif: $administratifBackdrop,
+);
+@each $credo, $couleur in $credos-backdrops {
+  .cdk-overlay-backdrop:has(+ .cdk-global-overlay-wrapper .credo-#{$credo}) {
+    @include custom-backdrop($couleur);
+  }
+}
+
+// Fiche projet : thème Material selon le crédo (focus des champs, selects, boutons...), à la place du thème
+// gerer de action_travaux.component pour action-autre / operation-autre. En global plutôt que dans le composant :
+// 5 thèmes y dépassaient le budget de style (anyComponentStyle). Les panneaux en overlay (liste d'un select,
+// calendrier) sont hors du dialogue et gardent le thème global.
+$credos-palettes: (
+  proteger: $proteger-palette,
+  connaitre: $connaitre-palette,
+  valoriser: $valoriser-palette,
+  accompagner: $accompagner-palette,
+  administratif: $administratif-palette,
+  neutre: mat.m2-define-palette(mat.$m2-grey-palette, 600, 400, 800),
+);
+@each $cle, $palette in $credos-palettes {
+  $theme-credo: mat.m2-define-light-theme((
+    color: (
+      primary: $palette,
+      accent: mat.m2-define-palette(mat.$m2-amber-palette),
+      warn: mat.m2-define-palette(mat.$m2-red-palette),
+    )
+  ));
+  .dialogue.fond-#{$cle} {
+    @include mat.form-field-color($theme-credo);
+    @include mat.input-color($theme-credo);
+    @include mat.select-color($theme-credo);
+    @include mat.option-color($theme-credo);
+    @include mat.optgroup-color($theme-credo);
+    @include mat.autocomplete-color($theme-credo);
+    @include mat.datepicker-color($theme-credo);
+    @include mat.button-color($theme-credo);
+    @include mat.icon-button-color($theme-credo);
+    @include mat.button-toggle-color($theme-credo);
+    @include mat.progress-spinner-color($theme-credo);
+    @include mat.stepper-color($theme-credo); // stepper des travaux, affiché en neutre tant que le type n'est pas choisi
+  }
 }
 
 // Fond blanc force pour la nouvelle modale de rattachement acte-site.

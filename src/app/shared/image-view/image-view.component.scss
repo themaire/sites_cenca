@@ -9,8 +9,28 @@
   margin: auto;
   text-align: center;
   .carousel-image {
+    position: relative;
     height: 85vh;
     overflow: hidden;
+    .chargement {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      @include align(center, center);
+      gap: 16px;
+      color: #ccc;
+      pointer-events: none;
+      --mdc-circular-progress-active-indicator-color: #{$orangeM};
+      mat-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 56px;
+      }
+    }
+    img.masquee {
+      visibility: hidden;
+    }
     img {
       display: block;
       width: 100%;

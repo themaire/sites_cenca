@@ -1,7 +1,7 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiResponse } from '../interfaces/api';
-import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
+import { ProjetService } from '../../sites/site-detail/detail-actions/projets.service';
 import { SitesService } from '../../sites/sites.service';
 import { Localisation } from '../../shared/interfaces/localisation';
 

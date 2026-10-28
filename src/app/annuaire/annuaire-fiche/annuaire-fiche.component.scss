@@ -4,10 +4,9 @@
 @import "../../styles/variables.scss";
 
 :host {
-  // $administratif partage la même teinte de base ($bleuM) que $connaitre : on réutilise sa palette Material.
   @include mat.all-component-themes(mat.m2-define-light-theme((
     color: (
-      primary: $connaitre-palette,
+      primary: $administratif-palette,
       accent:  mat.m2-define-palette(mat.$m2-amber-palette),
       warn:    $red-palette,
     )

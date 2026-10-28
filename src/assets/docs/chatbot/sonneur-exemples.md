@@ -1,6 +1,6 @@
 # Exemples de questions à poser à Sonneur
 
-Posez votre question en français, comme à un collègue : Sonneur choisit lui-même les données à consulter. Les exemples ci-dessous ont été vérifiés sur les données le 20 octobre 2026 ; un clic ne les envoie pas, recopiez-les ou adaptez-les dans la zone de saisie. Pour le fonctionnement général, voir [Sonneur, l'assistant de consultation](/aide/sonneur).
+Posez votre question en français, comme à un collègue : Sonneur choisit lui-même les données à consulter. Les exemples ci-dessous ont été vérifiés sur les données le 20 octobre 2026 (le 23 octobre pour les périmètres modifiés, les objectifs de gestion, les mesures compensatoires et les habitats naturels ; le 27 octobre pour les bassins d'agence, les informations sur une commune et la recherche dans les textes) ; un clic ne les envoie pas, recopiez-les ou adaptez-les dans la zone de saisie. Pour le fonctionnement général, voir [Sonneur, l'assistant de consultation](/aide/sonneur).
 
 ## Conseils pour bien formuler
 
@@ -21,12 +21,26 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Quels sont les nouveaux sites de 2025 ?
 - Quels sites sont entrés depuis 2020 dans la Marne ?
 - Liste des sites gérés en Haute-Marne, du plus grand au plus petit.
+- Quels sont les sites du bassin Rhin-Meuse ?
+- Quels sites gérés de la Marne sont dans le bassin Seine-Normandie ?
+
+Le bassin d'agence de l'eau est déterminé par croisement des contours (il n'est pas renseigné pour tous les sites dans la base) : un site à cheval sur deux bassins apparaît dans les deux.
 
 ### Sites d'une commune
 
 - Quels sites gère-t-on à Villechétif ?
 - Y a-t-il des sites du CENCA à Saint-Dizier ?
 - Quels sites se trouvent sur la commune des Riceys ?
+
+### Informations sur une commune
+
+Pour une commune, Sonneur donne le ou les **bassins d'agence de l'eau** (avec le sous-bassin Seine-Normandie et la part de la commune dans chacun) et tous les **espaces naturels** qui la touchent, regroupés par type (sites du CENCA, Natura 2000, ZNIEFF, APB, réserves, PNR, Ramsar…), avec leur surface dans la commune. Les contours sont croisés sur la carte : une ZNIEFF qui ne fait qu'effleurer la commune est comptée, pour sa seule surface dans la commune.
+
+- Dans quel bassin d'agence de l'eau se trouve Villechétif ?
+- Givet est-elle en Rhin-Meuse ou en Seine-Normandie ?
+- Quels espaces naturels (Natura 2000, ZNIEFF, réserves…) touchent la commune de Givet ?
+- Quelle surface de ZNIEFF sur la commune de Villechétif ?
+- Y a-t-il un site Natura 2000 ou un arrêté de protection de biotope à Saint-Dizier ?
 
 ### Sites autour d'un point GPS
 
@@ -69,6 +83,14 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Combien de sites bénéficient d'une protection forte ?
 - Combien de nouveaux sites par an depuis le début ?
 
+### Périmètres modifiés
+
+Sites dont le contour a été modifié une année donnée (hors sites créés cette année-là), comme dans l'export annuel à la FCEN. Sans année précisée, Sonneur prend l'année précédente.
+
+- Quels sites ont changé de périmètre l'année dernière ?
+- Quels sites ont changé de périmètre en 2024 ?
+- Liste des contours de sites modifiés en 2025, avec leur surface actuelle.
+
 ### Indicateurs d'activité
 
 - Combien d'animations l'année dernière, et combien de personnes sensibilisées ?
@@ -98,6 +120,16 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Quels actes arrivent à échéance d'ici 2 ans ?
 - Quels actes sont échus depuis moins de 3 mois ?
 
+## Mesures compensatoires
+
+Projets (éolien, carrière, photovoltaïque…) pour lesquels le CENCA assure des mesures compensatoires : société, durée, année de début, objectifs et sites concernés.
+
+- Quelles mesures compensatoires suit-on ?
+- Mesures compensatoires liées aux carrières.
+- Quels parcs éoliens ont des mesures compensatoires sur nos sites ?
+- Quelles mesures compensatoires concernent le site 10060 ?
+- Quels sont les objectifs des mesures compensatoires de CEMEX ?
+
 ## Projets et travaux
 
 ### Travaux d'un site
@@ -120,12 +152,58 @@ Posez votre question en français, comme à un collègue : Sonneur choisit lui-m
 - Détaille les opérations du projet de pâturage 2025 de la Pelouse de Champ Cognier : maître d'œuvre, financeurs, animaux.
 - Qui a réalisé les travaux du projet « Milieu - Restaurer / Trait. végét » 2026 du site 10030 ?
 
+### Objectifs de gestion
+
+Ce que visent les projets d'un site : niveau d'enjeu (espèces, habitat…), enjeux écologiques, objectif opérationnel (conserver, restaurer, entretenir…), pressions à maîtriser (dynamique ligneuse…) et, quand ils sont saisis, résultats attendus et surfaces. Pour ce qui a été réalisé, demandez plutôt les travaux du site.
+
+- Quels sont les objectifs de gestion du Marais de Villechétif ?
+- Quels enjeux écologiques visent les projets du site 10035 ?
+- Objectifs des projets de la Pelouse de Champ Cognier depuis 2024.
+- Quelles pressions le projet de pâturage 2026 du site 10030 doit-il maîtriser ?
+
 ### Bilan des opérations
 
 - Bilan des travaux réalisés en 2025 par type d'action.
 - Combien d'hectares pâturés chaque année depuis 2022 ?
 - Bilan des opérations par site en 2025.
 - Bilan des opérations du site 10030 depuis 2020.
+
+## Rechercher un mot dans les textes
+
+Sonneur cherche un mot ou une expression (sans tenir compte des accents ni des majuscules) dans les textes libres de la base :
+
+- les **descriptions** des sites et leurs **remarques de sensibilité** ;
+- les **descriptions et remarques des opérations de travaux**, y compris les opérations anciennes reprises de l'ancienne base ;
+- les **remarques des actes fonciers**.
+
+Pour chaque texte trouvé, il indique d'où il vient, le site, l'année et un extrait autour du mot. Mettez le mot cherché entre guillemets pour lever toute ambiguïté.
+
+- Où parle-t-on de « grille » dans la base ?
+- Quels sites mentionnent « cadenas » dans leur description ?
+- Quelles opérations de travaux parlent de « grille à chauves-souris » ?
+- Quels actes fonciers ont une remarque sur le « droit de chasse » ?
+- Cherche « castor » dans les descriptions des sites et les travaux.
+
+## Habitats naturels (cartographie des végétations)
+
+Les données viennent de la cartographie des habitats (relevés de végétation depuis 2006). Tous les sites ne sont pas cartographiés, ou seulement en partie : Sonneur indique la surface et le pourcentage cartographiés, et les années de relevé.
+
+### Habitats d'un site
+
+- Quels habitats sur la Pelouse de Champ Cognier ?
+- État de conservation des habitats du site 10035.
+- Quelle part du Marais de Villechétif est en zone humide ?
+- Quels habitats ont été relevés en 2021 sur le site 10030 ?
+- Quand les habitats du site 10035 ont-ils été cartographiés ?
+
+### Synthèses de la cartographie
+
+- Combien d'hectares d'habitats cartographiés par an ?
+- Quels sites gérés sont les moins cartographiés ?
+- Quels sites de l'Aube sont les mieux cartographiés ?
+- Sur quels sites trouve-t-on des pelouses calcicoles ?
+- Sur quels sites de la Marne trouve-t-on des phragmitaies ?
+- Quelles végétations de zone humide sont les plus cartographiées ?
 
 ## Observations naturalistes (WebObs)
 
@@ -175,3 +253,4 @@ Les données viennent d'un export WebObs (faune et flore depuis 2000), arrêté 
 - Il ne modifie aucune donnée : il fonctionne en lecture seule.
 - Il n'exécute pas de requête libre et ne fait pas de calcul spatial en dehors des questions ci-dessus (par exemple croiser deux couches au choix, ou mesurer une distance entre deux sites).
 - Il ne voit pas les saisies WebObs postérieures à l'export.
+- Il ne connaît les habitats que là où ils ont été cartographiés : un site non relevé n'a pas d'habitats dans ses réponses.

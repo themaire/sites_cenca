@@ -57,7 +57,19 @@ $valoriser: $orangeC;
 
 $accompagner: $violetM;
 
-$administratif: $bleuM;
+$administratif: #5f6b7a; // gris ardoise (distinct des cinq crédos)
+
+// Fonds derrière les fiches projet, selon le crédo (même principe que $gererBackdrop : teinte assombrie, semi-transparente)
+$protegerBackdrop: rgba(mix(black, $proteger, 50%), 0.5);
+$connaitreBackdrop: rgba(mix(black, $connaitre, 50%), 0.5);
+$valoriserBackdrop: rgba(mix(black, $valoriser, 50%), 0.5);
+$accompagnerBackdrop: rgba(mix(black, $accompagner, 50%), 0.5);
+$administratifBackdrop: rgba(mix(black, $administratif, 50%), 0.5);
+
+// Fiche projet dont le crédo n'est pas encore connu (chargement, type pas choisi) : gris sans teinte
+$neutre: #a3a8ae;
+$neutreTC: #f6f7f8;
+$neutreBackdrop: rgba(30, 32, 36, 0.5);
 
 $liens-utiles: $VertM;
 

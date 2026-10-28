@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 
-import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
-import { OperationLite } from '../../sites/site-detail/detail-projets/projet/operation/operations';
+import { Objectif } from '../../sites/site-detail/detail-actions/action_travaux/objectif/objectifs';
+import { OperationLite } from '../../sites/site-detail/detail-actions/action_travaux/operation/operations';
 
 @Component({
   selector: 'app-form-buttons',

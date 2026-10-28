@@ -23,37 +23,53 @@
   box-sizing: border-box;
 }
 .galerie {
-  display: flex;
-  flex-wrap: wrap;
-  @include align(center, space-between);
-  gap: 10px;
+  // Grille fluide : autant de colonnes que la largeur le permet, cartes de même largeur
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  align-content: start;
+  gap: 16px;
 }
 .card {
   display: flex;
-  width: 210px;
   flex-direction: column;
-  @include align(center, center);
-  border: 1px solid black;
-  padding-top: 5px;
-  border-radius: 10px;
-  transition: transform 100ms ease-in-out;
-  height: fit-content;
+  min-width: 0; // autorise la troncature du nom dans la grille
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 150ms ease-in-out, transform 150ms ease-in-out;
   &:hover {
-    transform: scale(1.01);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   & img {
-    width: 200px;
-    border-radius: 5px;
     display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background-color: rgba(0, 0, 0, 0.05);
   }
-  & div {
-    display: flex;
-    flex-direction: column;
-    @include align(center, center);
-    & p {
-      margin: 0;
-    }
-  }
+}
+.card-pied {
+  display: flex;
+  @include align(center, space-between);
+  gap: 4px;
+  padding: 4px 4px 4px 10px;
+}
+.card-nom {
+  // Nom sur 2 lignes maximum, coupé par « … » au-delà (nom complet au survol)
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 
 .selected {

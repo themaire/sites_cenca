@@ -12,7 +12,7 @@ export const COULEURS_ACTION_2: Record<string, string> = {
   '201': '#00796b', // Bûcheronnage
   '202': '#c5e1a5', // Débroussaillage
   '203': '#7cb342', // Broyage
-  '204': '#2ecc40', // Fauche
+  '204': '#e8b923', // Fauche
   '205': '#4db6ac', // Taille
   '206': '#33691e', // Arrachage
   '210': '#e67e22', // Pâturage
