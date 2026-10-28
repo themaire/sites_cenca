@@ -1,4 +1,4 @@
-<div class="projet-autre" [ngClass]="'credo-' + credo.cle" *ngIf="!isLoading; else chargement">
+<div class="action-autre" [ngClass]="'credo-' + credo.cle" *ngIf="!isLoading; else chargement">
 
   <!-- Fiche ouverte dans Access par un collègue : on informe, on ne bloque pas -->
   <div class="bandeau-access" *ngIf="ouvertPar().length">
@@ -176,7 +176,7 @@
 
 <ng-template #chargement>
   <div class="chargement">
-    <mat-spinner class="spinner-vert"></mat-spinner>
+    <mat-spinner class="spinner-neutre"></mat-spinner>
     <p>Chargement ...</p>
   </div>
 </ng-template>

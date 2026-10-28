@@ -42,13 +42,23 @@ export class SitesResearchComponent implements OnInit {
     commune: '*',
     milieux_naturels: '*',
     responsable: '*',
+    annee: '*', // année de création (sélecteur prem_ctr du backend)
   };
+
+  /** Sélecteur du backend → paramètre de la route de recherche, quand les noms diffèrent */
+  private readonly paramDuSelecteur: Record<string, string> = { prem_ctr: 'annee' };
 
   public selectors: Selector[] = [];
   research: SitesService = inject(SitesService);
 
   constructor(private router: Router) {
     this.research.getSelectors().then((selectors: Selector[]) => {
+      // Années de création : les plus récentes en premier
+      const annees = selectors.find(s => s.name === 'prem_ctr');
+      if (annees) annees.values.sort((a, b) => Number(b) - Number(a));
+      // Valeurs avec libellé (responsables : nom complet) : triées par libellé
+      selectors.filter(s => s.libelles).forEach(s =>
+        s.values.sort((a, b) => (s.libelles![a] ?? a).localeCompare(s.libelles![b] ?? b, 'fr')));
       this.selectors = selectors;
       // console.log(this.selectors);
     });
@@ -94,7 +104,27 @@ export class SitesResearchComponent implements OnInit {
     // console.log("Dans nameChange avec " + this.params.type + "/" + this.params.code + "/" + this.params.nom + "/" + this.params.commune + "/" + this.params.milieux_naturels + "/" + this.params.responsable);
   }
 
+  /** Sélecteur de l'année de création : en tête de la 1re ligne */
+  get selecteurAnnee(): Selector | undefined {
+    return this.selectors.find(s => s.name === 'prem_ctr');
+  }
+
+  /** Les autres sélecteurs dynamiques : 2e ligne, après le type */
+  get autresSelecteurs(): Selector[] {
+    return this.selectors.filter(s => s.name !== 'prem_ctr');
+  }
+
+  /**
+   * Largeur minimale d'un sélecteur, en caractères, d'après son plus long texte (titre ou valeur) :
+   * le libellé et la valeur choisie restent lisibles. Bornée pour ne pas écraser les autres champs.
+   */
+  largeurSelecteur(selector: Selector): number {
+    const plusLongueValeur = Math.max(0, ...(selector.values ?? []).map(v => String(selector.libelles?.[v] ?? v).length));
+    return Math.min(Math.max(selector.title.length + 4, plusLongueValeur + 4), 32);
+  }
+
   selectionSelectors($event: any, selector: any, index: boolean = false) {
+    const cle = this.paramDuSelecteur[selector] ?? selector;
     // $event.taget contient plein d'informations du <select> en question
     console.log("$event.value : ", $event.value);
 
@@ -114,12 +144,12 @@ export class SitesResearchComponent implements OnInit {
     if (selector === optionTextMat) {
       // Il faut que le nom du type de selector passé en parametre de cette fonction
       // soit égal au libellé de l'option sélectionnée pour faire une étoile *.
-      this.params[selector] = '*';
+      this.params[cle] = '*';
       // $event.target.style.backgroundColor = '#F5F3F3'; // Quand on utilise PAS mat-select
     } else {
       if (index != true)
-        this.params[selector] = encodeURIComponent(optionTextMat);
-      else this.params[selector] = encodeURIComponent(optionIndexMat);
+        this.params[cle] = encodeURIComponent(optionTextMat);
+      else this.params[cle] = encodeURIComponent(optionIndexMat);
 
       // selectElement.style.backgroundColor = '#76b82a';
     }
@@ -144,6 +174,7 @@ export class SitesResearchComponent implements OnInit {
             this.params.commune,
             this.params.milieux_naturels,
             this.params.responsable,
+            this.params.annee,
           ],
         },
       },

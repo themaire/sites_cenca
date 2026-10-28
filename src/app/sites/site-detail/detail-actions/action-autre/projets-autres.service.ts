@@ -130,11 +130,20 @@ export class ProjetsAutresService {
 
   // ── Erreurs ─────────────────────────────────────────────────────────────────
 
+  /** 404 sur un objet (supprimé entre-temps), et non sur une route que le serveur ne connaît pas */
+  estIntrouvable(error: unknown): boolean {
+    return error instanceof HttpErrorResponse && error.status === 404 && error.error?.message !== 'Route non trouvée.';
+  }
+
   /** Liste lisible des erreurs renvoyées par le backend (400 : toutes les erreurs d'un coup) */
   erreursDe(error: HttpErrorResponse): string[] {
     if (error.status === 401) return ['Vous devez être connecté pour enregistrer (session expirée ?).'];
-    if (error.status === 404) return ["L'élément n'existe plus : il a peut-être été supprimé par un collègue."];
     const corps = error.error;
+    // 404 « Route non trouvée » : le serveur ne connaît pas /sites/autres (module absent ou pas déployé)
+    if (error.status === 404 && corps?.message === 'Route non trouvée.') {
+      return ['Le serveur ne propose pas (ou plus) les projets « autres » : route ' + (corps.req ?? error.url) + ' introuvable. Prévenez le gestionnaire de l\'outil.'];
+    }
+    if (this.estIntrouvable(error)) return ["L'élément n'existe plus : il a peut-être été supprimé par un collègue."];
     if (corps?.erreurs?.length) return corps.erreurs;
     if (corps?.message) return [corps.message + (corps.detail ? ' : ' + corps.detail : '')];
     return ['Erreur de communication avec le serveur (' + error.status + ').'];

@@ -1,7 +1,7 @@
 @import "../../../styles/mixins.scss";
 @import "../../../styles/variables.scss";
 
-.detail-projets {
+.detail-actions {
   display: flex;
 }
 
@@ -34,6 +34,17 @@ h2 {
 .mat-mdc-table .mat-mdc-header-cell {
   @include dim(100%, 100%);
   border: none;
+}
+
+// Largeur des colonnes : fixe pour les colonnes courtes, le reste partagé entre Nom (2 parts) et Type (4 parts)
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  &.annee { flex: 0 0 70px; }
+  &.responsable,
+  &.date_deb,
+  &.statut { flex: 0 0 110px; }
+  &.projet { flex: 2 1 0; }
+  &.action { flex: 4 1 0; }
 }
 
 // Ligne de titre
@@ -80,7 +91,30 @@ h2 {
   background-color: #f2f2f2; /* Gris très clair */
 }
 
-// Hauteur fixe pour chaque ligne
+// Couleur du crédo de chaque projet (cf. credos-projets.ts) : teinte claire sur les lignes,
+// en alternance pair / impair, et couleur pleine sur la pastille du chip de filtre.
+// « neutre » : projet « autre » dont le crédo n'est pas encore connu.
+$credos-lignes: (
+  gerer: $gerer,
+  proteger: $proteger,
+  connaitre: $connaitre,
+  valoriser: $valoriser,
+  accompagner: $accompagner,
+  administratif: $administratif,
+  neutre: $neutre,
+);
+@each $cle, $couleur in $credos-lignes {
+  .mat-mdc-cell.credo-#{$cle} {
+    &.even-row { background-color: mix(white, $couleur, 72%); } // bien teintée, pas blanche
+    &.odd-row { background-color: mix(white, $couleur, 62%); }
+  }
+  .chip-dot.credo-#{$cle} {
+    background-color: $couleur;
+  }
+}
+
+// Hauteur minimale de chaque ligne : une action longue agrandit la ligne au lieu de déborder
 .mat-mdc-cell, .mat-mdc-header-cell {
-  height: 110px; // Définissez la hauteur souhaitée ici
+  height: auto;
+  min-height: 110px;
 }

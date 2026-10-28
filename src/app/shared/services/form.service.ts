@@ -20,12 +20,12 @@ import { catchError, map, skip, tap } from 'rxjs/operators';
 import { Annuaire } from '../../annuaire/interfaces/annuaire';
 import { Acte } from '../../sites/site-detail/detail-mfu/acte';
 import { Parcelle } from '../../sites/site-detail/detail-mfu/acte_mfu/parcelle-mfu/parcelle';
-import { Projet } from '../../sites/site-detail/detail-projets/projets';
+import { Projet } from '../../sites/site-detail/detail-actions/projets';
 import {
   Operation,
   OperationCheckbox,
-} from '../../sites/site-detail/detail-projets/projet/operation/operations';
-import { Objectif } from '../../sites/site-detail/detail-projets/projet/objectif/objectifs';
+} from '../../sites/site-detail/detail-actions/action_travaux/operation/operations';
+import { Objectif } from '../../sites/site-detail/detail-actions/action_travaux/objectif/objectifs';
 import { ProjetMfu } from '../../sites/foncier/foncier';
 import { SelectValue } from '../interfaces/formValues';
 import { DocPlanDetail } from '../../sites/site-detail/detail-gestion/docplan';
@@ -33,7 +33,7 @@ import { DocPlanDetail } from '../../sites/site-detail/detail-gestion/docplan';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SitesService } from '../../sites/sites.service';
-import { ProjetService } from '../../sites/site-detail/detail-projets/projets.service';
+import { ProjetService } from '../../sites/site-detail/detail-actions/projets.service';
 // import { GeoService } from '../../shared/services/geo.service';
 import { DocfileService } from './docfile.service';
 import { v4 as uuidv4 } from 'uuid';

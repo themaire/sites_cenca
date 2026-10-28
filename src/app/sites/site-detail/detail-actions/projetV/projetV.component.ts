@@ -18,7 +18,7 @@ import {
 } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-dialog-operation',
+  selector: 'app-projet-v', // ancien composant inutilisé (import commenté dans detail-actions)
   standalone: true,
   imports: [
             CommonModule,

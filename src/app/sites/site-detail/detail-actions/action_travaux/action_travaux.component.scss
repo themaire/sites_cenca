@@ -81,6 +81,7 @@ mat-dialog-content.dialogue {
   &.credo-valoriser { background-color: $valoriser; }
   &.credo-accompagner { background-color: $accompagner; }
   &.credo-administratif { background-color: $administratif; }
+  &.credo-neutre { background-color: $neutre; min-width: 1.5em; } // sans libellé : garder la largeur d'une ligne
 }
 
 .projet {
@@ -181,6 +182,19 @@ mat-dialog-content.dialogue {
   &.fond-valoriser { background-color: mix(white, $valoriser, 93%) !important; }
   &.fond-accompagner { background-color: mix(white, $accompagner, 93%) !important; }
   &.fond-administratif { background-color: mix(white, $administratif, 93%) !important; }
+  &.fond-neutre { background-color: $neutreTC !important; }
+}
+
+// Crédo pas encore connu : le stepper (projet neuf sans type) perd aussi son fond vert
+.dialogue.fond-neutre ::ng-deep {
+  .mat-mdc-stepper-horizontal,
+  .mat-mdc-stepper-vertical,
+  .mat-stepper-horizontal,
+  .mat-stepper-vertical,
+  .mat-mdc-stepper-content,
+  .mat-stepper-content {
+    background-color: $neutreTC !important;
+  }
 }
 
 // Thème Material selon le crédo : dans src/styles.scss (5 thèmes ici dépassaient le budget de style du composant)
@@ -276,6 +290,11 @@ mat-dialog-content.dialogue {
 
 .spinner-vert {
   --mdc-circular-progress-active-indicator-color: #{$couleur-territoire};
+}
+
+// Chargement de la fiche : le crédo n'est pas encore connu
+.spinner-neutre {
+  --mdc-circular-progress-active-indicator-color: #{$neutre};
 }
 
 // Pour le bilan d'exécution du projet

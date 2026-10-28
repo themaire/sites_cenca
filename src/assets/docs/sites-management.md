@@ -38,11 +38,11 @@ La fiche est organisée en onglets. Sur ordinateur :
 | **Infos générales** | Identité du site (nom, code, surface, responsable, type, références…), communes concernées, conservateurs bénévoles |
 | **Description et Ouverture** | Description, sensibilité, ouverture au public, liens CEN et MNHN |
 | **Actes MFU** | Actes de maîtrise foncière et d'usage du site, filtrables (tous, valides, invalides) — voir [Foncier](/aide/foncier) |
-| **Projets** | Projets du site et leurs opérations — voir [Ajouter une géométrie à une opération](/aide/ajout_shapefile) |
+| **Actions** | Projets du site et leurs opérations — voir [Ajouter une géométrie à une opération](/aide/ajout_shapefile) |
 | **Plans de gestion** | Documents planificateurs du site — voir [Plans de gestion](/aide/plans-gestion) |
 | **Habitats** | Milieux naturels et code géologie |
 
-Sur téléphone, les mêmes contenus sont répartis en trois groupes d'onglets aux libellés raccourcis : **Infos gén.** et **Desc. et Ouv.**, puis **Actes MFU** et **Projets**, puis **Gestion** et **Habitats**.
+Sur téléphone, les mêmes contenus sont répartis en trois groupes d'onglets aux libellés raccourcis : **Infos gén.** et **Desc. et Ouv.**, puis **Actes MFU** et **Actions**, puis **Gestion** et **Habitats**.
 
 Le bouton **Retour** ramène à la liste.
 

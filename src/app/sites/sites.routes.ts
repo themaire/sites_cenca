@@ -15,6 +15,12 @@ export const SITES_ROUTES: Route[] = [
             {
                 // path: 'filtre/:type',
                 // path: 'filtre',
+                path: 'filtre/:type/:code/:nom/:commune/:milieux_naturels/:responsable/:annee',
+                component: SitesDisplayComponent,
+                outlet: 'liste'
+            },
+            {
+                // Ancienne forme sans l'année de création : garde les liens déjà enregistrés
                 path: 'filtre/:type/:code/:nom/:commune/:milieux_naturels/:responsable',
                 component: SitesDisplayComponent,
                 outlet: 'liste'
