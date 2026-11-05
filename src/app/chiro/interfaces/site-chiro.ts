@@ -5,6 +5,7 @@ export interface ListSiteChiro {
   insee: string;
   commune: string;
   code: string;
+  code_site?: string;
   nom: string;
   nbrel: number;
   nbobs: number;
@@ -15,6 +16,7 @@ export interface ListSiteChiro {
 export interface DetailSiteChiro {
   id_site: number;
   code: string;
+  code_site?: string;
   nom: string;
   localisation?: string;
   contact?: string;
@@ -51,6 +53,7 @@ export interface DetailSiteChiro {
 
 export interface CreateSite {
   code: string;
+  code_site?: string;
   nom: string;
   insee: string;
   nature?: string;

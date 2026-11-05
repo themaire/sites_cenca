@@ -119,9 +119,8 @@ export class TravauxDisplayComponent implements AfterViewInit {
 
   resetSelected(): void {
     this.selectedProjet = undefined;
-    this.route.params.subscribe((params: Params) => {
-      this.loadSites(params);
-    });
+    // snapshot : se réabonner à route.params empilerait un abonnement de plus à chaque appel
+    this.loadSites(this.route.snapshot.params);
   }
 
   openDialog(projet: ProjetTravaux): void {
@@ -154,9 +153,8 @@ export class TravauxDisplayComponent implements AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(() => {
-      this.route.params.subscribe((params: Params) => {
-        this.loadSites(params);
-      });
+      // snapshot : se réabonner à route.params empilerait un abonnement de plus à chaque fermeture
+      this.loadSites(this.route.snapshot.params);
     });
   }
 }

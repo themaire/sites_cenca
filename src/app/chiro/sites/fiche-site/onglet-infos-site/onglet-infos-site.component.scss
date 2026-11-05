@@ -127,5 +127,16 @@
       min-width: 130px;
       flex-shrink: 0;
     }
+
+    .lien-site {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: #3f51b5;
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
+    }
+
+    .code-inconnu { cursor: help; }
   }
 }

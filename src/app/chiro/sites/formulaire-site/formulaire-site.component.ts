@@ -62,6 +62,7 @@ export class FormulaireNouveauSiteComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       code: ['', Validators.required],
+      code_site: [''],
       nom: ['', Validators.required],
       insee: ['', Validators.required],
       nature: [null],
@@ -137,6 +138,7 @@ export class FormulaireNouveauSiteComponent implements OnInit {
     const val = this.form.value;
     const data: CreateSite = {
       code: val.code,
+      code_site: val.code_site || undefined,
       nom: val.nom,
       insee: val.insee,
       nature: val.nature || undefined,

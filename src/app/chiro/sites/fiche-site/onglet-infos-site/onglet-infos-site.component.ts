@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -18,12 +19,13 @@ import { DetailSiteChiro, UpdateSite } from '../../../interfaces/site-chiro';
 import { Typologies } from '../../../interfaces/observation';
 import { FormButtonsComponent } from '../../../../shared/form-buttons/form-buttons.component';
 import { MapComponent } from '../../../../map/map.component';
+import { SitesService } from '../../../../sites/sites.service';
 
 @Component({
   selector: 'app-onglet-infos-site',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
+    CommonModule, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatCardModule, MatCheckboxModule, MatDatepickerModule,
     MatFormFieldModule, MatIconModule, MatInputModule, MatNativeDateModule,
     MatSelectModule, MatSnackBarModule, MatTooltipModule,
@@ -49,17 +51,35 @@ export class OngletInfosSiteComponent implements OnChanges {
   communesIGN: CommuneIGN[] = [];
   loadingCommunes = false;
   pickedPoint?: { lat: number; lng: number };
+  /** Le code site correspond à un site CENCA existant : affiché en lien vers sa fiche (null : vérification en cours). */
+  codeSiteExiste: boolean | null = null;
 
   constructor(
     private fb: FormBuilder,
     private chiroService: ChiroService,
     private communeIgnService: CommuneIgnService,
+    private sitesService: SitesService,
     private snackBar: MatSnackBar,
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['site'] && this.form) {
-      this.form.patchValue(this.buildFormValue());
+    if (changes['site']) {
+      this.verifierCodeSite();
+      if (this.form) {
+        this.form.patchValue(this.buildFormValue());
+      }
+    }
+  }
+
+  /** Cherche le code site parmi les sites CENCA (permalien /site/:code s'il existe). */
+  private async verifierCodeSite(): Promise<void> {
+    const code = this.site?.code_site?.trim();
+    this.codeSiteExiste = null;
+    if (!code) return;
+    const sites = await this.sitesService.getSitesParCode(code).catch(() => []);
+    // Le site affiché a pu changer pendant la recherche
+    if (this.site?.code_site?.trim() === code) {
+      this.codeSiteExiste = sites.length > 0;
     }
   }
 
@@ -95,6 +115,7 @@ export class OngletInfosSiteComponent implements OnChanges {
   private buildFormValue() {
     return {
       code: this.site.code,
+      code_site: this.site.code_site ?? '',
       nom: this.site.nom,
       nature: this.site.nature ?? null,
       definition: this.site.definition ?? null,
@@ -123,6 +144,7 @@ export class OngletInfosSiteComponent implements OnChanges {
   private async initForm() {
     this.form = this.fb.group({
       code: ['', Validators.required],
+      code_site: [''],
       nom: ['', Validators.required],
       insee: [null],
       nature: [null],
@@ -170,6 +192,7 @@ export class OngletInfosSiteComponent implements OnChanges {
     const val = this.form.value;
     const data: UpdateSite = {
       code: val.code,
+      code_site: val.code_site || undefined,
       nom: val.nom,
       insee: val.insee || undefined,
       nature: val.nature || undefined,

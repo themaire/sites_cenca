@@ -515,13 +515,8 @@ export class DetailPmfuComponent {
             // console.log(this.docForm);
             this.cdr.detectChanges();
           }
-          // Souscrire aux changements du statut du formulaire principal (projetForm)
-          this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
-            (status) => {
-              this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
-              this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
-            }
-          );
+          // Souscrire aux changements du statut du formulaire principal (pmfuForm)
+          this.subscribeToForm();
 
           this.isLoading = false; // Le chargement est terminé
         }, this.loadingDelay);
@@ -589,17 +584,7 @@ export class DetailPmfuComponent {
         // console.log('Formulaire de projet créé avec succès :', this.pmfuForm.value);
 
         // Souscrire aux changements du statut du formulaire principal (pmfuForm)
-        this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
-          (status) => {
-            console.log('Formulaire projet MFU valide juste avant :', this.pmfuForm.valid);
-            this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
-            // console.log('Statut du formulaire principal :', status);
-            // console.log("this.isFormValid = this.projetForm.valid :");
-            // console.log(this.isFormValid + " = " + this.projetForm.valid);
-            // console.log("isFormValid passé à l'enfant:", this.isFormValid);
-            this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
-          }
-        );
+        this.subscribeToForm();
 
         this.isLoading = false; // Le chargement est terminé
       } catch (error) {
@@ -797,6 +782,19 @@ export class DetailPmfuComponent {
   /**
    * Gère le basculement entre le mode édition et le mode affichage du formulaire PMFU
    */
+  /**
+   * Abonne isFormValid au statut de pmfuForm.
+   * Ferme d'abord l'abonnement précédent : sinon chaque passage en mode édition
+   * en empilerait un de plus sur le même formulaire.
+   */
+  private subscribeToForm(): void {
+    this.formStatusSubscription?.unsubscribe();
+    this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(() => {
+      this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
+      this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
+    });
+  }
+
   toggleEditPmfu(): void {
     this.isEditPmfu = this.formService.simpleToggle(this.isEditPmfu); // Changer le mode du booleen
 
@@ -806,13 +804,8 @@ export class DetailPmfuComponent {
       this.initialparcellesSelected = this.parcellesInitialesBackup.map(p => ({ ...p }));
       this.parcellesAjoutees = [];
       this.parcellesSelected = this.parcellesInitialesBackup.map(p => ({ ...p }));
-      // Souscrire aux changements du statut du formulaire principal (projetForm)
-      this.formStatusSubscription = this.pmfuForm.statusChanges.subscribe(
-        (status) => {
-          this.isFormValid = this.pmfuForm.valid; // Mettre à jour isFormValid en temps réel
-          this.cdr.detectChanges(); // Forcer la détection des changements dans le parent
-        }
-      );
+      // Souscrire aux changements du statut du formulaire principal (pmfuForm)
+      this.subscribeToForm();
     } else { // Si on quitte le mode édition
       this.parcellesSelected = this.parcellesInitialesBackup.map(p => ({ ...p }));
       this.parcellesAjoutees = [];

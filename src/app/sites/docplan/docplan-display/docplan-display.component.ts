@@ -132,9 +132,8 @@ export class DocplanDisplayComponent {
     });
 
     dialogRef.afterClosed().subscribe(() => {
-      this.route.params.subscribe((params: Params) => {
-        this.loadDocplans(params);
-      });
+      // snapshot : se réabonner à route.params empilerait un abonnement de plus à chaque fermeture
+      this.loadDocplans(this.route.snapshot.params);
     });
   }
 }
