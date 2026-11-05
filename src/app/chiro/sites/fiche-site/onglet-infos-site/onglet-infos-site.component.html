@@ -25,6 +25,10 @@
           <input matInput formControlName="code">
         </mat-form-field>
         <mat-form-field>
+          <mat-label>Code site</mat-label>
+          <input matInput formControlName="code_site">
+        </mat-form-field>
+        <mat-form-field>
           <mat-label>Nom *</mat-label>
           <input matInput formControlName="nom">
         </mat-form-field>
@@ -195,6 +199,7 @@
       <mat-card-header><mat-card-title>Identification</mat-card-title></mat-card-header>
       <mat-card-content>
         <div class="champ"><span class="label">Code</span><span>{{ site.code }}</span></div>
+        <div class="champ"><span class="label">Code site</span><span>{{ site.code_site || '—' }}</span></div>
         <div class="champ"><span class="label">Nom</span><span>{{ site.nom }}</span></div>
         <div class="champ"><span class="label">Type</span><span>{{ site.definition_libelle || site.definition || '—' }}</span></div>
         <div class="champ"><span class="label">Nature</span><span>{{ site.nature_libelle || site.nature || '—' }}</span></div>

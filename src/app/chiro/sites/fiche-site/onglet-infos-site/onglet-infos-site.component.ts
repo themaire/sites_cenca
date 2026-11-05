@@ -95,6 +95,7 @@ export class OngletInfosSiteComponent implements OnChanges {
   private buildFormValue() {
     return {
       code: this.site.code,
+      code_site: this.site.code_site ?? '',
       nom: this.site.nom,
       nature: this.site.nature ?? null,
       definition: this.site.definition ?? null,
@@ -123,6 +124,7 @@ export class OngletInfosSiteComponent implements OnChanges {
   private async initForm() {
     this.form = this.fb.group({
       code: ['', Validators.required],
+      code_site: [''],
       nom: ['', Validators.required],
       insee: [null],
       nature: [null],
@@ -170,6 +172,7 @@ export class OngletInfosSiteComponent implements OnChanges {
     const val = this.form.value;
     const data: UpdateSite = {
       code: val.code,
+      code_site: val.code_site || undefined,
       nom: val.nom,
       insee: val.insee || undefined,
       nature: val.nature || undefined,
